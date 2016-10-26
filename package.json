@@ -1,0 +1,58 @@
+{
+  "name": "tree-gateway",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thiagobustamante/tree-gateway.git"
+  },
+  "dependencies": {
+    "cluster": "^0.7.7",
+    "express": "^4.14.0",
+    "express-http-proxy": "^0.10.0",
+    "express-rate-limit": "^2.5.0",
+    "fs-extra": "^0.30.0",
+    "morgan": "~1.7.0",
+    "os": "^0.1.1",
+    "rate-limit-redis": "^1.0.4",
+    "serve-favicon": "~2.3.0",
+    "typescript-ioc": "^0.2.4",
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.3.4",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/es6-promise": "0.0.32",
+    "@types/express": "^4.0.33",
+    "@types/express-serve-static-core": "^4.0.37",
+    "@types/fs-extra": "0.0.33",
+    "@types/jasmine": "^2.5.35",
+    "@types/morgan": "^1.7.32",
+    "@types/multer": "0.0.32",
+    "@types/passport": "^0.2.32",
+    "@types/request": "0.0.31",
+    "@types/serve-static": "^1.7.31",
+    "@types/underscore": "^1.7.33",
+    "@types/underscore.string": "0.0.30",
+    "@types/winston": "0.0.28",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-istanbul": "^1.0.0",
+    "gulp-istanbul-enforcer": "^1.0.3",
+    "gulp-jasmine": "^2.4.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^2.0.0-alpha",
+    "gulp-typedoc": "^2.0.0",
+    "gulp-typescript": "^3.0.2",
+    "jasmine-console-reporter": "^1.2.6",
+    "merge2": "^1.0.2",
+    "remap-istanbul": "^0.6.4",
+    "request": "^2.72.0",
+    "run-sequence": "^1.1.5",
+    "typedoc": "^0.3.12",
+    "typescript": "^2.0.3"
+  }
+}

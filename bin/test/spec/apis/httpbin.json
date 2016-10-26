@@ -1,0 +1,26 @@
+{
+    "name": "Test API",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "test",
+        "target": {
+            "path": "http://httpbin.org",
+            "allowPath": ["get/", "post/"],
+            "denyPath": ["put/", "delete/"],
+            "allowMethod": ["get"], 
+            "denyMethod": ["post"]
+        },
+        "filter": [
+            {"name": "myCustomFilter"},
+            {"name": "myRolesFilter", "statusOnError": 403, "errorMessage": "Not Authorized"}
+        ],
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "throttling": {
+        
+    },
+    "serviceDiscovery": {
+
+    }
+}
