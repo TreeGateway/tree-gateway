@@ -17,7 +17,7 @@ var ApiRateLimit = (function () {
     ApiRateLimit.prototype.throttling = function (path, throttling) {
         var RateLimit = require('express-rate-limit');
         var rateConfig = Utils.omit(throttling, "store");
-        if (throttling.store === 'RedisStore') {
+        if (throttling.store === 'redis') {
             var RedisStore = require('rate-limit-redis');
             rateConfig.store = new RedisStore({
                 expiry: (throttling.windowMs / 1000) + 1

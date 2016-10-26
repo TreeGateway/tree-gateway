@@ -14,7 +14,7 @@ export class ApiRateLimit {
     throttling(path: string, throttling: config.Throttling) {
         let RateLimit = require('express-rate-limit');
         let rateConfig = Utils.omit(throttling, "store");
-        if (throttling.store === 'RedisStore') {
+        if (throttling.store === 'redis') {
             let RedisStore = require('rate-limit-redis');
 
             rateConfig.store = new RedisStore({
