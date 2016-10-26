@@ -42,6 +42,19 @@ describe("Gateway Tests", function () {
             });
         });
     });
+    describe("The Gateway Limit Controller", function () {
+        it("should be able to limit the requests to API", function (done) {
+            request(gatewayAddress + "/limited/get?arg=1", function (error, response, body) {
+                var result = JSON.parse(body);
+                expect(result.args.arg).toEqual("1");
+                request(gatewayAddress + "/limited/get?arg=1", function (error, response, body) {
+                    expect(response.statusCode).toEqual(429);
+                    expect(body).toEqual("Too many requests, please try again later.");
+                    done();
+                });
+            });
+        });
+    });
 });
 
 //# sourceMappingURL=test-auth.spec.js.map
