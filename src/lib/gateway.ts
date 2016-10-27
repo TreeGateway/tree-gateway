@@ -4,7 +4,8 @@ import * as express from "express";
 import * as fs from "fs-extra";
 import * as StringUtils from "underscore.string";
 import * as config from "./config";
-import {ApiProxy} from "./proxy";
+import {ApiProxy} from "./proxy/proxy";
+import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling";
 import {Set, StringMap} from "./es5-compat";
 import {Settings} from "./settings";
@@ -54,7 +55,7 @@ export class Gateway {
         winston.info("Configuring API ["+api.name+"] on path: "+api.proxy.path);
         let apiKey: string = this.getApiKey(api);
         this.apis.set(apiKey, api);
-        api.proxy.path = ApiProxy.normalizePath(api.proxy.path);
+        api.proxy.path = Utils.normalizePath(api.proxy.path);
         
         if (api.throttling) {
             winston.debug("Configuring API Rate Limits");

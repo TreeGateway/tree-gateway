@@ -90,10 +90,25 @@ export interface Proxy {
 
 export interface ServiceDiscovery {
 }
-
+/**
+ * Add filters to the request pipeline. A Filter is a function that receives
+ * the request and the response object and must return a boolean value to inform
+ * it the given request should target the destination API or if it should be ignored.
+ */
 export interface Filter {
+    /**
+     * The filter name.
+     */
     name: string,
+    /**
+     * The status code to be sent on responses blocked by this filter.
+     * Defaults to 404.
+     */
     statusOnError?: number;
+    /**
+     * The message to be sent on responses blocked by this filter.
+     * Defaults to Not Found.
+     */
     errorMessage?: string;
 }
 

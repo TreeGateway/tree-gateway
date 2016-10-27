@@ -10,7 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var fs = require("fs-extra");
 var StringUtils = require("underscore.string");
-var proxy_1 = require("./proxy");
+var proxy_1 = require("./proxy/proxy");
+var Utils = require("./proxy/utils");
 var throttling_1 = require("./throttling");
 var es5_compat_1 = require("./es5-compat");
 var settings_1 = require("./settings");
@@ -55,7 +56,7 @@ var Gateway = (function () {
         winston.info("Configuring API [" + api.name + "] on path: " + api.proxy.path);
         var apiKey = this.getApiKey(api);
         this.apis.set(apiKey, api);
-        api.proxy.path = proxy_1.ApiProxy.normalizePath(api.proxy.path);
+        api.proxy.path = Utils.normalizePath(api.proxy.path);
         if (api.throttling) {
             winston.debug("Configuring API Rate Limits");
             this.apiRateLimit.throttling(api.proxy.path, api.throttling);
