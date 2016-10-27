@@ -33,15 +33,11 @@ var ApiProxy = (function () {
         if (proxy.https) {
             result['https'] = proxy.https;
         }
-        if ((proxy.filter && proxy.filter.length > 0) ||
-            (proxy.target.allowPath && proxy.target.allowPath.length > 0) ||
-            (proxy.target.allowMethod && proxy.target.allowMethod.length > 0) ||
-            (proxy.target.denyPath && proxy.target.denyPath.length > 0) ||
-            (proxy.target.denyMethod && proxy.target.denyMethod.length > 0)) {
-            var filterChain_1 = this.buildFilters(proxy);
+        var filterChain = this.buildFilters(proxy);
+        if (filterChain && filterChain.length > 0) {
             result['filter'] = function (req, res) {
                 var result = true;
-                filterChain_1.forEach(function (f) {
+                filterChain.forEach(function (f) {
                     if (result) {
                         result = f(req, res);
                     }
@@ -83,6 +79,7 @@ var ApiProxy = (function () {
             });
             body.push(");");
         }
+        body.push("if (!accepted){ res.status(405);}");
         body.push("return accepted;");
         return Function("req", "res", body.join(''));
     };

@@ -41,6 +41,12 @@ describe("Gateway Tests", function () {
                 done();
             });
         });
+        it("should be able to filter requests by method", function (done) {
+            request(gatewayAddress + "/test/post", function (error, response, body) {
+                expect(response.statusCode).toEqual(405);
+                done();
+            });
+        });
     });
     describe("The Gateway Limit Controller", function () {
         it("should be able to limit the requests to API", function (done) {

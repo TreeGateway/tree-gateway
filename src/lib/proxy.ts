@@ -40,13 +40,8 @@ export class ApiProxy {
         if (proxy.https) {
             result['https']  = proxy.https; 
         }
-        if ((proxy.filter && proxy.filter.length > 0) ||
-            (proxy.target.allowPath && proxy.target.allowPath.length > 0) ||
-            (proxy.target.allowMethod && proxy.target.allowMethod.length > 0) ||
-            (proxy.target.denyPath && proxy.target.denyPath.length > 0) ||
-            (proxy.target.denyMethod && proxy.target.denyMethod.length > 0)) {
-            
-            let filterChain: Array<Function> = this.buildFilters(proxy);
+        let filterChain: Array<Function> = this.buildFilters(proxy);
+        if (filterChain && filterChain.length > 0) {            
             result['filter'] = function(req, res) {
                 let result = true;
                 filterChain.forEach(f=>{
@@ -96,6 +91,7 @@ export class ApiProxy {
             });
             body.push(");");
         }
+        body.push("if (!accepted){ res.status(405);}");
         body.push("return accepted;");
         return Function("req", "res", body.join(''));
     }
@@ -112,6 +108,5 @@ export class ApiProxy {
     private hasMethodFilter(proxy: config.Proxy) {
         return (proxy.target.allowMethod && proxy.target.allowMethod.length > 0)
             || (proxy.target.denyMethod && proxy.target.denyMethod.length > 0);
-    }
-    
+    }   
 }

@@ -46,6 +46,12 @@ describe("Gateway Tests", () => {
 				done();				
 			});
 		});
+		it("should be able to filter requests by method", (done) => {
+			request(gatewayAddress+"/test/post", (error, response, body)=>{
+				expect(response.statusCode).toEqual(405);
+				done();				
+			});
+		});
 	});
 
 	describe("The Gateway Limit Controller", () => {
@@ -61,5 +67,4 @@ describe("Gateway Tests", () => {
 			});
 		});
 	});
-	
 });
