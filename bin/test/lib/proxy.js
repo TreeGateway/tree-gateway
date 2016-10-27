@@ -18,10 +18,15 @@ var ApiProxy = (function () {
     ApiProxy.prototype.proxy = function (api) {
         this.settings.app.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api.proxy)));
     };
+    ApiProxy.normalizePath = function (path) {
+        path = ((StringUtils.startsWith(path, '/')) ? path : '/' + path);
+        path = ((StringUtils.endsWith(path, '/')) ? path : path + '/');
+        return path;
+    };
     ApiProxy.prototype.configureProxy = function (proxy) {
         var result = {
             forwardPath: function (req, res) {
-                return StringUtils.splice(req.originalUrl, 0, proxy.path.length);
+                return req.url;
             }
         };
         if (proxy.preserveHostHdr) {
@@ -53,8 +58,42 @@ var ApiProxy = (function () {
             filterChain.push(this.buildMethodFilter(proxy));
         }
         if (this.hasPathFilter(proxy)) {
+            filterChain.push(this.buildPathFilter(proxy));
         }
         return filterChain;
+    };
+    ApiProxy.prototype.buildPathFilter = function (proxy) {
+        var func = new Array();
+        func.push("function(req, res){");
+        func.push("var pathToRegexp = require('path-to-regexp');");
+        func.push("var StringUtils = require('underscore.string');");
+        func.push("var accepted = true;");
+        func.push("var targetPath = req.path;");
+        if (proxy.target.allowPath && proxy.target.allowPath.length > 0) {
+            func.push("accepted = (");
+            proxy.target.allowPath.forEach(function (path, index) {
+                if (index > 0) {
+                    func.push("||");
+                }
+                func.push("(pathToRegexp('" + ApiProxy.normalizePath(path) + "').test(targetPath))");
+            });
+            func.push(");");
+        }
+        if (proxy.target.denyPath && proxy.target.denyPath.length > 0) {
+            func.push("accepted = accepted && (");
+            proxy.target.denyPath.forEach(function (path, index) {
+                if (index > 0) {
+                    func.push("&&");
+                }
+                func.push("!(pathToRegexp('" + ApiProxy.normalizePath(path) + "').test(targetPath))");
+            });
+            func.push(");");
+        }
+        func.push("return accepted;");
+        func.push("}");
+        var f;
+        eval('f = ' + func.join('\n'));
+        return f;
     };
     ApiProxy.prototype.buildMethodFilter = function (proxy) {
         var body = new Array();
@@ -65,17 +104,17 @@ var ApiProxy = (function () {
                 if (index > 0) {
                     body.push("||");
                 }
-                body.push("(req.method === '" + StringUtils.capitalize(method) + "')");
+                body.push("(req.method === '" + method.toUpperCase() + "')");
             });
             body.push(");");
         }
         if (proxy.target.denyMethod && proxy.target.denyMethod.length > 0) {
-            body.push("accepted = (");
+            body.push("accepted = accepted && (");
             proxy.target.denyMethod.forEach(function (method, index) {
                 if (index > 0) {
                     body.push("&&");
                 }
-                body.push("(req.method !== '" + StringUtils.capitalize(method) + "')");
+                body.push("(req.method !== '" + method.toUpperCase() + "')");
             });
             body.push(");");
         }

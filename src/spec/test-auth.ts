@@ -17,7 +17,7 @@ Container.bind(Settings).scope(Scope.Singleton).provider(provider)
 
 const gateway: Gateway = new Gateway();
 const app = gateway.server;
-const port = 4567;
+const port = 4568;
 const gatewayAddress = "http://localhost:"+port;
 let server;
 app.set('env', 'test');
@@ -49,6 +49,12 @@ describe("Gateway Tests", () => {
 		it("should be able to filter requests by method", (done) => {
 			request(gatewayAddress+"/test/post", (error, response, body)=>{
 				expect(response.statusCode).toEqual(405);
+				done();				
+			});
+		});
+		it("should be able to filter requests by path", (done) => {
+			request(gatewayAddress+"/user-agent", (error, response, body)=>{
+				expect(response.statusCode).toEqual(404);
 				done();				
 			});
 		});

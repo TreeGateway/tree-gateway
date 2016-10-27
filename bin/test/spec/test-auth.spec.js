@@ -15,7 +15,7 @@ var provider = {
 typescript_ioc_1.Container.bind(settings_1.Settings).scope(typescript_ioc_1.Scope.Singleton).provider(provider);
 var gateway = new gateway_1.Gateway();
 var app = gateway.server;
-var port = 4567;
+var port = 4568;
 var gatewayAddress = "http://localhost:" + port;
 var server;
 app.set('env', 'test');
@@ -44,6 +44,12 @@ describe("Gateway Tests", function () {
         it("should be able to filter requests by method", function (done) {
             request(gatewayAddress + "/test/post", function (error, response, body) {
                 expect(response.statusCode).toEqual(405);
+                done();
+            });
+        });
+        it("should be able to filter requests by path", function (done) {
+            request(gatewayAddress + "/user-agent", function (error, response, body) {
+                expect(response.statusCode).toEqual(404);
                 done();
             });
         });

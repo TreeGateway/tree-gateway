@@ -54,7 +54,7 @@ export class Gateway {
         winston.info("Configuring API ["+api.name+"] on path: "+api.proxy.path);
         let apiKey: string = this.getApiKey(api);
         this.apis.set(apiKey, api);
-        api.proxy.path = ((StringUtils.startsWith(api.proxy.path, '/'))?api.proxy.path:'/'+api.proxy.path);
+        api.proxy.path = ApiProxy.normalizePath(api.proxy.path);
         
         if (api.throttling) {
             winston.debug("Configuring API Rate Limits");
