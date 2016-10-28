@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;app&quot; | MS-AUTHENTICATION</title>
+	<title>Interceptor | MS-AUTHENTICATION</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,51 +55,80 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_app_.html">&quot;app&quot;</a>
+					<a href="../modules/_config_.html">&quot;config&quot;</a>
+				</li>
+				<li>
+					<a href="_config_.interceptor.html">Interceptor</a>
 				</li>
 			</ul>
-			<h1>External module &quot;app&quot;</h1>
+			<h1>Interface Interceptor</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Add interceptors to the request pipeline. An Interceptor is a function that receives
+						the request or the response object and can modify these objects.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Interceptor</span>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-not-exported">
-							<h3>Variables</h3>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_app_.html#app" class="tsd-kind-icon">app</a></li>
-								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_app_.html#gateway" class="tsd-kind-icon">gateway</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.interceptor.html#request" class="tsd-kind-icon">request</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.interceptor.html#response" class="tsd-kind-icon">response</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
-					<a name="app" class="tsd-anchor"></a>
-					<h3>app</h3>
-					<div class="tsd-signature tsd-kind-icon">app<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Application</span><span class="tsd-signature-symbol"> =&nbsp;gateway.server</span></div>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="request" class="tsd-anchor"></a>
+					<h3>request</h3>
+					<div class="tsd-signature tsd-kind-icon">request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/cbd7bd6/src/lib/app.ts#L12">app.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/cbd7bd6/src/lib/config.ts#L166">config.ts:166</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A list of request interceptors</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
-					<a name="gateway" class="tsd-anchor"></a>
-					<h3>gateway</h3>
-					<div class="tsd-signature tsd-kind-icon">gateway<span class="tsd-signature-symbol">:</span> <a href="../classes/_gateway_.gateway.html" class="tsd-signature-type">Gateway</a><span class="tsd-signature-symbol"> =&nbsp;Container.get(Gateway)</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="response" class="tsd-anchor"></a>
+					<h3>response</h3>
+					<div class="tsd-signature tsd-kind-icon">response<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/cbd7bd6/src/lib/app.ts#L11">app.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/cbd7bd6/src/lib/config.ts#L170">config.ts:170</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A list of response interceptors</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -109,45 +138,72 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_app_.html">"app"</a>
+					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_app_.html">"app"</a>
+						<a href="../modules/_config_.html">"config"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_config_.html">"config"</a>
+						<a href="../modules/_es5_compat_.html">"es5-<wbr>compat"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_es5_compat_.html">"es5-<wbr>compat"</a>
+						<a href="../modules/_gateway_.html">"gateway"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_gateway_.html">"gateway"</a>
+						<a href="../modules/_proxy_filter_.html">"proxy/filter"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_proxy_filter_.html">"proxy/filter"</a>
+						<a href="../modules/_proxy_interceptor_.html">"proxy/interceptor"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_proxy_interceptor_.html">"proxy/interceptor"</a>
+						<a href="../modules/_proxy_proxy_.html">"proxy/proxy"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_proxy_proxy_.html">"proxy/proxy"</a>
+						<a href="../modules/_proxy_utils_.html">"proxy/utils"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_proxy_utils_.html">"proxy/utils"</a>
+						<a href="../modules/_settings_.html">"settings"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_settings_.html">"settings"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_throttling_throttling_.html">"throttling/throttling"</a>
+						<a href="../modules/_throttling_throttling_.html">"throttling/throttling"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
-						<a href="_app_.html#app" class="tsd-kind-icon">app</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.api.html" class="tsd-kind-icon">Api</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
-						<a href="_app_.html#gateway" class="tsd-kind-icon">gateway</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.filter.html" class="tsd-kind-icon">Filter</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.interceptor.html" class="tsd-kind-icon">Interceptor</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_.interceptor.html#request" class="tsd-kind-icon">request</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_.interceptor.html#response" class="tsd-kind-icon">response</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.proxy.html" class="tsd-kind-icon">Proxy</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.servicediscovery.html" class="tsd-kind-icon">Service<wbr>Discovery</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.target.html" class="tsd-kind-icon">Target</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.throttling.html" class="tsd-kind-icon">Throttling</a>
 					</li>
 				</ul>
 			</nav>

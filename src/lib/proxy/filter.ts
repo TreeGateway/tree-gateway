@@ -40,7 +40,7 @@ export class ProxyFilter {
         func.push("return accepted;");
         func.push("}");
         let f;
-        eval('f = '+func.join('\n'))
+        eval('f = '+func.join(''))
         return f;
     }
 
@@ -74,7 +74,7 @@ export class ProxyFilter {
         func.push("return accepted;");
         func.push("}");
         let f;
-        eval('f = '+func.join('\n'))
+        eval('f = '+func.join(''))
         return f;
     }
 

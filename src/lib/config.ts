@@ -43,7 +43,7 @@ export interface Proxy {
      * 
      * ```
      * 
-     * Or you can the decision for the gateway:
+     * Or you can leave the decision for the gateway:
      * 
      * "target": {
      *      "path": "httpbin.org",
@@ -83,6 +83,50 @@ export interface Proxy {
      * ``` 
      */
     filter?: Array<Filter>,
+    /**
+     * Add interceptors to the request pipeline. An Interceptor is a function that receives
+     * the request or the response object and can modify these objects.
+     * 
+     * You can define two types of interceptors: Request Interceptors or Response Interceptors.
+     * 
+     * Example of a request interceptor:
+     * ```
+     * module.exports = function(proxyReq, originalReq) {
+     *    // you can update headers 
+     *    proxyReq.headers['Content-Type'] = 'text/html';
+     *    // you can change the method 
+     *    proxyReq.method = 'GET';
+     *    // you can munge the bodyContent. 
+     *    proxyReq.bodyContent = proxyReq.bodyContent.replace(/losing/, 'winning!');
+     *    return proxyReq;
+     * };
+     * ```
+     * 
+     * Example of a response interceptor:
+     * ```
+     * module.exports = function(rsp, data, req, res, callback) {
+     *    // rsp - original response from the target 
+     *    data = JSON.parse(data.toString('utf8'));
+     *    callback(null, JSON.stringify(data));
+     *    // callback follow the node conventions ```callback(error, value)```
+     * };
+     * ```
+     * 
+     * Each interceptor must be defined on its own .js file (placed on middleware/interceptor/[request | response] folder)
+     * and the fileName must match: <interceptorName>.js. 
+     * 
+     * So, the above request interceptor should be saved in a file called 
+     * middleware/interceptor/request/myRequestInterceptor.js and configured as:
+     * 
+     * ```
+     * interceptor:{
+     *    request: ["myRequestInterceptor"]
+     * }
+     * ```
+     * 
+     * If more than one request or response interceptor are defined, they are executed in declaration order. 
+     */
+    interceptor?: Interceptor,
     preserveHostHdr?: boolean;
     timeout?: number;
 }
@@ -109,6 +153,21 @@ export interface Filter {
      * Defaults to Not Found.
      */
     errorMessage?: string;
+}
+
+/**
+ * Add interceptors to the request pipeline. An Interceptor is a function that receives
+ * the request or the response object and can modify these objects.
+ */
+export interface Interceptor {
+    /**
+     * A list of request interceptors
+     */
+    request: Array<string>;
+    /**
+     * A list of response interceptors
+     */
+    response: Array<string>;
 }
 
 export interface Target {

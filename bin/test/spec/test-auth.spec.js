@@ -64,6 +64,22 @@ describe("Gateway Tests", function () {
                 });
             });
         });
+        it("should be able to intercept requests ", function (done) {
+            request(gatewayAddress + "/intercepted/get", function (error, response, body) {
+                expect(response.statusCode).toEqual(200);
+                var result = JSON.parse(body);
+                expect(result.headers['X-Proxied-By']).toEqual("Tree-Gateway");
+                done();
+            });
+        });
+        it("should be able to intercept responses ", function (done) {
+            request(gatewayAddress + "/intercepted/get", function (error, response, body) {
+                expect(response.statusCode).toEqual(200);
+                var result = JSON.parse(body);
+                expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway");
+                done();
+            });
+        });
     });
     describe("The Gateway Limit Controller", function () {
         it("should be able to limit the requests to API", function (done) {

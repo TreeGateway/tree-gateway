@@ -69,6 +69,22 @@ describe("Gateway Tests", () => {
 				});
 			});
 		});
+		it("should be able to intercept requests ", (done) => {
+			request(gatewayAddress+"/intercepted/get", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				let result = JSON.parse(body);
+				expect(result.headers['X-Proxied-By']).toEqual("Tree-Gateway");
+				done();				
+			});
+		});
+		it("should be able to intercept responses ", (done) => {
+			request(gatewayAddress+"/intercepted/get", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				let result = JSON.parse(body);
+				expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway");
+				done();				
+			});
+		});
 	});
 
 	describe("The Gateway Limit Controller", () => {

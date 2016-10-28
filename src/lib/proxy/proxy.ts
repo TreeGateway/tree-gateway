@@ -6,6 +6,7 @@ import * as config from "../config";
 import {AutoWired, Inject} from "typescript-ioc";
 import {Settings} from "../settings";
 import {ProxyFilter} from "./filter";
+import {ProxyInterceptor} from "./interceptor";
 
 let proxy = require("express-http-proxy");
 
@@ -20,6 +21,9 @@ export class ApiProxy {
 
     @Inject
     private filter: ProxyFilter;
+
+    @Inject
+    private interceptor: ProxyInterceptor;
 
     /**
      * Configure a proxy for a given API
@@ -54,6 +58,14 @@ export class ApiProxy {
                 });
                 return result;
             }; 
+        }
+        let requestInterceptor: Function = this.interceptor.requestInterceptor(proxy);
+        if (requestInterceptor) {            
+            result['decorateRequest'] = requestInterceptor; 
+        }
+        let responseInterceptor: Function = this.interceptor.responseInterceptor(proxy);
+        if (responseInterceptor) {            
+            result['intercept'] = responseInterceptor; 
         }
         return result;
     }

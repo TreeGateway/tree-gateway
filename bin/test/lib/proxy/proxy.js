@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var typescript_ioc_1 = require("typescript-ioc");
 var settings_1 = require("../settings");
 var filter_1 = require("./filter");
+var interceptor_1 = require("./interceptor");
 var proxy = require("express-http-proxy");
 var ApiProxy = (function () {
     function ApiProxy() {
@@ -45,6 +46,14 @@ var ApiProxy = (function () {
                 return result;
             };
         }
+        var requestInterceptor = this.interceptor.requestInterceptor(proxy);
+        if (requestInterceptor) {
+            result['decorateRequest'] = requestInterceptor;
+        }
+        var responseInterceptor = this.interceptor.responseInterceptor(proxy);
+        if (responseInterceptor) {
+            result['intercept'] = responseInterceptor;
+        }
         return result;
     };
     __decorate([
@@ -55,6 +64,10 @@ var ApiProxy = (function () {
         typescript_ioc_1.Inject, 
         __metadata('design:type', filter_1.ProxyFilter)
     ], ApiProxy.prototype, "filter", void 0);
+    __decorate([
+        typescript_ioc_1.Inject, 
+        __metadata('design:type', interceptor_1.ProxyInterceptor)
+    ], ApiProxy.prototype, "interceptor", void 0);
     ApiProxy = __decorate([
         typescript_ioc_1.AutoWired, 
         __metadata('design:paramtypes', [])

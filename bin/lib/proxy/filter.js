@@ -44,7 +44,7 @@ var ProxyFilter = (function () {
         func.push("return accepted;");
         func.push("}");
         var f;
-        eval('f = ' + func.join('\n'));
+        eval('f = ' + func.join(''));
         return f;
     };
     ProxyFilter.prototype.buildPathFilter = function (proxy) {
@@ -77,7 +77,7 @@ var ProxyFilter = (function () {
         func.push("return accepted;");
         func.push("}");
         var f;
-        eval('f = ' + func.join('\n'));
+        eval('f = ' + func.join(''));
         return f;
     };
     ProxyFilter.prototype.buildMethodFilter = function (proxy) {
