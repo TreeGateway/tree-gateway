@@ -55,7 +55,7 @@ gulp.task('test-coverage', function(done) {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
-		// .pipe(istanbul())
+		.pipe(istanbul())
 		.pipe(sourcemaps.write('./')) 
 		.pipe(gulp.dest('bin/test/lib'));
 });
@@ -90,8 +90,8 @@ gulp.task('test-run', function() {
 });
 
 gulp.task('test', function(done) {
-    runSequence('test-build', 'test-copy-apis','test-coverage', 'test-run', function() {
-				//'remap-istanbul-reports', function() {
+    runSequence('test-build', 'test-copy-apis','test-coverage', 'test-run', 
+				'remap-istanbul-reports', function() {
         console.log('test completed.');
         done();
     });
@@ -104,7 +104,7 @@ gulp.task("docs", ['docs-clean'], function() {
             module: "commonjs",
             target: "es6",
             out: "./doc/",
-            name: "MS-AUTHENTICATION",
+            name: "Tree-Gateway",
 			includeDeclarations: true,
 			experimentalDecorators: true,
 			emitDecoratorMetadata: true,
@@ -121,22 +121,10 @@ gulp.task("docs", ['docs-clean'], function() {
 });
 
 gulp.task('release', function(done) {
-    runSequence('clean', 'build', 'install-cluster', 'test', 'docs', function() {
+    runSequence('clean', 'build', 'test', 'docs', function() {
         console.log('release created.');
         done();
     });
-});
-
-gulp.task('deploy', function(done) {
-    runSequence('clean', 'build', 'install-cluster', function() {
-        console.log('service deployed.');
-        done();
-    });
-});
-
-gulp.task('install-cluster', function() {
-    gulp.src('./src/www')
-    .pipe(gulp.dest('./bin'));
 });
 
 gulp.task('watch', ['build'], function() {
