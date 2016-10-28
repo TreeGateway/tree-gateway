@@ -3,7 +3,7 @@ A complete and free API Gateway
 
 It is a work in proggress. Already implemented
 
-## Features DONE
+## Features Implemented
  - API Proxy
    - Request and Response Interceptors
    - Filters
