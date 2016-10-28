@@ -21,3 +21,8 @@ It is a work in proggress. Already implemented
  - Caching
  - Admin API
  - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
+
+## Future work
+  - API composition
+  - Virtual Paths
+  - Protocol Transformations
