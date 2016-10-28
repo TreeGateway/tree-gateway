@@ -9,13 +9,15 @@ const provider: Provider = {
   get: () => {
       const settings: Settings = new Settings();
       settings.app = express(); 
+	  settings.apiPath = __dirname + '/apis';
+	  settings.middlewarePath = __dirname + '/middleware';
       return settings; 
   }
 };
 
-Container.bind(Settings).scope(Scope.Singleton).provider(provider)
+Container.bind(Settings).provider(provider)
 
-const gateway: Gateway = new Gateway();
+const gateway: Gateway = Container.get(Gateway);
 const app = gateway.server;
 const port = 4568;
 const gatewayAddress = "http://localhost:"+port;
@@ -25,7 +27,7 @@ app.set('env', 'test');
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
 		console.log('\nInitializing gateway...');
-		gateway.configure(__dirname + '/apis', ()=>{
+		gateway.initialize(()=>{
 			console.log('Gateway configured');
 			server = app.listen(port, ()=>{
 				console.log('Gateway started');

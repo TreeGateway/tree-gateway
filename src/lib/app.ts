@@ -5,9 +5,10 @@ import * as logger from "morgan";
 import {Gateway} from "./gateway";
 import * as fs from "fs-extra";
 import * as winston from "winston";
+import {Container} from "typescript-ioc";
 
 winston.add(winston.transports.File, { filename: __dirname + '/logs/gateway.log' });
-let gateway: Gateway = new Gateway();
+let gateway: Gateway = Container.get(Gateway);
 let app = gateway.server;
 
 if (app.get('env') == 'production') {
@@ -22,7 +23,7 @@ else {
   app.use(logger('dev'));
 }
 
-gateway.configure(__dirname +'/apis');
+gateway.initialize();
 app.listen(3010);
 module.exports = app;
 

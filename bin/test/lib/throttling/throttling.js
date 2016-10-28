@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var Utils = require("underscore");
 var typescript_ioc_1 = require("typescript-ioc");
-var settings_1 = require("./settings");
+var settings_1 = require("../settings");
 var ApiRateLimit = (function () {
     function ApiRateLimit() {
     }

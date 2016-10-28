@@ -7,6 +7,9 @@ const provider: Provider = {
   get: () => {
       const settings: Settings = new Settings();
       settings.app = express();
+      settings.apiPath = (__dirname +'/apis');
+      settings.middlewarePath = (__dirname +'/middleware');
+
       return settings; 
   }
 };
@@ -17,4 +20,6 @@ const provider: Provider = {
 @Provided(provider)
 export class Settings {
     app: express.Application;
+    apiPath: string;
+    middlewarePath: string;
 }

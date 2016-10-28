@@ -14,6 +14,8 @@ var provider = {
     get: function () {
         var settings = new Settings();
         settings.app = express();
+        settings.apiPath = (__dirname + '/apis');
+        settings.middlewarePath = (__dirname + '/middleware');
         return settings;
     }
 };

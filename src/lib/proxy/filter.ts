@@ -4,9 +4,13 @@ import * as StringUtils from "underscore.string";
 import * as config from "../config";
 import * as Utils from "./utils";
 import {AutoWired, Inject} from "typescript-ioc";
+import {Settings} from "../settings";
+import * as path from "path"; 
  
 @AutoWired
 export class ProxyFilter {
+    @Inject
+    private settings: Settings;
     buildFilters(proxy: config.Proxy) {
         let filterChain = new Array<Function>();
         if (this.hasMethodFilter(proxy)) {
@@ -15,7 +19,29 @@ export class ProxyFilter {
         if (this.hasPathFilter(proxy)) {
           filterChain.push(this.buildPathFilter(proxy));
         }
+        // if (this.hasCustomFilter(proxy)) {
+        //   filterChain.push(this.buildCustomFilter(proxy));
+        // }
         return filterChain;
+    }
+
+    private buildCustomFilter(proxy: config.Proxy) {
+        let func = new Array<string>();
+        func.push("function(req, res){");
+        func.push("var accepted = (");
+        proxy.filter.forEach((filter, index)=>{
+            if (index > 0) {
+                func.push("||");                
+            }
+            let p = path.join(this.settings.middlewarePath,filter.name);                
+            func.push("require('"+p+"')."+filter.name+"(req, res)");
+        });
+        func.push(");");
+        func.push("return accepted;");
+        func.push("}");
+        let f;
+        eval('f = '+func.join('\n'))
+        return f;
     }
 
     private buildPathFilter(proxy: config.Proxy) {

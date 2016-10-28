@@ -10,6 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var Utils = require("./utils");
 var typescript_ioc_1 = require("typescript-ioc");
+var settings_1 = require("../settings");
+var path = require("path");
 var ProxyFilter = (function () {
     function ProxyFilter() {
     }
@@ -22,6 +24,25 @@ var ProxyFilter = (function () {
             filterChain.push(this.buildPathFilter(proxy));
         }
         return filterChain;
+    };
+    ProxyFilter.prototype.buildCustomFilter = function (proxy) {
+        var _this = this;
+        var func = new Array();
+        func.push("function(req, res){");
+        func.push("var accepted = (");
+        proxy.filter.forEach(function (filter, index) {
+            if (index > 0) {
+                func.push("||");
+            }
+            var p = path.join(_this.settings.middlewarePath, filter.name);
+            func.push("require('" + p + "')." + filter.name + "(req, res)");
+        });
+        func.push(");");
+        func.push("return accepted;");
+        func.push("}");
+        var f;
+        eval('f = ' + func.join('\n'));
+        return f;
     };
     ProxyFilter.prototype.buildPathFilter = function (proxy) {
         var func = new Array();
@@ -94,6 +115,10 @@ var ProxyFilter = (function () {
         return (proxy.target.allowMethod && proxy.target.allowMethod.length > 0)
             || (proxy.target.denyMethod && proxy.target.denyMethod.length > 0);
     };
+    __decorate([
+        typescript_ioc_1.Inject, 
+        __metadata('design:type', settings_1.Settings)
+    ], ProxyFilter.prototype, "settings", void 0);
     ProxyFilter = __decorate([
         typescript_ioc_1.AutoWired, 
         __metadata('design:paramtypes', [])

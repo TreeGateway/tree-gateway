@@ -6,7 +6,7 @@ import * as StringUtils from "underscore.string";
 import * as config from "./config";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
-import {ApiRateLimit} from "./throttling";
+import {ApiRateLimit} from "./throttling/throttling";
 import {Set, StringMap} from "./es5-compat";
 import {Settings} from "./settings";
 import {AutoWired, Inject} from "typescript-ioc";
@@ -15,19 +15,23 @@ import * as winston from "winston";
 @AutoWired
 export class Gateway {
     @Inject
-    private settings: Settings;    
-    @Inject
     private apiProxy: ApiProxy;
     @Inject
     private apiRateLimit: ApiRateLimit;
     private apis: StringMap<config.Api>;
+    private settings: Settings;
+
+    constructor(@Inject settings: Settings) {
+        this.settings = settings;
+    }    
     
     get server() : express.Application{
         return this.settings.app;
     }
 
-    configure(path: string, ready?: () => void) {
+    initialize(ready?: () => void) {
         this.apis = new StringMap<config.Api>();
+        let path = this.settings.apiPath;
         fs.readdir(path, (err, files) => {
             if (err) {
                 winston.error("Error reading directory: "+err);

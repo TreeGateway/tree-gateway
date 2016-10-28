@@ -3,8 +3,9 @@ var logger = require("morgan");
 var gateway_1 = require("./gateway");
 var fs = require("fs-extra");
 var winston = require("winston");
+var typescript_ioc_1 = require("typescript-ioc");
 winston.add(winston.transports.File, { filename: __dirname + '/logs/gateway.log' });
-var gateway = new gateway_1.Gateway();
+var gateway = typescript_ioc_1.Container.get(gateway_1.Gateway);
 var app = gateway.server;
 if (app.get('env') == 'production') {
     var accessLogStream = fs.createWriteStream(__dirname + '/logs/access_errors.log', { flags: 'a' });
@@ -17,7 +18,7 @@ if (app.get('env') == 'production') {
 else {
     app.use(logger('dev'));
 }
-gateway.configure(__dirname + '/apis');
+gateway.initialize();
 app.listen(3010);
 module.exports = app;
 

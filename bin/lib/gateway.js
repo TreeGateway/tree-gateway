@@ -8,17 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var fs = require("fs-extra");
 var StringUtils = require("underscore.string");
 var proxy_1 = require("./proxy/proxy");
 var Utils = require("./proxy/utils");
-var throttling_1 = require("./throttling");
+var throttling_1 = require("./throttling/throttling");
 var es5_compat_1 = require("./es5-compat");
 var settings_1 = require("./settings");
 var typescript_ioc_1 = require("typescript-ioc");
 var winston = require("winston");
 var Gateway = (function () {
-    function Gateway() {
+    function Gateway(settings) {
+        this.settings = settings;
     }
     Object.defineProperty(Gateway.prototype, "server", {
         get: function () {
@@ -27,9 +31,10 @@ var Gateway = (function () {
         enumerable: true,
         configurable: true
     });
-    Gateway.prototype.configure = function (path, ready) {
+    Gateway.prototype.initialize = function (ready) {
         var _this = this;
         this.apis = new es5_compat_1.StringMap();
+        var path = this.settings.apiPath;
         fs.readdir(path, function (err, files) {
             if (err) {
                 winston.error("Error reading directory: " + err);
@@ -72,10 +77,6 @@ var Gateway = (function () {
     };
     __decorate([
         typescript_ioc_1.Inject, 
-        __metadata('design:type', settings_1.Settings)
-    ], Gateway.prototype, "settings", void 0);
-    __decorate([
-        typescript_ioc_1.Inject, 
         __metadata('design:type', proxy_1.ApiProxy)
     ], Gateway.prototype, "apiProxy", void 0);
     __decorate([
@@ -83,8 +84,9 @@ var Gateway = (function () {
         __metadata('design:type', throttling_1.ApiRateLimit)
     ], Gateway.prototype, "apiRateLimit", void 0);
     Gateway = __decorate([
-        typescript_ioc_1.AutoWired, 
-        __metadata('design:paramtypes', [])
+        typescript_ioc_1.AutoWired,
+        __param(0, typescript_ioc_1.Inject), 
+        __metadata('design:paramtypes', [settings_1.Settings])
     ], Gateway);
     return Gateway;
 }());

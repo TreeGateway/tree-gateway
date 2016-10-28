@@ -1,10 +1,10 @@
 "use strict";
 
 import * as express from "express";
-import * as config from "./config";
+import * as config from "../config";
 import * as Utils from "underscore";
 import {AutoWired, Inject} from "typescript-ioc";
-import {Settings} from "./settings";
+import {Settings} from "../settings";
 
 @AutoWired
 export class ApiRateLimit {

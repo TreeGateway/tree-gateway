@@ -9,11 +9,13 @@ var provider = {
     get: function () {
         var settings = new settings_1.Settings();
         settings.app = express();
+        settings.apiPath = __dirname + '/apis';
+        settings.middlewarePath = __dirname + '/middleware';
         return settings;
     }
 };
-typescript_ioc_1.Container.bind(settings_1.Settings).scope(typescript_ioc_1.Scope.Singleton).provider(provider);
-var gateway = new gateway_1.Gateway();
+typescript_ioc_1.Container.bind(settings_1.Settings).provider(provider);
+var gateway = typescript_ioc_1.Container.get(gateway_1.Gateway);
 var app = gateway.server;
 var port = 4568;
 var gatewayAddress = "http://localhost:" + port;
@@ -22,7 +24,7 @@ app.set('env', 'test');
 describe("Gateway Tests", function () {
     beforeAll(function (done) {
         console.log('\nInitializing gateway...');
-        gateway.configure(__dirname + '/apis', function () {
+        gateway.initialize(function () {
             console.log('Gateway configured');
             server = app.listen(port, function () {
                 console.log('Gateway started');
