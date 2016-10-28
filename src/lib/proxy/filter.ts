@@ -19,9 +19,9 @@ export class ProxyFilter {
         if (this.hasPathFilter(proxy)) {
           filterChain.push(this.buildPathFilter(proxy));
         }
-        // if (this.hasCustomFilter(proxy)) {
-        //   filterChain.push(this.buildCustomFilter(proxy));
-        // }
+        if (this.hasCustomFilter(proxy)) {
+          filterChain.push(this.buildCustomFilter(proxy));
+        }
         return filterChain;
     }
 
@@ -33,8 +33,8 @@ export class ProxyFilter {
             if (index > 0) {
                 func.push("||");                
             }
-            let p = path.join(this.settings.middlewarePath,filter.name);                
-            func.push("require('"+p+"')."+filter.name+"(req, res)");
+            let p = path.join(this.settings.middlewarePath, 'filter' ,filter.name);                
+            func.push("require('"+p+"')(req, res)");
         });
         func.push(");");
         func.push("return accepted;");

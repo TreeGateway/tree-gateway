@@ -50,9 +50,18 @@ describe("Gateway Tests", function () {
             });
         });
         it("should be able to filter requests by path", function (done) {
-            request(gatewayAddress + "/user-agent", function (error, response, body) {
+            request(gatewayAddress + "/test/user-agent", function (error, response, body) {
                 expect(response.statusCode).toEqual(404);
                 done();
+            });
+        });
+        it("should be able to filter requests with custom filters", function (done) {
+            request(gatewayAddress + "/filtered/get", function (error, response, body) {
+                expect(response.statusCode).toEqual(200);
+                request(gatewayAddress + "/filtered/user-agent", function (error, response, body) {
+                    expect(response.statusCode).toEqual(404);
+                    done();
+                });
             });
         });
     });

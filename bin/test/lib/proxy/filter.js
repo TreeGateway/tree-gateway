@@ -23,6 +23,9 @@ var ProxyFilter = (function () {
         if (this.hasPathFilter(proxy)) {
             filterChain.push(this.buildPathFilter(proxy));
         }
+        if (this.hasCustomFilter(proxy)) {
+            filterChain.push(this.buildCustomFilter(proxy));
+        }
         return filterChain;
     };
     ProxyFilter.prototype.buildCustomFilter = function (proxy) {
@@ -34,8 +37,8 @@ var ProxyFilter = (function () {
             if (index > 0) {
                 func.push("||");
             }
-            var p = path.join(_this.settings.middlewarePath, filter.name);
-            func.push("require('" + p + "')." + filter.name + "(req, res)");
+            var p = path.join(_this.settings.middlewarePath, 'filter', filter.name);
+            func.push("require('" + p + "')(req, res)");
         });
         func.push(");");
         func.push("return accepted;");

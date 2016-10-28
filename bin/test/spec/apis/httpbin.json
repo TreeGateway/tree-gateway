@@ -11,8 +11,6 @@
             "denyMethod": ["post"]
         },
         "filter": [
-            {"name": "myCustomFilter"},
-            {"name": "myRolesFilter", "statusOnError": 403, "errorMessage": "Not Authorized"}
         ],
         "preserveHostHdr": true,
         "timeout": 5000

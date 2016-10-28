@@ -46,7 +46,7 @@ gulp.task('test-build', function(done) {
 gulp.task('test-copy-apis', function() {
     gulp.src('src/spec/apis/*')
     .pipe(gulp.dest('bin/test/spec/apis'));
-    gulp.src('src/spec/middleware/*')
+    gulp.src('src/spec/middleware/**/*')
     .pipe(gulp.dest('bin/test/spec/middleware'));
 });
 
@@ -112,7 +112,6 @@ gulp.task("docs", ['docs-clean'], function() {
 
 			// TypeDoc options (see typedoc docs) 
 			version: true,
-			verbose: false,
 			// json: "output/to/file.json"
  
 			// theme: "/path/to/my/theme",

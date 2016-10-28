@@ -67,14 +67,13 @@ export interface Proxy {
      * 
      * Example:
      * ```
-     * function myFilter (req, res) { 
-     *   return req.method == 'GET';
-     * }
+     * module.exports = function (req, res) {
+     *   return true;
+     * };
      * ```
      * 
-     * Each filter must be defined on its own .js file (placed on middleware/filters folder)
-     * and the fileName must match: <filterName>.js. The name of the filter function should also
-     * matches the <filterName>.
+     * Each filter must be defined on its own .js file (placed on middleware/filter folder)
+     * and the fileName must match: <filterName>.js. 
      * 
      * So, the above filter should be saved in a file called myFilter.js and configured as:
      * ```
