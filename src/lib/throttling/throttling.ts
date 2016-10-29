@@ -5,6 +5,7 @@ import * as config from "../config";
 import * as Utils from "underscore";
 import {AutoWired, Inject} from "typescript-ioc";
 import {Settings} from "../settings";
+import * as pathUtil from "path"; 
 
 @AutoWired
 export class ApiRateLimit {
@@ -13,7 +14,7 @@ export class ApiRateLimit {
 
     throttling(path: string, throttling: config.Throttling) {
         let RateLimit = require('express-rate-limit');
-        let rateConfig = Utils.omit(throttling, "store");
+        let rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler");
         if (throttling.store === 'redis') {
             let RedisStore = require('rate-limit-redis');
 
@@ -26,6 +27,15 @@ export class ApiRateLimit {
         }
         
         let limiter = new RateLimit(rateConfig);        
+
+        if (throttling.keyGenerator) {
+            let p = pathUtil.join(this.settings.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
+            rateConfig.keyGenerator = require(p);
+        }
+        if (throttling.handler) {
+            let p = pathUtil.join(this.settings.middlewarePath, 'throttling', 'handler' , throttling.handler);                
+            rateConfig.handler = require(p);
+        }
 
         this.settings.app.use(path, limiter);
     }

@@ -11,12 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var Utils = require("underscore");
 var typescript_ioc_1 = require("typescript-ioc");
 var settings_1 = require("../settings");
+var pathUtil = require("path");
 var ApiRateLimit = (function () {
     function ApiRateLimit() {
     }
     ApiRateLimit.prototype.throttling = function (path, throttling) {
         var RateLimit = require('express-rate-limit');
-        var rateConfig = Utils.omit(throttling, "store");
+        var rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler");
         if (throttling.store === 'redis') {
             var RedisStore = require('rate-limit-redis');
             rateConfig.store = new RedisStore({
@@ -24,6 +25,14 @@ var ApiRateLimit = (function () {
             });
         }
         var limiter = new RateLimit(rateConfig);
+        if (throttling.keyGenerator) {
+            var p = pathUtil.join(this.settings.middlewarePath, 'throttling', 'keyGenerator', throttling.keyGenerator);
+            rateConfig.keyGenerator = require(p);
+        }
+        if (throttling.handler) {
+            var p = pathUtil.join(this.settings.middlewarePath, 'throttling', 'handler', throttling.handler);
+            rateConfig.handler = require(p);
+        }
         this.settings.app.use(path, limiter);
     };
     __decorate([

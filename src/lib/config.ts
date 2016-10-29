@@ -213,8 +213,44 @@ export interface Throttling {
      * Enable header to show request limit and current usage.
      */
     headers?: boolean;
-    // keyGenerator: Function used to generate keys. By default user IP address (req.ip) is used. Defaults:
-    // handler: The function to execute once the max limit is exceeded. It receives the request and the response objects. The "next" param is available if you need to pass to the next middleware. Defaults:
+    /**
+     * The name of the function used to generate keys. By default user IP address (req.ip) is used.
+     * For Example, on myKeyGen.js file:
+     * ```
+     * module.exports = function (req) {
+     *    return req.ip;
+     * };
+     * ```
+     * This function must be saved on a js file:
+     * ``` 
+     * middleware/throttling/keyGenerator/myKeyGen.js
+     * ```
+     */
+    keyGenerator?: string;
+    /**
+     * The name of the function to execute once the max limit is exceeded. It receives the request 
+     * and the response objects. The "next" param is available if you need to pass to the 
+     * next middleware.
+     * 
+     * For Example, on myHandler.js file:
+     * ```
+     * module.exports = function (req, res) {
+     *   res.format({
+     *      html: function(){
+     *         res.status(options.statusCode).end(options.message);
+     *      },
+     *      json: function(){
+     *         res.status(options.statusCode).json({ message: options.message });
+     *      }
+     *   });
+     * };
+     * ```
+     * This function must be saved on a js file:
+     * ``` 
+     * middleware/throttling/handler/myHandler.js
+     * ```
+     */
+    handler?: string;
     /**
      * The storage to use when persisting rate limit attempts. 
      * By default, the MemoryStore is used. Possible values are: 

@@ -11,6 +11,8 @@ winston.add(winston.transports.File, { filename: __dirname + '/logs/gateway.log'
 let gateway: Gateway = Container.get(Gateway);
 let app = gateway.server;
 
+//app.enable('trust proxy'); // If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc) 
+
 if (app.get('env') == 'production') {
   const accessLogStream = fs.createWriteStream(__dirname + '/logs/access_errors.log',{flags: 'a'});
   app.use(logger('common', {

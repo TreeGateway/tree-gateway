@@ -38,12 +38,6 @@ export class ProxyInterceptor {
         eval('f = '+func.join(''))
         return f;
     }
-    //  * module.exports = function(rsp, data, req, res, callback) {
-    //  *    // rsp - original response from the target 
-    //  *    data = JSON.parse(data.toString('utf8'));
-    //  *    callback(null, JSON.stringify(data));
-    //  *    // callback follow the node conventions ```callback(error, value)```
-    //  * };
 
     private buildResponseInterceptor(proxy: config.Proxy) {
         let func = new Array<string>();

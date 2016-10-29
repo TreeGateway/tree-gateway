@@ -85,7 +85,9 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#delayafter" class="tsd-kind-icon">delay<wbr>After</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#delayms" class="tsd-kind-icon">delay<wbr>Ms</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#handler" class="tsd-kind-icon">handler</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#headers" class="tsd-kind-icon">headers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#keygenerator" class="tsd-kind-icon">key<wbr>Generator</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#max" class="tsd-kind-icon">max</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#message" class="tsd-kind-icon">message</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.throttling.html#statuscode" class="tsd-kind-icon">status<wbr>Code</a></li>
@@ -104,7 +106,7 @@
 					<div class="tsd-signature tsd-kind-icon">delay<wbr>After<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L191">config.ts:191</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L191">config.ts:191</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -120,7 +122,7 @@
 					<div class="tsd-signature tsd-kind-icon">delay<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L196">config.ts:196</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L196">config.ts:196</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -131,12 +133,43 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="handler" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> handler</h3>
+					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L253">config.ts:253</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name of the function to execute once the max limit is exceeded. It receives the request
+								and the response objects. The &quot;next&quot; param is available if you need to pass to the
+							next middleware.</p>
+						</div>
+						<p>For Example, on myHandler.js file:</p>
+						<pre><code><span class="hljs-keyword">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span></span> (req, res) {
+  res.<span class="hljs-keyword">format</span>({
+     html: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+        res.<span class="hljs-keyword">status</span>(options.statusCode).<span class="hljs-keyword">end</span>(options.message);
+     },
+     json: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+        res.<span class="hljs-keyword">status</span>(options.statusCode).json({ message: options.message });
+     }
+  });
+};
+</code></pre><p>This function must be saved on a js file:</p>
+						<pre><code>middleware/throttling/<span class="hljs-keyword">handler</span>/myHandler.js
+</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="headers" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
 					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L215">config.ts:215</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L215">config.ts:215</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -146,12 +179,34 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="keygenerator" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> key<wbr>Generator</h3>
+					<div class="tsd-signature tsd-kind-icon">key<wbr>Generator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L229">config.ts:229</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name of the function used to generate keys. By default user IP address (req.ip) is used.
+							For Example, on myKeyGen.js file:</p>
+							<pre><code>module.exports = <span class="hljs-keyword">function</span> <span class="hljs-title"></span>(req) {
+   <span class="hljs-keyword">return</span> <span class="hljs-type">req.ip</span>;
+};
+</code></pre><p>This function must be saved on a js file:</p>
+							<pre><code>middleware<span class="hljs-regexp">/throttling/</span>keyGenerator<span class="hljs-regexp">/myKeyGen.js</span>
+</code></pre>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="max" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max</h3>
 					<div class="tsd-signature tsd-kind-icon">max<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L201">config.ts:201</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L201">config.ts:201</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -167,7 +222,7 @@
 					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L206">config.ts:206</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L206">config.ts:206</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -183,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">status<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L211">config.ts:211</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L211">config.ts:211</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -199,7 +254,7 @@
 					<div class="tsd-signature tsd-kind-icon">store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L229">config.ts:229</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L265">config.ts:265</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -219,7 +274,7 @@
 					<div class="tsd-signature tsd-kind-icon">window<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/6a600fb/src/lib/config.ts#L186">config.ts:186</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/8e4821b/src/lib/config.ts#L186">config.ts:186</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -301,7 +356,13 @@
 								<a href="_config_.throttling.html#delayms" class="tsd-kind-icon">delay<wbr>Ms</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_.throttling.html#handler" class="tsd-kind-icon">handler</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_.throttling.html#headers" class="tsd-kind-icon">headers</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_.throttling.html#keygenerator" class="tsd-kind-icon">key<wbr>Generator</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_.throttling.html#max" class="tsd-kind-icon">max</a>
