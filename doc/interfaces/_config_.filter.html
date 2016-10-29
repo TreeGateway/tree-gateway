@@ -92,9 +92,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.filter.html#errormessage" class="tsd-kind-icon">error<wbr>Message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.filter.html#appliesto" class="tsd-kind-icon">applies<wbr>To</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.filter.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.filter.html#statusonerror" class="tsd-kind-icon">status<wbr>OnError</a></li>
 							</ul>
 						</section>
 					</div>
@@ -103,18 +102,19 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="errormessage" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> error<wbr>Message</h3>
-					<div class="tsd-signature tsd-kind-icon">error<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="appliesto" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> applies<wbr>To</h3>
+					<div class="tsd-signature tsd-kind-icon">applies<wbr>To<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/e9c1e2e/src/lib/config.ts#L155">config.ts:155</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/b57f373/src/lib/config.ts#L151">config.ts:151</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The message to be sent on responses blocked by this filter.
-							Defaults to Not Found.</p>
+							<p>A list of paths that should be filtered by this filter. If not provided, all paths
+								will be filtered.
+							Defaults to *.</p>
 						</div>
 					</div>
 				</section>
@@ -124,28 +124,12 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/e9c1e2e/src/lib/config.ts#L145">config.ts:145</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/b57f373/src/lib/config.ts#L145">config.ts:145</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The filter name.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="statusonerror" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> status<wbr>OnError</h3>
-					<div class="tsd-signature tsd-kind-icon">status<wbr>OnError<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/e9c1e2e/src/lib/config.ts#L150">config.ts:150</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The status code to be sent on responses blocked by this filter.
-							Defaults to 404.</p>
 						</div>
 					</div>
 				</section>
@@ -200,13 +184,10 @@
 						<a href="_config_.filter.html" class="tsd-kind-icon">Filter</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.filter.html#errormessage" class="tsd-kind-icon">error<wbr>Message</a>
+								<a href="_config_.filter.html#appliesto" class="tsd-kind-icon">applies<wbr>To</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_.filter.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.filter.html#statusonerror" class="tsd-kind-icon">status<wbr>OnError</a>
 							</li>
 						</ul>
 					</li>

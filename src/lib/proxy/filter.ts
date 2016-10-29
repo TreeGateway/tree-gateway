@@ -28,19 +28,34 @@ export class ProxyFilter {
     private buildCustomFilter(proxy: config.Proxy) {
         let func = new Array<string>();
         func.push("function(req, res){");
-        func.push("var accepted = (");
+        func.push("var pathToRegexp = require('path-to-regexp');");
+        func.push("var accepted = true;");
+        func.push("accepted = (");
         proxy.filter.forEach((filter, index)=>{
             if (index > 0) {
-                func.push("||");                
+                func.push("&&");                
+            }
+            func.push("(");                
+            if (filter.appliesTo) {
+                func.push("!(");                
+                filter.appliesTo.forEach((path,index)=>{
+                    if (index > 0) {
+                        func.push("||");                
+                    }                
+                    func.push("(pathToRegexp('"+Utils.normalizePath(path)+"').test(req.path))");
+
+                });
+                func.push(") ? accepted :");                
             }
             let p = path.join(this.settings.middlewarePath, 'filter' ,filter.name);                
             func.push("require('"+p+"')(req, res)");
+            func.push(")");                
         });
         func.push(");");
         func.push("return accepted;");
         func.push("}");
         let f;
-        eval('f = '+func.join(''))
+        eval('f = '+func.join('\n'))
         return f;
     }
 

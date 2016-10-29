@@ -65,7 +65,10 @@ describe("Gateway Tests", () => {
 				expect(response.statusCode).toEqual(200);
 				request(gatewayAddress+"/filtered/user-agent", (error, response, body)=>{
 					expect(response.statusCode).toEqual(404);
-					done();				
+					request(gatewayAddress+"/filtered/get?denyParam=1", (error, response, body)=>{
+						expect(response.statusCode).toEqual(404);
+						done();				
+					});
 				});
 			});
 		});

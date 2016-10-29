@@ -144,15 +144,11 @@ export interface Filter {
      */
     name: string,
     /**
-     * The status code to be sent on responses blocked by this filter.
-     * Defaults to 404.
+     * A list of paths that should be filtered by this filter. If not provided, all paths
+     * will be filtered.
+     * Defaults to *.
      */
-    statusOnError?: number;
-    /**
-     * The message to be sent on responses blocked by this filter.
-     * Defaults to Not Found.
-     */
-    errorMessage?: string;
+    appliesTo?: Array<string>;
 }
 
 /**

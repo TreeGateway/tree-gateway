@@ -32,19 +32,33 @@ var ProxyFilter = (function () {
         var _this = this;
         var func = new Array();
         func.push("function(req, res){");
-        func.push("var accepted = (");
+        func.push("var pathToRegexp = require('path-to-regexp');");
+        func.push("var accepted = true;");
+        func.push("accepted = (");
         proxy.filter.forEach(function (filter, index) {
             if (index > 0) {
-                func.push("||");
+                func.push("&&");
+            }
+            func.push("(");
+            if (filter.appliesTo) {
+                func.push("!(");
+                filter.appliesTo.forEach(function (path, index) {
+                    if (index > 0) {
+                        func.push("||");
+                    }
+                    func.push("(pathToRegexp('" + Utils.normalizePath(path) + "').test(req.path))");
+                });
+                func.push(") ? accepted :");
             }
             var p = path.join(_this.settings.middlewarePath, 'filter', filter.name);
             func.push("require('" + p + "')(req, res)");
+            func.push(")");
         });
         func.push(");");
         func.push("return accepted;");
         func.push("}");
         var f;
-        eval('f = ' + func.join(''));
+        eval('f = ' + func.join('\n'));
         return f;
     };
     ProxyFilter.prototype.buildPathFilter = function (proxy) {

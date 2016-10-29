@@ -60,7 +60,10 @@ describe("Gateway Tests", function () {
                 expect(response.statusCode).toEqual(200);
                 request(gatewayAddress + "/filtered/user-agent", function (error, response, body) {
                     expect(response.statusCode).toEqual(404);
-                    done();
+                    request(gatewayAddress + "/filtered/get?denyParam=1", function (error, response, body) {
+                        expect(response.statusCode).toEqual(404);
+                        done();
+                    });
                 });
             });
         });

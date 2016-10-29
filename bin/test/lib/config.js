@@ -1,7 +1,7 @@
 "use strict";
 var __cov_ATGs56glYGYDs9vzOIkBqw = (Function('return this'))();
-if (!__cov_ATGs56glYGYDs9vzOIkBqw.$$cov_1477709350349$$) { __cov_ATGs56glYGYDs9vzOIkBqw.$$cov_1477709350349$$ = {}; }
-__cov_ATGs56glYGYDs9vzOIkBqw = __cov_ATGs56glYGYDs9vzOIkBqw.$$cov_1477709350349$$;
+if (!__cov_ATGs56glYGYDs9vzOIkBqw.$$cov_1477763167149$$) { __cov_ATGs56glYGYDs9vzOIkBqw.$$cov_1477763167149$$ = {}; }
+__cov_ATGs56glYGYDs9vzOIkBqw = __cov_ATGs56glYGYDs9vzOIkBqw.$$cov_1477763167149$$;
 if (!(__cov_ATGs56glYGYDs9vzOIkBqw['/Users/thiago/git/tree-gateway/bin/lib/config.js'])) {
    __cov_ATGs56glYGYDs9vzOIkBqw['/Users/thiago/git/tree-gateway/bin/lib/config.js'] = {"path":"/Users/thiago/git/tree-gateway/bin/lib/config.js","s":{},"b":{},"f":{},"fnMap":{},"statementMap":{},"branchMap":{}};
 }
