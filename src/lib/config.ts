@@ -126,7 +126,7 @@ export interface Proxy {
      * 
      * If more than one request or response interceptor are defined, they are executed in declaration order. 
      */
-    interceptor?: Interceptor,
+    interceptor?: Interceptors,
     preserveHostHdr?: boolean;
     timeout?: number;
 }
@@ -155,15 +155,32 @@ export interface Filter {
  * Add interceptors to the request pipeline. An Interceptor is a function that receives
  * the request or the response object and can modify these objects.
  */
-export interface Interceptor {
+export interface Interceptors {
     /**
      * A list of request interceptors
      */
-    request: Array<string>;
+    request: Array<Interceptor>;
     /**
      * A list of response interceptors
      */
-    response: Array<string>;
+    response: Array<Interceptor>;
+}
+
+/**
+ * An Interceptor is a function that receives
+ * the request or the response object and can modify these objects.
+ */
+export interface Interceptor {
+    /**
+     * The interceptor name.
+     */
+    name: string,
+    /**
+     * A list of paths that should be intercepted by this interceptor. If not provided, all paths
+     * will be intercepted.
+     * Defaults to *.
+     */
+    appliesTo?: Array<string>;
 }
 
 export interface Target {

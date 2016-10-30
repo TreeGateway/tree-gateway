@@ -71,7 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Add interceptors to the request pipeline. An Interceptor is a function that receives
+						<p>An Interceptor is a function that receives
 						the request or the response object and can modify these objects.</p>
 					</div>
 				</div>
@@ -91,8 +91,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.interceptor.html#request" class="tsd-kind-icon">request</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.interceptor.html#response" class="tsd-kind-icon">response</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.interceptor.html#appliesto" class="tsd-kind-icon">applies<wbr>To</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.interceptor.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -101,32 +101,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="request" class="tsd-anchor"></a>
-					<h3>request</h3>
-					<div class="tsd-signature tsd-kind-icon">request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="appliesto" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> applies<wbr>To</h3>
+					<div class="tsd-signature tsd-kind-icon">applies<wbr>To<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/b57f373/src/lib/config.ts#L162">config.ts:162</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/0a591ec/src/lib/config.ts#L183">config.ts:183</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A list of request interceptors</p>
+							<p>A list of paths that should be intercepted by this interceptor. If not provided, all paths
+								will be intercepted.
+							Defaults to *.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="response" class="tsd-anchor"></a>
-					<h3>response</h3>
-					<div class="tsd-signature tsd-kind-icon">response<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/b57f373/src/lib/config.ts#L166">config.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/0a591ec/src/lib/config.ts#L177">config.ts:177</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A list of response interceptors</p>
+							<p>The interceptor name.</p>
 						</div>
 					</div>
 				</section>
@@ -184,15 +186,18 @@
 						<a href="_config_.interceptor.html" class="tsd-kind-icon">Interceptor</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.interceptor.html#request" class="tsd-kind-icon">request</a>
+								<a href="_config_.interceptor.html#appliesto" class="tsd-kind-icon">applies<wbr>To</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.interceptor.html#response" class="tsd-kind-icon">response</a>
+								<a href="_config_.interceptor.html#name" class="tsd-kind-icon">name</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.interceptors.html" class="tsd-kind-icon">Interceptors</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.proxy.html" class="tsd-kind-icon">Proxy</a>
 					</li>

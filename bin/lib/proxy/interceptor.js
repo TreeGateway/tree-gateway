@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var typescript_ioc_1 = require("typescript-ioc");
 var settings_1 = require("../settings");
 var path = require("path");
+var Utils = require("./utils");
+var pathToRegexp = require('path-to-regexp');
 var ProxyInterceptor = (function () {
     function ProxyInterceptor() {
     }
@@ -31,7 +33,17 @@ var ProxyInterceptor = (function () {
         var func = new Array();
         func.push("function(proxyReq, originalReq){");
         proxy.interceptor.request.forEach(function (interceptor, index) {
-            var p = path.join(_this.settings.middlewarePath, 'interceptor', 'request', interceptor);
+            var p = path.join(_this.settings.middlewarePath, 'interceptor', 'request', interceptor.name);
+            if (interceptor.appliesTo) {
+                func.push("if (");
+                interceptor.appliesTo.forEach(function (path, index) {
+                    if (index > 0) {
+                        func.push("||");
+                    }
+                    func.push("(pathToRegexp('" + Utils.normalizePath(path) + "').test(originalReq.path))");
+                });
+                func.push(")");
+            }
             func.push("proxyReq = require('" + p + "')(proxyReq, originalReq);");
         });
         func.push("return proxyReq;");
@@ -44,9 +56,27 @@ var ProxyInterceptor = (function () {
         var _this = this;
         var func = new Array();
         func.push("function(rsp, data, req, res, callback){");
+        func.push("var continueChain = function(rsp, data, req, res, calback){ callback(null, data);};");
         proxy.interceptor.response.forEach(function (interceptor, index) {
-            var p = path.join(_this.settings.middlewarePath, 'interceptor', 'response', interceptor);
-            func.push("require('" + p + "')(rsp, data, req, res, (error, value)=>{ \
+            if (interceptor.appliesTo) {
+                func.push("var f" + index + ";");
+                func.push("if (");
+                interceptor.appliesTo.forEach(function (path, index) {
+                    if (index > 0) {
+                        func.push("&&");
+                    }
+                    func.push("!(pathToRegexp('" + Utils.normalizePath(path) + "').test(req.path))");
+                });
+                func.push(")");
+                func.push("f" + index + " = continueChain;");
+                func.push("else f" + index + " = ");
+            }
+            else {
+                func.push("var f" + index + " = ");
+            }
+            var p = path.join(_this.settings.middlewarePath, 'interceptor', 'response', interceptor.name);
+            func.push("require('" + p + "');");
+            func.push("f" + index + "(rsp, data, req, res, (error, value)=>{ \
                 if (error) { \
                    callback(error); \
                    return; \

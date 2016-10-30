@@ -10,11 +10,12 @@
         "timeout": 5000,
         "interceptor": {
             "request": [
-                "myRequestInterceptor"
+                {"name":"myRequestInterceptor", "appliesTo": ["get/"]},
+                {"name":"mySecondRequestInterceptor"}
             ], 
             "response": [
-                "myResponseInterceptor", 
-                "SecondInterceptor"
+                {"name":"myResponseInterceptor"}, 
+                {"name":"SecondInterceptor", "appliesTo": ["get/"]}
             ] 
         }
     }

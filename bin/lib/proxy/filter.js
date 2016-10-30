@@ -12,6 +12,7 @@ var Utils = require("./utils");
 var typescript_ioc_1 = require("typescript-ioc");
 var settings_1 = require("../settings");
 var path = require("path");
+var pathToRegexp = require('path-to-regexp');
 var ProxyFilter = (function () {
     function ProxyFilter() {
     }
@@ -32,7 +33,6 @@ var ProxyFilter = (function () {
         var _this = this;
         var func = new Array();
         func.push("function(req, res){");
-        func.push("var pathToRegexp = require('path-to-regexp');");
         func.push("var accepted = true;");
         func.push("accepted = (");
         proxy.filter.forEach(function (filter, index) {
@@ -64,8 +64,6 @@ var ProxyFilter = (function () {
     ProxyFilter.prototype.buildPathFilter = function (proxy) {
         var func = new Array();
         func.push("function(req, res){");
-        func.push("var pathToRegexp = require('path-to-regexp');");
-        func.push("var StringUtils = require('underscore.string');");
         func.push("var accepted = true;");
         func.push("var targetPath = req.path;");
         if (proxy.target.allowPath && proxy.target.allowPath.length > 0) {

@@ -6,6 +6,8 @@ import * as Utils from "./utils";
 import {AutoWired, Inject} from "typescript-ioc";
 import {Settings} from "../settings";
 import * as path from "path"; 
+
+let pathToRegexp = require('path-to-regexp');
  
 @AutoWired
 export class ProxyFilter {
@@ -28,7 +30,6 @@ export class ProxyFilter {
     private buildCustomFilter(proxy: config.Proxy) {
         let func = new Array<string>();
         func.push("function(req, res){");
-        func.push("var pathToRegexp = require('path-to-regexp');");
         func.push("var accepted = true;");
         func.push("accepted = (");
         proxy.filter.forEach((filter, index)=>{
@@ -62,8 +63,6 @@ export class ProxyFilter {
     private buildPathFilter(proxy: config.Proxy) {
         let func = new Array<string>();
         func.push("function(req, res){");
-        func.push("var pathToRegexp = require('path-to-regexp');");
-        func.push("var StringUtils = require('underscore.string');");
         func.push("var accepted = true;");
         func.push("var targetPath = req.path;");
         if (proxy.target.allowPath && proxy.target.allowPath.length > 0) {

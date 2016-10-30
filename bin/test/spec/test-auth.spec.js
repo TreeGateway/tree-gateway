@@ -72,6 +72,15 @@ describe("Gateway Tests", function () {
                 expect(response.statusCode).toEqual(200);
                 var result = JSON.parse(body);
                 expect(result.headers['X-Proxied-By']).toEqual("Tree-Gateway");
+                expect(result.headers['X-Proxied-2-By']).toEqual("Tree-Gateway");
+                done();
+            });
+        });
+        it("should be able to intercept requests with applies filter", function (done) {
+            request(gatewayAddress + "/intercepted/headers", function (error, response, body) {
+                expect(response.statusCode).toEqual(200);
+                var result = JSON.parse(body);
+                expect(result.headers['X-Proxied-2-By']).toEqual("Tree-Gateway");
                 done();
             });
         });
@@ -80,6 +89,14 @@ describe("Gateway Tests", function () {
                 expect(response.statusCode).toEqual(200);
                 var result = JSON.parse(body);
                 expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway");
+                done();
+            });
+        });
+        it("should be able to intercept responses with applies filter", function (done) {
+            request(gatewayAddress + "/intercepted/headers", function (error, response, body) {
+                expect(response.statusCode).toEqual(200);
+                var result = JSON.parse(body);
+                expect(response.headers['via']).toEqual("Changed By Tree-Gateway");
                 done();
             });
         });
