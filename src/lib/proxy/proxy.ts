@@ -35,7 +35,7 @@ export class ApiProxy {
     private configureProxy(proxy: config.Proxy) {
         let result = {
             forwardPath: function(req: express.Request, res: express.Response) {
-                return req.url;//StringUtils.splice(req.originalUrl, 0, proxy.path.length-1);
+                return req.url;
             }
         };
         if (proxy.preserveHostHdr) {

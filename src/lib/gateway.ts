@@ -77,3 +77,12 @@ export class Gateway {
         return api.name + (api.version? '_'+api.version: '_default');
     }
 }
+/*TODO: 
+- Create a file for Gateway configurations:
+  - Global interceptors / Filters / Throttling
+- Create a global interceptor to add a 'Via' header pointing to Tree-Gateway
+- Expose an Admin port
+- Manage API versions
+- Fix the log (winston is not logging on log file, but just on consoles)
+- Create a clsuter program, to initialize the app in cluster
+*/

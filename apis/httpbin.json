@@ -14,11 +14,5 @@
         ],
         "preserveHostHdr": true,
         "timeout": 5000
-    },
-    "throttling": {
-        
-    },
-    "serviceDiscovery": {
-
     }
 }

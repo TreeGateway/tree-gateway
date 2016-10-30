@@ -9,8 +9,8 @@ var provider = {
     get: function () {
         var settings = new settings_1.Settings();
         settings.app = express();
-        settings.apiPath = __dirname + '/apis';
-        settings.middlewarePath = __dirname + '/middleware';
+        settings.apiPath = __dirname + '/../../../apis';
+        settings.middlewarePath = __dirname + '/../../../middleware';
         return settings;
     }
 };

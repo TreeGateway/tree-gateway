@@ -43,14 +43,6 @@ gulp.task('test-build', function(done) {
 		.pipe(gulp.dest('bin/test/spec'));
 });
 
-gulp.task('test-copy-apis', function() {
-    gulp.src('src/spec/apis/*')
-    .pipe(gulp.dest('bin/test/spec/apis'));
-    gulp.src('src/spec/middleware/**/*')
-    .pipe(gulp.dest('bin/test/spec/middleware'));
-});
-
-
 gulp.task('test-coverage', function(done) {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
@@ -90,7 +82,7 @@ gulp.task('test-run', function() {
 });
 
 gulp.task('test', function(done) {
-    runSequence('test-build', 'test-copy-apis','test-coverage', 'test-run', 
+    runSequence('test-build', 'test-coverage', 'test-run', 
 				'remap-istanbul-reports', function() {
         console.log('test completed.');
         done();

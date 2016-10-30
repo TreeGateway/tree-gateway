@@ -9,8 +9,8 @@ const provider: Provider = {
   get: () => {
       const settings: Settings = new Settings();
       settings.app = express(); 
-	  settings.apiPath = __dirname + '/apis';
-	  settings.middlewarePath = __dirname + '/middleware';
+	  settings.apiPath = __dirname + '/../../../apis';
+	  settings.middlewarePath = __dirname + '/../../../middleware';
       return settings; 
   }
 };
