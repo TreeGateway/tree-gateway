@@ -10,6 +10,7 @@
     "url": "https://github.com/thiagobustamante/tree-gateway.git"
   },
   "dependencies": {
+    "args": "^2.1.0",
     "cluster": "^0.7.7",
     "compression": "^1.6.2",
     "express": "^4.14.0",
