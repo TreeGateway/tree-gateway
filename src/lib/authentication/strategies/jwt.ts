@@ -7,7 +7,7 @@ import {Settings} from "../../settings";
 import * as Utils from "underscore";
 import * as pathUtil from "path"; 
 
-module.exports = function (apiKey: string, authConfig: config.JWTAuthenticatin, settings: Settings) {
+module.exports = function (apiKey: string, authConfig: config.JWTAuthentication, settings: Settings) {
     let opts = Utils.omit(authConfig, "extractFrom", "verify");
     if (authConfig.extractFrom) {
         let extractors: Array<string> = Utils.keys(authConfig.extractFrom);

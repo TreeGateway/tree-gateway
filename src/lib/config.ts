@@ -284,11 +284,11 @@ export interface Throttling {
 }
 
 export interface Authentication {
-    jwt?: JWTAuthenticatin;
-    basic?: BasicAuthenticatin;
+    jwt?: JWTAuthentication;
+    basic?: BasicAuthentication;
 }
 
-export interface BasicAuthenticatin {
+export interface BasicAuthentication {
     /**
      * Is a function with the parameters verify(userid, password, done) {
      *  - userid The username.
@@ -298,7 +298,7 @@ export interface BasicAuthenticatin {
     verify: string;
 }
 
-export interface JWTAuthenticatin {
+export interface JWTAuthentication {
     /**
      * Is a REQUIRED string or buffer containing the secret (symmetric) 
      * or PEM-encoded public key (asymmetric) for verifying the token's signature.
