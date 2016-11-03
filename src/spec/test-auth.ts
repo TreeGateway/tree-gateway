@@ -164,6 +164,16 @@ describe("Gateway Tests", () => {
 			});
 		});
 		
+		it("should be able to verify Local authentication on requests to API", (done) => {
+			request.get({
+				url:gatewayAddress+"/secureLocal/get?userid=test&passwd=test123"
+			}, (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				let result = JSON.parse(body);
+				expect(result.args.userid).toEqual("test");
+				done();				
+			});
+		});
 	});
 	
 });

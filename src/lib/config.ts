@@ -298,6 +298,24 @@ export interface BasicAuthentication {
     verify: string;
 }
 
+export interface LocalAuthentication {
+    /**
+     * Is a function with the parameters verify(userid, password, done) {
+     *  - userid The username.
+     *  - password The password.
+     *  - done is a passport error first callback accepting arguments done(error, user, info)
+     */    
+    verify: string;
+    /**
+     * Optional, defaults to 'username'
+     */
+    usernameField?: string;
+    /**
+     * Optional, defaults to 'password'
+     */
+    passwordField?: string;
+}
+
 export interface JWTAuthentication {
     /**
      * Is a REQUIRED string or buffer containing the secret (symmetric) 
