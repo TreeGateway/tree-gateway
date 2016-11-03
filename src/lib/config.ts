@@ -285,6 +285,17 @@ export interface Throttling {
 
 export interface Authentication {
     jwt?: JWTAuthenticatin;
+    basic?: BasicAuthenticatin;
+}
+
+export interface BasicAuthenticatin {
+    /**
+     * Is a function with the parameters verify(userid, password, done) {
+     *  - userid The username.
+     *  - password The password.
+     *  - done is a passport error first callback accepting arguments done(error, user, info)
+     */    
+    verify: string;
 }
 
 export interface JWTAuthenticatin {
@@ -294,8 +305,7 @@ export interface JWTAuthenticatin {
      */
     secretOrKey:string;
     /**
-     * Function that accepts a request as the only parameter and returns either 
-     * the JWT as a string or null. See Extracting the JWT from the request for more details.
+     * Defines how the JWT token will be extracted from request.
      */
     extractFrom?: JWTRequestExtractor; 
     /**
@@ -314,7 +324,6 @@ export interface JWTAuthenticatin {
      * If true do not validate the expiration of the token.
      */
     ignoreExpiration?: boolean;
-// passReqToCallback: If true the request will be passed to the verify callback. i.e. verify(request, jwt_payload, done_callback).
     /**
      * Is a function with the parameters verify(request, jwt_payload, done) 
      *  - request The user request.

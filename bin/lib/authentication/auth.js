@@ -15,7 +15,8 @@ var pathUtil = require("path");
 var auth = require("passport");
 var winston = require("winston");
 var providedStrategies = {
-    'jwt': require('./strategies/jwt')
+    'jwt': require('./strategies/jwt'),
+    'basic': require('./strategies/basic')
 };
 var ApiAuth = (function () {
     function ApiAuth() {

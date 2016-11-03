@@ -121,7 +121,7 @@ describe("Gateway Tests", function () {
                 done();
             });
         });
-        it("should be able to verify authentication on requests to API", function (done) {
+        it("should be able to verify JWT authentication on requests to API", function (done) {
             request.get({
                 headers: { 'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ' },
                 url: gatewayAddress + "/secure/get?arg=1"
@@ -132,13 +132,24 @@ describe("Gateway Tests", function () {
                 done();
             });
         });
-        it("should be able to verify authentication on requests to API via query param", function (done) {
+        it("should be able to verify JWT authentication on requests to API via query param", function (done) {
             request.get({
                 url: gatewayAddress + "/secure/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
             }, function (error, response, body) {
                 expect(response.statusCode).toEqual(200);
                 var result = JSON.parse(body);
                 expect(result.args.jwt).toBeDefined();
+                done();
+            });
+        });
+        it("should be able to verify Basic authentication on requests to API", function (done) {
+            request.get({
+                headers: { 'authorization': 'Basic dGVzdDp0ZXN0MTIz' },
+                url: gatewayAddress + "/secureBasic/get?arg=1"
+            }, function (error, response, body) {
+                expect(response.statusCode).toEqual(200);
+                var result = JSON.parse(body);
+                expect(result.args.arg).toEqual("1");
                 done();
             });
         });

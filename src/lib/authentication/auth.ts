@@ -9,7 +9,8 @@ import * as auth from "passport";
 import * as winston from "winston";
 
 const providedStrategies = {
-    'jwt': require('./strategies/jwt')
+    'jwt': require('./strategies/jwt'),
+    'basic': require('./strategies/basic')
 } 
 
 @AutoWired
