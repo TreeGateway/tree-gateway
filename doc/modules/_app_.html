@@ -76,6 +76,13 @@
 								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_app_.html#gateway" class="tsd-kind-icon">gateway</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_app_.html#configureadminserver" class="tsd-kind-icon">configure<wbr>Admin<wbr>Server</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_app_.html#configuregatewayserver" class="tsd-kind-icon">configure<wbr>Gateway<wbr>Server</a></li>
+							</ul>
+						</section>
 					</div>
 				</section>
 			</section>
@@ -84,10 +91,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 					<a name="app" class="tsd-anchor"></a>
 					<h3>app</h3>
-					<div class="tsd-signature tsd-kind-icon">app<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Application</span><span class="tsd-signature-symbol"> =&nbsp;gateway.server</span></div>
+					<div class="tsd-signature tsd-kind-icon">app<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Application</span><span class="tsd-signature-symbol"> =&nbsp;configureGatewayServer()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/098d961/src/lib/app.ts#L14">app.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/app.ts#L16">app.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -97,9 +104,46 @@
 					<div class="tsd-signature tsd-kind-icon">gateway<span class="tsd-signature-symbol">:</span> <a href="../classes/_gateway_.gateway.html" class="tsd-signature-type">Gateway</a><span class="tsd-signature-symbol"> =&nbsp;Container.get(Gateway)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/098d961/src/lib/app.ts#L13">app.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/app.ts#L15">app.ts:15</a></li>
 						</ul>
 					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="configureadminserver" class="tsd-anchor"></a>
+					<h3>configure<wbr>Admin<wbr>Server</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Admin<wbr>Server<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/app.ts#L47">app.ts:47</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Express</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="configuregatewayserver" class="tsd-anchor"></a>
+					<h3>configure<wbr>Gateway<wbr>Server</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Gateway<wbr>Server<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Application</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/app.ts#L21">app.ts:21</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Application</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -109,8 +153,17 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_admin_admin_server_.html">"admin/admin-<wbr>server"</a>
+					</li>
 					<li class="current tsd-kind-external-module">
 						<a href="_app_.html">"app"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_authentication_auth_.html">"authentication/auth"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_authentication_strategies_jwt_.html">"authentication/strategies/jwt"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="_command_line_.html">"command-<wbr>line"</a>
@@ -151,6 +204,12 @@
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="_app_.html#gateway" class="tsd-kind-icon">gateway</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_app_.html#configureadminserver" class="tsd-kind-icon">configure<wbr>Admin<wbr>Server</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_app_.html#configuregatewayserver" class="tsd-kind-icon">configure<wbr>Gateway<wbr>Server</a>
 					</li>
 				</ul>
 			</nav>

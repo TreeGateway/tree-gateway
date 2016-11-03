@@ -21,6 +21,11 @@ export interface Api {
      */
     throttling?: Throttling;
 
+    /**
+     * Configuration for API authentication.
+     */
+    authentication?: Authentication;
+
     serviceDiscovery?: ServiceDiscovery;
 }
 
@@ -276,4 +281,53 @@ export interface Throttling {
      * ```
      */
     store?: string; 
+}
+
+export interface Authentication {
+    jwt?: JWTAuthenticatin;
+}
+
+export interface JWTAuthenticatin {
+    /**
+     * Is a REQUIRED string or buffer containing the secret (symmetric) 
+     * or PEM-encoded public key (asymmetric) for verifying the token's signature.
+     */
+    secretOrKey:string;
+    /**
+     * Function that accepts a request as the only parameter and returns either 
+     * the JWT as a string or null. See Extracting the JWT from the request for more details.
+     */
+    extractFrom?: JWTRequestExtractor; 
+    /**
+     * If defined the token issuer (iss) will be verified against this value.
+     */
+    issuer?: string;
+    /**
+     * If defined, the token audience (aud) will be verified against this value.
+     */
+    audience?: string;
+    /**
+     * List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
+     */
+    algorithms: Array<string>;
+    /**
+     * If true do not validate the expiration of the token.
+     */
+    ignoreExpiration?: boolean;
+// passReqToCallback: If true the request will be passed to the verify callback. i.e. verify(request, jwt_payload, done_callback).
+    /**
+     * Is a function with the parameters verify(request, jwt_payload, done) 
+     *  - request The user request.
+     *  - jwt_payload is an object literal containing the decoded JWT payload.
+     *  - done is a passport error first callback accepting arguments done(error, user, info)
+     */    
+    verify?: string;
+}
+
+export interface JWTRequestExtractor {
+    header?: string;
+    queryParam?: string;
+    authHeader?: string;
+    bodyField?: string;
+    cookie?: string;
 }

@@ -14,7 +14,6 @@ const provider: Provider = {
   }
 };
 
-
 @AutoWired
 @Scoped(Scope.Singleton)
 @Provided(provider)

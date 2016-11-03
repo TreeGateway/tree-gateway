@@ -16,6 +16,7 @@ var StringUtils = require("underscore.string");
 var proxy_1 = require("./proxy/proxy");
 var Utils = require("./proxy/utils");
 var throttling_1 = require("./throttling/throttling");
+var auth_1 = require("./authentication/auth");
 var es5_compat_1 = require("./es5-compat");
 var settings_1 = require("./settings");
 var typescript_ioc_1 = require("typescript-ioc");
@@ -66,6 +67,10 @@ var Gateway = (function () {
             winston.debug("Configuring API Rate Limits");
             this.apiRateLimit.throttling(api.proxy.path, api.throttling);
         }
+        if (api.authentication) {
+            winston.debug("Configuring API Authentication");
+            this.apiAuth.authentication(apiKey, api.proxy.path, api.authentication);
+        }
         winston.debug("Configuring API Proxy");
         this.apiProxy.proxy(api);
         if (ready) {
@@ -83,8 +88,13 @@ var Gateway = (function () {
         typescript_ioc_1.Inject, 
         __metadata('design:type', throttling_1.ApiRateLimit)
     ], Gateway.prototype, "apiRateLimit", void 0);
+    __decorate([
+        typescript_ioc_1.Inject, 
+        __metadata('design:type', auth_1.ApiAuth)
+    ], Gateway.prototype, "apiAuth", void 0);
     Gateway = __decorate([
         typescript_ioc_1.AutoWired,
+        typescript_ioc_1.Singleton,
         __param(0, typescript_ioc_1.Inject), 
         __metadata('design:paramtypes', [settings_1.Settings])
     ], Gateway);

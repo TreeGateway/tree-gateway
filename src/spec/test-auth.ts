@@ -120,4 +120,37 @@ describe("Gateway Tests", () => {
 			});
 		});
 	});
+
+	describe("The Gateway Authenticator", () => {
+		it("should be able deny request without authentication", (done) => {
+			request(gatewayAddress+"/secure/get?arg=1", (error, response, body)=>{
+				expect(response.statusCode).toEqual(401);
+				done();				
+			});
+		});
+
+		it("should be able to verify authentication on requests to API", (done) => {
+			request.get({
+				headers: { 'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ' },
+				url:gatewayAddress+"/secure/get?arg=1"
+			}, (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				let result = JSON.parse(body);
+				expect(result.args.arg).toEqual("1");
+				done();				
+			});
+		});
+
+		it("should be able to verify authentication on requests to API via query param", (done) => {
+			request.get({
+				url:gatewayAddress+"/secure/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
+			}, (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				let result = JSON.parse(body);
+				expect(result.args.jwt).toBeDefined();
+				done();				
+			});
+		});
+	});
+	
 });

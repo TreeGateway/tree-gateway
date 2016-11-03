@@ -7,17 +7,21 @@ import * as config from "./config";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
+import {ApiAuth} from "./authentication/auth";
 import {Set, StringMap} from "./es5-compat";
 import {Settings} from "./settings";
-import {AutoWired, Inject} from "typescript-ioc";
+import {AutoWired, Inject, Singleton} from "typescript-ioc";
 import * as winston from "winston";
 
 @AutoWired
+@Singleton
 export class Gateway {
     @Inject
     private apiProxy: ApiProxy;
     @Inject
     private apiRateLimit: ApiRateLimit;
+    @Inject
+    private apiAuth: ApiAuth;
     private apis: StringMap<config.Api>;
     private settings: Settings;
 
@@ -64,6 +68,10 @@ export class Gateway {
         if (api.throttling) {
             winston.debug("Configuring API Rate Limits");
             this.apiRateLimit.throttling(api.proxy.path, api.throttling);
+        }
+        if (api.authentication) {
+            winston.debug("Configuring API Authentication");
+            this.apiAuth.authentication(apiKey, api.proxy.path, api.authentication);
         }
         winston.debug("Configuring API Proxy");
         this.apiProxy.proxy(api);
