@@ -5,10 +5,14 @@
         "path": "test/",
         "target": {
             "path": "http://httpbin.org",
-            "allowPath": ["get/", "post/"],
-            "denyPath": ["user-agent"],
-            "allowMethod": ["get"], 
-            "denyMethod": ["post"]
+            "allow": {
+                "path": ["get/", "post/"],
+                "method": ["get"]
+            },
+            "deny": {
+                "path": ["user-agent"],
+                "method": ["post"]
+            }
         },
         "filter": [
         ],

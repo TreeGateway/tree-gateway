@@ -190,10 +190,13 @@ export interface Interceptor {
 
 export interface Target {
     path: string;
-    allowPath?: Array<string>;
-    denyPath?: Array<string>;
-    allowMethod?: Array<string>;
-    denyMethod?: Array<string>;
+    allow?: TargetFilter;
+    deny?: TargetFilter;
+}
+
+export interface TargetFilter {
+    path: Array<string>;
+    method: Array<string>;
 }
 
 export interface Throttling {
@@ -286,6 +289,7 @@ export interface Throttling {
 export interface Authentication {
     jwt?: JWTAuthentication;
     basic?: BasicAuthentication;
+    local?: LocalAuthentication;
 }
 
 export interface BasicAuthentication {

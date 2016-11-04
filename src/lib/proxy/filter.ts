@@ -15,11 +15,11 @@ export class ProxyFilter {
     private settings: Settings;
     buildFilters(proxy: config.Proxy) {
         let filterChain = new Array<Function>();
-        if (this.hasMethodFilter(proxy)) {
-            filterChain.push(this.buildMethodFilter(proxy));
+        if (proxy.target.allow) {
+            filterChain.push(this.buildAllowFilter(proxy.target.allow));
         }
-        if (this.hasPathFilter(proxy)) {
-          filterChain.push(this.buildPathFilter(proxy));
+        if (proxy.target.deny) {
+          filterChain.push(this.buildDenyFilter(proxy.target.deny));
         }
         if (this.hasCustomFilter(proxy)) {
           filterChain.push(this.buildCustomFilter(proxy));
@@ -60,30 +60,32 @@ export class ProxyFilter {
         return f;
     }
 
-    private buildPathFilter(proxy: config.Proxy) {
+    private buildAllowFilter(allow: config.TargetFilter) {
         let func = new Array<string>();
         func.push("function(req, res){");
         func.push("var accepted = true;");
         func.push("var targetPath = req.path;");
-        if (proxy.target.allowPath && proxy.target.allowPath.length > 0) {
+        if (allow.path && allow.path.length > 0) {
             func.push("accepted = (");
-            proxy.target.allowPath.forEach((path, index)=>{
+            allow.method.forEach((method, index)=>{
+                if (index > 0) {
+                    func.push("||");                
+                }
+                func.push("(req.method === '"+method.toUpperCase()+"')")
+            });
+            func.push(");");
+        }
+        if (allow.method && allow.method.length > 0) {
+            func.push("if (accepted) {");
+            func.push("accepted = (");
+            allow.path.forEach((path, index)=>{
                 if (index > 0) {
                     func.push("||");                
                 }                
                 func.push("(pathToRegexp('"+Utils.normalizePath(path)+"').test(targetPath))");
             });
             func.push(");");
-        }
-        if (proxy.target.denyPath && proxy.target.denyPath.length > 0) {
-            func.push("accepted = accepted && (");
-            proxy.target.denyPath.forEach((path, index)=>{
-                if (index > 0) {
-                    func.push("&&");                
-                }
-                func.push("!(pathToRegexp('"+Utils.normalizePath(path)+"').test(targetPath))");
-            });
-            func.push(");");
+            func.push("}");
         }
         func.push("return accepted;");
         func.push("}");
@@ -92,45 +94,41 @@ export class ProxyFilter {
         return f;
     }
 
-    private buildMethodFilter(proxy: config.Proxy) {
-        let body = new Array<string>();
-        body.push("var accepted = true;");
-        if (proxy.target.allowMethod && proxy.target.allowMethod.length > 0) {
-            body.push("accepted = (");
-            proxy.target.allowMethod.forEach((method, index)=>{
+    private buildDenyFilter(deny: config.TargetFilter) {
+        let func = new Array<string>();
+        func.push("function(req, res){");
+        func.push("var accepted = true;");
+        func.push("var targetPath = req.path;");
+        if (deny.path && deny.path.length > 0) {
+            func.push("accepted = (");
+            deny.method.forEach((method, index)=>{
                 if (index > 0) {
-                    body.push("||");                
+                    func.push("&&");                
                 }
-                body.push("(req.method === '"+method.toUpperCase()+"')")
+                func.push("(req.method !== '"+method.toUpperCase()+"')")
             });
-            body.push(");");
+            func.push(");");
         }
-        if (proxy.target.denyMethod && proxy.target.denyMethod.length > 0) {
-            body.push("accepted = accepted && (");
-            proxy.target.denyMethod.forEach((method, index) => {
+        if (deny.method && deny.method.length > 0) {
+            func.push("if (accepted) {");
+            func.push("accepted = (");
+            deny.path.forEach((path, index)=>{
                 if (index > 0) {
-                    body.push("&&");                
-                }
-                body.push("(req.method !== '"+method.toUpperCase()+"')")
+                    func.push("&&");                
+                }                
+                func.push("!(pathToRegexp('"+Utils.normalizePath(path)+"').test(targetPath))");
             });
-            body.push(");");
+            func.push(");");
+            func.push("}");
         }
-        body.push("if (!accepted){ res.status(405);}");
-        body.push("return accepted;");
-        return Function("req", "res", body.join(''));
+        func.push("return accepted;");
+        func.push("}");
+        let f;
+        eval('f = '+func.join(''))
+        return f;
     }
 
     private hasCustomFilter(proxy: config.Proxy) {
         return (proxy.filter && proxy.filter.length > 0);
-    }
-
-    private hasPathFilter(proxy: config.Proxy) {
-        return (proxy.target.allowPath && proxy.target.allowPath.length > 0)
-            || (proxy.target.denyPath && proxy.target.denyPath.length > 0);
-    }
-
-    private hasMethodFilter(proxy: config.Proxy) {
-        return (proxy.target.allowMethod && proxy.target.allowMethod.length > 0)
-            || (proxy.target.denyMethod && proxy.target.denyMethod.length > 0);
     }
 }  
