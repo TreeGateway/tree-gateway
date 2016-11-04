@@ -1,6 +1,6 @@
 "use strict";
 var express = require("express");
-var winston = require("winston");
+var Winston = require("winston");
 var settings_1 = require("../lib/settings");
 var path = require("path");
 var StringUtils = require("underscore.string");
@@ -31,10 +31,21 @@ var provider = {
         settings.redisClient = new redis(6379, 'localhost');
         settings.apiPath = path.join(Parameters.rootDir, 'apis');
         settings.middlewarePath = path.join(Parameters.rootDir, 'middleware');
+        settings.logger = new Winston.Logger({
+            level: (process.env.NODE_ENV === 'production') ? 'error' : 'debug',
+            transports: [
+                new Winston.transports.Console({
+                    colorize: true
+                }),
+                new Winston.transports.File({
+                    filename: path.join(Parameters.rootDir, 'logs/gateway.log'),
+                    timestamp: true
+                })
+            ]
+        });
         return settings;
     }
 };
 typescript_ioc_1.Container.bind(settings_1.Settings).provider(provider);
-winston.add(winston.transports.File, { filename: path.join(Parameters.rootDir, 'logs/gateway.log') });
 
 //# sourceMappingURL=command-line.js.map

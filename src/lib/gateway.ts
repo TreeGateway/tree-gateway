@@ -11,7 +11,6 @@ import {ApiAuth} from "./authentication/auth";
 import {Set, StringMap} from "./es5-compat";
 import {Settings} from "./settings";
 import {AutoWired, Inject, Singleton} from "typescript-ioc";
-import * as winston from "winston";
 
 @AutoWired
 @Singleton
@@ -38,7 +37,7 @@ export class Gateway {
         let path = this.settings.apiPath;
         fs.readdir(path, (err, files) => {
             if (err) {
-                winston.error("Error reading directory: "+err);
+                this.settings.logger.error("Error reading directory: "+err);
             }
             else {
                 path = ((StringUtils.endsWith(path, '/'))?path:path+'/');
@@ -47,7 +46,7 @@ export class Gateway {
                     if (StringUtils.endsWith(fileName, '.json')) {
                         fs.readJson(path+fileName, (error, apiConfig: config.Api)=>{
                             if (error) {
-                                winston.error("Error reading directory: "+error);
+                                this.settings.logger.error("Error reading directory: "+error);
                             }
                             else {
                                 this.loadApi(apiConfig, (length -1 === index)?ready: null);
@@ -60,20 +59,20 @@ export class Gateway {
     }
 
     loadApi(api: config.Api, ready?: () => void) {
-        winston.info("Configuring API ["+api.name+"] on path: "+api.proxy.path);
+        this.settings.logger.info("Configuring API ["+api.name+"] on path: "+api.proxy.path);
         let apiKey: string = this.getApiKey(api);
         this.apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
         
         if (api.throttling) {
-            winston.debug("Configuring API Rate Limits");
+            this.settings.logger.debug("Configuring API Rate Limits");
             this.apiRateLimit.throttling(api.proxy.path, api.throttling);
         }
         if (api.authentication) {
-            winston.debug("Configuring API Authentication");
+            this.settings.logger.debug("Configuring API Authentication");
             this.apiAuth.authentication(apiKey, api.proxy.path, api.authentication);
         }
-        winston.debug("Configuring API Proxy");
+        this.settings.logger.debug("Configuring API Proxy");
         this.apiProxy.proxy(api);
         
         if (ready) {

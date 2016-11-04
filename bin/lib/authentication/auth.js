@@ -13,7 +13,6 @@ var typescript_ioc_1 = require("typescript-ioc");
 var settings_1 = require("../settings");
 var pathUtil = require("path");
 var auth = require("passport");
-var winston = require("winston");
 var providedStrategies = {
     'jwt': require('./strategies/jwt'),
     'basic': require('./strategies/basic'),
@@ -37,10 +36,10 @@ var ApiAuth = (function () {
                     strategy(apiKey, authConfig);
                 }
                 _this.settings.app.use(path, auth.authenticate(apiKey, { session: false }));
-                winston.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
+                _this.settings.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
             }
             catch (e) {
-                winston.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
+                _this.settings.logger.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
             }
         });
     };

@@ -6,7 +6,6 @@ import * as Utils from "underscore";
 import {AutoWired, Inject} from "typescript-ioc";
 import {Settings} from "../settings";
 import * as pathUtil from "path"; 
-import * as winston from "winston";
 
 @AutoWired
 export class ApiRateLimit {
@@ -19,7 +18,7 @@ export class ApiRateLimit {
 
         if (this.settings.redisClient) {
             let store = require('./store');
-            winston.debug("Using Redis as throttling store.");
+            this.settings.logger.debug("Using Redis as throttling store.");
             rateConfig.store = new store.RedisStore({
                 expiry: (throttling.windowMs / 1000) +1,
                 client: this.settings.redisClient

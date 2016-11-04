@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var express = require("express");
 var typescript_ioc_1 = require("typescript-ioc");
 var redis = require("ioredis");
+var Winston = require("winston");
 var provider = {
     get: function () {
         var settings = new Settings();
@@ -18,6 +19,14 @@ var provider = {
         settings.redisClient = new redis(6379, 'localhost');
         settings.apiPath = (__dirname + '/apis');
         settings.middlewarePath = (__dirname + '/middleware');
+        settings.logger = new Winston.Logger({
+            level: 'info',
+            transports: [
+                new Winston.transports.Console({
+                    timestamp: true
+                })
+            ]
+        });
         return settings;
     }
 };

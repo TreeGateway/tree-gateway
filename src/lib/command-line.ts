@@ -1,7 +1,7 @@
 "use strict";
 
 import * as express from "express";
-import * as winston from "winston";
+import * as Winston from "winston";
 import {Settings} from "../lib/settings";
 import * as path from "path";
 import * as StringUtils from "underscore.string";
@@ -36,9 +36,21 @@ const provider: Provider = {
     settings.redisClient = new redis(6379, 'localhost');
     settings.apiPath = path.join(Parameters.rootDir, 'apis');
     settings.middlewarePath = path.join(Parameters.rootDir ,'middleware');
+    settings.logger = new Winston.Logger({
+        level: (process.env.NODE_ENV === 'production')?'error':'debug',
+        transports: [
+            new Winston.transports.Console({
+                colorize: true
+            }),
+            new Winston.transports.File({
+              filename: path.join(Parameters.rootDir, 'logs/gateway.log'),
+              timestamp: true
+            })
+        ]          
+      });
+
       return settings; 
   }
 };
 
 Container.bind(Settings).provider(provider);
-winston.add(winston.transports.File, { filename: path.join(Parameters.rootDir, 'logs/gateway.log') });

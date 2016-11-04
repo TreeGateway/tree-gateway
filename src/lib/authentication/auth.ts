@@ -6,7 +6,6 @@ import {AutoWired, Inject} from "typescript-ioc";
 import {Settings} from "../settings";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
-import * as winston from "winston";
 
 const providedStrategies = {
     'jwt': require('./strategies/jwt'),
@@ -33,10 +32,10 @@ export class ApiAuth {
                     strategy(apiKey, authConfig);
                 }
                 this.settings.app.use(path, auth.authenticate(apiKey, { session: false }));
-                winston.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
+                this.settings.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
             }
             catch(e) {
-                winston.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
+                this.settings.logger.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
             }
         });
     }

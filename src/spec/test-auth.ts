@@ -4,6 +4,7 @@ import "jasmine";
 import {Gateway} from "../lib/gateway";
 import {Settings} from "../lib/settings";
 import {Container, Scope, Scoped, Provided, Provider, AutoWired, Inject} from "typescript-ioc";
+import * as Winston from "winston";
 
 const provider: Provider = { 
   get: () => {
@@ -11,6 +12,15 @@ const provider: Provider = {
       settings.app = express(); 
 	  settings.apiPath = __dirname + '/../../../apis';
 	  settings.middlewarePath = __dirname + '/../../../middleware';
+      settings.logger = new Winston.Logger({
+        level: 'info',
+        transports: [
+            new Winston.transports.Console({
+                colorize: true
+            })
+        ]          
+      });
+	  
       return settings; 
   }
 };
