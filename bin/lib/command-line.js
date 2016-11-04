@@ -5,6 +5,7 @@ var settings_1 = require("../lib/settings");
 var path = require("path");
 var StringUtils = require("underscore.string");
 var typescript_ioc_1 = require("typescript-ioc");
+var redis = require("ioredis");
 var args = require("args");
 var parameters = args
     .option('dir', 'The root directory where apis and middlewares are placed.', __dirname)
@@ -27,6 +28,7 @@ var provider = {
     get: function () {
         var settings = new settings_1.Settings();
         settings.app = express();
+        settings.redisClient = new redis(6379, 'localhost');
         settings.apiPath = path.join(Parameters.rootDir, 'apis');
         settings.middlewarePath = path.join(Parameters.rootDir, 'middleware');
         return settings;

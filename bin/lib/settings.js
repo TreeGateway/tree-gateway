@@ -10,10 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var express = require("express");
 var typescript_ioc_1 = require("typescript-ioc");
+var redis = require("ioredis");
 var provider = {
     get: function () {
         var settings = new Settings();
         settings.app = express();
+        settings.redisClient = new redis(6379, 'localhost');
         settings.apiPath = (__dirname + '/apis');
         settings.middlewarePath = (__dirname + '/middleware');
         return settings;

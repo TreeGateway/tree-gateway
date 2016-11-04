@@ -272,18 +272,6 @@ export interface Throttling {
      * ```
      */
     handler?: string;
-    /**
-     * The storage to use when persisting rate limit attempts. 
-     * By default, the MemoryStore is used. Possible values are: 
-     * ```
-     * memory
-     * ```
-     * And
-     * ```
-     * redis
-     * ```
-     */
-    store?: string; 
 }
 
 export interface Authentication {

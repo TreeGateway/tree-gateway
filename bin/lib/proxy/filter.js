@@ -18,11 +18,11 @@ var ProxyFilter = (function () {
     }
     ProxyFilter.prototype.buildFilters = function (proxy) {
         var filterChain = new Array();
-        if (this.hasMethodFilter(proxy)) {
-            filterChain.push(this.buildMethodFilter(proxy));
+        if (proxy.target.allow) {
+            filterChain.push(this.buildAllowFilter(proxy.target.allow));
         }
-        if (this.hasPathFilter(proxy)) {
-            filterChain.push(this.buildPathFilter(proxy));
+        if (proxy.target.deny) {
+            filterChain.push(this.buildDenyFilter(proxy.target.deny));
         }
         if (this.hasCustomFilter(proxy)) {
             filterChain.push(this.buildCustomFilter(proxy));
@@ -61,30 +61,32 @@ var ProxyFilter = (function () {
         eval('f = ' + func.join('\n'));
         return f;
     };
-    ProxyFilter.prototype.buildPathFilter = function (proxy) {
+    ProxyFilter.prototype.buildAllowFilter = function (allow) {
         var func = new Array();
         func.push("function(req, res){");
         func.push("var accepted = true;");
         func.push("var targetPath = req.path;");
-        if (proxy.target.allowPath && proxy.target.allowPath.length > 0) {
+        if (allow.path && allow.path.length > 0) {
             func.push("accepted = (");
-            proxy.target.allowPath.forEach(function (path, index) {
+            allow.method.forEach(function (method, index) {
+                if (index > 0) {
+                    func.push("||");
+                }
+                func.push("(req.method === '" + method.toUpperCase() + "')");
+            });
+            func.push(");");
+        }
+        if (allow.method && allow.method.length > 0) {
+            func.push("if (accepted) {");
+            func.push("accepted = (");
+            allow.path.forEach(function (path, index) {
                 if (index > 0) {
                     func.push("||");
                 }
                 func.push("(pathToRegexp('" + Utils.normalizePath(path) + "').test(targetPath))");
             });
             func.push(");");
-        }
-        if (proxy.target.denyPath && proxy.target.denyPath.length > 0) {
-            func.push("accepted = accepted && (");
-            proxy.target.denyPath.forEach(function (path, index) {
-                if (index > 0) {
-                    func.push("&&");
-                }
-                func.push("!(pathToRegexp('" + Utils.normalizePath(path) + "').test(targetPath))");
-            });
-            func.push(");");
+            func.push("}");
         }
         func.push("return accepted;");
         func.push("}");
@@ -92,43 +94,41 @@ var ProxyFilter = (function () {
         eval('f = ' + func.join(''));
         return f;
     };
-    ProxyFilter.prototype.buildMethodFilter = function (proxy) {
-        var body = new Array();
-        body.push("var accepted = true;");
-        if (proxy.target.allowMethod && proxy.target.allowMethod.length > 0) {
-            body.push("accepted = (");
-            proxy.target.allowMethod.forEach(function (method, index) {
+    ProxyFilter.prototype.buildDenyFilter = function (deny) {
+        var func = new Array();
+        func.push("function(req, res){");
+        func.push("var accepted = true;");
+        func.push("var targetPath = req.path;");
+        if (deny.path && deny.path.length > 0) {
+            func.push("accepted = (");
+            deny.method.forEach(function (method, index) {
                 if (index > 0) {
-                    body.push("||");
+                    func.push("&&");
                 }
-                body.push("(req.method === '" + method.toUpperCase() + "')");
+                func.push("(req.method !== '" + method.toUpperCase() + "')");
             });
-            body.push(");");
+            func.push(");");
         }
-        if (proxy.target.denyMethod && proxy.target.denyMethod.length > 0) {
-            body.push("accepted = accepted && (");
-            proxy.target.denyMethod.forEach(function (method, index) {
+        if (deny.method && deny.method.length > 0) {
+            func.push("if (accepted) {");
+            func.push("accepted = (");
+            deny.path.forEach(function (path, index) {
                 if (index > 0) {
-                    body.push("&&");
+                    func.push("&&");
                 }
-                body.push("(req.method !== '" + method.toUpperCase() + "')");
+                func.push("!(pathToRegexp('" + Utils.normalizePath(path) + "').test(targetPath))");
             });
-            body.push(");");
+            func.push(");");
+            func.push("}");
         }
-        body.push("if (!accepted){ res.status(405);}");
-        body.push("return accepted;");
-        return Function("req", "res", body.join(''));
+        func.push("return accepted;");
+        func.push("}");
+        var f;
+        eval('f = ' + func.join(''));
+        return f;
     };
     ProxyFilter.prototype.hasCustomFilter = function (proxy) {
         return (proxy.filter && proxy.filter.length > 0);
-    };
-    ProxyFilter.prototype.hasPathFilter = function (proxy) {
-        return (proxy.target.allowPath && proxy.target.allowPath.length > 0)
-            || (proxy.target.denyPath && proxy.target.denyPath.length > 0);
-    };
-    ProxyFilter.prototype.hasMethodFilter = function (proxy) {
-        return (proxy.target.allowMethod && proxy.target.allowMethod.length > 0)
-            || (proxy.target.denyMethod && proxy.target.denyMethod.length > 0);
     };
     __decorate([
         typescript_ioc_1.Inject, 

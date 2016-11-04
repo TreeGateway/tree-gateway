@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JWTAuthenticatin | Tree-Gateway</title>
+	<title>TargetFilter | Tree-Gateway</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -58,10 +58,10 @@
 					<a href="../modules/_config_.html">&quot;config&quot;</a>
 				</li>
 				<li>
-					<a href="_config_.jwtauthenticatin.html">JWTAuthenticatin</a>
+					<a href="_config_.targetfilter.html">TargetFilter</a>
 				</li>
 			</ul>
-			<h1>Interface JWTAuthenticatin</h1>
+			<h1>Interface TargetFilter</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">JWTAuthenticatin</span>
+						<span class="target">TargetFilter</span>
 					</li>
 				</ul>
 			</section>
@@ -83,13 +83,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#algorithms" class="tsd-kind-icon">algorithms</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#audience" class="tsd-kind-icon">audience</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#extractfrom" class="tsd-kind-icon">extract<wbr>From</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#ignoreexpiration" class="tsd-kind-icon">ignore<wbr>Expiration</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#issuer" class="tsd-kind-icon">issuer</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#secretorkey" class="tsd-kind-icon">secret<wbr>OrKey</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.jwtauthenticatin.html#verify" class="tsd-kind-icon">verify</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.targetfilter.html#method" class="tsd-kind-icon">method</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_.targetfilter.html#path" class="tsd-kind-icon">path</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,116 +93,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="algorithms" class="tsd-anchor"></a>
-					<h3>algorithms</h3>
-					<div class="tsd-signature tsd-kind-icon">algorithms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="method" class="tsd-anchor"></a>
+					<h3>method</h3>
+					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L312">config.ts:312</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/config.ts#L199">config.ts:199</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>List of strings with the names of the allowed algorithms. For instance, [&quot;HS256&quot;, &quot;HS384&quot;].</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="audience" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> audience</h3>
-					<div class="tsd-signature tsd-kind-icon">audience<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="path" class="tsd-anchor"></a>
+					<h3>path</h3>
+					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L308">config.ts:308</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/config.ts#L198">config.ts:198</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>If defined, the token audience (aud) will be verified against this value.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="extractfrom" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> extract<wbr>From</h3>
-					<div class="tsd-signature tsd-kind-icon">extract<wbr>From<span class="tsd-signature-symbol">:</span> <a href="_config_.jwtrequestextractor.html" class="tsd-signature-type">JWTRequestExtractor</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L300">config.ts:300</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Function that accepts a request as the only parameter and returns either
-							the JWT as a string or null. See Extracting the JWT from the request for more details.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="ignoreexpiration" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ignore<wbr>Expiration</h3>
-					<div class="tsd-signature tsd-kind-icon">ignore<wbr>Expiration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L316">config.ts:316</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>If true do not validate the expiration of the token.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="issuer" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> issuer</h3>
-					<div class="tsd-signature tsd-kind-icon">issuer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L304">config.ts:304</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>If defined the token issuer (iss) will be verified against this value.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="secretorkey" class="tsd-anchor"></a>
-					<h3>secret<wbr>OrKey</h3>
-					<div class="tsd-signature tsd-kind-icon">secret<wbr>OrKey<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L295">config.ts:295</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Is a REQUIRED string or buffer containing the secret (symmetric)
-							or PEM-encoded public key (asymmetric) for verifying the token&#39;s signature.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="verify" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> verify</h3>
-					<div class="tsd-signature tsd-kind-icon">verify<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/config.ts#L324">config.ts:324</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Is a function with the parameters verify(request, jwt_payload, done)</p>
-							<ul>
-								<li>request The user request.</li>
-								<li>jwt_payload is an object literal containing the decoded JWT payload.</li>
-								<li>done is a passport error first callback accepting arguments done(error, user, info)</li>
-							</ul>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -227,7 +130,13 @@
 						<a href="../modules/_authentication_auth_.html">"authentication/auth"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_authentication_strategies_basic_.html">"authentication/strategies/basic"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_authentication_strategies_jwt_.html">"authentication/strategies/jwt"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_authentication_strategies_local_.html">"authentication/strategies/local"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_command_line_.html">"command-<wbr>line"</a>
@@ -257,6 +166,9 @@
 						<a href="../modules/_settings_.html">"settings"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_throttling_store_.html">"throttling/store"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_throttling_throttling_.html">"throttling/throttling"</a>
 					</li>
 				</ul>
@@ -270,6 +182,9 @@
 						<a href="_config_.authentication.html" class="tsd-kind-icon">Authentication</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.basicauthentication.html" class="tsd-kind-icon">Basic<wbr>Authentication</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.filter.html" class="tsd-kind-icon">Filter</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
@@ -278,38 +193,14 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.interceptors.html" class="tsd-kind-icon">Interceptors</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="_config_.jwtauthenticatin.html" class="tsd-kind-icon">JWTAuthenticatin</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#algorithms" class="tsd-kind-icon">algorithms</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#audience" class="tsd-kind-icon">audience</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#extractfrom" class="tsd-kind-icon">extract<wbr>From</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#ignoreexpiration" class="tsd-kind-icon">ignore<wbr>Expiration</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#issuer" class="tsd-kind-icon">issuer</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#secretorkey" class="tsd-kind-icon">secret<wbr>OrKey</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_config_.jwtauthenticatin.html#verify" class="tsd-kind-icon">verify</a>
-							</li>
-						</ul>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.jwtauthentication.html" class="tsd-kind-icon">JWTAuthentication</a>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.jwtrequestextractor.html" class="tsd-kind-icon">JWTRequest<wbr>Extractor</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.localauthentication.html" class="tsd-kind-icon">Local<wbr>Authentication</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.proxy.html" class="tsd-kind-icon">Proxy</a>
@@ -320,6 +211,21 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.target.html" class="tsd-kind-icon">Target</a>
 					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_.targetfilter.html" class="tsd-kind-icon">Target<wbr>Filter</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_.targetfilter.html#method" class="tsd-kind-icon">method</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_.targetfilter.html#path" class="tsd-kind-icon">path</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_.throttling.html" class="tsd-kind-icon">Throttling</a>
 					</li>

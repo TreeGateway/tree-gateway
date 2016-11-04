@@ -6,6 +6,7 @@ import {Settings} from "../lib/settings";
 import * as path from "path";
 import * as StringUtils from "underscore.string";
 import {Container, Provider} from "typescript-ioc";
+import * as redis from "ioredis";
 
 let args = require("args");
 
@@ -32,6 +33,7 @@ const provider: Provider = {
   get: () => {
     const settings: Settings = new Settings();
     settings.app = express();
+    settings.redisClient = new redis(6379, 'localhost');
     settings.apiPath = path.join(Parameters.rootDir, 'apis');
     settings.middlewarePath = path.join(Parameters.rootDir ,'middleware');
       return settings; 

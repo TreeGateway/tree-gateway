@@ -28,8 +28,8 @@ module.exports = function (apiKey, authConfig, settings) {
         verifyFunction = require(p);
     }
     else {
-        verifyFunction = function (jwt_payload, done) {
-            done(null, jwt_payload);
+        verifyFunction = function (jwtPayload, done) {
+            done(null, jwtPayload);
         };
     }
     passport.use(apiKey, new passport_jwt_1.Strategy(opts, verifyFunction));

@@ -9,7 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var typescript_rest_1 = require("typescript-rest");
+var typescript_ioc_1 = require("typescript-ioc");
 require("es6-promise");
+var gateway_1 = require("../gateway");
 var APIService = (function () {
     function APIService() {
     }
@@ -20,13 +22,18 @@ var APIService = (function () {
         });
     };
     __decorate([
+        typescript_ioc_1.Inject, 
+        __metadata('design:type', gateway_1.Gateway)
+    ], APIService.prototype, "gateway", void 0);
+    __decorate([
         typescript_rest_1.GET, 
         __metadata('design:type', Function), 
         __metadata('design:paramtypes', []), 
         __metadata('design:returntype', Promise)
     ], APIService.prototype, "search", null);
     APIService = __decorate([
-        typescript_rest_1.Path('apis'), 
+        typescript_rest_1.Path('apis'),
+        typescript_ioc_1.AutoWired, 
         __metadata('design:paramtypes', [])
     ], APIService);
     return APIService;

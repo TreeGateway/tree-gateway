@@ -65,30 +65,42 @@
 			<div class="tsd-panel tsd-typography">
 				<h1 id="tree-gateway">tree-gateway</h1>
 				<p>A complete and free API Gateway</p>
-				<p>It is a work in proggress. Already implemented</p>
+				<p>It is an work in proggress. </p>
 				<h2 id="features-implemented">Features Implemented</h2>
 				<ul>
 					<li>API Proxy<ul>
 							<li>Request and Response Interceptors</li>
 							<li>Filters<ul>
-									<li>Method Filters</li>
-									<li>Path Filters</li>
 									<li>Custom Filters</li>
+								</ul>
+							</li>
+							<li>Interceptors<ul>
+									<li>Request Interceptors</li>
+									<li>Response Interceptors</li>
 								</ul>
 							</li>
 						</ul>
 					</li>
 					<li>Throttling (Rate Limits)</li>
+					<li>Authentication<ul>
+							<li>Passport integration</li>
+							<li>JWT</li>
+							<li>Basic</li>
+							<li>Local</li>
+							<li>Custom</li>
+						</ul>
+					</li>
 				</ul>
 				<h2 id="in-progress-features">In progress Features</h2>
 				<ul>
 					<li>Service Discovery</li>
-					<li>Authentication</li>
 					<li>Authorization</li>
 					<li>Monitoring and Analytics</li>
 					<li>Circuit Breaker</li>
 					<li>Caching</li>
 					<li>Admin API</li>
+					<li>Clustering</li>
+					<li>Dockering</li>
 					<li><a href="https://github.com/samuelcardoso/tree-gateway-dashboard">[Visual Dashboard]</a>;</li>
 				</ul>
 				<h2 id="future-work">Future work</h2>
@@ -115,7 +127,13 @@
 						<a href="modules/_authentication_auth_.html">"authentication/auth"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="modules/_authentication_strategies_basic_.html">"authentication/strategies/basic"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="modules/_authentication_strategies_jwt_.html">"authentication/strategies/jwt"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_authentication_strategies_local_.html">"authentication/strategies/local"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_command_line_.html">"command-<wbr>line"</a>
@@ -143,6 +161,9 @@
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_settings_.html">"settings"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_throttling_store_.html">"throttling/store"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_throttling_throttling_.html">"throttling/throttling"</a>

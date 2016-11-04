@@ -1,25 +1,33 @@
 # tree-gateway
 A complete and free API Gateway
 
-It is a work in proggress. Already implemented
+It is an work in proggress. 
 
 ## Features Implemented
  - API Proxy
    - Request and Response Interceptors
    - Filters
-     - Method Filters
-     - Path Filters
      - Custom Filters
+   - Interceptors
+     - Request Interceptors
+     - Response Interceptors
  - Throttling (Rate Limits)
+ - Authentication
+   - Passport integration
+   - JWT
+   - Basic
+   - Local
+   - Custom
 
 ## In progress Features
  - Service Discovery
- - Authentication
  - Authorization
  - Monitoring and Analytics
  - Circuit Breaker
  - Caching
  - Admin API
+ - Clustering
+ - Dockering
  - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
 
 ## Future work

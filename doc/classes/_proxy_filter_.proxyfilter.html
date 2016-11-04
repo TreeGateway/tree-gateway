@@ -89,13 +89,11 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#buildallowfilter" class="tsd-kind-icon">build<wbr>Allow<wbr>Filter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#buildcustomfilter" class="tsd-kind-icon">build<wbr>Custom<wbr>Filter</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#builddenyfilter" class="tsd-kind-icon">build<wbr>Deny<wbr>Filter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_proxy_filter_.proxyfilter.html#buildfilters" class="tsd-kind-icon">build<wbr>Filters</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#buildmethodfilter" class="tsd-kind-icon">build<wbr>Method<wbr>Filter</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#buildpathfilter" class="tsd-kind-icon">build<wbr>Path<wbr>Filter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#hascustomfilter" class="tsd-kind-icon">has<wbr>Custom<wbr>Filter</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#hasmethodfilter" class="tsd-kind-icon">has<wbr>Method<wbr>Filter</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_proxy_filter_.proxyfilter.html#haspathfilter" class="tsd-kind-icon">has<wbr>Path<wbr>Filter</a></li>
 							</ul>
 						</section>
 					</div>
@@ -109,13 +107,36 @@
 					<div class="tsd-signature tsd-kind-icon">settings<span class="tsd-signature-symbol">:</span> <a href="_settings_.settings.html" class="tsd-signature-type">Settings</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L15">proxy/filter.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/proxy/filter.ts#L15">proxy/filter.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="buildallowfilter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Allow<wbr>Filter</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">build<wbr>Allow<wbr>Filter<span class="tsd-signature-symbol">(</span>allow<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.targetfilter.html" class="tsd-signature-type">TargetFilter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/proxy/filter.ts#L63">proxy/filter.ts:63</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>allow: <a href="../interfaces/_config_.targetfilter.html" class="tsd-signature-type">TargetFilter</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="buildcustomfilter" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Custom<wbr>Filter</h3>
@@ -126,13 +147,36 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L30">proxy/filter.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/proxy/filter.ts#L30">proxy/filter.ts:30</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>proxy: <a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="builddenyfilter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Deny<wbr>Filter</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">build<wbr>Deny<wbr>Filter<span class="tsd-signature-symbol">(</span>deny<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.targetfilter.html" class="tsd-signature-type">TargetFilter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/proxy/filter.ts#L97">proxy/filter.ts:97</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>deny: <a href="../interfaces/_config_.targetfilter.html" class="tsd-signature-type">TargetFilter</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -149,7 +193,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L16">proxy/filter.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/proxy/filter.ts#L16">proxy/filter.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -163,52 +207,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="buildmethodfilter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Method<wbr>Filter</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">build<wbr>Method<wbr>Filter<span class="tsd-signature-symbol">(</span>proxy<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L95">proxy/filter.ts:95</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>proxy: <a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Function</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="buildpathfilter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Path<wbr>Filter</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">build<wbr>Path<wbr>Filter<span class="tsd-signature-symbol">(</span>proxy<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L63">proxy/filter.ts:63</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>proxy: <a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="hascustomfilter" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> has<wbr>Custom<wbr>Filter</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -218,53 +216,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L123">proxy/filter.ts:123</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>proxy: <a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="hasmethodfilter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> has<wbr>Method<wbr>Filter</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">has<wbr>Method<wbr>Filter<span class="tsd-signature-symbol">(</span>proxy<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L132">proxy/filter.ts:132</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>proxy: <a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="haspathfilter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> has<wbr>Path<wbr>Filter</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">has<wbr>Path<wbr>Filter<span class="tsd-signature-symbol">(</span>proxy<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.proxy.html" class="tsd-signature-type">Proxy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/91f3ead/src/lib/proxy/filter.ts#L127">proxy/filter.ts:127</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/5d6789b/src/lib/proxy/filter.ts#L131">proxy/filter.ts:131</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -295,7 +247,13 @@
 						<a href="../modules/_authentication_auth_.html">"authentication/auth"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_authentication_strategies_basic_.html">"authentication/strategies/basic"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_authentication_strategies_jwt_.html">"authentication/strategies/jwt"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_authentication_strategies_local_.html">"authentication/strategies/local"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_command_line_.html">"command-<wbr>line"</a>
@@ -325,6 +283,9 @@
 						<a href="../modules/_settings_.html">"settings"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_throttling_store_.html">"throttling/store"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_throttling_throttling_.html">"throttling/throttling"</a>
 					</li>
 				</ul>
@@ -340,25 +301,19 @@
 								<a href="_proxy_filter_.proxyfilter.html#settings" class="tsd-kind-icon">settings</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_proxy_filter_.proxyfilter.html#buildallowfilter" class="tsd-kind-icon">build<wbr>Allow<wbr>Filter</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_proxy_filter_.proxyfilter.html#buildcustomfilter" class="tsd-kind-icon">build<wbr>Custom<wbr>Filter</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_proxy_filter_.proxyfilter.html#builddenyfilter" class="tsd-kind-icon">build<wbr>Deny<wbr>Filter</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_proxy_filter_.proxyfilter.html#buildfilters" class="tsd-kind-icon">build<wbr>Filters</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="_proxy_filter_.proxyfilter.html#buildmethodfilter" class="tsd-kind-icon">build<wbr>Method<wbr>Filter</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="_proxy_filter_.proxyfilter.html#buildpathfilter" class="tsd-kind-icon">build<wbr>Path<wbr>Filter</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_proxy_filter_.proxyfilter.html#hascustomfilter" class="tsd-kind-icon">has<wbr>Custom<wbr>Filter</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="_proxy_filter_.proxyfilter.html#hasmethodfilter" class="tsd-kind-icon">has<wbr>Method<wbr>Filter</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="_proxy_filter_.proxyfilter.html#haspathfilter" class="tsd-kind-icon">has<wbr>Path<wbr>Filter</a>
 							</li>
 						</ul>
 					</li>

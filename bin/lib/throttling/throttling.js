@@ -12,16 +12,19 @@ var Utils = require("underscore");
 var typescript_ioc_1 = require("typescript-ioc");
 var settings_1 = require("../settings");
 var pathUtil = require("path");
+var winston = require("winston");
 var ApiRateLimit = (function () {
     function ApiRateLimit() {
     }
     ApiRateLimit.prototype.throttling = function (path, throttling) {
         var RateLimit = require('express-rate-limit');
         var rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler");
-        if (throttling.store === 'redis') {
-            var RedisStore = require('rate-limit-redis');
-            rateConfig.store = new RedisStore({
-                expiry: (throttling.windowMs / 1000) + 1
+        if (this.settings.redisClient) {
+            var store = require('./store');
+            winston.debug("Using Redis as throttling store.");
+            rateConfig.store = new store.RedisStore({
+                expiry: (throttling.windowMs / 1000) + 1,
+                client: this.settings.redisClient
             });
         }
         var limiter = new RateLimit(rateConfig);

@@ -5,10 +5,10 @@ import {AutoWired, Inject} from "typescript-ioc";
 import "es6-promise";
 import {Gateway} from "../gateway";
 
-// @AutoWired
 @Path('apis')
+@AutoWired
 export class APIService {
-    // @Inject 
+    @Inject 
     private gateway: Gateway;
 
     @GET
