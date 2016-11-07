@@ -8,15 +8,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var typescript_rest_1 = require("typescript-rest");
 require("es6-promise");
+var Utils = require("underscore");
 var APIService = (function () {
     function APIService() {
     }
     APIService.prototype.search = function () {
         return new Promise(function (resolve, reject) {
-            console.log('API service called ');
-            resolve(["Teste 1"]);
+            resolve(APIService.gateway.apis);
+        });
+    };
+    APIService.prototype.getApi = function (name) {
+        return new Promise(function (resolve, reject) {
+            resolve(Utils.filter(APIService.gateway.apis, function (apiConfig) {
+                return name === apiConfig.name;
+            }));
         });
     };
     __decorate([
@@ -25,6 +35,14 @@ var APIService = (function () {
         __metadata('design:paramtypes', []), 
         __metadata('design:returntype', Promise)
     ], APIService.prototype, "search", null);
+    __decorate([
+        typescript_rest_1.GET,
+        typescript_rest_1.Path(":name"),
+        __param(0, typescript_rest_1.PathParam("name")), 
+        __metadata('design:type', Function), 
+        __metadata('design:paramtypes', [String]), 
+        __metadata('design:returntype', Promise)
+    ], APIService.prototype, "getApi", null);
     APIService = __decorate([
         typescript_rest_1.Path('apis'), 
         __metadata('design:paramtypes', [])

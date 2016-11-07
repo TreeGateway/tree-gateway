@@ -3,6 +3,8 @@ var logger = require("morgan");
 var compression = require("compression");
 var express = require("express");
 var fs = require("fs-extra");
+var admin_server_1 = require("./admin/admin-server");
+var typescript_rest_1 = require("typescript-rest");
 var StringUtils = require("underscore.string");
 var proxy_1 = require("./proxy/proxy");
 var Utils = require("./proxy/utils");
@@ -59,6 +61,13 @@ var Gateway = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Gateway.prototype, "apis", {
+        get: function () {
+            return this._apis.values();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Gateway.prototype.start = function (ready) {
         var _this = this;
         this.initialize(this.configFile, function () {
@@ -98,7 +107,7 @@ var Gateway = (function () {
     };
     Gateway.prototype.loadApis = function (ready) {
         var _this = this;
-        this.apis = new es5_compat_1.StringMap();
+        this._apis = new es5_compat_1.StringMap();
         var path = this.apiPath;
         fs.readdir(path, function (err, files) {
             if (err) {
@@ -127,7 +136,7 @@ var Gateway = (function () {
             this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
         }
         var apiKey = this.getApiKey(api);
-        this.apis.set(apiKey, api);
+        this._apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
         if (api.throttling) {
             if (this._logger.isDebugEnabled()) {
@@ -160,22 +169,7 @@ var Gateway = (function () {
             }
             else {
                 _this.app = express();
-                _this._config = defaults(gatewayConfig, {
-                    rootPath: path.dirname(configFileName),
-                });
-                if (StringUtils.startsWith(_this._config.rootPath, '.')) {
-                    _this._config.rootPath = path.join(path.dirname(configFileName), _this._config.rootPath);
-                }
-                _this._config = defaults(_this._config, {
-                    apiPath: path.join(_this._config.rootPath, 'apis'),
-                    middlewarePath: path.join(_this._config.rootPath, 'middleware')
-                });
-                if (StringUtils.startsWith(_this._config.apiPath, '.')) {
-                    _this._config.apiPath = path.join(_this._config.rootPath, _this._config.apiPath);
-                }
-                if (StringUtils.startsWith(_this._config.middlewarePath, '.')) {
-                    _this._config.middlewarePath = path.join(_this._config.rootPath, _this._config.middlewarePath);
-                }
+                _this.initializeConfig(configFileName, gatewayConfig);
                 _this._logger = new logger_1.Logger(_this.config.logger, _this);
                 if (_this.config.database) {
                     _this._redisClient = dbConfig.initializeRedis(_this.config.database);
@@ -187,6 +181,24 @@ var Gateway = (function () {
                 _this.configureAdminServer();
             }
         });
+    };
+    Gateway.prototype.initializeConfig = function (configFileName, gatewayConfig) {
+        this._config = defaults(gatewayConfig, {
+            rootPath: path.dirname(configFileName),
+        });
+        if (StringUtils.startsWith(this._config.rootPath, '.')) {
+            this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
+        }
+        this._config = defaults(this._config, {
+            apiPath: path.join(this._config.rootPath, 'apis'),
+            middlewarePath: path.join(this._config.rootPath, 'middleware')
+        });
+        if (StringUtils.startsWith(this._config.apiPath, '.')) {
+            this._config.apiPath = path.join(this._config.rootPath, this._config.apiPath);
+        }
+        if (StringUtils.startsWith(this._config.middlewarePath, '.')) {
+            this._config.middlewarePath = path.join(this._config.rootPath, this._config.middlewarePath);
+        }
     };
     Gateway.prototype.configureServer = function (ready) {
         this.app.disable('x-powered-by');
@@ -206,6 +218,8 @@ var Gateway = (function () {
         this.adminApp.disable('x-powered-by');
         this.adminApp.use(compression());
         this.adminApp.use(logger('dev'));
+        admin_server_1.APIService.gateway = this;
+        typescript_rest_1.Server.buildServices(this.adminApp, admin_server_1.APIService);
     };
     Gateway.prototype.getApiKey = function (api) {
         return api.name + (api.version ? '_' + api.version : '_default');

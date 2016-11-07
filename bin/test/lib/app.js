@@ -1,7 +1,7 @@
 "use strict";
 var __cov_Jik9dObhExao7pXak0WMrA = (Function('return this'))();
-if (!__cov_Jik9dObhExao7pXak0WMrA.$$cov_1478541281104$$) { __cov_Jik9dObhExao7pXak0WMrA.$$cov_1478541281104$$ = {}; }
-__cov_Jik9dObhExao7pXak0WMrA = __cov_Jik9dObhExao7pXak0WMrA.$$cov_1478541281104$$;
+if (!__cov_Jik9dObhExao7pXak0WMrA.$$cov_1478552597499$$) { __cov_Jik9dObhExao7pXak0WMrA.$$cov_1478552597499$$ = {}; }
+__cov_Jik9dObhExao7pXak0WMrA = __cov_Jik9dObhExao7pXak0WMrA.$$cov_1478552597499$$;
 if (!(__cov_Jik9dObhExao7pXak0WMrA['/Users/thiago/git/tree-gateway/bin/lib/app.js'])) {
    __cov_Jik9dObhExao7pXak0WMrA['/Users/thiago/git/tree-gateway/bin/lib/app.js'] = {"path":"/Users/thiago/git/tree-gateway/bin/lib/app.js","s":{"1":0,"2":0,"3":0,"4":0,"5":0},"b":{},"f":{"1":0},"fnMap":{"1":{"name":"(anonymous_1)","line":5,"loc":{"start":{"line":5,"column":14},"end":{"line":5,"column":26}}}},"statementMap":{"1":{"start":{"line":2,"column":0},"end":{"line":2,"column":37}},"2":{"start":{"line":3,"column":0},"end":{"line":3,"column":47}},"3":{"start":{"line":4,"column":0},"end":{"line":4,"column":81}},"4":{"start":{"line":5,"column":0},"end":{"line":7,"column":3}},"5":{"start":{"line":6,"column":4},"end":{"line":6,"column":25}}},"branchMap":{}};
 }

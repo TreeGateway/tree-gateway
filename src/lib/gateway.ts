@@ -5,6 +5,8 @@ import * as logger from "morgan";
 import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
+import {APIService} from "./admin/admin-server";
+import {Server} from "typescript-rest";
 import * as StringUtils from "underscore.string";
 import {ApiConfig} from "./config/api";
 import {GatewayConfig} from "./config/gateway";
@@ -26,13 +28,13 @@ export class Gateway {
     private apiProxy: ApiProxy;
     private apiRateLimit: ApiRateLimit;
     private apiAuth: ApiAuth;
-    private apis: StringMap<ApiConfig>;
-    private _config: GatewayConfig;
-    private _logger: Logger;
-    private _redisClient: redis.Redis;
     private configFile: string;
     private apiServer: http.Server;
     private adminServer: http.Server;
+    private _apis: StringMap<ApiConfig>;
+    private _config: GatewayConfig;
+    private _logger: Logger;
+    private _redisClient: redis.Redis;
 
     constructor(gatewayConfigFile: string) {
         this.configFile = gatewayConfigFile;
@@ -60,6 +62,10 @@ export class Gateway {
 
     get middlewarePath(): string {
         return this.config.middlewarePath;
+    }
+
+    get apis(): Array<ApiConfig> {
+        return this._apis.values();
     }
 
     start(ready?: ()=>void) {
@@ -102,7 +108,7 @@ export class Gateway {
     }
 
     private loadApis(ready?: () => void) {
-        this.apis = new StringMap<ApiConfig>();
+        this._apis = new StringMap<ApiConfig>();
         let path = this.apiPath;
         fs.readdir(path, (err, files) => {
             if (err) {
@@ -132,7 +138,7 @@ export class Gateway {
             this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
         }
         let apiKey: string = this.getApiKey(api);
-        this.apis.set(apiKey, api);
+        this._apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
         
         if (api.throttling) {
@@ -168,24 +174,7 @@ export class Gateway {
             }
             else {
                 this.app = express();
-                this._config = defaults(gatewayConfig, {
-                    rootPath : path.dirname(configFileName),
-                });
-                if (StringUtils.startsWith(this._config.rootPath, '.')) {
-                    this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
-                }
-
-                this._config = defaults(this._config, {
-                    apiPath : path.join(this._config.rootPath, 'apis'),
-                    middlewarePath : path.join(this._config.rootPath, 'middleware')
-                });
-
-                if (StringUtils.startsWith(this._config.apiPath, '.')) {
-                    this._config.apiPath = path.join(this._config.rootPath, this._config.apiPath);                
-                }
-                if (StringUtils.startsWith(this._config.middlewarePath, '.')) {
-                    this._config.middlewarePath = path.join(this._config.rootPath, this._config.middlewarePath);                
-                }
+                this.initializeConfig(configFileName, gatewayConfig);
                 this._logger = new Logger(this.config.logger, this);
                 if (this.config.database) {
                     this._redisClient = dbConfig.initializeRedis(this.config.database);
@@ -198,6 +187,27 @@ export class Gateway {
                 this.configureAdminServer();
             }
         });
+    }
+
+    private initializeConfig(configFileName: string, gatewayConfig: GatewayConfig) {
+        this._config = defaults(gatewayConfig, {
+            rootPath : path.dirname(configFileName),
+        });
+        if (StringUtils.startsWith(this._config.rootPath, '.')) {
+            this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
+        }
+
+        this._config = defaults(this._config, {
+            apiPath : path.join(this._config.rootPath, 'apis'),
+            middlewarePath : path.join(this._config.rootPath, 'middleware')
+        });
+
+        if (StringUtils.startsWith(this._config.apiPath, '.')) {
+            this._config.apiPath = path.join(this._config.rootPath, this._config.apiPath);                
+        }
+        if (StringUtils.startsWith(this._config.middlewarePath, '.')) {
+            this._config.middlewarePath = path.join(this._config.rootPath, this._config.middlewarePath);                
+        }
     }
 
     private configureServer(ready: ()=>void) {
@@ -225,12 +235,9 @@ export class Gateway {
         this.adminApp.disable('x-powered-by'); 
         this.adminApp.use(compression());
         this.adminApp.use(logger('dev'));
-
-        // Server.buildServices(adminServer, APIService);
-        // adminServer.listen(gateway.config.adminPort, ()=>{
-        //     // winston.info('Gateway Admin API listenning on port %d', Parameters.adminPort);
-        // });
-
+        
+        APIService.gateway = this;
+        Server.buildServices(this.adminApp, APIService);
     }
 
     private getApiKey(api: ApiConfig) {
@@ -238,11 +245,8 @@ export class Gateway {
     }
 }
 /*TODO: 
-- Create a file for Gateway configurations:
   - Global interceptors / Filters / Throttling
 - Create a global interceptor to add a 'Via' header pointing to Tree-Gateway
-- Expose an Admin port
 - Manage API versions
-- Fix the log (winston is not logging on log file, but just on consoles)
 - Create a clsuter program, to initialize the app in cluster
 */
