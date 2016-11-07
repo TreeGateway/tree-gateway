@@ -1,7 +1,7 @@
 "use strict";
 var __cov_Nw3iUKWarPCEV3wtRoJI3w = (Function('return this'))();
-if (!__cov_Nw3iUKWarPCEV3wtRoJI3w.$$cov_1478494487039$$) { __cov_Nw3iUKWarPCEV3wtRoJI3w.$$cov_1478494487039$$ = {}; }
-__cov_Nw3iUKWarPCEV3wtRoJI3w = __cov_Nw3iUKWarPCEV3wtRoJI3w.$$cov_1478494487039$$;
+if (!__cov_Nw3iUKWarPCEV3wtRoJI3w.$$cov_1478541281104$$) { __cov_Nw3iUKWarPCEV3wtRoJI3w.$$cov_1478541281104$$ = {}; }
+__cov_Nw3iUKWarPCEV3wtRoJI3w = __cov_Nw3iUKWarPCEV3wtRoJI3w.$$cov_1478541281104$$;
 if (!(__cov_Nw3iUKWarPCEV3wtRoJI3w['/Users/thiago/git/tree-gateway/bin/lib/config/authentication.js'])) {
    __cov_Nw3iUKWarPCEV3wtRoJI3w['/Users/thiago/git/tree-gateway/bin/lib/config/authentication.js'] = {"path":"/Users/thiago/git/tree-gateway/bin/lib/config/authentication.js","s":{},"b":{},"f":{},"fnMap":{},"statementMap":{},"branchMap":{}};
 }

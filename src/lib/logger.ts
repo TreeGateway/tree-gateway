@@ -30,10 +30,10 @@ export class Logger {
         }
         if (config && config.file) {
             config.file = defaults(config.file, {
-                filename: path.join(__dirname, 'logs/gateway.log')
+                filename: './logs/gateway.log'
             })
             if (StringUtils.startsWith(config.file.filename, '.')) {
-            config.file.filename = path.join(gateway.config.rootPath, config.file.filename);                
+                config.file.filename = path.join(gateway.config.rootPath, config.file.filename);                
             }
             options.transports.push(new Winston.transports.File(config.file));
         }
@@ -53,15 +53,15 @@ export class Logger {
         return this.level >= LogLevel.error;
     }
 
-    debug(msg: string, ...meta:any[]) {
-        this.winston.debug(msg, meta);
+    debug(...args: any[]) {
+        this.winston.debug.apply(this, arguments);
     }
 
-    info(msg: string, ...meta:any[]) {
-        this.winston.info(msg, meta);
+    info(...args: any[]) {
+        this.winston.info.apply(this, arguments);
     }
 
-    error(msg: string, ...meta:any[]) {
-        this.winston.error(msg, meta);
+    error(...args: any[]) {
+        this.winston.error.apply(this, arguments);
     }
 }

@@ -1,5 +1,8 @@
 "use strict";
 
+import * as http from "http";
+import * as logger from "morgan";
+import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
 import * as StringUtils from "underscore.string";
@@ -19,6 +22,7 @@ let defaults = require('defaults');
 
 export class Gateway {
     private app: express.Application;
+    private adminApp: express.Application;
     private apiProxy: ApiProxy;
     private apiRateLimit: ApiRateLimit;
     private apiAuth: ApiAuth;
@@ -26,22 +30,12 @@ export class Gateway {
     private _config: GatewayConfig;
     private _logger: Logger;
     private _redisClient: redis.Redis;
+    private configFile: string;
+    private apiServer: http.Server;
+    private adminServer: http.Server;
 
-    constructor(app: express.Application, gatewayConfig?: GatewayConfig) {
-        this._config = defaults(gatewayConfig, {
-            rootPath : __dirname,
-            apiPath : path.join(__dirname +'/apis'),
-            middlewarePath : path.join(__dirname +'/middleware')
-        });
-        
-        this.app = app;
-        this._logger = new Logger(this.config.logger, this);
-        if (this.config.database) {
-            this._redisClient = dbConfig.initializeRedis(this.config.database);
-        }
-        this.apiProxy = new ApiProxy(this);
-        this.apiRateLimit = new ApiRateLimit(this);
-        this.apiAuth = new ApiAuth(this);
+    constructor(gatewayConfigFile: string) {
+        this.configFile = gatewayConfigFile;
     }    
     
     get server(): express.Application {
@@ -68,7 +62,46 @@ export class Gateway {
         return this.config.middlewarePath;
     }
 
-    initialize(ready?: () => void) {
+    start(ready?: ()=>void) {
+        this.initialize(this.configFile, ()=>{
+            this.apiServer = this.app.listen(this.config.listenPort, ()=>{
+                this.logger.info('Gateway listenning on port %d', this.config.listenPort);
+                if (ready) {
+                    ready();
+                }
+            });
+        });  
+    }
+
+    startAdmin(ready?: ()=>void) {
+        if (this.adminApp) {
+            this.adminServer = this.adminApp.listen(this.config.adminPort, ()=>{
+                this.logger.info('Gateway Admin Server listenning on port %d', this.config.adminPort);
+                if (ready) {
+                    ready();
+                }
+            });
+        }
+        else {
+            console.error("You must start the Tree-Gateway before.");
+        }
+    }
+
+    stop() {
+        if (this.apiServer) {
+            this.apiServer.close();
+            this.apiServer = null;
+        }
+    }
+
+    stopAdmin() {
+        if (this.adminServer) {
+            this.adminServer.close();
+            this.adminServer = null;
+        }
+    }
+
+    private loadApis(ready?: () => void) {
         this.apis = new StringMap<ApiConfig>();
         let path = this.apiPath;
         fs.readdir(path, (err, files) => {
@@ -94,7 +127,7 @@ export class Gateway {
         });
     }
 
-    loadApi(api: ApiConfig, ready?: () => void) {
+    private loadApi(api: ApiConfig, ready?: () => void) {
         if (this._logger.isInfoEnabled()) {
             this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
         }
@@ -122,6 +155,82 @@ export class Gateway {
         if (ready) {
             ready();
         }
+    }
+
+    private initialize(configFileName: string, ready?: ()=>void) {
+        if (StringUtils.startsWith(configFileName, '.')) {
+            configFileName = path.join(process.cwd(), configFileName);                
+        }
+        
+        fs.readJson(configFileName, (error, gatewayConfig: GatewayConfig)=>{
+            if (error) {
+                console.error("Error reading tree-gateway.json config file: "+error);
+            }
+            else {
+                this.app = express();
+                this._config = defaults(gatewayConfig, {
+                    rootPath : path.dirname(configFileName),
+                });
+                if (StringUtils.startsWith(this._config.rootPath, '.')) {
+                    this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
+                }
+
+                this._config = defaults(this._config, {
+                    apiPath : path.join(this._config.rootPath, 'apis'),
+                    middlewarePath : path.join(this._config.rootPath, 'middleware')
+                });
+
+                if (StringUtils.startsWith(this._config.apiPath, '.')) {
+                    this._config.apiPath = path.join(this._config.rootPath, this._config.apiPath);                
+                }
+                if (StringUtils.startsWith(this._config.middlewarePath, '.')) {
+                    this._config.middlewarePath = path.join(this._config.rootPath, this._config.middlewarePath);                
+                }
+                this._logger = new Logger(this.config.logger, this);
+                if (this.config.database) {
+                    this._redisClient = dbConfig.initializeRedis(this.config.database);
+                }
+                this.apiProxy = new ApiProxy(this);
+                this.apiRateLimit = new ApiRateLimit(this);
+                this.apiAuth = new ApiAuth(this);
+
+                this.configureServer(ready);
+                this.configureAdminServer();
+            }
+        });
+    }
+
+    private configureServer(ready: ()=>void) {
+        this.app.disable('x-powered-by'); 
+        this.app.use(compression());
+        if (this.config.underProxy) {
+            this.app.enable('trust proxy'); 
+        }
+        if (this.app.get('env') == 'production') {
+            // const accessLogStream = fs.createWriteStream(path.join(Parameters.rootDir, 'logs/access_errors.log'),{flags: 'a'});
+            // gateway.server.use(logger('common', {
+            //   skip: function(req: express.Request, res: express.Response) { 
+            //       return res.statusCode < 400 
+            //   }, 
+            //   stream: accessLogStream }));
+        } 
+        else {
+            this.app.use(logger('dev'));
+        }
+        this.loadApis(ready);
+    }
+
+    private configureAdminServer() {
+        this.adminApp = express();
+        this.adminApp.disable('x-powered-by'); 
+        this.adminApp.use(compression());
+        this.adminApp.use(logger('dev'));
+
+        // Server.buildServices(adminServer, APIService);
+        // adminServer.listen(gateway.config.adminPort, ()=>{
+        //     // winston.info('Gateway Admin API listenning on port %d', Parameters.adminPort);
+        // });
+
     }
 
     private getApiKey(api: ApiConfig) {

@@ -83,8 +83,21 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#colorize" class="tsd-kind-icon">colorize</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#depth" class="tsd-kind-icon">depth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#eol" class="tsd-kind-icon">eol</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#filename" class="tsd-kind-icon">filename</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#json" class="tsd-kind-icon">json</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#logstash" class="tsd-kind-icon">logstash</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#maxfiles" class="tsd-kind-icon">max<wbr>Files</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#maxretries" class="tsd-kind-icon">max<wbr>Retries</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#maxsize" class="tsd-kind-icon">maxsize</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#prettyprint" class="tsd-kind-icon">pretty<wbr>Print</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#showlevel" class="tsd-kind-icon">show<wbr>Level</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#silent" class="tsd-kind-icon">silent</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#tailable" class="tsd-kind-icon">tailable</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#timestamp" class="tsd-kind-icon">timestamp</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logfileconfig.html#zippedarchive" class="tsd-kind-icon">zipped<wbr>Archive</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,14 +106,208 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="colorize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> colorize</h3>
+					<div class="tsd-signature tsd-kind-icon">colorize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L129">config/gateway.ts:129</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating if we should colorize output.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="depth" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> depth</h3>
+					<div class="tsd-signature tsd-kind-icon">depth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L157">config/gateway.ts:157</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Numeric indicating how many times to recurse while formatting the object with util.inspect
+								(only used with prettyPrint: true)
+							(default null, unlimited)</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="eol" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> eol</h3>
+					<div class="tsd-signature tsd-kind-icon">eol<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L146">config/gateway.ts:146</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>String indicating the end-of-line characters to use (default to \n).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="filename" class="tsd-anchor"></a>
-					<h3>filename</h3>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filename</h3>
 					<div class="tsd-signature tsd-kind-icon">filename<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:30</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L117">config/gateway.ts:117</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The filename of the logfile to write output to.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="json" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> json</h3>
+					<div class="tsd-signature tsd-kind-icon">json<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L142">config/gateway.ts:142</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, messages will be logged as JSON (default true).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="logstash" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> logstash</h3>
+					<div class="tsd-signature tsd-kind-icon">logstash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L161">config/gateway.ts:161</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, messages will be logged as JSON and formatted for logstash (default false).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="maxfiles" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Files</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Files<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L138">config/gateway.ts:138</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Limit the number of files created when the size of the logfile is exceeded.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="maxretries" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Retries</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Retries<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L178">config/gateway.ts:178</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The number of stream creation retry attempts before entering a failed state.
+								In a failed state the transport stays active but performs a NOOP on it&#39;s log function.
+							(default 2)</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="maxsize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> maxsize</h3>
+					<div class="tsd-signature tsd-kind-icon">maxsize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L134">config/gateway.ts:134</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Max size in bytes of the logfile, if the size is exceeded then a new file is created,
+							a counter will become a suffix of the log file.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="prettyprint" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> pretty<wbr>Print</h3>
+					<div class="tsd-signature tsd-kind-icon">pretty<wbr>Print<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L151">config/gateway.ts:151</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, additional JSON metadata objects that are added to logging string
+							messages will be displayed as a JSON string representation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="showlevel" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> show<wbr>Level</h3>
+					<div class="tsd-signature tsd-kind-icon">show<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L165">config/gateway.ts:165</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating if we should prepend output with level (default true).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="silent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> silent</h3>
+					<div class="tsd-signature tsd-kind-icon">silent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L125">config/gateway.ts:125</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating whether to suppress output.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="tailable" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> tailable</h3>
+					<div class="tsd-signature tsd-kind-icon">tailable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L172">config/gateway.ts:172</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, log files will be rolled based on maxsize and maxfiles, but in ascending order.
+								The filename will always have the most recent log lines. The larger the appended number,
+								the older the log file.
+							This option requires maxFiles to be set, or it will be ignored.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="timestamp" class="tsd-anchor"></a>
@@ -108,9 +315,29 @@
 					<div class="tsd-signature tsd-kind-icon">timestamp<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:31</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L121">config/gateway.ts:121</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>flag indicating if we should prepend output with timestamps (default true).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="zippedarchive" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> zipped<wbr>Archive</h3>
+					<div class="tsd-signature tsd-kind-icon">zipped<wbr>Archive<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L182">config/gateway.ts:182</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, all log files but the current one will be zipped.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -197,6 +424,9 @@
 						<a href="../enums/_config_gateway_.loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_gateway_.accessloggerconfig.html" class="tsd-kind-icon">Access<wbr>Logger<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_gateway_.gatewayconfig.html" class="tsd-kind-icon">Gateway<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
@@ -208,10 +438,49 @@
 						<a href="_config_gateway_.logfileconfig.html" class="tsd-kind-icon">Log<wbr>File<wbr>Config</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#colorize" class="tsd-kind-icon">colorize</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#depth" class="tsd-kind-icon">depth</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#eol" class="tsd-kind-icon">eol</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.logfileconfig.html#filename" class="tsd-kind-icon">filename</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#json" class="tsd-kind-icon">json</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#logstash" class="tsd-kind-icon">logstash</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#maxfiles" class="tsd-kind-icon">max<wbr>Files</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#maxretries" class="tsd-kind-icon">max<wbr>Retries</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#maxsize" class="tsd-kind-icon">maxsize</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#prettyprint" class="tsd-kind-icon">pretty<wbr>Print</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#showlevel" class="tsd-kind-icon">show<wbr>Level</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#silent" class="tsd-kind-icon">silent</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#tailable" class="tsd-kind-icon">tailable</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.logfileconfig.html#timestamp" class="tsd-kind-icon">timestamp</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logfileconfig.html#zippedarchive" class="tsd-kind-icon">zipped<wbr>Archive</a>
 							</li>
 						</ul>
 					</li>

@@ -84,6 +84,14 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#colorize" class="tsd-kind-icon">colorize</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#depth" class="tsd-kind-icon">depth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#humanreadableunhandledexception" class="tsd-kind-icon">human<wbr>Readable<wbr>Unhandled<wbr>Exception</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#json" class="tsd-kind-icon">json</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#prettyprint" class="tsd-kind-icon">pretty<wbr>Print</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#showlevel" class="tsd-kind-icon">show<wbr>Level</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#silent" class="tsd-kind-icon">silent</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#stderrlevels" class="tsd-kind-icon">stderr<wbr>Levels</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#stringify" class="tsd-kind-icon">stringify</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.logconsoleconfig.html#timestamp" class="tsd-kind-icon">timestamp</a></li>
 							</ul>
 						</section>
@@ -98,9 +106,140 @@
 					<div class="tsd-signature tsd-kind-icon">colorize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:25</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L76">config/gateway.ts:76</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating if we should colorize output.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="depth" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> depth</h3>
+					<div class="tsd-signature tsd-kind-icon">depth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L97">config/gateway.ts:97</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Numeric indicating how many times to recurse while formatting the object with util.inspect
+								(only used with prettyPrint: true)
+							(default null, unlimited)</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="humanreadableunhandledexception" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> human<wbr>Readable<wbr>Unhandled<wbr>Exception</h3>
+					<div class="tsd-signature tsd-kind-icon">human<wbr>Readable<wbr>Unhandled<wbr>Exception<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L101">config/gateway.ts:101</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating if uncaught exception should be output as human readable, instead of a single line</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="json" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> json</h3>
+					<div class="tsd-signature tsd-kind-icon">json<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L80">config/gateway.ts:80</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, messages will be logged as JSON (default true).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="prettyprint" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> pretty<wbr>Print</h3>
+					<div class="tsd-signature tsd-kind-icon">pretty<wbr>Print<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L91">config/gateway.ts:91</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, additional JSON metadata objects that are added to logging string
+							messages will be displayed as a JSON string representation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="showlevel" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> show<wbr>Level</h3>
+					<div class="tsd-signature tsd-kind-icon">show<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L105">config/gateway.ts:105</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating if we should prepend output with level (default true).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="silent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> silent</h3>
+					<div class="tsd-signature tsd-kind-icon">silent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L72">config/gateway.ts:72</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indicating whether to suppress output.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="stderrlevels" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> stderr<wbr>Levels</h3>
+					<div class="tsd-signature tsd-kind-icon">stderr<wbr>Levels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L110">config/gateway.ts:110</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of strings containing the levels to log to stderr instead of stdout, for example
+							[&#39;error&#39;, &#39;debug&#39;, &#39;info&#39;]. (default [&#39;error&#39;, &#39;debug&#39;])</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="stringify" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> stringify</h3>
+					<div class="tsd-signature tsd-kind-icon">stringify<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L86">config/gateway.ts:86</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag indiciating if the output should be passed through JSON.stringify,
+								resulting in single-line output. Most useful when used in conjunction with
+							the json flag. (default false)</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="timestamp" class="tsd-anchor"></a>
@@ -108,9 +247,14 @@
 					<div class="tsd-signature tsd-kind-icon">timestamp<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:26</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L68">config/gateway.ts:68</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>flag indicating if we should prepend output with timestamps (default true).</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -197,6 +341,9 @@
 						<a href="../enums/_config_gateway_.loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_gateway_.accessloggerconfig.html" class="tsd-kind-icon">Access<wbr>Logger<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_gateway_.gatewayconfig.html" class="tsd-kind-icon">Gateway<wbr>Config</a>
 					</li>
 				</ul>
@@ -206,6 +353,30 @@
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.logconsoleconfig.html#colorize" class="tsd-kind-icon">colorize</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#depth" class="tsd-kind-icon">depth</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#humanreadableunhandledexception" class="tsd-kind-icon">human<wbr>Readable<wbr>Unhandled<wbr>Exception</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#json" class="tsd-kind-icon">json</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#prettyprint" class="tsd-kind-icon">pretty<wbr>Print</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#showlevel" class="tsd-kind-icon">show<wbr>Level</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#silent" class="tsd-kind-icon">silent</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#stderrlevels" class="tsd-kind-icon">stderr<wbr>Levels</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.logconsoleconfig.html#stringify" class="tsd-kind-icon">stringify</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.logconsoleconfig.html#timestamp" class="tsd-kind-icon">timestamp</a>

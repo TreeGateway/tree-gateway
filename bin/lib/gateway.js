@@ -1,4 +1,7 @@
 "use strict";
+var logger = require("morgan");
+var compression = require("compression");
+var express = require("express");
 var fs = require("fs-extra");
 var StringUtils = require("underscore.string");
 var proxy_1 = require("./proxy/proxy");
@@ -11,20 +14,8 @@ var dbConfig = require("./redis");
 var path = require("path");
 var defaults = require('defaults');
 var Gateway = (function () {
-    function Gateway(app, gatewayConfig) {
-        this._config = defaults(gatewayConfig, {
-            rootPath: __dirname,
-            apiPath: path.join(__dirname + '/apis'),
-            middlewarePath: path.join(__dirname + '/middleware')
-        });
-        this.app = app;
-        this._logger = new logger_1.Logger(this.config.logger, this);
-        if (this.config.database) {
-            this._redisClient = dbConfig.initializeRedis(this.config.database);
-        }
-        this.apiProxy = new proxy_1.ApiProxy(this);
-        this.apiRateLimit = new throttling_1.ApiRateLimit(this);
-        this.apiAuth = new auth_1.ApiAuth(this);
+    function Gateway(gatewayConfigFile) {
+        this.configFile = gatewayConfigFile;
     }
     Object.defineProperty(Gateway.prototype, "server", {
         get: function () {
@@ -68,7 +59,44 @@ var Gateway = (function () {
         enumerable: true,
         configurable: true
     });
-    Gateway.prototype.initialize = function (ready) {
+    Gateway.prototype.start = function (ready) {
+        var _this = this;
+        this.initialize(this.configFile, function () {
+            _this.apiServer = _this.app.listen(_this.config.listenPort, function () {
+                _this.logger.info('Gateway listenning on port %d', _this.config.listenPort);
+                if (ready) {
+                    ready();
+                }
+            });
+        });
+    };
+    Gateway.prototype.startAdmin = function (ready) {
+        var _this = this;
+        if (this.adminApp) {
+            this.adminServer = this.adminApp.listen(this.config.adminPort, function () {
+                _this.logger.info('Gateway Admin Server listenning on port %d', _this.config.adminPort);
+                if (ready) {
+                    ready();
+                }
+            });
+        }
+        else {
+            console.error("You must start the Tree-Gateway before.");
+        }
+    };
+    Gateway.prototype.stop = function () {
+        if (this.apiServer) {
+            this.apiServer.close();
+            this.apiServer = null;
+        }
+    };
+    Gateway.prototype.stopAdmin = function () {
+        if (this.adminServer) {
+            this.adminServer.close();
+            this.adminServer = null;
+        }
+    };
+    Gateway.prototype.loadApis = function (ready) {
         var _this = this;
         this.apis = new es5_compat_1.StringMap();
         var path = this.apiPath;
@@ -120,6 +148,64 @@ var Gateway = (function () {
         if (ready) {
             ready();
         }
+    };
+    Gateway.prototype.initialize = function (configFileName, ready) {
+        var _this = this;
+        if (StringUtils.startsWith(configFileName, '.')) {
+            configFileName = path.join(process.cwd(), configFileName);
+        }
+        fs.readJson(configFileName, function (error, gatewayConfig) {
+            if (error) {
+                console.error("Error reading tree-gateway.json config file: " + error);
+            }
+            else {
+                _this.app = express();
+                _this._config = defaults(gatewayConfig, {
+                    rootPath: path.dirname(configFileName),
+                });
+                if (StringUtils.startsWith(_this._config.rootPath, '.')) {
+                    _this._config.rootPath = path.join(path.dirname(configFileName), _this._config.rootPath);
+                }
+                _this._config = defaults(_this._config, {
+                    apiPath: path.join(_this._config.rootPath, 'apis'),
+                    middlewarePath: path.join(_this._config.rootPath, 'middleware')
+                });
+                if (StringUtils.startsWith(_this._config.apiPath, '.')) {
+                    _this._config.apiPath = path.join(_this._config.rootPath, _this._config.apiPath);
+                }
+                if (StringUtils.startsWith(_this._config.middlewarePath, '.')) {
+                    _this._config.middlewarePath = path.join(_this._config.rootPath, _this._config.middlewarePath);
+                }
+                _this._logger = new logger_1.Logger(_this.config.logger, _this);
+                if (_this.config.database) {
+                    _this._redisClient = dbConfig.initializeRedis(_this.config.database);
+                }
+                _this.apiProxy = new proxy_1.ApiProxy(_this);
+                _this.apiRateLimit = new throttling_1.ApiRateLimit(_this);
+                _this.apiAuth = new auth_1.ApiAuth(_this);
+                _this.configureServer(ready);
+                _this.configureAdminServer();
+            }
+        });
+    };
+    Gateway.prototype.configureServer = function (ready) {
+        this.app.disable('x-powered-by');
+        this.app.use(compression());
+        if (this.config.underProxy) {
+            this.app.enable('trust proxy');
+        }
+        if (this.app.get('env') == 'production') {
+        }
+        else {
+            this.app.use(logger('dev'));
+        }
+        this.loadApis(ready);
+    };
+    Gateway.prototype.configureAdminServer = function () {
+        this.adminApp = express();
+        this.adminApp.disable('x-powered-by');
+        this.adminApp.use(compression());
+        this.adminApp.use(logger('dev'));
     };
     Gateway.prototype.getApiKey = function (api) {
         return api.name + (api.version ? '_' + api.version : '_default');

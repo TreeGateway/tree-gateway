@@ -1,11 +1,8 @@
 "use strict";
 var path = require("path");
-var StringUtils = require("underscore.string");
 var args = require("args");
 var parameters = args
-    .option('dir', 'The root directory where apis and middlewares are placed.', __dirname)
-    .option('port', 'The gateway listen port.', 8000)
-    .option('adminPort', 'The gateway admin server listen port.', 8001)
+    .option('config', 'The Tree-Gateway config file (tree-gateway.json).', path.join(process.cwd(), 'tree-gateway.json'))
     .parse(process.argv);
 var Parameters = (function () {
     function Parameters() {
@@ -13,11 +10,6 @@ var Parameters = (function () {
     return Parameters;
 }());
 exports.Parameters = Parameters;
-Parameters.rootDir = parameters.dir;
-Parameters.port = parameters.port;
-Parameters.adminPort = parameters.adminPort;
-if (StringUtils.startsWith(Parameters.rootDir, '.')) {
-    Parameters.rootDir = path.join(process.cwd(), Parameters.rootDir);
-}
+Parameters.gatewayConfigFile = parameters.config;
 
 //# sourceMappingURL=command-line.js.map

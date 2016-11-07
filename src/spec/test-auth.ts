@@ -3,36 +3,21 @@ import * as request from "request";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
 
-const gateway: Gateway = new Gateway(express(), {
-	rootPath: __dirname,
-	apiPath: __dirname + '/../../../apis',
-	middlewarePath: __dirname + '/../../../middleware', 
-	logger: {
-		console: {
-			colorize: true
-		}
-	}
-});
-const app = gateway.server;
-const port = 4568;
-const gatewayAddress = "http://localhost:"+port;
 let server;
-app.set('env', 'test');
-
+let gateway: Gateway;
+let gatewayAddress: string;
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
-		console.log('\nInitializing gateway...');
-		gateway.initialize(()=>{
-			console.log('Gateway configured');
-			server = app.listen(port, ()=>{
-				console.log('Gateway started');
-				done();
-			});
+		gateway = new Gateway("./tree-gateway.json");
+		gateway.start(()=>{
+			gateway.server.set('env', 'test');
+			gatewayAddress = "http://localhost:"+gateway.config.listenPort;
+			done();
 		});
 	});
 
 	afterAll(function(){
-		server.close();
+		gateway.stop();
 	});
 
 	describe("The Gateway Proxy", () => {

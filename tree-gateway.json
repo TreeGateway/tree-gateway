@@ -1,4 +1,8 @@
 {
+    "underProxy": false,
+    "listenPort": 8000,
+    "adminPort": 8001,
+    "rootPath": ".",
     "logger": {
         "level": "debug",
         "console": {
@@ -7,7 +11,11 @@
         "file": {
             "timestamp": true,
             "filename": "./logs/gateway.log",
-            "json": false 
+            "json": false, 
+            "prettyPrint": true 
         }
+    },
+    "accessLog": {
+        
     }
 }

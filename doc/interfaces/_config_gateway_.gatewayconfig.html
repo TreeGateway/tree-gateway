@@ -90,10 +90,15 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#accesslogger" class="tsd-kind-icon">access<wbr>Logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#adminport" class="tsd-kind-icon">admin<wbr>Port</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#apipath" class="tsd-kind-icon">api<wbr>Path</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#database" class="tsd-kind-icon">database</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#listenport" class="tsd-kind-icon">listen<wbr>Port</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#middlewarepath" class="tsd-kind-icon">middleware<wbr>Path</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#rootpath" class="tsd-kind-icon">root<wbr>Path</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_config_gateway_.gatewayconfig.html#underproxy" class="tsd-kind-icon">under<wbr>Proxy</a></li>
 							</ul>
 						</section>
 					</div>
@@ -102,14 +107,49 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="accesslogger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> access<wbr>Logger</h3>
+					<div class="tsd-signature tsd-kind-icon">access<wbr>Logger<span class="tsd-signature-symbol">:</span> <a href="_config_gateway_.accessloggerconfig.html" class="tsd-signature-type">AccessLoggerConfig</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L42">config/gateway.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configurations for gateway logger.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="adminport" class="tsd-anchor"></a>
+					<h3>admin<wbr>Port</h3>
+					<div class="tsd-signature tsd-kind-icon">admin<wbr>Port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L14">config/gateway.ts:14</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The gateway admin server port</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="apipath" class="tsd-anchor"></a>
 					<h3>api<wbr>Path</h3>
 					<div class="tsd-signature tsd-kind-icon">api<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:7</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L22">config/gateway.ts:22</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Folder where the gateway will search for installed APIs.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="database" class="tsd-anchor"></a>
@@ -117,9 +157,29 @@
 					<div class="tsd-signature tsd-kind-icon">database<span class="tsd-signature-symbol">:</span> <a href="_config_gateway_.redisconfig.html" class="tsd-signature-type">RedisConfig</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:10</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L38">config/gateway.ts:38</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configurations for gateway database (REDIS).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="listenport" class="tsd-anchor"></a>
+					<h3>listen<wbr>Port</h3>
+					<div class="tsd-signature tsd-kind-icon">listen<wbr>Port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L10">config/gateway.ts:10</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The gateway port</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="logger" class="tsd-anchor"></a>
@@ -127,9 +187,14 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="_config_gateway_.loggerconfig.html" class="tsd-signature-type">LoggerConfig</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:9</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L34">config/gateway.ts:34</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configurations for gateway logger.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="middlewarepath" class="tsd-anchor"></a>
@@ -137,9 +202,44 @@
 					<div class="tsd-signature tsd-kind-icon">middleware<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in config/gateway.ts:8</li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L26">config/gateway.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Folder where the gateway will search for its middleware functions.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="rootpath" class="tsd-anchor"></a>
+					<h3>root<wbr>Path</h3>
+					<div class="tsd-signature tsd-kind-icon">root<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L18">config/gateway.ts:18</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The root folder where the gateway will work.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="underproxy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> under<wbr>Proxy</h3>
+					<div class="tsd-signature tsd-kind-icon">under<wbr>Proxy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f534ddd/src/lib/config/gateway.ts#L30">config/gateway.ts:30</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -225,11 +325,20 @@
 					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
 						<a href="../enums/_config_gateway_.loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_config_gateway_.accessloggerconfig.html" class="tsd-kind-icon">Access<wbr>Logger<wbr>Config</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="_config_gateway_.gatewayconfig.html" class="tsd-kind-icon">Gateway<wbr>Config</a>
 						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.gatewayconfig.html#accesslogger" class="tsd-kind-icon">access<wbr>Logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.gatewayconfig.html#adminport" class="tsd-kind-icon">admin<wbr>Port</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.gatewayconfig.html#apipath" class="tsd-kind-icon">api<wbr>Path</a>
 							</li>
@@ -237,10 +346,19 @@
 								<a href="_config_gateway_.gatewayconfig.html#database" class="tsd-kind-icon">database</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.gatewayconfig.html#listenport" class="tsd-kind-icon">listen<wbr>Port</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.gatewayconfig.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_config_gateway_.gatewayconfig.html#middlewarepath" class="tsd-kind-icon">middleware<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.gatewayconfig.html#rootpath" class="tsd-kind-icon">root<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_config_gateway_.gatewayconfig.html#underproxy" class="tsd-kind-icon">under<wbr>Proxy</a>
 							</li>
 						</ul>
 					</li>

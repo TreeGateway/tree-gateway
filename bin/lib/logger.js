@@ -20,7 +20,7 @@ var Logger = (function () {
         }
         if (config && config.file) {
             config.file = defaults(config.file, {
-                filename: path.join(__dirname, 'logs/gateway.log')
+                filename: './logs/gateway.log'
             });
             if (StringUtils.startsWith(config.file.filename, '.')) {
                 config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
@@ -38,26 +38,26 @@ var Logger = (function () {
     Logger.prototype.isErrorEnabled = function () {
         return this.level >= gateway_1.LogLevel.error;
     };
-    Logger.prototype.debug = function (msg) {
-        var meta = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            meta[_i - 1] = arguments[_i];
+    Logger.prototype.debug = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
         }
-        this.winston.debug(msg, meta);
+        this.winston.debug.apply(this, arguments);
     };
-    Logger.prototype.info = function (msg) {
-        var meta = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            meta[_i - 1] = arguments[_i];
+    Logger.prototype.info = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
         }
-        this.winston.info(msg, meta);
+        this.winston.info.apply(this, arguments);
     };
-    Logger.prototype.error = function (msg) {
-        var meta = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            meta[_i - 1] = arguments[_i];
+    Logger.prototype.error = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
         }
-        this.winston.error(msg, meta);
+        this.winston.error.apply(this, arguments);
     };
     return Logger;
 }());

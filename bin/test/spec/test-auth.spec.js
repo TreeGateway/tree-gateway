@@ -1,36 +1,21 @@
 "use strict";
-var express = require("express");
 var request = require("request");
 require("jasmine");
 var gateway_1 = require("../lib/gateway");
-var gateway = new gateway_1.Gateway(express(), {
-    rootPath: __dirname,
-    apiPath: __dirname + '/../../../apis',
-    middlewarePath: __dirname + '/../../../middleware',
-    logger: {
-        console: {
-            colorize: true
-        }
-    }
-});
-var app = gateway.server;
-var port = 4568;
-var gatewayAddress = "http://localhost:" + port;
 var server;
-app.set('env', 'test');
+var gateway;
+var gatewayAddress;
 describe("Gateway Tests", function () {
     beforeAll(function (done) {
-        console.log('\nInitializing gateway...');
-        gateway.initialize(function () {
-            console.log('Gateway configured');
-            server = app.listen(port, function () {
-                console.log('Gateway started');
-                done();
-            });
+        gateway = new gateway_1.Gateway("./tree-gateway.json");
+        gateway.start(function () {
+            gateway.server.set('env', 'test');
+            gatewayAddress = "http://localhost:" + gateway.config.listenPort;
+            done();
         });
     });
     afterAll(function () {
-        server.close();
+        gateway.stop();
     });
     describe("The Gateway Proxy", function () {
         it("should be able to proxy an API", function (done) {
