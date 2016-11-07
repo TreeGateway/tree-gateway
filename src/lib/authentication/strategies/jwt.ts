@@ -2,12 +2,12 @@
 
 import * as passport from 'passport';
 import {Strategy, ExtractJwt} from 'passport-jwt';
-import * as config from "../../config";
-import {Settings} from "../../settings";
+import {Gateway} from "../../gateway"; 
+import {JWTAuthentication} from "../../config/authentication";
 import * as Utils from "underscore";
 import * as pathUtil from "path"; 
 
-module.exports = function (apiKey: string, authConfig: config.JWTAuthentication, settings: Settings) {
+module.exports = function (apiKey: string, authConfig: JWTAuthentication, gateway: Gateway) {
     let opts = Utils.omit(authConfig, "extractFrom", "verify");
     if (authConfig.extractFrom) {
         let extractors: Array<string> = Utils.keys(authConfig.extractFrom);
@@ -28,7 +28,7 @@ module.exports = function (apiKey: string, authConfig: config.JWTAuthentication,
     let verifyFunction;
     if (authConfig.verify) {
         opts['passReqToCallback'] = true;
-        let p = pathUtil.join(settings.middlewarePath, 'authentication', 'verify', authConfig.verify);                
+        let p = pathUtil.join(gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);                
         verifyFunction = require(p);
     }
     else {

@@ -3,7 +3,7 @@ var passport = require('passport');
 var passport_jwt_1 = require('passport-jwt');
 var Utils = require("underscore");
 var pathUtil = require("path");
-module.exports = function (apiKey, authConfig, settings) {
+module.exports = function (apiKey, authConfig, gateway) {
     var opts = Utils.omit(authConfig, "extractFrom", "verify");
     if (authConfig.extractFrom) {
         var extractors = Utils.keys(authConfig.extractFrom);
@@ -24,7 +24,7 @@ module.exports = function (apiKey, authConfig, settings) {
     var verifyFunction;
     if (authConfig.verify) {
         opts['passReqToCallback'] = true;
-        var p = pathUtil.join(settings.middlewarePath, 'authentication', 'verify', authConfig.verify);
+        var p = pathUtil.join(gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);
         verifyFunction = require(p);
     }
     else {

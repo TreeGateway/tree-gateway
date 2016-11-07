@@ -1,18 +1,19 @@
 "use strict";
 
 import * as StringUtils from "underscore.string";
-import * as config from "../config";
-import {AutoWired, Inject} from "typescript-ioc";
-import {Settings} from "../settings";
+import * as config from "../config/proxy";
 import * as path from "path"; 
 import * as Utils from "./utils";
+import {ApiProxy} from "./proxy";
 
 let pathToRegexp = require('path-to-regexp');
 
-@AutoWired
 export class ProxyInterceptor {
-    @Inject
-    private settings: Settings;
+    private proxy: ApiProxy;
+
+    constructor(proxy: ApiProxy) {
+        this.proxy = proxy;
+    }
     
     requestInterceptor(proxy: config.Proxy) {
         if (this.hasRequestInterceptor(proxy)) {
@@ -32,7 +33,7 @@ export class ProxyInterceptor {
         let func = new Array<string>();
         func.push("function(proxyReq, originalReq){");
         proxy.interceptor.request.forEach((interceptor, index)=>{
-            let p = path.join(this.settings.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
+            let p = path.join(this.proxy.gateway.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
             if (interceptor.appliesTo) {
                 func.push("if (");                
                 interceptor.appliesTo.forEach((path,index)=>{
@@ -75,7 +76,7 @@ export class ProxyInterceptor {
             else {
                 func.push("var f"+index+" = ");        
             }
-            let p = path.join(this.settings.middlewarePath, 'interceptor', 'response' ,interceptor.name);                
+            let p = path.join(this.proxy.gateway.middlewarePath, 'interceptor', 'response' ,interceptor.name);                
             func.push("require('"+p+"');");
             func.push("f"+index+"(rsp, data, req, res, (error, value)=>{ \
                 if (error) { \

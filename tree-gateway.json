@@ -1,0 +1,13 @@
+{
+    "logger": {
+        "level": "debug",
+        "console": {
+            "colorize": true
+        },
+        "file": {
+            "timestamp": true,
+            "filename": "./logs/gateway.log",
+            "json": false 
+        }
+    }
+}

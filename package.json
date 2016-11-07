@@ -30,7 +30,6 @@
     "rate-limit-redis": "^1.0.4",
     "redis": "^2.6.3",
     "serve-favicon": "~2.3.0",
-    "typescript-ioc": "^0.2.4",
     "typescript-rest": "^0.2.2",
     "underscore": "^1.8.3",
     "underscore.string": "^3.3.4",

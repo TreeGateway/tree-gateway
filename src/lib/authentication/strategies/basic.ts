@@ -2,12 +2,12 @@
 
 import * as passport from 'passport';
 import {BasicStrategy} from 'passport-http';
-import * as config from "../../config";
-import {Settings} from "../../settings";
+import {Gateway} from "../../gateway"; 
+import {BasicAuthentication} from "../../config/authentication";
 import * as pathUtil from "path"; 
 
-module.exports = function (apiKey: string, authConfig: config.BasicAuthentication, settings: Settings) {
-    let p = pathUtil.join(settings.middlewarePath, 'authentication', 'verify', authConfig.verify);                
+module.exports = function (apiKey: string, authConfig: BasicAuthentication, gateway: Gateway) {
+    let p = pathUtil.join(gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);                
     let verifyFunction = require(p);
     passport.use(apiKey, new BasicStrategy(verifyFunction));
 };

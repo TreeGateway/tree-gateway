@@ -91,20 +91,20 @@
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 					<a name="app" class="tsd-anchor"></a>
 					<h3>app</h3>
-					<div class="tsd-signature tsd-kind-icon">app<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Application</span><span class="tsd-signature-symbol"> =&nbsp;configureGatewayServer()</span></div>
+					<div class="tsd-signature tsd-kind-icon">app<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Express</span><span class="tsd-signature-symbol"> =&nbsp;configureGatewayServer()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/app.ts#L16">app.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/app.ts#L13">app.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 					<a name="gateway" class="tsd-anchor"></a>
 					<h3>gateway</h3>
-					<div class="tsd-signature tsd-kind-icon">gateway<span class="tsd-signature-symbol">:</span> <a href="../classes/_gateway_.gateway.html" class="tsd-signature-type">Gateway</a><span class="tsd-signature-symbol"> =&nbsp;Container.get(Gateway)</span></div>
+					<div class="tsd-signature tsd-kind-icon">gateway<span class="tsd-signature-symbol">:</span> <a href="../classes/_gateway_.gateway.html" class="tsd-signature-type">Gateway</a><span class="tsd-signature-symbol"> =&nbsp;new Gateway(app)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/app.ts#L15">app.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/app.ts#L14">app.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -121,7 +121,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/app.ts#L47">app.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/app.ts#L45">app.ts:45</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Express</span></h4>
@@ -132,16 +132,16 @@
 					<a name="configuregatewayserver" class="tsd-anchor"></a>
 					<h3>configure<wbr>Gateway<wbr>Server</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">configure<wbr>Gateway<wbr>Server<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Application</span></li>
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Gateway<wbr>Server<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/app.ts#L21">app.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/app.ts#L19">app.ts:19</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Application</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Express</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -175,13 +175,31 @@
 						<a href="_command_line_.html">"command-<wbr>line"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_config_.html">"config"</a>
+						<a href="_config_api_.html">"config/api"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_config_authentication_.html">"config/authentication"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_config_gateway_.html">"config/gateway"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_config_proxy_.html">"config/proxy"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_config_servicediscovery_.html">"config/service<wbr>Discovery"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_config_throttling_.html">"config/throttling"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="_es5_compat_.html">"es5-<wbr>compat"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="_gateway_.html">"gateway"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_logger_.html">"logger"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="_proxy_filter_.html">"proxy/filter"</a>
@@ -196,7 +214,7 @@
 						<a href="_proxy_utils_.html">"proxy/utils"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_settings_.html">"settings"</a>
+						<a href="_redis_.html">"redis"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="_throttling_store_.html">"throttling/store"</a>

@@ -1,11 +1,10 @@
 "use strict";
 
-import * as config from "../config";
+import {AuthenticationConfig} from "../config/authentication";
 import * as Utils from "underscore";
-import {AutoWired, Inject} from "typescript-ioc";
-import {Settings} from "../settings";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
+import {Gateway} from "../gateway";
 
 const providedStrategies = {
     'jwt': require('./strategies/jwt'),
@@ -13,29 +12,33 @@ const providedStrategies = {
     'local': require('./strategies/local')
 } 
 
-@AutoWired
 export class ApiAuth {
-    @Inject
-    private settings: Settings;
+    private gateway: Gateway;
 
-    authentication(apiKey: string, path: string, authentication: config.Authentication) {
+    constructor(gateway: Gateway) {
+        this.gateway = gateway;
+    }
+
+    authentication(apiKey: string, path: string, authentication: AuthenticationConfig) {
         Utils.keys(authentication).forEach(key=>{
             try {
                 let authConfig = authentication[key];
                 if (Utils.has(providedStrategies, key)) {
                     let strategy = providedStrategies[key];
-                    strategy(apiKey, authConfig, this.settings);
+                    strategy(apiKey, authConfig, this.gateway);
                 }
                 else {
-                    let p = pathUtil.join(this.settings.middlewarePath, 'authentication', 'strategies' , key);                
+                    let p = pathUtil.join(this.gateway.middlewarePath, 'authentication', 'strategies' , key);                
                     let strategy = require(p);
                     strategy(apiKey, authConfig);
                 }
-                this.settings.app.use(path, auth.authenticate(apiKey, { session: false }));
-                this.settings.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
+                this.gateway.server.use(path, auth.authenticate(apiKey, { session: false }));
+                if (this.gateway.logger.isDebugEnabled) {
+                    this.gateway.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
+                }
             }
             catch(e) {
-                this.settings.logger.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
+                this.gateway.logger.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
             }
         });
     }

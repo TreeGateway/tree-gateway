@@ -3,50 +3,86 @@
 import * as express from "express";
 import * as fs from "fs-extra";
 import * as StringUtils from "underscore.string";
-import * as config from "./config";
+import {ApiConfig} from "./config/api";
+import {GatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
 import {ApiAuth} from "./authentication/auth";
 import {Set, StringMap} from "./es5-compat";
-import {Settings} from "./settings";
-import {AutoWired, Inject, Singleton} from "typescript-ioc";
+import {Logger} from "./logger";
+import * as redis from "ioredis";
+import * as dbConfig from "./redis";
+import * as path from "path";
 
-@AutoWired
-@Singleton
+let defaults = require('defaults');
+
 export class Gateway {
-    @Inject
+    private app: express.Application;
     private apiProxy: ApiProxy;
-    @Inject
     private apiRateLimit: ApiRateLimit;
-    @Inject
     private apiAuth: ApiAuth;
-    private apis: StringMap<config.Api>;
-    private settings: Settings;
+    private apis: StringMap<ApiConfig>;
+    private _config: GatewayConfig;
+    private _logger: Logger;
+    private _redisClient: redis.Redis;
 
-    constructor(@Inject settings: Settings) {
-        this.settings = settings;
+    constructor(app: express.Application, gatewayConfig?: GatewayConfig) {
+        this._config = defaults(gatewayConfig, {
+            rootPath : __dirname,
+            apiPath : path.join(__dirname +'/apis'),
+            middlewarePath : path.join(__dirname +'/middleware')
+        });
+        
+        this.app = app;
+        this._logger = new Logger(this.config.logger, this);
+        if (this.config.database) {
+            this._redisClient = dbConfig.initializeRedis(this.config.database);
+        }
+        this.apiProxy = new ApiProxy(this);
+        this.apiRateLimit = new ApiRateLimit(this);
+        this.apiAuth = new ApiAuth(this);
     }    
     
-    get server() : express.Application{
-        return this.settings.app;
+    get server(): express.Application {
+        return this.app;
+    }
+
+    get logger(): Logger {
+        return this._logger;
+    }
+
+    get config(): GatewayConfig {
+        return this._config;
+    }
+
+    get redisClient(): redis.Redis {
+        return this._redisClient;
+    }
+
+    get apiPath(): string {
+        return this.config.apiPath;
+    }
+
+    get middlewarePath(): string {
+        return this.config.middlewarePath;
     }
 
     initialize(ready?: () => void) {
-        this.apis = new StringMap<config.Api>();
-        let path = this.settings.apiPath;
+        this.apis = new StringMap<ApiConfig>();
+        let path = this.apiPath;
         fs.readdir(path, (err, files) => {
             if (err) {
-                this.settings.logger.error("Error reading directory: "+err);
+                this._logger.error("Error reading directory: "+err);
             }
             else {
                 path = ((StringUtils.endsWith(path, '/'))?path:path+'/');
                 const length = files.length;
                 files.forEach((fileName, index) =>{
                     if (StringUtils.endsWith(fileName, '.json')) {
-                        fs.readJson(path+fileName, (error, apiConfig: config.Api)=>{
+                        fs.readJson(path+fileName, (error, apiConfig: ApiConfig)=>{
                             if (error) {
-                                this.settings.logger.error("Error reading directory: "+error);
+                                this._logger.error("Error reading directory: "+error);
                             }
                             else {
                                 this.loadApi(apiConfig, (length -1 === index)?ready: null);
@@ -58,21 +94,29 @@ export class Gateway {
         });
     }
 
-    loadApi(api: config.Api, ready?: () => void) {
-        this.settings.logger.info("Configuring API ["+api.name+"] on path: "+api.proxy.path);
+    loadApi(api: ApiConfig, ready?: () => void) {
+        if (this._logger.isInfoEnabled()) {
+            this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
+        }
         let apiKey: string = this.getApiKey(api);
         this.apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
         
         if (api.throttling) {
-            this.settings.logger.debug("Configuring API Rate Limits");
+            if (this._logger.isDebugEnabled()) {
+                this._logger.debug("Configuring API Rate Limits");
+            }
             this.apiRateLimit.throttling(api.proxy.path, api.throttling);
         }
         if (api.authentication) {
-            this.settings.logger.debug("Configuring API Authentication");
+            if (this._logger.isDebugEnabled()) {
+                this._logger.debug("Configuring API Authentication");
+            }
             this.apiAuth.authentication(apiKey, api.proxy.path, api.authentication);
         }
-        this.settings.logger.debug("Configuring API Proxy");
+        if (this._logger.isDebugEnabled()) {
+            this._logger.debug("Configuring API Proxy");
+        }
         this.apiProxy.proxy(api);
         
         if (ready) {
@@ -80,7 +124,7 @@ export class Gateway {
         }
     }
 
-    private getApiKey(api: config.Api) {
+    private getApiKey(api: ApiConfig) {
         return api.name + (api.version? '_'+api.version: '_default');
     }
 }

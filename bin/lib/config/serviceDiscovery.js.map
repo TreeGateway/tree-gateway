@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/lib/config/serviceDiscovery.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC","file":"serviceDiscovery.js","sourcesContent":["\"use strict\";\n\nexport interface ServiceDiscoveryConfig {\n}\n"]}

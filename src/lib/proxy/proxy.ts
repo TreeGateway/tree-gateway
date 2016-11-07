@@ -2,11 +2,11 @@
 
 import * as express from "express";
 import * as StringUtils from "underscore.string";
-import * as config from "../config";
-import {AutoWired, Inject} from "typescript-ioc";
-import {Settings} from "../settings";
+import {ApiConfig} from "../config/api";
+import {Proxy} from "../config/proxy";
 import {ProxyFilter} from "./filter";
 import {ProxyInterceptor} from "./interceptor";
+import {Gateway} from "../gateway";
 
 let proxy = require("express-http-proxy");
 
@@ -14,25 +14,25 @@ let proxy = require("express-http-proxy");
  * The API Proxy system. It uses [[express-http-proxy]](https://github.com/villadora/express-http-proxy)
  * to proxy requests to a target API.
  */
-@AutoWired
 export class ApiProxy {
-    @Inject
-    private settings: Settings;
-
-    @Inject
     private filter: ProxyFilter;
-
-    @Inject
     private interceptor: ProxyInterceptor;
+    gateway: Gateway;
+
+    constructor(gateway: Gateway) {
+        this.gateway = gateway;
+        this.filter = new ProxyFilter(this);
+        this.interceptor = new ProxyInterceptor(this);
+    }
 
     /**
      * Configure a proxy for a given API
      */
-    proxy(api: config.Api, ) {
-        this.settings.app.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api.proxy)));
+    proxy(api: ApiConfig, ) {
+        this.gateway.server.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api.proxy)));
     }
     
-    private configureProxy(proxy: config.Proxy) {
+    private configureProxy(proxy: Proxy) {
         let result = {
             forwardPath: function(req: express.Request, res: express.Response) {
                 return req.url;

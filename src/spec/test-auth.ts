@@ -2,32 +2,17 @@ import * as express from "express";
 import * as request from "request";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
-import {Settings} from "../lib/settings";
-import {Container, Scope, Scoped, Provided, Provider, AutoWired, Inject} from "typescript-ioc";
-import * as Winston from "winston";
 
-const provider: Provider = { 
-  get: () => {
-      const settings: Settings = new Settings();
-      settings.app = express(); 
-	  settings.apiPath = __dirname + '/../../../apis';
-	  settings.middlewarePath = __dirname + '/../../../middleware';
-      settings.logger = new Winston.Logger({
-        level: 'info',
-        transports: [
-            new Winston.transports.Console({
-                colorize: true
-            })
-        ]          
-      });
-	  
-      return settings; 
-  }
-};
-
-Container.bind(Settings).provider(provider)
-
-const gateway: Gateway = Container.get(Gateway);
+const gateway: Gateway = new Gateway(express(), {
+	rootPath: __dirname,
+	apiPath: __dirname + '/../../../apis',
+	middlewarePath: __dirname + '/../../../middleware', 
+	logger: {
+		console: {
+			colorize: true
+		}
+	}
+});
 const app = gateway.server;
 const port = 4568;
 const gatewayAddress = "http://localhost:"+port;

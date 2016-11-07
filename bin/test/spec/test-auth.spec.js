@@ -3,28 +3,16 @@ var express = require("express");
 var request = require("request");
 require("jasmine");
 var gateway_1 = require("../lib/gateway");
-var settings_1 = require("../lib/settings");
-var typescript_ioc_1 = require("typescript-ioc");
-var Winston = require("winston");
-var provider = {
-    get: function () {
-        var settings = new settings_1.Settings();
-        settings.app = express();
-        settings.apiPath = __dirname + '/../../../apis';
-        settings.middlewarePath = __dirname + '/../../../middleware';
-        settings.logger = new Winston.Logger({
-            level: 'info',
-            transports: [
-                new Winston.transports.Console({
-                    colorize: true
-                })
-            ]
-        });
-        return settings;
+var gateway = new gateway_1.Gateway(express(), {
+    rootPath: __dirname,
+    apiPath: __dirname + '/../../../apis',
+    middlewarePath: __dirname + '/../../../middleware',
+    logger: {
+        console: {
+            colorize: true
+        }
     }
-};
-typescript_ioc_1.Container.bind(settings_1.Settings).provider(provider);
-var gateway = typescript_ioc_1.Container.get(gateway_1.Gateway);
+});
 var app = gateway.server;
 var port = 4568;
 var gatewayAddress = "http://localhost:" + port;

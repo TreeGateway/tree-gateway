@@ -1,41 +1,44 @@
 "use strict";
 
 import * as express from "express";
-import * as config from "../config";
+import {ThrottlingConfig} from "../config/throttling";
 import * as Utils from "underscore";
-import {AutoWired, Inject} from "typescript-ioc";
-import {Settings} from "../settings";
 import * as pathUtil from "path"; 
+import {Gateway} from "../gateway";
 
-@AutoWired
 export class ApiRateLimit {
-    @Inject
-    private settings: Settings;
+    private gateway: Gateway;
 
-    throttling(path: string, throttling: config.Throttling) {
+    constructor(gateway: Gateway) {
+        this.gateway = gateway;
+    }
+
+    throttling(path: string, throttling: ThrottlingConfig) {
         let RateLimit = require('express-rate-limit');
         let rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler");
 
-        if (this.settings.redisClient) {
+        if (this.gateway.redisClient) {
             let store = require('./store');
-            this.settings.logger.debug("Using Redis as throttling store.");
+            if (this.gateway.logger.isDebugEnabled()) {
+                this.gateway.logger.debug("Using Redis as throttling store.");
+            }
             rateConfig.store = new store.RedisStore({
                 expiry: (throttling.windowMs / 1000) +1,
-                client: this.settings.redisClient
+                client: this.gateway.redisClient
             });
         }
         
         let limiter = new RateLimit(rateConfig);        
 
         if (throttling.keyGenerator) {
-            let p = pathUtil.join(this.settings.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
+            let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
             rateConfig.keyGenerator = require(p);
         }
         if (throttling.handler) {
-            let p = pathUtil.join(this.settings.middlewarePath, 'throttling', 'handler' , throttling.handler);                
+            let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
             rateConfig.handler = require(p);
         }
 
-        this.settings.app.use(path, limiter);
+        this.gateway.server.use(path, limiter);
     }
 }

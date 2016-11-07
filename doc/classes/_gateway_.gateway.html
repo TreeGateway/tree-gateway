@@ -89,16 +89,23 @@
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#_logger" class="tsd-kind-icon">_logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#_redisclient" class="tsd-kind-icon">_redis<wbr>Client</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#apiauth" class="tsd-kind-icon">api<wbr>Auth</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#apiproxy" class="tsd-kind-icon">api<wbr>Proxy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#apiratelimit" class="tsd-kind-icon">api<wbr>Rate<wbr>Limit</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#apis" class="tsd-kind-icon">apis</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#settings" class="tsd-kind-icon">settings</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#app" class="tsd-kind-icon">app</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_gateway_.gateway.html#config" class="tsd-kind-icon">config</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_gateway_.gateway.html#apipath" class="tsd-kind-icon">api<wbr>Path</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_gateway_.gateway.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_gateway_.gateway.html#middlewarepath" class="tsd-kind-icon">middleware<wbr>Path</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_gateway_.gateway.html#redisclient" class="tsd-kind-icon">redis<wbr>Client</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_gateway_.gateway.html#server" class="tsd-kind-icon">server</a></li>
 							</ul>
 						</section>
@@ -119,19 +126,22 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Gateway<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><a href="_settings_.settings.html" class="tsd-signature-type">Settings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_gateway_.gateway.html" class="tsd-signature-type">Gateway</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Gateway<span class="tsd-signature-symbol">(</span>app<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Application</span>, gatewayConfig<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_config_gateway_.gatewayconfig.html" class="tsd-signature-type">GatewayConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_gateway_.gateway.html" class="tsd-signature-type">Gateway</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L25">gateway.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L27">gateway.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>settings: <a href="_settings_.settings.html" class="tsd-signature-type">Settings</a></h5>
+									<h5>app: <span class="tsd-signature-type">express.Application</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> gatewayConfig: <a href="../interfaces/_config_gateway_.gatewayconfig.html" class="tsd-signature-type">GatewayConfig</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_gateway_.gateway.html" class="tsd-signature-type">Gateway</a></h4>
@@ -142,12 +152,32 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_logger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _logger</h3>
+					<div class="tsd-signature tsd-kind-icon">_logger<span class="tsd-signature-symbol">:</span> <a href="_logger_.logger.html" class="tsd-signature-type">Logger</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L26">gateway.ts:26</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_redisclient" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _redis<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">_redis<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">redis.Redis</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L27">gateway.ts:27</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="apiauth" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> api<wbr>Auth</h3>
 					<div class="tsd-signature tsd-kind-icon">api<wbr>Auth<span class="tsd-signature-symbol">:</span> <a href="_authentication_auth_.apiauth.html" class="tsd-signature-type">ApiAuth</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L23">gateway.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L23">gateway.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -157,7 +187,7 @@
 					<div class="tsd-signature tsd-kind-icon">api<wbr>Proxy<span class="tsd-signature-symbol">:</span> <a href="_proxy_proxy_.apiproxy.html" class="tsd-signature-type">ApiProxy</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L19">gateway.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L21">gateway.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -167,33 +197,111 @@
 					<div class="tsd-signature tsd-kind-icon">api<wbr>Rate<wbr>Limit<span class="tsd-signature-symbol">:</span> <a href="_throttling_throttling_.apiratelimit.html" class="tsd-signature-type">ApiRateLimit</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L21">gateway.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L22">gateway.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="apis" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apis</h3>
-					<div class="tsd-signature tsd-kind-icon">apis<span class="tsd-signature-symbol">:</span> <a href="_es5_compat_.stringmap.html" class="tsd-signature-type">StringMap</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_config_.api.html" class="tsd-signature-type">Api</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">apis<span class="tsd-signature-symbol">:</span> <a href="_es5_compat_.stringmap.html" class="tsd-signature-type">StringMap</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_config_api_.apiconfig.html" class="tsd-signature-type">ApiConfig</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L24">gateway.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L24">gateway.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="settings" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> settings</h3>
-					<div class="tsd-signature tsd-kind-icon">settings<span class="tsd-signature-symbol">:</span> <a href="_settings_.settings.html" class="tsd-signature-type">Settings</a></div>
+					<a name="app" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> app</h3>
+					<div class="tsd-signature tsd-kind-icon">app<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">express.Application</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L25">gateway.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L20">gateway.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="config" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> config</h3>
+					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_config_gateway_.gatewayconfig.html" class="tsd-signature-type">GatewayConfig</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L25">gateway.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="apipath" class="tsd-anchor"></a>
+					<h3>api<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> apiPath<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L57">gateway.ts:57</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="logger" class="tsd-anchor"></a>
+					<h3>logger</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> logger<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_logger_.logger.html" class="tsd-signature-type">Logger</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L49">gateway.ts:49</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="_logger_.logger.html" class="tsd-signature-type">Logger</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="middlewarepath" class="tsd-anchor"></a>
+					<h3>middleware<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> middlewarePath<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L61">gateway.ts:61</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="redisclient" class="tsd-anchor"></a>
+					<h3>redis<wbr>Client</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> redisClient<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">redis.Redis</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L53">gateway.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">redis.Redis</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
 					<a name="server" class="tsd-anchor"></a>
 					<h3>server</h3>
@@ -204,7 +312,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L31">gateway.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L45">gateway.ts:45</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">express.Application</span></h4>
@@ -218,19 +326,19 @@
 					<a name="getapikey" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Api<wbr>Key</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Api<wbr>Key<span class="tsd-signature-symbol">(</span>api<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.api.html" class="tsd-signature-type">Api</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Api<wbr>Key<span class="tsd-signature-symbol">(</span>api<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_api_.apiconfig.html" class="tsd-signature-type">ApiConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L83">gateway.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L121">gateway.ts:121</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>api: <a href="../interfaces/_config_.api.html" class="tsd-signature-type">Api</a></h5>
+									<h5>api: <a href="../interfaces/_config_api_.apiconfig.html" class="tsd-signature-type">ApiConfig</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -247,7 +355,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L35">gateway.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L65">gateway.ts:65</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -276,19 +384,19 @@
 					<a name="loadapi" class="tsd-anchor"></a>
 					<h3>load<wbr>Api</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">load<wbr>Api<span class="tsd-signature-symbol">(</span>api<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_.api.html" class="tsd-signature-type">Api</a>, ready<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">load<wbr>Api<span class="tsd-signature-symbol">(</span>api<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_api_.apiconfig.html" class="tsd-signature-type">ApiConfig</a>, ready<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/063dbe0/src/lib/gateway.ts#L61">gateway.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/f42d93d/src/lib/gateway.ts#L91">gateway.ts:91</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>api: <a href="../interfaces/_config_.api.html" class="tsd-signature-type">Api</a></h5>
+									<h5>api: <a href="../interfaces/_config_api_.apiconfig.html" class="tsd-signature-type">ApiConfig</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> ready: <span class="tsd-signature-type">function</span></h5>
@@ -340,13 +448,31 @@
 						<a href="../modules/_command_line_.html">"command-<wbr>line"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="../modules/_config_.html">"config"</a>
+						<a href="../modules/_config_api_.html">"config/api"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_config_authentication_.html">"config/authentication"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_config_gateway_.html">"config/gateway"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_config_proxy_.html">"config/proxy"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_config_servicediscovery_.html">"config/service<wbr>Discovery"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_config_throttling_.html">"config/throttling"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_es5_compat_.html">"es5-<wbr>compat"</a>
 					</li>
 					<li class="current tsd-kind-external-module">
 						<a href="../modules/_gateway_.html">"gateway"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_logger_.html">"logger"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_proxy_filter_.html">"proxy/filter"</a>
@@ -361,7 +487,7 @@
 						<a href="../modules/_proxy_utils_.html">"proxy/utils"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="../modules/_settings_.html">"settings"</a>
+						<a href="../modules/_redis_.html">"redis"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_throttling_store_.html">"throttling/store"</a>
@@ -382,6 +508,12 @@
 								<a href="_gateway_.gateway.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_gateway_.gateway.html#_logger" class="tsd-kind-icon">_logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_gateway_.gateway.html#_redisclient" class="tsd-kind-icon">_redis<wbr>Client</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_gateway_.gateway.html#apiauth" class="tsd-kind-icon">api<wbr>Auth</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -394,7 +526,22 @@
 								<a href="_gateway_.gateway.html#apis" class="tsd-kind-icon">apis</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="_gateway_.gateway.html#settings" class="tsd-kind-icon">settings</a>
+								<a href="_gateway_.gateway.html#app" class="tsd-kind-icon">app</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_gateway_.gateway.html#config" class="tsd-kind-icon">config</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_gateway_.gateway.html#apipath" class="tsd-kind-icon">api<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_gateway_.gateway.html#logger" class="tsd-kind-icon">logger</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_gateway_.gateway.html#middlewarepath" class="tsd-kind-icon">middleware<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_gateway_.gateway.html#redisclient" class="tsd-kind-icon">redis<wbr>Client</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="_gateway_.gateway.html#server" class="tsd-kind-icon">server</a>
@@ -412,6 +559,9 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_gateway_.html#defaults" class="tsd-kind-icon">defaults</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

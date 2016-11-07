@@ -1,18 +1,20 @@
 "use strict";
 
 import * as StringUtils from "underscore.string";
-import * as config from "../config";
+import * as config from "../config/proxy";
 import * as Utils from "./utils";
-import {AutoWired, Inject} from "typescript-ioc";
-import {Settings} from "../settings";
 import * as path from "path"; 
+import {ApiProxy} from "./proxy";
 
 let pathToRegexp = require('path-to-regexp');
  
-@AutoWired
 export class ProxyFilter {
-    @Inject
-    private settings: Settings;
+    private proxy: ApiProxy;
+
+    constructor(proxy: ApiProxy) {
+        this.proxy = proxy;
+    }
+
     buildFilters(proxy: config.Proxy) {
         let filterChain = new Array<Function>();
         if (proxy.target.allow) {
@@ -48,7 +50,7 @@ export class ProxyFilter {
                 });
                 func.push(") ? accepted :");                
             }
-            let p = path.join(this.settings.middlewarePath, 'filter' ,filter.name);                
+            let p = path.join(this.proxy.gateway.middlewarePath, 'filter' ,filter.name);                
             func.push("require('"+p+"')(req, res)");
             func.push(")");                
         });
