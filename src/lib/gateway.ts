@@ -136,7 +136,7 @@ export class Gateway {
     }
 
     private loadApi(api: ApiConfig, ready?: (err?) => void) {
-        validateApiConfig(api, (err, value)=>{
+        validateApiConfig(api, (err, value: ApiConfig)=>{
             if (err) {
                 this._logger.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
                 if (ready) {
@@ -144,7 +144,7 @@ export class Gateway {
                 }
             }
             else {
-                this.loadValidateApi(api, ready);
+                this.loadValidateApi(value, ready);
             }
         });
     }
@@ -190,7 +190,7 @@ export class Gateway {
             }
             else {
                 this.app = express();
-                validateGatewayConfig(gatewayConfig, (err, value)=>{
+                validateGatewayConfig(gatewayConfig, (err, value: GatewayConfig)=>{
                     if (err) {
                         console.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
                         if (ready) {
@@ -198,7 +198,7 @@ export class Gateway {
                         }
                     }
                     else {
-                        this.initializeConfig(configFileName, gatewayConfig);
+                        this.initializeConfig(configFileName, value);
                         this._logger = new Logger(this.config.logger, this);
                         if (this.config.database) {
                             this._redisClient = dbConfig.initializeRedis(this.config.database);
