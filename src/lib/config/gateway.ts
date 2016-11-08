@@ -44,7 +44,7 @@ export interface GatewayConfig {
 }
 
 export interface AccessLoggerConfig {
-
+    
 }
 
 export interface RedisConfig {

@@ -4,6 +4,7 @@ import * as Winston from "winston";
 import {LoggerConfig, LogLevel} from "./config/gateway";
 import * as StringUtils from "underscore.string";
 import * as path from "path";
+import * as fs from "fs-extra";
 import {Gateway} from "./gateway";
 
 let defaults = require('defaults');
@@ -33,7 +34,8 @@ export class Logger {
                 filename: './logs/gateway.log'
             })
             if (StringUtils.startsWith(config.file.filename, '.')) {
-                config.file.filename = path.join(gateway.config.rootPath, config.file.filename);                
+                config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
+                fs.ensureDirSync(path.dirname(config.file.filename));
             }
             options.transports.push(new Winston.transports.File(config.file));
         }

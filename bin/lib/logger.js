@@ -3,6 +3,7 @@ var Winston = require("winston");
 var gateway_1 = require("./config/gateway");
 var StringUtils = require("underscore.string");
 var path = require("path");
+var fs = require("fs-extra");
 var defaults = require('defaults');
 var Logger = (function () {
     function Logger(config, gateway) {
@@ -24,6 +25,7 @@ var Logger = (function () {
             });
             if (StringUtils.startsWith(config.file.filename, '.')) {
                 config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
+                fs.ensureDirSync(path.dirname(config.file.filename));
             }
             options.transports.push(new Winston.transports.File(config.file));
         }
