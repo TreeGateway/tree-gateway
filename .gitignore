@@ -8,5 +8,5 @@ pids
 bin
 node_modules
 .npm
-docs
+doc
 /.vscode
