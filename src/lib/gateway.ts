@@ -5,7 +5,7 @@ import * as logger from "morgan";
 import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
-import {APIService} from "./admin/admin-server";
+import * as admin from "./admin/admin-server";
 import {Server} from "typescript-rest";
 import * as StringUtils from "underscore.string";
 import {ApiConfig, validateApiConfig} from "./config/api";
@@ -262,8 +262,8 @@ export class Gateway {
         this.adminApp.use(compression());
         this.adminApp.use(logger('dev'));
         
-        APIService.gateway = this;
-        Server.buildServices(this.adminApp, APIService);
+        admin.AdminServer.gateway = this;
+        Server.buildServices(this.adminApp);
     }
 
     private getApiKey(api: ApiConfig) {
