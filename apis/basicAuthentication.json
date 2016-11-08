@@ -1,5 +1,5 @@
 {
-    "name": "Test Basic Authenticated API",
+    "name": "TestBasicAuthenticatedAPI",
     "version": "1.0.0",
     "proxy": {
         "path": "secureBasic/",

@@ -1,5 +1,7 @@
 "use strict";
 
+import * as Joi from "joi";
+
 /**
  * Configuration for the API proxy engine.
  */
@@ -168,4 +170,42 @@ export interface TargetFilter {
     method: Array<string>;
 }
 
+let TargetFilterSchema = Joi.object().keys({
+    path: Joi.array().items(Joi.string().regex(/^[a-z\-\/]+$/i)).required(),
+    method: Joi.array().items(Joi.string().allow('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')).required(),
+});
 
+let TargetSchema = Joi.object().keys({
+    path: Joi.string().required(),
+    allow: TargetFilterSchema,
+    deny: TargetFilterSchema,
+});
+
+let FilterSchema = Joi.object().keys({
+    name: Joi.string().required(),
+    appliesTo: Joi.array().items(Joi.string())
+});
+
+let InterceptorSchema = Joi.object().keys({
+    name: Joi.string().required(),
+    appliesTo: Joi.array().items(Joi.string())
+});
+
+let InterceptorsSchema = Joi.object().keys({
+    request: Joi.array().items(InterceptorSchema).required(),
+    response: Joi.array().items(InterceptorSchema).required()
+});
+
+export let ProxyValidatorSchema = Joi.object().keys({
+    path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
+    target: TargetSchema.required(),
+    https: Joi.boolean(),
+    filter: Joi.array().items(FilterSchema),
+    interceptor: InterceptorsSchema,
+    preserveHostHdr: Joi.boolean(),
+    timeout: Joi.number()
+});
+
+export function validateProxyConfig(proxy: Proxy, callback: (err, value)=>void) {
+    Joi.validate(proxy, ProxyValidatorSchema, callback);
+}

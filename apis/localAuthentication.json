@@ -1,5 +1,5 @@
 {
-    "name": "Test Local Authenticated API",
+    "name": "TestLocalAuthenticatedAPI",
     "version": "1.0.0",
     "proxy": {
         "path": "secureLocal/",

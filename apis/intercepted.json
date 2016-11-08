@@ -1,5 +1,5 @@
 {
-    "name": "Test Intercepted API",
+    "name": "TestInterceptedAPI",
     "version": "1.0.0",
     "proxy": {
         "path": "/intercepted",

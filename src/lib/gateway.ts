@@ -8,8 +8,8 @@ import * as fs from "fs-extra";
 import {APIService} from "./admin/admin-server";
 import {Server} from "typescript-rest";
 import * as StringUtils from "underscore.string";
-import {ApiConfig} from "./config/api";
-import {GatewayConfig} from "./config/gateway";
+import {ApiConfig, validateApiConfig} from "./config/api";
+import {GatewayConfig, validateGatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
@@ -68,14 +68,16 @@ export class Gateway {
         return this._apis.values();
     }
 
-    start(ready?: ()=>void) {
-        this.initialize(this.configFile, ()=>{
-            this.apiServer = this.app.listen(this.config.listenPort, ()=>{
-                this.logger.info('Gateway listenning on port %d', this.config.listenPort);
-                if (ready) {
-                    ready();
-                }
-            });
+    start(ready?: (err?)=>void) {
+        this.initialize(this.configFile, (err)=>{
+            if (!err) {
+                this.apiServer = this.app.listen(this.config.listenPort, ()=>{
+                    this.logger.info('Gateway listenning on port %d', this.config.listenPort);
+                    if (ready) {
+                        ready();
+                    }
+                });
+            }
         });  
     }
 
@@ -107,7 +109,7 @@ export class Gateway {
         }
     }
 
-    private loadApis(ready?: () => void) {
+    private loadApis(ready?: (err?) => void) {
         this._apis = new StringMap<ApiConfig>();
         let path = this.apiPath;
         fs.readdir(path, (err, files) => {
@@ -133,7 +135,21 @@ export class Gateway {
         });
     }
 
-    private loadApi(api: ApiConfig, ready?: () => void) {
+    private loadApi(api: ApiConfig, ready?: (err?) => void) {
+        validateApiConfig(api, (err, value)=>{
+            if (err) {
+                this._logger.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
+                if (ready) {
+                    ready(err);
+                }
+            }
+            else {
+                this.loadValidateApi(api, ready);
+            }
+        });
+    }
+
+    private loadValidateApi(api: ApiConfig, ready?: (err?) => void) {
         if (this._logger.isInfoEnabled()) {
             this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
         }
@@ -163,7 +179,7 @@ export class Gateway {
         }
     }
 
-    private initialize(configFileName: string, ready?: ()=>void) {
+    private initialize(configFileName: string, ready?: (err?)=>void) {
         if (StringUtils.startsWith(configFileName, '.')) {
             configFileName = path.join(process.cwd(), configFileName);                
         }
@@ -174,17 +190,27 @@ export class Gateway {
             }
             else {
                 this.app = express();
-                this.initializeConfig(configFileName, gatewayConfig);
-                this._logger = new Logger(this.config.logger, this);
-                if (this.config.database) {
-                    this._redisClient = dbConfig.initializeRedis(this.config.database);
-                }
-                this.apiProxy = new ApiProxy(this);
-                this.apiRateLimit = new ApiRateLimit(this);
-                this.apiAuth = new ApiAuth(this);
+                validateGatewayConfig(gatewayConfig, (err, value)=>{
+                    if (err) {
+                        console.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
+                        if (ready) {
+                            ready(err);
+                        }
+                    }
+                    else {
+                        this.initializeConfig(configFileName, gatewayConfig);
+                        this._logger = new Logger(this.config.logger, this);
+                        if (this.config.database) {
+                            this._redisClient = dbConfig.initializeRedis(this.config.database);
+                        }
+                        this.apiProxy = new ApiProxy(this);
+                        this.apiRateLimit = new ApiRateLimit(this);
+                        this.apiAuth = new ApiAuth(this);
 
-                this.configureServer(ready);
-                this.configureAdminServer();
+                        this.configureServer(ready);
+                        this.configureAdminServer();
+                    }
+                });
             }
         });
     }
@@ -210,7 +236,7 @@ export class Gateway {
         }
     }
 
-    private configureServer(ready: ()=>void) {
+    private configureServer(ready: (err?)=>void) {
         this.app.disable('x-powered-by'); 
         this.app.use(compression());
         if (this.config.underProxy) {

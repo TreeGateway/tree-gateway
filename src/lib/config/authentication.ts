@@ -1,5 +1,7 @@
 "use strict";
 
+import * as Joi from "joi";
+
 export interface AuthenticationConfig {
     jwt?: JWTAuthentication;
     basic?: BasicAuthentication;
@@ -55,7 +57,7 @@ export interface JWTAuthentication {
     /**
      * List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
      */
-    algorithms: Array<string>;
+    algorithms?: Array<string>;
     /**
      * If true do not validate the expiration of the token.
      */
@@ -75,4 +77,42 @@ export interface JWTRequestExtractor {
     authHeader?: string;
     bodyField?: string;
     cookie?: string;
+}
+
+let JWTRequestExtractorSchema = Joi.object().keys({
+    header: Joi.string(),
+    queryParam: Joi.string(),
+    authHeader: Joi.string(),
+    bodyField: Joi.string(),
+    cookie: Joi.string()
+});
+
+let JWTAuthenticationSchema = Joi.object().keys({
+    secretOrKey: Joi.string().required(),
+    extractFrom: JWTRequestExtractorSchema,
+    issuer: Joi.string(),
+    audience: Joi.string(),
+    algorithms: Joi.array().items(Joi.string()),
+    ignoreExpiration: Joi.boolean(),
+    verify: Joi.string()
+});
+
+let BasicAuthenticationSchema = Joi.object().keys({
+    verify: Joi.string().required()
+});
+
+let LocalAuthenticationSchema = Joi.object().keys({
+    verify: Joi.string().required(),
+    usernameField: Joi.string(),
+    passwordField: Joi.string()
+});
+
+export let AuthenticationValidatorSchema = Joi.object().keys({
+    jwt: JWTAuthenticationSchema,
+    basic: BasicAuthenticationSchema,
+    local: LocalAuthenticationSchema,
+}).xor('jwt', 'basic', 'local');
+
+export function validateAuthenticationConfig(authentication: AuthenticationConfig, callback: (err, value)=>void) {
+    Joi.validate(authentication, AuthenticationValidatorSchema, callback);
 }

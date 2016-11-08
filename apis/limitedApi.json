@@ -1,5 +1,5 @@
 {
-    "name": "Test Limit API",
+    "name": "TestLimitAPI",
     "version": "1.0.0",
     "proxy": {
         "path": "limited",

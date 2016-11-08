@@ -86,7 +86,137 @@
 								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_config_gateway_.redisconfig.html" class="tsd-kind-icon">Redis<wbr>Config</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_gateway_.html#accessloggerconfigschema" class="tsd-kind-icon">Access<wbr>Logger<wbr>Config<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_config_gateway_.html#gatewayconfigvalidatorschema" class="tsd-kind-icon">Gateway<wbr>Config<wbr>Validator<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_gateway_.html#logconsoleconfigschema" class="tsd-kind-icon">Log<wbr>Console<wbr>Config<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_gateway_.html#logfileconfigschema" class="tsd-kind-icon">Log<wbr>File<wbr>Config<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_gateway_.html#loggerconfigschema" class="tsd-kind-icon">Logger<wbr>Config<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_gateway_.html#redisconfigschema" class="tsd-kind-icon">Redis<wbr>Config<wbr>Schema</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_config_gateway_.html#validategatewayconfig" class="tsd-kind-icon">validate<wbr>Gateway<wbr>Config</a></li>
+							</ul>
+						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="accessloggerconfigschema" class="tsd-anchor"></a>
+					<h3>Access<wbr>Logger<wbr>Config<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Access<wbr>Logger<wbr>Config<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L232">config/gateway.ts:232</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="gatewayconfigvalidatorschema" class="tsd-anchor"></a>
+					<h3>Gateway<wbr>Config<wbr>Validator<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Gateway<wbr>Config<wbr>Validator<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({listenPort: Joi.number().positive().required(),adminPort: Joi.number().positive().required(),rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),apiPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),underProxy: Joi.boolean(),logger: LoggerConfigSchema,database: RedisConfigSchema,accessLogger: AccessLoggerConfigSchema})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L235">config/gateway.ts:235</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="logconsoleconfigschema" class="tsd-anchor"></a>
+					<h3>Log<wbr>Console<wbr>Config<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Log<wbr>Console<wbr>Config<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({timestamp: Joi.boolean(),silent: Joi.boolean(),colorize: Joi.boolean(),json: Joi.boolean(),stringify: Joi.boolean(),prettyPrint: Joi.boolean(),depth: Joi.number().positive(),humanReadableUnhandledException: Joi.boolean(),showLevel: Joi.boolean(),stderrLevels: Joi.array().items(Joi.string().allow(&#x27;error&#x27;, &#x27;info&#x27;, &#x27;debug&#x27;))})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L190">config/gateway.ts:190</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="logfileconfigschema" class="tsd-anchor"></a>
+					<h3>Log<wbr>File<wbr>Config<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Log<wbr>File<wbr>Config<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({filename: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),timestamp: Joi.boolean(),silent: Joi.boolean(),colorize: Joi.boolean(),maxsize: Joi.number().positive(),maxFiles: Joi.number().positive(),json: Joi.boolean(),eol: Joi.string(),prettyPrint: Joi.boolean(),depth: Joi.number().positive(),logstash: Joi.boolean(),showLevel: Joi.boolean(),tailable: Joi.boolean(),maxRetries: Joi.number().positive(),zippedArchive: Joi.boolean()}).with(&#x27;depth&#x27;,&#x27;prettyPrint&#x27;).with(&#x27;tailable&#x27;, &#x27;maxFiles&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L203">config/gateway.ts:203</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="loggerconfigschema" class="tsd-anchor"></a>
+					<h3>Logger<wbr>Config<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Logger<wbr>Config<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({level: Joi.string().allow(&#x27;error&#x27;, &#x27;info&#x27;, &#x27;debug&#x27;),console: LogConsoleConfigSchema,file: LogFileConfigSchema})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L221">config/gateway.ts:221</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="redisconfigschema" class="tsd-anchor"></a>
+					<h3>Redis<wbr>Config<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Redis<wbr>Config<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({host: Joi.string().hostname().required(),port: Joi.number().positive().required()})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L227">config/gateway.ts:227</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="validategatewayconfig" class="tsd-anchor"></a>
+					<h3>validate<wbr>Gateway<wbr>Config</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Gateway<wbr>Config<span class="tsd-signature-symbol">(</span>gatewayConfig<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_gateway_.gatewayconfig.html" class="tsd-signature-type">GatewayConfig</a>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/gateway.ts#L247">config/gateway.ts:247</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>gatewayConfig: <a href="../interfaces/_config_gateway_.gatewayconfig.html" class="tsd-signature-type">GatewayConfig</a></h5>
+								</li>
+								<li>
+									<h5>callback: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>err: <span class="tsd-signature-type">any</span></h5>
+														</li>
+														<li>
+															<h5>value: <span class="tsd-signature-type">any</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -189,6 +319,27 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="../interfaces/_config_gateway_.redisconfig.html" class="tsd-kind-icon">Redis<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_gateway_.html#accessloggerconfigschema" class="tsd-kind-icon">Access<wbr>Logger<wbr>Config<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_config_gateway_.html#gatewayconfigvalidatorschema" class="tsd-kind-icon">Gateway<wbr>Config<wbr>Validator<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_gateway_.html#logconsoleconfigschema" class="tsd-kind-icon">Log<wbr>Console<wbr>Config<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_gateway_.html#logfileconfigschema" class="tsd-kind-icon">Log<wbr>File<wbr>Config<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_gateway_.html#loggerconfigschema" class="tsd-kind-icon">Logger<wbr>Config<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_gateway_.html#redisconfigschema" class="tsd-kind-icon">Redis<wbr>Config<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_config_gateway_.html#validategatewayconfig" class="tsd-kind-icon">validate<wbr>Gateway<wbr>Config</a>
 					</li>
 				</ul>
 			</nav>

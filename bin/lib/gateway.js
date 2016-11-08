@@ -6,6 +6,8 @@ var fs = require("fs-extra");
 var admin_server_1 = require("./admin/admin-server");
 var typescript_rest_1 = require("typescript-rest");
 var StringUtils = require("underscore.string");
+var api_1 = require("./config/api");
+var gateway_1 = require("./config/gateway");
 var proxy_1 = require("./proxy/proxy");
 var Utils = require("./proxy/utils");
 var throttling_1 = require("./throttling/throttling");
@@ -70,13 +72,15 @@ var Gateway = (function () {
     });
     Gateway.prototype.start = function (ready) {
         var _this = this;
-        this.initialize(this.configFile, function () {
-            _this.apiServer = _this.app.listen(_this.config.listenPort, function () {
-                _this.logger.info('Gateway listenning on port %d', _this.config.listenPort);
-                if (ready) {
-                    ready();
-                }
-            });
+        this.initialize(this.configFile, function (err) {
+            if (!err) {
+                _this.apiServer = _this.app.listen(_this.config.listenPort, function () {
+                    _this.logger.info('Gateway listenning on port %d', _this.config.listenPort);
+                    if (ready) {
+                        ready();
+                    }
+                });
+            }
         });
     };
     Gateway.prototype.startAdmin = function (ready) {
@@ -132,6 +136,20 @@ var Gateway = (function () {
         });
     };
     Gateway.prototype.loadApi = function (api, ready) {
+        var _this = this;
+        api_1.validateApiConfig(api, function (err, value) {
+            if (err) {
+                _this._logger.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
+                if (ready) {
+                    ready(err);
+                }
+            }
+            else {
+                _this.loadValidateApi(api, ready);
+            }
+        });
+    };
+    Gateway.prototype.loadValidateApi = function (api, ready) {
         if (this._logger.isInfoEnabled()) {
             this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
         }
@@ -169,16 +187,26 @@ var Gateway = (function () {
             }
             else {
                 _this.app = express();
-                _this.initializeConfig(configFileName, gatewayConfig);
-                _this._logger = new logger_1.Logger(_this.config.logger, _this);
-                if (_this.config.database) {
-                    _this._redisClient = dbConfig.initializeRedis(_this.config.database);
-                }
-                _this.apiProxy = new proxy_1.ApiProxy(_this);
-                _this.apiRateLimit = new throttling_1.ApiRateLimit(_this);
-                _this.apiAuth = new auth_1.ApiAuth(_this);
-                _this.configureServer(ready);
-                _this.configureAdminServer();
+                gateway_1.validateGatewayConfig(gatewayConfig, function (err, value) {
+                    if (err) {
+                        console.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
+                        if (ready) {
+                            ready(err);
+                        }
+                    }
+                    else {
+                        _this.initializeConfig(configFileName, gatewayConfig);
+                        _this._logger = new logger_1.Logger(_this.config.logger, _this);
+                        if (_this.config.database) {
+                            _this._redisClient = dbConfig.initializeRedis(_this.config.database);
+                        }
+                        _this.apiProxy = new proxy_1.ApiProxy(_this);
+                        _this.apiRateLimit = new throttling_1.ApiRateLimit(_this);
+                        _this.apiAuth = new auth_1.ApiAuth(_this);
+                        _this.configureServer(ready);
+                        _this.configureAdminServer();
+                    }
+                });
             }
         });
     };

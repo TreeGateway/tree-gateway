@@ -1,5 +1,7 @@
 "use strict";
 
+import * as Joi from "joi";
+
 /**
  * The API config descriptor.
  */
@@ -7,23 +9,23 @@ export interface GatewayConfig {
     /**
      * The gateway port
      */
-    listenPort: string;
+    listenPort: number;
     /**
      * The gateway admin server port
      */
-    adminPort: string;
+    adminPort: number;
     /**
      * The root folder where the gateway will work.
      */
-    rootPath: string;
+    rootPath?: string;
     /**
      * Folder where the gateway will search for installed APIs.
      */
-    apiPath: string;
+    apiPath?: string;
     /**
      * Folder where the gateway will search for its middleware functions.
      */
-    middlewarePath: string;
+    middlewarePath?: string;
     /**
      * If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
      */
@@ -40,7 +42,6 @@ export interface GatewayConfig {
      * Configurations for gateway logger.
      */
     accessLogger?: AccessLoggerConfig;
-
 }
 
 export interface AccessLoggerConfig {
@@ -184,4 +185,65 @@ export interface LogFileConfig {
 
 export enum LogLevel {
     error, info, debug
+}
+
+let LogConsoleConfigSchema = Joi.object().keys({
+    timestamp: Joi.boolean(),
+    silent: Joi.boolean(), 
+    colorize: Joi.boolean(), 
+    json: Joi.boolean(),
+    stringify: Joi.boolean(), 
+    prettyPrint: Joi.boolean(),
+    depth: Joi.number().positive(), 
+    humanReadableUnhandledException: Joi.boolean(), 
+    showLevel: Joi.boolean(),
+    stderrLevels: Joi.array().items(Joi.string().allow('error', 'info', 'debug')) 
+});
+
+let LogFileConfigSchema = Joi.object().keys({
+    filename: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
+    timestamp: Joi.boolean(),
+    silent: Joi.boolean(), 
+    colorize: Joi.boolean(), 
+    maxsize: Joi.number().positive(), 
+    maxFiles: Joi.number().positive(),
+    json: Joi.boolean(),
+    eol: Joi.string(),
+    prettyPrint: Joi.boolean(),
+    depth: Joi.number().positive(), 
+    logstash: Joi.boolean(),
+    showLevel: Joi.boolean(),
+    tailable: Joi.boolean(),
+    maxRetries: Joi.number().positive(),
+    zippedArchive: Joi.boolean()    
+}).with('depth','prettyPrint').with('tailable', 'maxFiles');
+
+let LoggerConfigSchema = Joi.object().keys({
+    level: Joi.string().allow('error', 'info', 'debug'),
+    console: LogConsoleConfigSchema,
+    file: LogFileConfigSchema
+});
+
+let RedisConfigSchema = Joi.object().keys({
+    host: Joi.string().hostname().required(),
+    port: Joi.number().positive().required()
+});
+
+let AccessLoggerConfigSchema = Joi.object().keys({
+});
+
+export let GatewayConfigValidatorSchema = Joi.object().keys({
+    listenPort: Joi.number().positive().required(),
+    adminPort: Joi.number().positive().required(),
+    rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
+    apiPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
+    middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
+    underProxy: Joi.boolean(),
+    logger: LoggerConfigSchema,
+    database: RedisConfigSchema,
+    accessLogger: AccessLoggerConfigSchema
+});
+
+export function validateGatewayConfig(gatewayConfig: GatewayConfig, callback: (err, value)=>void) {
+    Joi.validate(gatewayConfig, GatewayConfigValidatorSchema, callback);
 }

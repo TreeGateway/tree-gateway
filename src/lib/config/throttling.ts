@@ -1,5 +1,7 @@
 "use strict";
 
+import * as Joi from "joi";
+
 export interface ThrottlingConfig {
     /**
      * milliseconds - how long to keep records of requests in memory. 
@@ -73,4 +75,20 @@ export interface ThrottlingConfig {
      * ```
      */
     handler?: string;
+}
+
+export let ThrottlingConfigValidatorSchema = Joi.object().keys({
+    windowMs: Joi.number(),
+    delayAfter: Joi.number(),
+    delayMs: Joi.number(),
+    max: Joi.number(),
+    message: Joi.string(),
+    statusCode: Joi.number(),
+    headers: Joi.boolean(), 
+    keyGenerator: Joi.string().alphanum(),
+    handler: Joi.string().alphanum()
+});
+
+export function validateThrottlingConfig(throttling: ThrottlingConfig, callback: (err, value)=>void) {
+    Joi.validate(throttling, ThrottlingConfigValidatorSchema, callback);
 }

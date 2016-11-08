@@ -1,5 +1,5 @@
 {
-    "name": "Test Filtered API",
+    "name": "TestFilteredAPI",
     "version": "1.0.0",
     "proxy": {
         "path": "filtered/",

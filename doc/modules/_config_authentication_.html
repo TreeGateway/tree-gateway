@@ -79,7 +79,126 @@
 								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_config_authentication_.localauthentication.html" class="tsd-kind-icon">Local<wbr>Authentication</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_config_authentication_.html#authenticationvalidatorschema" class="tsd-kind-icon">Authentication<wbr>Validator<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_authentication_.html#basicauthenticationschema" class="tsd-kind-icon">Basic<wbr>Authentication<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_authentication_.html#jwtauthenticationschema" class="tsd-kind-icon">JWTAuthentication<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_authentication_.html#jwtrequestextractorschema" class="tsd-kind-icon">JWTRequest<wbr>Extractor<wbr>Schema</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_config_authentication_.html#localauthenticationschema" class="tsd-kind-icon">Local<wbr>Authentication<wbr>Schema</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_config_authentication_.html#validateauthenticationconfig" class="tsd-kind-icon">validate<wbr>Authentication<wbr>Config</a></li>
+							</ul>
+						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="authenticationvalidatorschema" class="tsd-anchor"></a>
+					<h3>Authentication<wbr>Validator<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Authentication<wbr>Validator<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({jwt: JWTAuthenticationSchema,basic: BasicAuthenticationSchema,local: LocalAuthenticationSchema,}).xor(&#x27;jwt&#x27;, &#x27;basic&#x27;, &#x27;local&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/authentication.ts#L110">config/authentication.ts:110</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="basicauthenticationschema" class="tsd-anchor"></a>
+					<h3>Basic<wbr>Authentication<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Basic<wbr>Authentication<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({verify: Joi.string().required()})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/authentication.ts#L100">config/authentication.ts:100</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="jwtauthenticationschema" class="tsd-anchor"></a>
+					<h3>JWTAuthentication<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">JWTAuthentication<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({secretOrKey: Joi.string().required(),extractFrom: JWTRequestExtractorSchema,issuer: Joi.string(),audience: Joi.string(),algorithms: Joi.array().items(Joi.string()),ignoreExpiration: Joi.boolean(),verify: Joi.string()})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/authentication.ts#L90">config/authentication.ts:90</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="jwtrequestextractorschema" class="tsd-anchor"></a>
+					<h3>JWTRequest<wbr>Extractor<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">JWTRequest<wbr>Extractor<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({header: Joi.string(),queryParam: Joi.string(),authHeader: Joi.string(),bodyField: Joi.string(),cookie: Joi.string()})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/authentication.ts#L82">config/authentication.ts:82</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="localauthenticationschema" class="tsd-anchor"></a>
+					<h3>Local<wbr>Authentication<wbr>Schema</h3>
+					<div class="tsd-signature tsd-kind-icon">Local<wbr>Authentication<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectSchema</span><span class="tsd-signature-symbol"> =&nbsp;Joi.object().keys({verify: Joi.string().required(),usernameField: Joi.string(),passwordField: Joi.string()})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/authentication.ts#L104">config/authentication.ts:104</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="validateauthenticationconfig" class="tsd-anchor"></a>
+					<h3>validate<wbr>Authentication<wbr>Config</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Authentication<wbr>Config<span class="tsd-signature-symbol">(</span>authentication<span class="tsd-signature-symbol">: </span><a href="../interfaces/_config_authentication_.authenticationconfig.html" class="tsd-signature-type">AuthenticationConfig</a>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/thiagobustamante/tree-gateway/blob/4a373e2/src/lib/config/authentication.ts#L116">config/authentication.ts:116</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>authentication: <a href="../interfaces/_config_authentication_.authenticationconfig.html" class="tsd-signature-type">AuthenticationConfig</a></h5>
+								</li>
+								<li>
+									<h5>callback: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>err: <span class="tsd-signature-type">any</span></h5>
+														</li>
+														<li>
+															<h5>value: <span class="tsd-signature-type">any</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -176,6 +295,24 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="../interfaces/_config_authentication_.localauthentication.html" class="tsd-kind-icon">Local<wbr>Authentication</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_config_authentication_.html#authenticationvalidatorschema" class="tsd-kind-icon">Authentication<wbr>Validator<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_authentication_.html#basicauthenticationschema" class="tsd-kind-icon">Basic<wbr>Authentication<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_authentication_.html#jwtauthenticationschema" class="tsd-kind-icon">JWTAuthentication<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_authentication_.html#jwtrequestextractorschema" class="tsd-kind-icon">JWTRequest<wbr>Extractor<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_config_authentication_.html#localauthenticationschema" class="tsd-kind-icon">Local<wbr>Authentication<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_config_authentication_.html#validateauthenticationconfig" class="tsd-kind-icon">validate<wbr>Authentication<wbr>Config</a>
 					</li>
 				</ul>
 			</nav>
