@@ -1,7 +1,6 @@
 "use strict";
 
 import * as http from "http";
-import * as logger from "morgan";
 import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
@@ -16,6 +15,7 @@ import {ApiRateLimit} from "./throttling/throttling";
 import {ApiAuth} from "./authentication/auth";
 import {Set, StringMap} from "./es5-compat";
 import {Logger} from "./logger";
+import {AccessLogger} from "./express-logger";
 import * as redis from "ioredis";
 import * as dbConfig from "./redis";
 import * as path from "path";
@@ -242,16 +242,9 @@ export class Gateway {
         if (this.config.underProxy) {
             this.app.enable('trust proxy'); 
         }
-        if (this.app.get('env') == 'production') {
-            // const accessLogStream = fs.createWriteStream(path.join(Parameters.rootDir, 'logs/access_errors.log'),{flags: 'a'});
-            // gateway.server.use(logger('common', {
-            //   skip: function(req: express.Request, res: express.Response) { 
-            //       return res.statusCode < 400 
-            //   }, 
-            //   stream: accessLogStream }));
-        } 
-        else {
-            this.app.use(logger('dev'));
+        if (this.config.accessLogger) {
+            AccessLogger.configureAccessLoger(this.config.accessLogger, 
+                        this, this.app, './logs/accessLog.log');
         }
         this.loadApis(ready);
     }
@@ -260,7 +253,10 @@ export class Gateway {
         this.adminApp = express();
         this.adminApp.disable('x-powered-by'); 
         this.adminApp.use(compression());
-        this.adminApp.use(logger('dev'));
+        if (this.config.adminLogger) {
+            AccessLogger.configureAccessLoger(this.config.adminLogger, 
+                        this, this.adminApp, './logs/adminAccessLog.log');
+        }
         
         admin.AdminServer.gateway = this;
         Server.buildServices(this.adminApp);

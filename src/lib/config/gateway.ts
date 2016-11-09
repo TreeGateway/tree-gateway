@@ -39,13 +39,33 @@ export interface GatewayConfig {
      */
     database?: RedisConfig;
     /**
-     * Configurations for gateway logger.
+     * Configurations for gateway access logger.
      */
     accessLogger?: AccessLoggerConfig;
+    /**
+     * Configurations for gateway access logger.
+     */
+    adminLogger?: AccessLoggerConfig;
 }
 
 export interface AccessLoggerConfig {
-    
+    /**
+     * customize the default logging message. 
+     * E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}", "HTTP {{req.method}} {{req.url}}".
+     */
+    msg?: string;  
+    /**
+     * Use the default Express/morgan request formatting. 
+     * Enabling this will override any msg if true. Will only output colors when colorize set to true
+     */
+    expressFormat?: boolean; 
+    /**
+     * Color the text and status code, using the Express/morgan color palette 
+     * (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+     */
+    colorize?: boolean;     
+    console?: LogConsoleConfig;
+    file?: LogFileConfig;
 }
 
 export interface RedisConfig {
@@ -230,6 +250,11 @@ let RedisConfigSchema = Joi.object().keys({
 });
 
 let AccessLoggerConfigSchema = Joi.object().keys({
+    msg: Joi.string(),
+    expressFormat: Joi.boolean(), 
+    colorize: Joi.boolean(),     
+    console: LogConsoleConfigSchema,
+    file: LogFileConfigSchema
 });
 
 export let GatewayConfigValidatorSchema = Joi.object().keys({
@@ -241,7 +266,8 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     underProxy: Joi.boolean(),
     logger: LoggerConfigSchema,
     database: RedisConfigSchema,
-    accessLogger: AccessLoggerConfigSchema
+    accessLogger: AccessLoggerConfigSchema,
+    adminLogger: AccessLoggerConfigSchema
 });
 
 export function validateGatewayConfig(gatewayConfig: GatewayConfig, callback: (err, value)=>void) {

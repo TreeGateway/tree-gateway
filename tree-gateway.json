@@ -16,6 +16,29 @@
         }
     },
     "accessLogger": {
-        
+        "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+        "console": {
+            "timestamp": true,
+            "colorize": true
+        },
+        "file": {
+            "timestamp": true,
+            "json": false,
+            "prettyPrint": true,
+            "filename": "./logs/accessLog.log"
+        }
+    },
+    "adminLogger": {
+        "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+        "console": {
+            "timestamp": true,
+            "colorize": true
+        },
+        "file": {
+            "timestamp": true,
+            "json": false,
+            "prettyPrint": true,
+            "filename": "./logs/adminAccessLog.log"
+        }
     }
 }
