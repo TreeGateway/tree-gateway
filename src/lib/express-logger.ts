@@ -16,7 +16,8 @@ export class AccessLogger {
     static configureAccessLoger(config: AccessLoggerConfig, gateway: Gateway, 
                                 server: express.Application, defaultFileName: string) {
         config = defaults(config, {
-            meta: false
+            meta: false, 
+            statusLevels: true
         })
         const options = Utils.omit(config, "console", "file");
         options.transports = [];
