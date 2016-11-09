@@ -1,10 +1,10 @@
 "use strict";
 
-import {Path, GET, PathParam, Errors} from "typescript-rest";
+import {Path, GET, POST, PathParam, Errors} from "typescript-rest";
 import "es6-promise";
 import * as fs from "fs-extra";
 import {Gateway} from "../gateway";
-import {ApiConfig} from "../config/api";
+import {ApiConfig, validateApiConfig} from "../config/api";
 import * as Utils from "underscore";
 import * as path from "path";
 
@@ -12,7 +12,7 @@ export class AdminServer {
     static gateway: Gateway;
 }
 
-@Path('middlewareaa')
+@Path('middleware')
 export class MiddlewareService {
 
     @GET
@@ -36,6 +36,13 @@ export class APIService {
         return new Promise<Array<ApiConfig>>((resolve, reject) =>{
             resolve(AdminServer.gateway.apis);
         });
+    }
+
+    @POST
+    addApi(api: ApiConfig) {
+        validateApiConfig(api, (error, value:ApiConfig)=>{
+//            AdminServer.gateway.addApi(value);
+        })
     }
 
     @GET

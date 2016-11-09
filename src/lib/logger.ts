@@ -35,8 +35,8 @@ export class Logger {
             })
             if (StringUtils.startsWith(config.file.filename, '.')) {
                 config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
-                fs.ensureDirSync(path.dirname(config.file.filename));
             }
+            fs.ensureDirSync(path.dirname(config.file.filename));
             options.transports.push(new Winston.transports.File(config.file));
         }
         
