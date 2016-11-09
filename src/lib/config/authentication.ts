@@ -111,7 +111,7 @@ export let AuthenticationValidatorSchema = Joi.object().keys({
     jwt: JWTAuthenticationSchema,
     basic: BasicAuthenticationSchema,
     local: LocalAuthenticationSchema,
-}).xor('jwt', 'basic', 'local');
+}).unknown(true).length(1);
 
 export function validateAuthenticationConfig(authentication: AuthenticationConfig, callback: (err, value)=>void) {
     Joi.validate(authentication, AuthenticationValidatorSchema, callback);

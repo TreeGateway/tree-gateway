@@ -7,11 +7,11 @@
             "path": "http://httpbin.org",
             "allow": {
                 "path": ["get/", "post/"],
-                "method": ["get"]
+                "method": ["GET"]
             },
             "deny": {
                 "path": ["user-agent"],
-                "method": ["post"]
+                "method": ["POST"]
             }
         },
         "filter": [

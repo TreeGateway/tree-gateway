@@ -197,7 +197,7 @@ let LogConsoleConfigSchema = Joi.object().keys({
     depth: Joi.number().positive(), 
     humanReadableUnhandledException: Joi.boolean(), 
     showLevel: Joi.boolean(),
-    stderrLevels: Joi.array().items(Joi.string().allow('error', 'info', 'debug')) 
+    stderrLevels: Joi.array().items(Joi.string().valid('error', 'info', 'debug')) 
 });
 
 let LogFileConfigSchema = Joi.object().keys({
@@ -219,7 +219,7 @@ let LogFileConfigSchema = Joi.object().keys({
 }).with('depth','prettyPrint').with('tailable', 'maxFiles');
 
 let LoggerConfigSchema = Joi.object().keys({
-    level: Joi.string().allow('error', 'info', 'debug'),
+    level: Joi.string().valid('error', 'info', 'debug'),
     console: LogConsoleConfigSchema,
     file: LogFileConfigSchema
 });

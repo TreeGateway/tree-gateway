@@ -154,6 +154,17 @@ describe("Gateway Tests", () => {
 				done();				
 			});
 		});
+
+		it("should be able to verify a custom authentication on requests to API", (done) => {
+			request.get({
+				url:gatewayAddress+"/secureCustom/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
+			}, (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				let result = JSON.parse(body);
+				expect(result.args.jwt).toBeDefined();
+				done();				
+			});
+		});
 	});
 	
 });

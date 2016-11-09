@@ -172,7 +172,7 @@ export interface TargetFilter {
 
 let TargetFilterSchema = Joi.object().keys({
     path: Joi.array().items(Joi.string().regex(/^[a-z\-\/]+$/i)).required(),
-    method: Joi.array().items(Joi.string().allow('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')).required(),
+    method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')).required(),
 });
 
 let TargetSchema = Joi.object().keys({
