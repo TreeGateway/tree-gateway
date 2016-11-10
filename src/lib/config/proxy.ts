@@ -105,7 +105,14 @@ export interface Proxy {
      * If more than one request or response interceptor are defined, they are executed in declaration order. 
      */
     interceptor?: Interceptors,
+    /**
+     * If true, the gateway will copy the host HTTP header to the proxied express server.
+     */
     preserveHostHdr?: boolean;
+    /**
+     * Configure a specific timeout for requests. Timed-out requests will respond with 504 
+     * status code and a X-Timeout-Reason header.
+     */
     timeout?: number;
 }
 
@@ -124,7 +131,7 @@ export interface Filter {
      * will be filtered.
      * Defaults to *.
      */
-    appliesTo?: Array<string>;
+    group?: Array<string>;
 }
 
 /**
@@ -161,29 +168,25 @@ export interface Interceptor {
 
 export interface Target {
     path: string;
-    allow?: TargetFilter;
-    deny?: TargetFilter;
+    /**
+     * A list of allowed groups
+     */
+    allow?: Array<string>;
+    /**
+     * A list of denied groups
+     */
+    deny?: Array<string>;
 }
-
-export interface TargetFilter {
-    path: Array<string>;
-    method: Array<string>;
-}
-
-let TargetFilterSchema = Joi.object().keys({
-    path: Joi.array().items(Joi.string().regex(/^[a-z\-\/]+$/i)).required(),
-    method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')).required(),
-});
 
 let TargetSchema = Joi.object().keys({
     path: Joi.string().required(),
-    allow: TargetFilterSchema,
-    deny: TargetFilterSchema,
+    allow: Joi.array().items(Joi.string()),
+    deny: Joi.array().items(Joi.string()),
 });
 
 let FilterSchema = Joi.object().keys({
     name: Joi.string().required(),
-    appliesTo: Joi.array().items(Joi.string())
+    group: Joi.array().items(Joi.string())
 });
 
 let InterceptorSchema = Joi.object().keys({

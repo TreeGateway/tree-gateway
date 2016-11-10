@@ -1,6 +1,21 @@
 {
     "name": "TestFilteredAPI",
     "version": "1.0.0",
+    "group": [
+        {
+            "name": "Group1",
+            "description": "Endpoints Group One",
+            "member": [
+                {
+                    "path": ["get/", "/user-agent"],
+                    "method": ["GET"]
+                },
+                {
+                    "path": ["headers/"] 
+                }
+            ] 
+        }
+    ],
     "proxy": {
         "path": "filtered/",
         "target": {
@@ -8,11 +23,12 @@
         },
         "filter": [
             {
-                "name": "myCustomFilter"
+                "name": "myCustomFilter",
+                "group": ["Group1"]
             },
             {
                 "name": "mySecondFilter", 
-                "appliesTo": ["get/"]
+                "group": ["Group1"]
             }
         ],
         "preserveHostHdr": true,

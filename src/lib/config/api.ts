@@ -3,6 +3,7 @@
 import {AuthenticationConfig, AuthenticationValidatorSchema} from "./authentication";
 import {ThrottlingConfig, ThrottlingConfigValidatorSchema} from "./throttling";
 import {Proxy, ProxyValidatorSchema} from "./proxy";
+import {Group, GroupValidatorSchema} from "./group";
 import {ServiceDiscoveryConfig, ServiceDiscoveryConfigValidatorSchema} from "./serviceDiscovery";
 import * as Joi from "joi";
 
@@ -23,6 +24,10 @@ export interface ApiConfig {
      */
     proxy: Proxy;
     /**
+     * Configure groups of endpoints
+     */
+    group?: Array<Group>;
+    /**
      * An optional description for API. 
      */
     description?: string;
@@ -36,14 +41,18 @@ export interface ApiConfig {
      */
     authentication?: AuthenticationConfig;
 
+    /**
+     * Configuration for service discovery.
+     */
     serviceDiscovery?: ServiceDiscoveryConfig;
 }
 
 export let ApiConfigValidatorSchema = Joi.object().keys({
     name: Joi.string().alphanum().min(3).max(30).required(),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required(),
-    proxy: ProxyValidatorSchema.required(),
     description: Joi.string(),
+    proxy: ProxyValidatorSchema.required(),
+    group: Joi.array().items(GroupValidatorSchema),
     throttling: ThrottlingConfigValidatorSchema,
     authentication: AuthenticationValidatorSchema, 
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema

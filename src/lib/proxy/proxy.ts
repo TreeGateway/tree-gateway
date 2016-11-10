@@ -28,11 +28,12 @@ export class ApiProxy {
     /**
      * Configure a proxy for a given API
      */
-    proxy(api: ApiConfig, ) {
-        this.gateway.server.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api.proxy)));
+    proxy(api: ApiConfig) {
+        this.gateway.server.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api)));
     }
     
-    private configureProxy(proxy: Proxy) {
+    private configureProxy(api: ApiConfig) {
+        const proxy: Proxy = api.proxy;
         let result = {
             forwardPath: function(req: express.Request, res: express.Response) {
                 return req.url;
@@ -47,11 +48,16 @@ export class ApiProxy {
         if (proxy.https) {
             result['https']  = proxy.https; 
         }
-        let filterChain: Array<Function> = this.filter.buildFilters(proxy);
+        let filterChain: Array<Function> = this.filter.buildFilters(api);
+        let debug = this.gateway.logger.isDebugEnabled();
+        let self = this;
         if (filterChain && filterChain.length > 0) {            
             result['filter'] = function(req, res) {
                 let result = true;
                 filterChain.forEach(f=>{
+                    if (debug) {
+                        self.gateway.logger.debug('Filter %s the path %s',(result?'accepted': 'rejected'),req.path);
+                    }
                     if (result) {
                         result = f(req, res);
                     } 

@@ -1,18 +1,40 @@
 {
     "name": "TestAPI",
     "version": "1.0.0",
+    "group": [
+        {
+            "name": "Group1",
+            "description": "Endpoints Group One",
+            "member": [
+                {
+                    "path": ["get/"], 
+                    "method": ["GET"]
+                }, 
+                {
+                    "path": ["post/"], 
+                    "method": ["GET"]
+                }
+            ] 
+        },
+        {
+            "name": "Group2",
+            "description": "Endpoints Group Two",
+            "member": [
+                {
+                    "path": ["user-agent"] 
+                }, 
+                {
+                    "method": ["POST"]
+                }
+            ] 
+        }
+    ],
     "proxy": {
         "path": "test/",
         "target": {
             "path": "http://httpbin.org",
-            "allow": {
-                "path": ["get/", "post/"],
-                "method": ["GET"]
-            },
-            "deny": {
-                "path": ["user-agent"],
-                "method": ["POST"]
-            }
+            "allow": ["Group1"],
+            "deny": ["Group2"]
         },
         "filter": [
         ],
