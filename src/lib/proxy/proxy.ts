@@ -65,11 +65,11 @@ export class ApiProxy {
                 return result;
             }; 
         }
-        let requestInterceptor: Function = this.interceptor.requestInterceptor(proxy);
+        let requestInterceptor: Function = this.interceptor.requestInterceptor(api);
         if (requestInterceptor) {            
             result['decorateRequest'] = requestInterceptor; 
         }
-        let responseInterceptor: Function = this.interceptor.responseInterceptor(proxy);
+        let responseInterceptor: Function = this.interceptor.responseInterceptor(api);
         if (responseInterceptor) {            
             result['intercept'] = responseInterceptor; 
         }

@@ -127,7 +127,7 @@ export interface Filter {
      */
     name: string,
     /**
-     * A list of paths that should be filtered by this filter. If not provided, all paths
+     * A list of groups that should be filtered by this filter. If not provided, everything
      * will be filtered.
      * Defaults to *.
      */
@@ -159,11 +159,11 @@ export interface Interceptor {
      */
     name: string,
     /**
-     * A list of paths that should be intercepted by this interceptor. If not provided, all paths
-     * will be intercepted.
+     * A list of groups that should be filtered by this filter. If not provided, everything
+     * will be filtered.
      * Defaults to *.
      */
-    appliesTo?: Array<string>;
+    group?: Array<string>;
 }
 
 export interface Target {
@@ -191,7 +191,7 @@ let FilterSchema = Joi.object().keys({
 
 let InterceptorSchema = Joi.object().keys({
     name: Joi.string().required(),
-    appliesTo: Joi.array().items(Joi.string())
+    group: Joi.array().items(Joi.string())
 });
 
 let InterceptorsSchema = Joi.object().keys({

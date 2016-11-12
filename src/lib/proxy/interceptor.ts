@@ -5,6 +5,9 @@ import * as config from "../config/proxy";
 import * as path from "path"; 
 import * as Utils from "./utils";
 import {ApiProxy} from "./proxy";
+import {ApiConfig} from "../config/api";
+import {Group} from "../config/group";
+import * as ObjectUtils from "underscore";
 
 let pathToRegexp = require('path-to-regexp');
 
@@ -15,33 +18,71 @@ export class ProxyInterceptor {
         this.proxy = proxy;
     }
     
-    requestInterceptor(proxy: config.Proxy) {
-        if (this.hasRequestInterceptor(proxy)) {
-          return (this.buildRequestInterceptor(proxy));
+    requestInterceptor(api: ApiConfig) {
+        if (this.hasRequestInterceptor(api.proxy)) {
+          return (this.buildRequestInterceptor(api));
         }
         return null;
     }
 
-    responseInterceptor(proxy: config.Proxy) {
-        if (this.hasResponseInterceptor(proxy)) {
-          return (this.buildResponseInterceptor(proxy));
+    responseInterceptor(api: ApiConfig) {
+        if (this.hasResponseInterceptor(api.proxy)) {
+          return (this.buildResponseInterceptor(api));
         }
         return null;
     }
 
-    private buildRequestInterceptor(proxy: config.Proxy) {
+    private buildRequestInterceptor(api: ApiConfig) {
         let func = new Array<string>();
         func.push("function(proxyReq, originalReq){");
+        let proxy: config.Proxy = api.proxy;
         proxy.interceptor.request.forEach((interceptor, index)=>{
             let p = path.join(this.proxy.gateway.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
-            if (interceptor.appliesTo) {
+            if (interceptor.group) {
                 func.push("if (");                
-                interceptor.appliesTo.forEach((path,index)=>{
+
+                let groups = ObjectUtils.filter(api.group, (g: Group)=>{
+                    return ObjectUtils.contains(interceptor.group, g.name);
+                });
+                groups.forEach((group,index)=>{
                     if (index > 0) {
                         func.push("||");                
                     }                
-                    func.push("(pathToRegexp('"+Utils.normalizePath(path)+"').test(originalReq.path))");
+                    func.push("(");
+                    group.member.forEach((member,memberIndex)=>{
+                        if (memberIndex > 0) {
+                            func.push("||");                
+                        }                
+                        func.push("(");
+                        let hasMethodFilter = false;
+                        if (member.method && member.method.length > 0) {
+                            func.push("(");
+                            hasMethodFilter = true;
+                            member.method.forEach((method,i)=>{
+                                if (i > 0) {
+                                    func.push("||");                
+                                }                
+                                func.push("(originalReq.method === '"+method.toUpperCase()+"')")
+                            });
+                            func.push(")");
+                        }
 
+                        if (member.path && member.path.length > 0) {
+                            if (hasMethodFilter) {
+                                func.push("&&");                
+                            }
+                            func.push("(");
+                            member.path.forEach((path,index)=>{
+                                if (index > 0) {
+                                    func.push("||");                
+                                }                
+                                func.push("(pathToRegexp('"+Utils.normalizePath(path)+"').test(originalReq.path))");
+                            });
+                            func.push(")");
+                        }
+                        func.push(")");                        
+                    });
+                    func.push(")");
                 });
                 func.push(")");                
             }
@@ -54,20 +95,58 @@ export class ProxyInterceptor {
         return f;
     }
 
-    private buildResponseInterceptor(proxy: config.Proxy) {
+    private buildResponseInterceptor(api: ApiConfig) {
         let func = new Array<string>();
         func.push("function(rsp, data, req, res, callback){");
         func.push("var continueChain = function(rsp, data, req, res, calback){ callback(null, data);};");
+        let proxy: config.Proxy = api.proxy;
         proxy.interceptor.response.forEach((interceptor, index)=>{
-            if (interceptor.appliesTo) {
+            if (interceptor.group) {
                 func.push("var f"+index+";");        
                 func.push("if (");                
-                interceptor.appliesTo.forEach((path,index)=>{
-                    if (index > 0) {
-                        func.push("&&");                
-                    }                
-                    func.push("!(pathToRegexp('"+Utils.normalizePath(path)+"').test(req.path))");
+                let groups = ObjectUtils.filter(api.group, (g: Group)=>{
+                    return ObjectUtils.contains(interceptor.group, g.name);
+                });
 
+                groups.forEach((group,index)=>{
+                    if (index > 0) {
+                        func.push("||");                
+                    }                
+                    func.push("(");
+                    group.member.forEach((member,memberIndex)=>{
+                        if (memberIndex > 0) {
+                            func.push("&&");                
+                        }                
+                        func.push("(");
+                        let hasMethodFilter = false;
+                        if (member.method && member.method.length > 0) {
+                            func.push("(");
+                            hasMethodFilter = true;
+                            member.method.forEach((method,i)=>{
+                                if (i > 0) {
+                                    func.push("&&");                
+                                }                
+                                func.push("(req.method ==! '"+method.toUpperCase()+"')")
+                            });
+                            func.push(")");
+                        }
+
+                        if (member.path && member.path.length > 0) {
+                            if (hasMethodFilter) {
+                                func.push("||");                
+                            }
+                            func.push("(");
+                            member.path.forEach((path,index)=>{
+                                if (index > 0) {
+                                    func.push("&&");                
+                                }                
+                                func.push("!(pathToRegexp('"+Utils.normalizePath(path)+"').test(req.path))");
+                            });
+                            func.push(")");
+                        }
+                        func.push(")");                        
+                    });
+                    func.push(")");
                 });
                 func.push(")");                
                 func.push("f"+index+" = continueChain;");        
