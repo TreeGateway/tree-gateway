@@ -28,7 +28,6 @@ export class ApiRateLimit {
             });
         }
         
-        let limiter = new RateLimit(rateConfig);        
 
         if (throttling.keyGenerator) {
             let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
@@ -39,6 +38,7 @@ export class ApiRateLimit {
             rateConfig.handler = require(p);
         }
 
+        let limiter = new RateLimit(rateConfig);        
         this.gateway.server.use(path, limiter);
     }
 }
