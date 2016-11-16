@@ -4,7 +4,8 @@ import * as http from "http";
 import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
-import * as admin from "./admin/admin-server";
+import * as admin from "./admin/admin-api";
+import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
 import * as StringUtils from "underscore.string";
 import {ApiConfig, validateApiConfig} from "./config/api";
@@ -258,8 +259,8 @@ export class Gateway {
                         this, this.adminApp, './logs/adminAccessLog.log');
         }
         
-        admin.AdminServer.gateway = this;
-        Server.buildServices(this.adminApp);
+        AdminServer.gateway = this;
+        Server.buildServices(this.adminApp, admin.MiddlewareAPI);
     }
 
     private getApiKey(api: ApiConfig) {
