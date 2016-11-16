@@ -1,13 +1,12 @@
 "use strict";
 
-import * as passport from 'passport';
 import {Strategy, ExtractJwt} from 'passport-jwt';
 import {Gateway} from "../../gateway"; 
 import {JWTAuthentication} from "../../config/authentication";
 import * as Utils from "underscore";
 import * as pathUtil from "path"; 
 
-module.exports = function (apiKey: string, authConfig: JWTAuthentication, gateway: Gateway) {
+module.exports = function (authConfig: JWTAuthentication, gateway: Gateway) {
     let opts = Utils.omit(authConfig, "extractFrom", "verify");
     if (authConfig.extractFrom) {
         let extractors: Array<string> = Utils.keys(authConfig.extractFrom);
@@ -36,7 +35,7 @@ module.exports = function (apiKey: string, authConfig: JWTAuthentication, gatewa
             done(null, jwtPayload);
         };
     }
-    passport.use(apiKey, new Strategy(opts, verifyFunction));
+    return new Strategy(opts, verifyFunction);
 };
 
 function getExtractor(extractor: string, param: string) {
