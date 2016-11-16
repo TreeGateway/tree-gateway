@@ -5,7 +5,6 @@ It is an work in proggress.
 
 ## Features Implemented
  - API Proxy
-   - Request and Response Interceptors
    - Filters
      - Custom Filters
    - Interceptors

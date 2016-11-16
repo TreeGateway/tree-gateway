@@ -164,6 +164,24 @@ describe("Gateway Tests", () => {
 			});
 		});
 		
+		it("should be able to verify authentication only to restricted groups in API", (done) => {
+			request.get({
+				url:gatewayAddress+"/secureBasic-by-group/get?arg=1"
+			}, (error, response, body)=>{
+				expect(response.statusCode).toEqual(401);
+				done();				
+			});
+		});
+
+		it("should be able to verify authentication only to restricted groups in API", (done) => {
+			request.get({
+				url:gatewayAddress+"/secureBasic-by-group/headers"
+			}, (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				done();				
+			});
+		});
+
 		it("should be able to verify Local authentication on requests to API", (done) => {
 			request.get({
 				url:gatewayAddress+"/secureLocal/get?userid=test&passwd=test123"
