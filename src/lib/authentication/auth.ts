@@ -1,10 +1,12 @@
 "use strict";
 
+import {ApiConfig} from "../config/api";
 import {AuthenticationConfig} from "../config/authentication";
 import * as Utils from "underscore";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
 import {Gateway} from "../gateway";
+import * as Groups from "../group";
 
 const providedStrategies = {
     'jwt': require('./strategies/jwt'),
@@ -19,10 +21,12 @@ export class ApiAuth {
         this.gateway = gateway;
     }
 
-    authentication(apiKey: string, path: string, authentication: AuthenticationConfig) {
-        Utils.keys(authentication).forEach(key=>{
+    authentication(apiKey: string, api: ApiConfig) {
+        let path: string =api.proxy.path;
+        let authentication: AuthenticationConfig=  api.authentication
+        Utils.keys(authentication.strategy).forEach(key=>{
             try {
-                let authConfig = authentication[key];
+                let authConfig = authentication.strategy[key];
                 if (Utils.has(providedStrategies, key)) {
                     let strategy = providedStrategies[key];
                     strategy(apiKey, authConfig, this.gateway);
@@ -32,7 +36,29 @@ export class ApiAuth {
                     let strategy = require(p);
                     strategy(apiKey, authConfig);
                 }
-                this.gateway.server.use(path, auth.authenticate(apiKey, { session: false }));
+
+                let authenticator =  auth.authenticate(apiKey, { session: false });
+                if (authentication.group) {
+                    if (this.gateway.logger.isDebugEnabled()) {
+                        let groups = Groups.filter(api.group, authentication.group);
+                        this.gateway.logger.debug('Configuring Group filters for Authentication on path [%s]. Groups [%s]', 
+                            api.proxy.target.path, JSON.stringify(groups));
+                    }
+                    let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
+                    this.gateway.server.use(path, (req, res, next)=>{
+                        if (f(req, res)){
+                            authenticator(req, res, next);
+                        }
+                        else {
+                            next(); 
+                        }
+                    });
+                }
+                else {
+                    this.gateway.server.use(path, authenticator);
+                }
+                
+                
                 if (this.gateway.logger.isDebugEnabled) {
                     this.gateway.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
                 }

@@ -75,6 +75,12 @@ export interface ThrottlingConfig {
      * ```
      */
     handler?: string;
+    /**
+     * A list of groups that should be handled by this limiter. If not provided, everything
+     * will be handled.
+     * Defaults to *.
+     */
+    group?: Array<string>;
 }
 
 export let ThrottlingConfigValidatorSchema = Joi.object().keys({
@@ -86,7 +92,8 @@ export let ThrottlingConfigValidatorSchema = Joi.object().keys({
     statusCode: Joi.number(),
     headers: Joi.boolean(), 
     keyGenerator: Joi.string().alphanum(),
-    handler: Joi.string().alphanum()
+    handler: Joi.string().alphanum(),
+    group: Joi.array().items(Joi.string())
 });
 
 export function validateThrottlingConfig(throttling: ThrottlingConfig, callback: (err, value)=>void) {

@@ -161,13 +161,13 @@ export class Gateway {
             if (this._logger.isDebugEnabled()) {
                 this._logger.debug("Configuring API Rate Limits");
             }
-            this.apiRateLimit.throttling(api.proxy.path, api.throttling);
+            this.apiRateLimit.throttling(api);
         }
         if (api.authentication) {
             if (this._logger.isDebugEnabled()) {
                 this._logger.debug("Configuring API Authentication");
             }
-            this.apiAuth.authentication(apiKey, api.proxy.path, api.authentication);
+            this.apiAuth.authentication(apiKey, api);
         }
         if (this._logger.isDebugEnabled()) {
             this._logger.debug("Configuring API Proxy");

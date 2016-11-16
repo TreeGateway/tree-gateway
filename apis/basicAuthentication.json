@@ -10,8 +10,10 @@
         "timeout": 5000
     },
     "authentication": {
-        "basic": {
-            "verify": "verifyBasicUser"
+        "strategy": {
+            "basic": {
+                "verify": "verifyBasicUser"
+            }
         }
     }
 }

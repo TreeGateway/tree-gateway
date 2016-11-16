@@ -99,6 +99,26 @@ describe("Gateway Tests", () => {
 				});
 			});
 		});
+		it("should be able to restict the limit to an API Group", (done) => {
+			request(gatewayAddress+"/limited-by-group/get?arg=1", (error, response, body)=>{
+				let result = JSON.parse(body);
+				expect(result.args.arg).toEqual("1");
+				request(gatewayAddress+"/limited-by-group/get?arg=1", (error, response, body)=>{
+					expect(response.statusCode).toEqual(429);
+					expect(body).toEqual("Too many requests, please try again later.");
+					done();				
+				});
+			});
+		});
+		it("should be able to restict the limit to an API Group", (done) => {
+			request(gatewayAddress+"/limited-by-group/headers", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				request(gatewayAddress+"/limited-by-group/headers", (error, response, body)=>{
+					expect(response.statusCode).toEqual(200);
+					done();				
+				});
+			});
+		});
 	});
 
 	describe("The Gateway Authenticator", () => {

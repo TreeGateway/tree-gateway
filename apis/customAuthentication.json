@@ -10,8 +10,10 @@
         "timeout": 5000
     },
     "authentication": {
-        "myJwtStrategy": {
-            "secret": "secret"
+        "strategy": {
+            "myJwtStrategy": {
+                "secret": "secret"
+            }
         }
     }
 }

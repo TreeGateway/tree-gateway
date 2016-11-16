@@ -3,6 +3,19 @@
 import * as Joi from "joi";
 
 export interface AuthenticationConfig {
+    /**
+     * The strategy used for authentication
+     */
+    strategy: AuthenticationStrategyConfig;
+    /**
+     * A list of groups that should be handled by this authenticator. If not provided, everything
+     * will be handled.
+     * Defaults to *.
+     */
+    group?: Array<string>;
+}
+
+export interface AuthenticationStrategyConfig {
     jwt?: JWTAuthentication;
     basic?: BasicAuthentication;
     local?: LocalAuthentication;
@@ -107,11 +120,16 @@ let LocalAuthenticationSchema = Joi.object().keys({
     passwordField: Joi.string()
 });
 
-export let AuthenticationValidatorSchema = Joi.object().keys({
+export let AuthenticationStrategyValidatorSchema = Joi.object().keys({
     jwt: JWTAuthenticationSchema,
     basic: BasicAuthenticationSchema,
     local: LocalAuthenticationSchema,
 }).unknown(true).length(1);
+
+export let AuthenticationValidatorSchema = Joi.object().keys({
+    strategy: AuthenticationStrategyValidatorSchema.required(),
+    group: Joi.array().items(Joi.string())
+});
 
 export function validateAuthenticationConfig(authentication: AuthenticationConfig, callback: (err, value)=>void) {
     Joi.validate(authentication, AuthenticationValidatorSchema, callback);

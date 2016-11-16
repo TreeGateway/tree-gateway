@@ -10,10 +10,12 @@
         "timeout": 5000
     },
     "authentication": {
-        "local": {
-            "usernameField": "userid",
-            "passwordField": "passwd",
-            "verify": "verifyBasicUser"
+        "strategy": {
+            "local": {
+                "usernameField": "userid",
+                "passwordField": "passwd",
+                "verify": "verifyBasicUser"
+            }
         }
     }
 }

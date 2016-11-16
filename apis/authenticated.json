@@ -10,15 +10,17 @@
         "timeout": 5000
     },
     "authentication": {
-        "jwt": {
-            "extractFrom": {
-                "authHeader": "Bearer",
-                "queryParam": "jwt"
-            },
-            "secretOrKey": "secret",
-            "algorithms": ["HS256", "HS384"],
-            "ignoreExpiration": true,
-            "verify": "verifyJwtUser"
+        "strategy": {
+            "jwt": {
+                "extractFrom": {
+                    "authHeader": "Bearer",
+                    "queryParam": "jwt"
+                },
+                "secretOrKey": "secret",
+                "algorithms": ["HS256", "HS384"],
+                "ignoreExpiration": true,
+                "verify": "verifyJwtUser"
+            }
         }
     }
 }

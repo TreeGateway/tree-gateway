@@ -1,13 +1,10 @@
 "use strict";
 
-import * as StringUtils from "underscore.string";
 import * as config from "../config/proxy";
 import * as path from "path"; 
-import * as Utils from "./utils";
 import {ApiProxy} from "./proxy";
 import {ApiConfig} from "../config/api";
-import {Group} from "../config/group";
-import * as ObjectUtils from "underscore";
+import * as Groups from "../group";
 
 let pathToRegexp = require('path-to-regexp');
 
@@ -40,50 +37,7 @@ export class ProxyInterceptor {
             let p = path.join(this.proxy.gateway.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
             if (interceptor.group) {
                 func.push("if (");                
-
-                let groups = ObjectUtils.filter(api.group, (g: Group)=>{
-                    return ObjectUtils.contains(interceptor.group, g.name);
-                });
-                groups.forEach((group,index)=>{
-                    if (index > 0) {
-                        func.push("||");                
-                    }                
-                    func.push("(");
-                    group.member.forEach((member,memberIndex)=>{
-                        if (memberIndex > 0) {
-                            func.push("||");                
-                        }                
-                        func.push("(");
-                        let hasMethodFilter = false;
-                        if (member.method && member.method.length > 0) {
-                            func.push("(");
-                            hasMethodFilter = true;
-                            member.method.forEach((method,i)=>{
-                                if (i > 0) {
-                                    func.push("||");                
-                                }                
-                                func.push("(originalReq.method === '"+method.toUpperCase()+"')")
-                            });
-                            func.push(")");
-                        }
-
-                        if (member.path && member.path.length > 0) {
-                            if (hasMethodFilter) {
-                                func.push("&&");                
-                            }
-                            func.push("(");
-                            member.path.forEach((path,index)=>{
-                                if (index > 0) {
-                                    func.push("||");                
-                                }                
-                                func.push("(pathToRegexp('"+Utils.normalizePath(path)+"').test(originalReq.path))");
-                            });
-                            func.push(")");
-                        }
-                        func.push(")");                        
-                    });
-                    func.push(")");
-                });
+                func.push(Groups.buildGroupAllowTest('originalReq', api.group, interceptor.group));
                 func.push(")");                
             }
             func.push("proxyReq = require('"+p+"')(proxyReq, originalReq);");
@@ -104,50 +58,7 @@ export class ProxyInterceptor {
             if (interceptor.group) {
                 func.push("var f"+index+";");        
                 func.push("if (");                
-                let groups = ObjectUtils.filter(api.group, (g: Group)=>{
-                    return ObjectUtils.contains(interceptor.group, g.name);
-                });
-
-                groups.forEach((group,index)=>{
-                    if (index > 0) {
-                        func.push("||");                
-                    }                
-                    func.push("(");
-                    group.member.forEach((member,memberIndex)=>{
-                        if (memberIndex > 0) {
-                            func.push("&&");                
-                        }                
-                        func.push("(");
-                        let hasMethodFilter = false;
-                        if (member.method && member.method.length > 0) {
-                            func.push("(");
-                            hasMethodFilter = true;
-                            member.method.forEach((method,i)=>{
-                                if (i > 0) {
-                                    func.push("&&");                
-                                }                
-                                func.push("(req.method ==! '"+method.toUpperCase()+"')")
-                            });
-                            func.push(")");
-                        }
-
-                        if (member.path && member.path.length > 0) {
-                            if (hasMethodFilter) {
-                                func.push("||");                
-                            }
-                            func.push("(");
-                            member.path.forEach((path,index)=>{
-                                if (index > 0) {
-                                    func.push("&&");                
-                                }                
-                                func.push("!(pathToRegexp('"+Utils.normalizePath(path)+"').test(req.path))");
-                            });
-                            func.push(")");
-                        }
-                        func.push(")");                        
-                    });
-                    func.push(")");
-                });
+                func.push(Groups.buildGroupNotAllowTest('req', api.group, interceptor.group));
                 func.push(")");                
                 func.push("f"+index+" = continueChain;");        
                 func.push("else f"+index+" = ");        
