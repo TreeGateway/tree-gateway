@@ -205,4 +205,15 @@ describe("Gateway Tests", () => {
 		});
 	});
 	
+	describe("The Gateway Cache", () => {
+		it("should be able to cache request on client", (done) => {
+			request(gatewayAddress+"/testCache/get", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				expect(response.headers['cache-control']).toEqual("public,max-age=600");
+				done();				
+			});
+		});
+	});
+
+
 });

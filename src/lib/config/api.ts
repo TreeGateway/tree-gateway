@@ -2,6 +2,7 @@
 
 import {AuthenticationConfig, AuthenticationValidatorSchema} from "./authentication";
 import {ThrottlingConfig, ThrottlingConfigValidatorSchema} from "./throttling";
+import {CacheConfig, CacheConfigValidatorSchema} from "./cache";
 import {Proxy, ProxyValidatorSchema} from "./proxy";
 import {Group, GroupValidatorSchema} from "./group";
 import {ServiceDiscoveryConfig, ServiceDiscoveryConfigValidatorSchema} from "./serviceDiscovery";
@@ -42,6 +43,11 @@ export interface ApiConfig {
     authentication?: AuthenticationConfig;
 
     /**
+     * Configuration for API authentication.
+     */
+    cache?: CacheConfig;
+
+    /**
      * Configuration for service discovery.
      */
     serviceDiscovery?: ServiceDiscoveryConfig;
@@ -55,6 +61,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     group: Joi.array().items(GroupValidatorSchema),
     throttling: ThrottlingConfigValidatorSchema,
     authentication: AuthenticationValidatorSchema, 
+    cache: CacheConfigValidatorSchema, 
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 

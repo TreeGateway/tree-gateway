@@ -14,6 +14,7 @@ import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
 import {ApiAuth} from "./authentication/auth";
+import {ApiCache} from "./cache/cache";
 import {Set, StringMap} from "./es5-compat";
 import {Logger} from "./logger";
 import {AccessLogger} from "./express-logger";
@@ -28,6 +29,7 @@ export class Gateway {
     private adminApp: express.Application;
     private apiProxy: ApiProxy;
     private apiRateLimit: ApiRateLimit;
+    private apiCache: ApiCache;
     private apiAuth: ApiAuth;
     private configFile: string;
     private apiServer: http.Server;
@@ -170,6 +172,12 @@ export class Gateway {
             }
             this.apiAuth.authentication(apiKey, api);
         }
+        if (api.cache) {
+            if (this._logger.isDebugEnabled()) {
+                this._logger.debug("Configuring API Cache");
+            }
+            this.apiCache.cache(api);
+        }
         if (this._logger.isDebugEnabled()) {
             this._logger.debug("Configuring API Proxy");
         }
@@ -207,6 +215,7 @@ export class Gateway {
                         this.apiProxy = new ApiProxy(this);
                         this.apiRateLimit = new ApiRateLimit(this);
                         this.apiAuth = new ApiAuth(this);
+                        this.apiCache = new ApiCache(this);
 
                         this.configureServer(ready);
                         this.configureAdminServer();
