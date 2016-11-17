@@ -47,7 +47,7 @@ gulp.task('test-coverage', function(done) {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
-		// .pipe(istanbul())
+		.pipe(istanbul())
 		.pipe(sourcemaps.write('./')) 
 		.pipe(gulp.dest('bin/test/lib'));
 });
@@ -82,8 +82,8 @@ gulp.task('test-run', function() {
 });
 
 gulp.task('test', function(done) {
-    runSequence('test-build', 'test-coverage', 'test-run', function(){ 
-				//'remap-istanbul-reports', function() {
+    runSequence('test-build', 'test-coverage', 'test-run',  
+				'remap-istanbul-reports', function() {
         console.log('test completed.');
         done();
     });
