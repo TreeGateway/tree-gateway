@@ -73,7 +73,7 @@ describe("Gateway Tests", () => {
 			request(gatewayAddress+"/intercepted/get", (error, response, body)=>{
 				expect(response.statusCode).toEqual(200);
 				let result = JSON.parse(body);
-				expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway");
+				expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway,Tree-Gateway");
 				done();				
 			});
 		});
@@ -81,7 +81,7 @@ describe("Gateway Tests", () => {
 			request(gatewayAddress+"/intercepted/headers", (error, response, body)=>{
 				expect(response.statusCode).toEqual(200);
 				let result = JSON.parse(body);
-				expect(response.headers['via']).toEqual("Changed By Tree-Gateway");
+				expect(response.headers['via']).toEqual("Changed By Tree-Gateway,Tree-Gateway");
 				done();				
 			});
 		});

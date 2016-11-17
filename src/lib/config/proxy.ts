@@ -37,7 +37,11 @@ export interface Proxy {
      * If set to true, will enforce the requests to the API target to use HTTPS protocol.
      * f your path already define a protocol on target URL, this option is ignored.
      */
-    https?: boolean
+    https?: boolean;
+    /**
+     * If True, no Via header will be added to proxied responses.
+     */
+    supressViaHeader?: boolean;
     /**
      * Add filters to the request pipeline. A Filter is a function that receives
      * the request and the response object and must return a boolean value to inform
@@ -203,6 +207,7 @@ export let ProxyValidatorSchema = Joi.object().keys({
     path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
     target: TargetSchema.required(),
     https: Joi.boolean(),
+    supressViaHeader: Joi.boolean(),
     filter: Joi.array().items(FilterSchema),
     interceptor: InterceptorsSchema,
     preserveHostHdr: Joi.boolean(),
