@@ -4,7 +4,7 @@ import * as http from "http";
 import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
-import * as admin from "./admin/admin-api";
+import * as admin from "./admin/api/admin-api";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
 import * as StringUtils from "underscore.string";
@@ -260,7 +260,7 @@ export class Gateway {
         }
         
         AdminServer.gateway = this;
-        Server.buildServices(this.adminApp, admin.MiddlewareAPI);
+        Server.buildServices(this.adminApp, admin.MiddlewareAPI, admin.APIService);
     }
 
     private getApiKey(api: ApiConfig) {
@@ -268,7 +268,6 @@ export class Gateway {
     }
 }
 /*TODO: 
-  - Global interceptors / Filters / Throttling
 - Create a global interceptor to add a 'Via' header pointing to Tree-Gateway
 - Manage API versions
 - Create a clsuter program, to initialize the app in cluster

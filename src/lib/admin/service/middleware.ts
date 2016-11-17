@@ -3,7 +3,7 @@
 import "es6-promise";
 import * as fs from "fs-extra";
 import * as path from "path";
-import {AdminServer} from "./admin-server";
+import {AdminServer} from "../admin-server";
 
 export class MiddlewareService { 
     static list(middleware: string) : Promise<Array<string>>{
