@@ -103,6 +103,76 @@ export class MiddlewareAPI {
         return MiddlewareService.save(path.join('authentication/verify', name), file.buffer);
     }
 
+    @GET
+    @Path('filters/:name')
+    readFilter(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('filter', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+
+    @GET
+    @Path('interceptors/request/:name')
+    readRequestInterceptors(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('interceptor/request', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+
+    @GET
+    @Path('interceptors/response/:name')
+    readResponseInterceptors(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('interceptor/response', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+
+    @GET
+    @Path('authentication/strategies/:name')
+    readAuthStrategies(@PathParam("name")name: string): Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('authentication/strategies', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+
+    @GET
+    @Path('authentication/verify/:name')
+    readAuthVerify(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('authentication/verify', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+
     @POST
     @Path('filters')
     addFilter(@FileParam("file") file: Express.Multer.File, 

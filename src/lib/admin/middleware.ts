@@ -12,6 +12,7 @@ export class MiddlewareService {
                 if (err) {
                     //TODO log err.
                     reject('Error reading installed middlewares.');
+                    return;
                 }
                 resolve(files);
             });
@@ -20,10 +21,11 @@ export class MiddlewareService {
 
     static add(middlewareName: string, content: Buffer) : Promise<string>{
         return new Promise<string>((resolve, reject) =>{
-            fs.writeFile(path.join(AdminServer.gateway.middlewarePath, middlewareName, '.js'), content, (err)=>{
+            fs.writeFile(path.join(AdminServer.gateway.middlewarePath, middlewareName + '.js'), content, (err)=>{
                 if (err) {
                     //TODO log err.
                     reject('Error saving middleware.');
+                    return;
                 }
                 resolve(middlewareName);
             })
@@ -32,10 +34,11 @@ export class MiddlewareService {
 
     static save(middlewareName: string, content: Buffer) : Promise<void>{
         return new Promise<void>((resolve, reject) =>{
-            fs.writeFile(path.join(AdminServer.gateway.middlewarePath, middlewareName, '.js'), content, (err)=>{
+            fs.writeFile(path.join(AdminServer.gateway.middlewarePath, middlewareName + '.js'), content, (err)=>{
                 if (err) {
                     //TODO log err.
                     reject('Error saving middleware.');
+                    return;
                 }
                 resolve();
             })
@@ -44,12 +47,27 @@ export class MiddlewareService {
 
     static remove(folder: string, middlewareName: string) : Promise<void>{
         return new Promise<void>((resolve, reject) =>{
-            fs.remove(path.join(AdminServer.gateway.middlewarePath, folder, middlewareName, '.js'), (err)=>{
+            fs.remove(path.join(AdminServer.gateway.middlewarePath, folder, middlewareName + '.js'), (err)=>{
                 if (err) {
                     //TODO log err.
                     reject('Error removing middleware.');
+                    return;
                 }
                 resolve();
+            })
+        });
+    }
+
+    static read(folder: string, middlewareName: string) : Promise<string>{
+        return new Promise<string>((resolve, reject) =>{
+            let filePath = path.join(AdminServer.gateway.middlewarePath, folder, middlewareName + '.js');
+            fs.access(filePath, (err)=>{
+                if (err) {
+                    //TODO log err.
+                    reject('Error reading middleware.');
+                    return;
+                }
+                resolve(filePath);
             })
         });
     }
