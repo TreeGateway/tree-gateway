@@ -96,7 +96,9 @@ export class ApiCache {
             if (cache.proxyRevalidate) {
                 result.push(',proxy-revalidate');
             }
-            result.push(',max-age='+cacheTime);
+            if (cache.cacheControl !== 'no-store') {
+                result.push(',max-age='+cacheTime);
+            }
         }
         else {
             result.push('no-store');
