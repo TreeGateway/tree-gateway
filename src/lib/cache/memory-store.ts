@@ -15,16 +15,16 @@ export class MemoryStore implements CacheStore<CacheEntry>{
         }));
     }
 
-    get(key, callback: StoreCallback<CacheEntry>): void {
+    get(key: string, callback: StoreCallback<CacheEntry>): void {
         let value = this.cache.get(key);
         callback(null, value);
     }
 
-    set(key: any, value: CacheEntry, maxAge?: number): void {
+    set(key: string, value: CacheEntry, maxAge?: number): void {
         this.cache.set(key, value, maxAge);
     }
 
-    del(key: any): void {
+    del(key: string): void {
         this.cache.del(key);
     }
 }

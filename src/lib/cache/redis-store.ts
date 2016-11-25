@@ -20,7 +20,7 @@ export class RedisStore implements CacheStore<CacheEntry>{
         });
     }
 
-    set(key: any, value: CacheEntry, maxAge?: number): void {
+    set(key: string, value: CacheEntry, maxAge?: number): void {
         let rdskey = this.options.prefix + key;
         let opt: Options = this.options;
         if (maxAge) {
@@ -29,23 +29,25 @@ export class RedisStore implements CacheStore<CacheEntry>{
         opt.client.set(rdskey, JSON.stringify(value), 'EX', opt.maxAge);
     }
 
-    get(key, callback: StoreCallback<CacheEntry>): void {
+    get(key: string, callback: StoreCallback<CacheEntry>): void {
         let rdskey = this.options.prefix + key;
-        this.options.client.get(rdskey, (err: any, cachedValue: string) => {
+        this.options.client.get(rdskey).then((cachedValue: string) => {
             try {
                 if (cachedValue) {
-                    callback(err, JSON.parse(cachedValue));
+                    callback(null, JSON.parse(cachedValue));
                 }
-                callback(err, null);
+                callback(null, null);
             }
             catch (e) {
                 callback(e, null);
                 this.del(key);
             }
+        }).catch((err: any)=>{
+            callback(err, null);
         });
     }
 
-    del(key: any): void {
+    del(key: string): void {
         let rdskey = this.options.prefix + key;
         this.options.client.del(rdskey);
     }

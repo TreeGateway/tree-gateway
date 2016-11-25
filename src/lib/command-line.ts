@@ -1,7 +1,6 @@
 "use strict";
 
 import * as path from "path";
-import * as StringUtils from "underscore.string";
 
 let args = require("args");
 

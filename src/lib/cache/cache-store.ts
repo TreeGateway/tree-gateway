@@ -10,9 +10,9 @@ export interface StoreCallback<T> {
 }
 
 export interface CacheStore<T> {
-    get(key, callback: StoreCallback<T>): void;
+    get(key: string, callback: StoreCallback<T>): void;
 
-    set(key: any, value: T, maxAge?: number): void;
+    set(key: string, value: T, maxAge?: number): void;
 
-    del(key: any): void ;
+    del(key: string): void ;
 }
