@@ -9,10 +9,12 @@
         "preserveHostHdr": true,
         "timeout": 5000
     },
-    "throttling": {
-        "windowMs": 60000,
-        "max": 1        
-    },
+    "throttling": [
+        {
+            "windowMs": 60000,
+            "max": 1        
+        }
+    ],
     "serviceDiscovery": {
 
     }

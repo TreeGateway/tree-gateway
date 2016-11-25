@@ -35,7 +35,7 @@ export interface ApiConfig {
     /**
      * Configuration for the rate limit engine.
      */
-    throttling?: ThrottlingConfig;
+    throttling?: Array<ThrottlingConfig>;
 
     /**
      * Configuration for API authentication.
@@ -45,7 +45,7 @@ export interface ApiConfig {
     /**
      * Configuration for API authentication.
      */
-    cache?: CacheConfig;
+    cache?: Array<CacheConfig>;
 
     /**
      * Configuration for service discovery.
@@ -59,9 +59,9 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     description: Joi.string(),
     proxy: ProxyValidatorSchema.required(),
     group: Joi.array().items(GroupValidatorSchema),
-    throttling: ThrottlingConfigValidatorSchema,
+    throttling: Joi.array().items(ThrottlingConfigValidatorSchema),
     authentication: AuthenticationValidatorSchema, 
-    cache: CacheConfigValidatorSchema, 
+    cache: Joi.array().items(CacheConfigValidatorSchema), 
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 

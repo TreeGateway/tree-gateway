@@ -7,6 +7,7 @@ import * as serverCache from "./server-cache";
 import {ClientCache} from "./client-cache";
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
+import * as Utils from "underscore";
 
 let onHeaders = require("on-headers");
 let ServerCache = serverCache.ServerCache;
@@ -26,18 +27,21 @@ export class ApiCache {
 
     private configureCache(api: ApiConfig) {
         let path: string = api.proxy.path;
-        let cache: CacheConfig = api.cache;
-        let validateGroupFunction: Function;
-        if (cache.group){
-            if (this.gateway.logger.isDebugEnabled()) {
-                let groups = Groups.filter(api.group, cache.group);
-                this.gateway.logger.debug('Configuring Group filters for Cache on path [%s]. Groups [%s]', 
-                    api.proxy.target.path, JSON.stringify(groups));
+        let cacheConfigs: Array<CacheConfig> = this.sortCaches(api.cache, path);
+
+        cacheConfigs.forEach((cache: CacheConfig)=>{
+            let validateGroupFunction: Function;
+            if (cache.group){
+                if (this.gateway.logger.isDebugEnabled()) {
+                    let groups = Groups.filter(api.group, cache.group);
+                    this.gateway.logger.debug('Configuring Group filters for Cache on path [%s]. Groups [%s]', 
+                        api.proxy.target.path, JSON.stringify(groups));
+                }
+                validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
-            validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
-        }
-        let cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);        
-        this.gateway.server.use(path, cacheMiddleware);
+            let cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);        
+            this.gateway.server.use(path, cacheMiddleware);
+        });
     }
 
     private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string): express.RequestHandler {
@@ -68,9 +72,33 @@ export class ApiCache {
     }
 
     private useCache(api: ApiConfig) : boolean{
-        if (api.cache && (api.cache.client || api.cache.server)){
+        if (api.cache && api.cache.length > 0){
             return true;
         }
         return false;
+    }
+
+    private sortCaches(caches: Array<CacheConfig>, path: string): Array<CacheConfig> {
+        let generalCaches = Utils.filter(caches, (value)=>{
+            if (value.group) {
+                return true;
+            }
+            return false;
+        });
+        
+        if (generalCaches.length > 1) {
+            this.gateway.logger.error("Invalid cache configuration for api [%s]." 
+                + "Conflicting configurations for default group", path);
+                return [];
+        }
+
+        if (generalCaches.length > 0) {
+            let index = caches.indexOf(generalCaches[0]);
+            if (index < caches.length -1) {
+                let gen = caches.splice(index, 1);
+                caches.push(gen)   
+            }
+        }
+        return caches;
     }
 }

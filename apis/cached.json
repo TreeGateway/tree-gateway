@@ -21,19 +21,21 @@
         "preserveHostHdr": true,
         "timeout": 5000
     },
-    "cache": {
-        "client": {
-            "cacheTime": "1 minute",
-            "cacheControl": "public",
-            "mustRevalidate": false,
-            "noTransform": false,
-            "proxyRevalidate": false
-        },
-        "server": {
-            "cacheTime": "10 minutes",
-            "binary": true,
-            "preserveHeaders" :["access-control-allow-credentials"]
-        },
-        "group": ["Group1"]
-    }
+    "cache": [
+        {
+            "client": {
+                "cacheTime": "1 minute",
+                "cacheControl": "public",
+                "mustRevalidate": false,
+                "noTransform": false,
+                "proxyRevalidate": false
+            },
+            "server": {
+                "cacheTime": "10 minutes",
+                "binary": true,
+                "preserveHeaders" :["access-control-allow-credentials"]
+            },
+            "group": ["Group1"]
+        }
+    ]
 }
