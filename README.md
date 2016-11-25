@@ -24,7 +24,7 @@ It is an work in proggress.
    - Server Cache
      - In Memory (lru-cache)
      - Redis 
-     
+
 ## In progress Features
  - Service Discovery
  - Authorization
@@ -36,6 +36,8 @@ It is an work in proggress.
  - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
 
 ## Future work
+  - Debug / Trace
+  - Mocks
   - API composition
   - Virtual Paths
   - Protocol Transformations

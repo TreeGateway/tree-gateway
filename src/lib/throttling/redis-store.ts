@@ -3,9 +3,11 @@ import * as redis from "ioredis";
 let defaults = require('defaults');
 
 interface Options {
+    path: string;
+    client: redis.Redis;
+    id?: string;
     expiry?: number;
     prefix?: string;
-    client: redis.Redis;
 }
 
 export class RedisStore {
@@ -14,13 +16,13 @@ export class RedisStore {
   constructor(options: Options) {
     this.options = defaults(options, {
         expiry: 60, // default expiry is one minute
-        prefix: "rl:"
+        prefix: "rl"
     });
   }
 
 
   incr (key: string, cb) {
-    let rdskey = this.options.prefix + key;
+    let rdskey = this.getRedisKey(key);
     let opt: Options = this.options;
     opt.client.multi()
       .incr(rdskey)
@@ -41,8 +43,19 @@ export class RedisStore {
   }
 
   resetKey(key: string) {
-    let rdskey = this.options.prefix + key;
-
+    let rdskey = this.getRedisKey(key);
     this.options.client.del(rdskey);
   }
+
+  private getRedisKey(key: string) {
+    let result: Array<string> = [];
+    result.push(this.options.prefix);
+    result.push(this.options.path);
+    if (this.options.id) {
+        result.push(this.options.id);
+    }
+    result.push(key);
+    return result.join(':');
+  }
+
 }

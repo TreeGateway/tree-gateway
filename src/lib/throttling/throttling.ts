@@ -28,6 +28,7 @@ export class ApiRateLimit {
                 this.gateway.logger.debug("Using Redis as throttling store.");
             }
             rateConfig.store = new store.RedisStore({
+                path: path,
                 expiry: (throttling.windowMs / 1000) +1,
                 client: this.gateway.redisClient
             });
