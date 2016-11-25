@@ -40,5 +40,5 @@
             "prettyPrint": true,
             "filename": "./logs/adminAccessLog.log"
         }
-    }
+    } 
 }

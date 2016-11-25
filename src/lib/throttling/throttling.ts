@@ -23,7 +23,7 @@ export class ApiRateLimit {
         let rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler", "group");
 
         if (this.gateway.redisClient) {
-            let store = require('./store');
+            let store = require('./redis-store');
             if (this.gateway.logger.isDebugEnabled()) {
                 this.gateway.logger.debug("Using Redis as throttling store.");
             }

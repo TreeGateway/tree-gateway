@@ -13,7 +13,6 @@ let ServerCache = serverCache.ServerCache;
 
 export class ApiCache {
     private gateway: Gateway;
-    private serverCache: serverCache.ServerCache;
 
     constructor(gateway: Gateway) {
         this.gateway = gateway;

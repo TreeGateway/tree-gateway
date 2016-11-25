@@ -14,25 +14,31 @@ export class ServerCache {
     constructor(gateway: Gateway) {
         this.gateway = gateway;
         if (!ServerCache.cacheStore) {
-            this.initializeCacheStore()
+            this.initializeCacheStore();
         }
     }
 
     private initializeCacheStore() {
         if (this.gateway.redisClient) {
-            let store = require('./store');
+            let store = require('./redis-store');
             if (this.gateway.logger.isDebugEnabled()) {
                 this.gateway.logger.debug("Using Redis as cache store.");
             }
+            ServerCache.cacheStore = new store.RedisStore({
+                client: this.gateway.redisClient
+            });            
         }
         else {
             ServerCache.cacheStore = new MemoryStore({
 
-            })
+            });
         }
     }
 
     buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req, res, next){
+        if (this.gateway.logger.isDebugEnabled()) {
+            this.gateway.logger.debug('Configuring Server Cache for path [%s].', path);
+        }
         let result = new Array<string>();
         result.push('ServerCache.cacheStore.get('+req+'.originalUrl, function(err, entry){');
         result.push('if (err) {');
