@@ -30,6 +30,7 @@ export interface ClientCacheConfig {
 export interface ServerCacheConfig {
     cacheTime: string;
     binary?: boolean;
+    preserveHeaders?: Array<string>;
 }
 
 let ClientCacheValidatorSchema = Joi.object().keys({
@@ -42,7 +43,8 @@ let ClientCacheValidatorSchema = Joi.object().keys({
 
 let ServerCacheValidatorSchema = Joi.object().keys({
     cacheTime: Joi.string().required(),
-    binary: Joi.boolean()
+    binary: Joi.boolean(),
+    preserveHeaders: Joi.array().items(Joi.string())
 });
 
 export let CacheConfigValidatorSchema = Joi.object().keys({

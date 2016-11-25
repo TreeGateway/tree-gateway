@@ -5,6 +5,7 @@ import {Gateway} from "../gateway";
 import {ServerCacheConfig} from "../config/cache";
 import {calculateSeconds} from "./cache-time";
 import {MemoryStore} from "./memory-store";
+import * as StringUtils from "underscore.string";
 
 export class ServerCache {
     static cacheStore: CacheStore<CacheEntry>;
@@ -40,6 +41,11 @@ export class ServerCache {
         result.push('if (entry) {');
         // cache hit
         result.push(res+'.contentType(entry.mimeType || "text/html");');
+        if (serverCache.preserveHeaders) {
+            serverCache.preserveHeaders.forEach((header)=>{
+                result.push(res+'.set('+StringUtils.quote(header)+', entry.header['+StringUtils.quote(header)+']);');
+            });
+        }
         if(serverCache.binary){
             result.push(res+'.send(new Buffer(entry.content, "base64"));');
         }
@@ -63,6 +69,16 @@ export class ServerCache {
         result.push('ServerCache.cacheStore.set('+req+'.originalUrl, {');
         result.push('content: body,');
         result.push('mimeType: this._headers["content-type"]');
+        if (serverCache.preserveHeaders) {
+            result.push(',header: {');
+            serverCache.preserveHeaders.forEach((header, index)=>{
+                if (index > 0) {
+                    result.push(',');        
+                }
+                result.push(StringUtils.quote(header)+': this._headers['+StringUtils.quote(header)+']');
+            });
+            result.push('}');
+        }
         result.push('}, '+cacheTime+');');
 
         result.push('return ret;');

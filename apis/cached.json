@@ -31,7 +31,8 @@
         },
         "server": {
             "cacheTime": "10 minutes",
-            "binary": true
+            "binary": true,
+            "preserveHeaders" :["access-control-allow-credentials"]
         },
         "group": ["Group1"]
     }

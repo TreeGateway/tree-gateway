@@ -213,6 +213,14 @@ describe("Gateway Tests", () => {
 				done();				
 			});
 		});
+
+		it("should be able to preserve headers on requests from server cache", (done) => {
+			request(gatewayAddress+"/testCache/get", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				expect(response.headers['access-control-allow-credentials']).toEqual("true");
+				done();				
+			});
+		});
 	});
 
 
