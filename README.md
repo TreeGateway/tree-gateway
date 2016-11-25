@@ -24,6 +24,7 @@ It is an work in proggress.
    - Server Cache
      - In Memory (lru-cache)
      - Redis 
+     
 ## In progress Features
  - Service Discovery
  - Authorization
