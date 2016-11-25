@@ -39,6 +39,18 @@ export class MiddlewareAPI {
         return MiddlewareService.list('authentication/verify');
     }
 
+    @GET
+    @Path('throttling/keyGenerators')
+    throttlingKeyGenerator() : Promise<Array<string>>{
+        return MiddlewareService.list('throttling/keyGenerator');
+    }
+
+    @GET
+    @Path('throttling/handlers')
+    throttlingHandler() : Promise<Array<string>>{
+        return MiddlewareService.list('throttling/handler');
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter(@PathParam("name")name: string) : Promise<void>{
@@ -69,6 +81,18 @@ export class MiddlewareAPI {
         return MiddlewareService.remove('authentication/verify', name);
     }
 
+    @DELETE
+    @Path('throttling/keyGenerators/:name')
+    removeThrottlingKeyGenerator(@PathParam("name")name: string) : Promise<void>{
+        return MiddlewareService.remove('throttling/keyGenerator', name);
+    }
+
+    @DELETE
+    @Path('throttling/handlers/:name')
+    removeThrottlingHandler(@PathParam("name")name: string) : Promise<void>{
+        return MiddlewareService.remove('throttling/handler', name);
+    }
+
     @PUT
     @Path('filters/:name')
     saveFilter(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
@@ -97,6 +121,18 @@ export class MiddlewareAPI {
     @Path('authentication/verify/:name')
     saveAuthVerify(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
         return MiddlewareService.save(path.join('authentication/verify', name), file.buffer);
+    }
+
+    @PUT
+    @Path('throttling/keyGenerators/:name')
+    saveThrottlingKeyGenerator(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
+        return MiddlewareService.save(path.join('throttling/keyGenerator', name), file.buffer);
+    }
+
+    @PUT
+    @Path('throttling/handlers/:name')
+    saveThrottlingHandler(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
+        return MiddlewareService.save(path.join('throttling/handler', name), file.buffer);
     }
 
     @GET
@@ -168,6 +204,35 @@ export class MiddlewareAPI {
             });
         });
     }
+
+    @GET
+    @Path('throttling/keyGenerators/:name')
+    readThrottlingKeyGenerator(@PathParam("name")name: string): Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('throttling/keyGenerator', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+
+    @GET
+    @Path('throttling/handlers/:name')
+    readThrottlingHandler(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('throttling/handler', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
+    
 
     @POST
     @Path('filters')
@@ -243,4 +308,35 @@ export class MiddlewareAPI {
                 });
         });
     }
+
+    @POST
+    @Path('throttling/keyGenerators')
+    addThrottlingKeyGenerator(@FileParam("file") file: Express.Multer.File, 
+                    @FormParam("name") name: string){
+        return new Promise<Return.NewResource>((resolve, reject) =>{
+            MiddlewareService.add(path.join('throttling/keyGenerator',name), file.buffer)
+                .then(value=>{
+                    resolve(new Return.NewResource(path.join('throttling/keyGenerators',name)));
+                })
+                .catch(err=>{
+                    reject(new Errors.InternalServerError('Error saving keyGenerator.'))
+                });
+        });
+    }
+
+    @POST
+    @Path('throttling/handlers')
+    addThrottlingHander(@FileParam("file") file: Express.Multer.File, 
+                    @FormParam("name") name: string){
+        return new Promise<Return.NewResource>((resolve, reject) =>{
+            MiddlewareService.add(path.join('throttling/handler',name), file.buffer)
+                .then(value=>{
+                    resolve(new Return.NewResource(path.join('throttling/handlers',name)));
+                })
+                .catch(err=>{
+                    reject(new Errors.InternalServerError('Error saving handler.'))
+                });
+        });
+    }
+    
 }

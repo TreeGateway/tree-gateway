@@ -11,7 +11,7 @@ export class MiddlewareService {
             fs.readdir(path.join(AdminServer.gateway.middlewarePath, middleware), (err, files) => {
                 if (err) {
                     //TODO log err.
-                    reject('Error reading installed middlewares.');
+                    resolve([]);
                     return;
                 }
                 resolve(files);
