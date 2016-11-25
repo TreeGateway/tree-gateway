@@ -222,6 +222,4 @@ describe("Gateway Tests", () => {
 			});
 		});
 	});
-
-
 });

@@ -16,14 +16,11 @@ export class MemoryStore implements CacheStore<CacheEntry>{
     }
 
     get(key, callback: StoreCallback<CacheEntry>): void {
-        console.log('get-cache: '+ key)
         let value = this.cache.get(key);
-        console.log('get-cache. Value: '+ value)
         callback(null, value);
     }
 
     set(key: any, value: CacheEntry, maxAge?: number): void {
-        console.log('set-cache: '+ key)
         this.cache.set(key, value, maxAge);
     }
 
