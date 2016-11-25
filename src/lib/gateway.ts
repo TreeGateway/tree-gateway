@@ -172,6 +172,7 @@ export class Gateway {
             }
             this.apiAuth.authentication(apiKey, api);
         }
+        this.apiProxy.configureProxyHeader(api);
         if (api.cache) {
             if (this._logger.isDebugEnabled()) {
                 this._logger.debug("Configuring API Cache");

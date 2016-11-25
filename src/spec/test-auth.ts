@@ -73,7 +73,7 @@ describe("Gateway Tests", () => {
 			request(gatewayAddress+"/intercepted/get", (error, response, body)=>{
 				expect(response.statusCode).toEqual(200);
 				let result = JSON.parse(body);
-				expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway,Tree-Gateway");
+				expect(response.headers['via']).toEqual("previous Interceptor wrote: Changed By Tree-Gateway, 1.1 Tree-Gateway");
 				done();				
 			});
 		});
@@ -81,7 +81,7 @@ describe("Gateway Tests", () => {
 			request(gatewayAddress+"/intercepted/headers", (error, response, body)=>{
 				expect(response.statusCode).toEqual(200);
 				let result = JSON.parse(body);
-				expect(response.headers['via']).toEqual("Changed By Tree-Gateway,Tree-Gateway");
+				expect(response.headers['via']).toEqual("Changed By Tree-Gateway, 1.1 Tree-Gateway");
 				done();				
 			});
 		});
@@ -209,7 +209,7 @@ describe("Gateway Tests", () => {
 		it("should be able to cache request on client", (done) => {
 			request(gatewayAddress+"/testCache/get", (error, response, body)=>{
 				expect(response.statusCode).toEqual(200);
-				expect(response.headers['cache-control']).toEqual("public,max-age=600");
+				expect(response.headers['cache-control']).toEqual("public,max-age=60");
 				done();				
 			});
 		});

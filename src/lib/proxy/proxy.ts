@@ -29,30 +29,28 @@ export class ApiProxy {
      * Configure a proxy for a given API
      */
     proxy(api: ApiConfig) {
-        if (!api.proxy.supressViaHeader) {
-            this.configureProxyHeader(api);
-        }
         this.gateway.server.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api)));
     }
 
-    private configureProxyHeader(api: ApiConfig) {
-        let onHeaders = require("on-headers");
-        const gatewayId = 'Tree-Gateway';
-        this.gateway.server.use(api.proxy.path, 
-            (req: express.Request, res: express.Response, next: express.NextFunction)=>{
-                onHeaders(res, ()=>{
-                    let viaHeader = res.get('Via') 
-                    if (viaHeader) {
-                        viaHeader = viaHeader + ','+gatewayId;
-                    }
-                    else {
-                        viaHeader = gatewayId;
-                    }
-                    res.set('Via', viaHeader);
-                });
-                next();
-        });
-
+    configureProxyHeader(api: ApiConfig) {
+        if (!api.proxy.supressViaHeader) {
+            let onHeaders = require("on-headers");
+            const gatewayId = 'Tree-Gateway';
+            this.gateway.server.use(api.proxy.path, 
+                (req: express.Request, res: express.Response, next: express.NextFunction)=>{
+                    onHeaders(res, ()=>{
+                        let viaHeader = res.get('Via') 
+                        if (viaHeader) {
+                            viaHeader = viaHeader + ', '+req.httpVersion+' '+gatewayId;
+                        }
+                        else {
+                            viaHeader = req.httpVersion+' '+gatewayId;
+                        }
+                        res.set('Via', viaHeader);
+                    });
+                    next();
+            });
+        }
     }
 
     private configureProxy(api: ApiConfig) {

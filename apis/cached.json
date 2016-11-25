@@ -23,14 +23,15 @@
     },
     "cache": {
         "client": {
-            "cacheTime": "10 minutes",
+            "cacheTime": "1 minute",
             "cacheControl": "public",
             "mustRevalidate": false,
             "noTransform": false,
             "proxyRevalidate": false
         },
         "server": {
-
+            "cacheTime": "10 minutes",
+            "binary": true
         },
         "group": ["Group1"]
     }
