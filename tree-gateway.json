@@ -40,5 +40,8 @@
             "prettyPrint": true,
             "filename": "./logs/adminAccessLog.log"
         }
+    },
+    "statsConfig": {
+        "windowMS": 60000
     }
 }

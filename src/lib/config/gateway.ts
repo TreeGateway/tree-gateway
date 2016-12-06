@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
 
 /**
  * The API config descriptor.
@@ -46,6 +47,8 @@ export interface GatewayConfig {
      * Configurations for gateway access logger.
      */
     adminLogger?: AccessLoggerConfig;
+
+    statsConfig?: StatsConfig;
 }
 
 export interface AccessLoggerConfig {
@@ -267,7 +270,8 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     logger: LoggerConfigSchema,
     database: RedisConfigSchema,
     accessLogger: AccessLoggerConfigSchema,
-    adminLogger: AccessLoggerConfigSchema
+    adminLogger: AccessLoggerConfigSchema,
+    statsConfig: StatsConfigValidatorSchema
 });
 
 export function validateGatewayConfig(gatewayConfig: GatewayConfig, callback: (err, value)=>void) {

@@ -22,6 +22,7 @@ import {AccessLogger} from "./express-logger";
 import * as redis from "ioredis";
 import * as dbConfig from "./redis";
 import * as path from "path";
+import {StatsConfig} from "./config/stats";
 
 let defaults = require('defaults');
 
@@ -67,6 +68,10 @@ export class Gateway {
 
     get statsRecorder() : StatsRecorder {
         return this._statsRecorder;
+    }
+
+    get statsConfig() : StatsConfig {
+        return this._config.statsConfig;
     }
 
     get middlewarePath(): string {
