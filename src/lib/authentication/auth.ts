@@ -6,13 +6,20 @@ import * as Utils from "underscore";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
 import {Gateway} from "../gateway";
+import {Stats} from "../stats/stats";
 import * as Groups from "../group";
+import * as express from "express";
 
 const providedStrategies = {
     'jwt': require('./strategies/jwt'),
     'basic': require('./strategies/basic'),
     'local': require('./strategies/local')
 } 
+
+class StatsController {
+    failStats: Stats;
+    successStats: Stats;
+}
 
 export class ApiAuth {
     private gateway: Gateway;
@@ -22,8 +29,8 @@ export class ApiAuth {
     }
 
     authentication(apiKey: string, api: ApiConfig) {
-        let path: string =api.proxy.path;
-        let authentication: AuthenticationConfig=  api.authentication
+        let path: string = api.proxy.path;
+        let authentication: AuthenticationConfig =  api.authentication
         Utils.keys(authentication.strategy).forEach(key=>{
             try {
                 let authConfig = authentication.strategy[key];
@@ -43,25 +50,12 @@ export class ApiAuth {
                 else{
                     auth.use(apiKey, authStrategy);
 
-                    let authenticator =  auth.authenticate(apiKey, { session: false });
+                    let authenticator =  auth.authenticate(apiKey, { session: false, failWithError: true });
                     if (authentication.group) {
-                        if (this.gateway.logger.isDebugEnabled()) {
-                            let groups = Groups.filter(api.group, authentication.group);
-                            this.gateway.logger.debug('Configuring Group filters for Authentication on path [%s]. Groups [%s]', 
-                                api.proxy.target.path, JSON.stringify(groups));
-                        }
-                        let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
-                        this.gateway.server.use(path, (req, res, next)=>{
-                            if (f(req, res)){
-                                authenticator(req, res, next);
-                            }
-                            else {
-                                next(); 
-                            }
-                        });
+                        this.createAuthenticatorForGroup(api, authentication, authenticator);
                     }
                     else {
-                        this.gateway.server.use(path, authenticator);
+                        this.createAuthenticator(api, authentication, authenticator);
                     }
                     
                     
@@ -75,4 +69,90 @@ export class ApiAuth {
             }
         });
     }
+    
+    private createAuthenticator(api: ApiConfig, authentication: AuthenticationConfig, 
+                                authenticator: express.RequestHandler) {
+        let path: string = api.proxy.path;
+        let stats = this.createAuthStats(path, authentication);
+        if (stats) {
+            this.gateway.server.use(path, (req, res, next)=>{
+                authenticator(req, res, (err)=>{
+                    if (err) {
+                        stats.failStats.registerOccurrence(req.path);
+                        next(err);
+                    }
+                    else {
+                        stats.successStats.registerOccurrence(req.path);
+                        next();
+                    }
+                });
+            });
+        }
+        else {
+            this.gateway.server.use(path, authenticator);
+        }
+    }
+
+    private createAuthenticatorForGroup(api: ApiConfig, authentication: AuthenticationConfig, 
+                                        authenticator: express.RequestHandler) {
+        let path: string = api.proxy.path;
+        if (this.gateway.logger.isDebugEnabled()) {
+            let groups = Groups.filter(api.group, authentication.group);
+            this.gateway.logger.debug('Configuring Group filters for Authentication on path [%s]. Groups [%s]', 
+                api.proxy.target.path, JSON.stringify(groups));
+        }
+        let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
+        let stats = this.createAuthStats(path, authentication);
+        if (stats) {
+            this.gateway.server.use(path, (req, res, next)=>{
+                if (f(req, res)){
+                    authenticator(req, res, (err)=>{
+                        if (err) {
+                            stats.failStats.registerOccurrence(req.path);
+                            next(err);
+                        }
+                        else {
+                            stats.successStats.registerOccurrence(req.path);
+                            next();
+                        }
+                    });
+                }
+                else {
+                    next(); 
+                }
+            });
+        }
+        else {
+            this.gateway.server.use(path, (req, res, next)=>{
+                if (f(req, res)){
+                    authenticator(req, res, next);
+                }
+                else {
+                    next(); 
+                }
+            });
+        }
+    }
+
+    private createAuthStats(path: string, authentication: AuthenticationConfig) : StatsController {
+        if (authentication.stats) {
+            let stats: StatsController = new StatsController();
+            stats.failStats = this.gateway.statsRecorder.createStats(this.getStatsKey('fail', path), authentication.stats);
+            stats.successStats = this.gateway.statsRecorder.createStats(this.getStatsKey('success', path), authentication.stats);
+            
+            return stats;
+        }
+
+        return null;
+    }
+
+    private getStatsKey(key: string, path: string) {
+        let result: Array<string> = [];
+        result.push('auth');
+        result.push(path);
+        result.push(key);
+        return result.join(':');
+    }
+
 }
+

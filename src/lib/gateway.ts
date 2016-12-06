@@ -1,3 +1,4 @@
+/// <reference path="./utils/collections.d.ts" />
 "use strict";
 
 import * as http from "http";
@@ -15,7 +16,7 @@ import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
 import {ApiAuth} from "./authentication/auth";
 import {ApiCache} from "./cache/cache";
-import {Set, StringMap} from "./es5-compat";
+import {StatsRecorder} from "./stats/stats-recorder";
 import {Logger} from "./logger";
 import {AccessLogger} from "./express-logger";
 import * as redis from "ioredis";
@@ -31,10 +32,11 @@ export class Gateway {
     private apiRateLimit: ApiRateLimit;
     private apiCache: ApiCache;
     private apiAuth: ApiAuth;
+    private _statsRecorder: StatsRecorder;
     private configFile: string;
     private apiServer: http.Server;
     private adminServer: http.Server;
-    private _apis: StringMap<ApiConfig>;
+    private _apis: Map<string, ApiConfig>;
     private _config: GatewayConfig;
     private _logger: Logger;
     private _redisClient: redis.Redis;
@@ -63,12 +65,20 @@ export class Gateway {
         return this.config.apiPath;
     }
 
+    get statsRecorder() : StatsRecorder {
+        return this._statsRecorder;
+    }
+
     get middlewarePath(): string {
         return this.config.middlewarePath;
     }
 
     get apis(): Array<ApiConfig> {
-        return this._apis.values();
+        let result = new Array<ApiConfig>();
+        this._apis.forEach(element => {
+            result.push(element);
+        });
+        return result;
     }
 
     start(ready?: (err?)=>void) {
@@ -113,7 +123,7 @@ export class Gateway {
     }
 
     private loadApis(ready?: (err?) => void) {
-        this._apis = new StringMap<ApiConfig>();
+        this._apis = new Map<string,ApiConfig>();
         let path = this.apiPath;
         fs.readdir(path, (err, files) => {
             if (err) {
@@ -213,6 +223,7 @@ export class Gateway {
                         if (this.config.database) {
                             this._redisClient = dbConfig.initializeRedis(this.config.database);
                         }
+                        this._statsRecorder = new StatsRecorder(this);
                         this.apiProxy = new ApiProxy(this);
                         this.apiRateLimit = new ApiRateLimit(this);
                         this.apiAuth = new ApiAuth(this);

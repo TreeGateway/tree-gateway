@@ -21,6 +21,9 @@
                 "ignoreExpiration": true,
                 "verify": "verifyJwtUser"
             }
+        }, 
+        "stats": {
+            "windowMS": 60000
         }
     }
 }
