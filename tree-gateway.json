@@ -42,6 +42,9 @@
         }
     },
     "statsConfig": {
-        "windowMS": 60000
-    }
+        "granularity": {
+            "duration": "1 hour",
+            "ttl": "2 days"
+        }
+    } 
 }

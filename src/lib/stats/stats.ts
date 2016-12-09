@@ -13,42 +13,28 @@ export class Stats {
             this.statsHandler.registerOccurrence(value);
         }, 0);
     }
+
+    static getStatsKey(prefix: string, key: string, path: string) {
+        let result: Array<string> = [];
+        result.push(prefix);
+        result.push(path);
+        result.push(key);
+        return result.join(':');
+    }  
 }
 
 export abstract class StatsHandler {
     id: string;
     private config: StatsConfig;
-    private timer: NodeJS.Timer;
 
     constructor(id: string, config: StatsConfig) {
         this.id = id;
         this.config = config;
     }
 
-    registerOccurrence(value: string){
-        if (!this.timer) {
-            this.newWindow();
-        }
-        this.registerOccurenceOnWindow(value);        
-    } 
-
-    getMeasurements() {
-        return this.config.measurements;
-    }
-
     findOccurrences(){
         return[];
     }
 
-    private newWindow() {
-        this.createWindow();
-        this.timer = setTimeout(()=>{
-            this.onWindowClosed();
-            this.timer = null;
-        }, this.config.windowMS);
-    }
-
-    abstract createWindow();
-    abstract registerOccurenceOnWindow(value: string);
-    abstract onWindowClosed();
+    abstract registerOccurrence(value: string);
 }

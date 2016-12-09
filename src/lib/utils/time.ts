@@ -23,8 +23,7 @@ export function calculateSeconds(cacheTime: string): number {
     let parts = StringUtils.clean(cacheTime).split(' ');
     if (!parts || parts.length == 0)
     {
-        this.gateway.logger.error('Invalid cacheTime [%s].', cacheTime); 
-        return 0;
+        throw new Error(`Invalid time configuration [${cacheTime}].`); 
     }
     value = parseInt(parts[0]);
     unit = (parts.length > 1?parts[1]:'second');
@@ -33,9 +32,9 @@ export function calculateSeconds(cacheTime: string): number {
 
     let unitValue = units[unit];
     if (!unitValue) {
-        this.gateway.logger.error('Invalid cacheTime unit [%s].', unit); 
-        return 0;
+        throw new Error(`Invalid time unit [${unit}].`); 
     }
 
     return unitValue * value;
 }
+ 
