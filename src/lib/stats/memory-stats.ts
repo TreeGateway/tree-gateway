@@ -24,6 +24,15 @@ export class MemoryStats extends StatsHandler {
         this.registerOccurrenceOnWindow(value);        
     } 
 
+    getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+
+    }
+    
+    getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+        
+    }
+    
+
     private newWindow() {
         this.createWindow();
         this.timer = setTimeout(()=>{

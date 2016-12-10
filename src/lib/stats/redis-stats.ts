@@ -39,6 +39,54 @@ export class RedisStats extends StatsHandler {
     }
 
     /**
+     * Get a time serie whit the last 'count' measurements recorded. 
+     */
+    getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+        let currentTime: number = this.getCurrentTime();
+        if (count > this.ttl / this.duration) {
+            return callback(new Error(`Count: ${count} exceeds the maximum stored slots for configured granularity.`));
+        }
+        this.getOccurrencesForTime(key, currentTime - count*this.duration, currentTime, callback);
+    }
+    
+    /**
+     * Get a time serie whit starting from the 'time' moment. 
+     */
+    getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+        let currentTime: number = this.getCurrentTime();
+        this.getOccurrencesForTime(key, time, currentTime, callback);
+    }
+    
+    private getOccurrencesForTime(key: string, time: number, currentTime: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+        let from: number = this.getRoundedTime(this.duration, time);
+        let to: number = this.getRoundedTime(this.duration, currentTime);
+        let multi: ioredis.Pipeline = this.gateway.redisClient.multi();
+
+        for(let ts=from; ts<=to; ts+=this.duration) {
+            let keyTimestamp = this.getRoundedTime(this.ttl, ts);
+            let tmpKey = [this.prefix, this.id, key, keyTimestamp].join(':');
+
+            multi.hget(tmpKey, ts);
+        }
+
+        multi.exec((err, results) => {
+            if (err) {
+                return callback(err);
+            }
+            let data=[];
+            for(let ts=from, i=0; ts<=to; ts+=this.duration, i+=1) {
+                data.push([ts, results[i][1] ? parseInt(results[i][1], 10) : 0]);
+            }
+
+            if (this.gateway.logger.isDebugEnabled()) {
+                this.gateway.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
+            }
+
+            return callback(null, data);
+        });
+    }
+
+    /**
      *  Get current timestamp in seconds
      */ 
     private getCurrentTime() {
