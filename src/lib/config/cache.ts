@@ -53,6 +53,14 @@ export let CacheConfigValidatorSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string())
 });
 
-export function validateCacheConfig(cache: CacheConfig, callback: (err, value)=>void) {
-    Joi.validate(cache, CacheConfigValidatorSchema, callback);
+export function validateCacheConfig(cache: CacheConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(cache, CacheConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }
