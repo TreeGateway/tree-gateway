@@ -32,15 +32,11 @@ export class RedisStore implements CacheStore<CacheEntry>{
     get(key: string, callback: StoreCallback<CacheEntry>): void {
         let rdskey = this.options.prefix + key;
         this.options.client.get(rdskey).then((cachedValue: string) => {
-            try {
-                if (cachedValue) {
-                    callback(null, JSON.parse(cachedValue));
-                }
-                callback(null, null);
+            if (cachedValue) {
+                callback(null, JSON.parse(cachedValue));
             }
-            catch (e) {
-                callback(e, null);
-                this.del(key);
+            else {
+                callback(null, null);
             }
         }).catch((err: any)=>{
             callback(err, null);

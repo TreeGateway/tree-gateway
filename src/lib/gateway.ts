@@ -66,10 +66,6 @@ export class Gateway {
         return this.config.apiPath;
     }
 
-    get statsRecorder() : StatsRecorder {
-        return this._statsRecorder;
-    }
-
     get statsConfig() : StatsConfig {
         return this._config.statsConfig;
     }
@@ -84,6 +80,10 @@ export class Gateway {
             result.push(element);
         });
         return result;
+    }
+
+    createStats(id: string) {
+        return this._statsRecorder.createStats(id, this._config.statsConfig);
     }
 
     start(ready?: (err?)=>void) {
@@ -285,6 +285,7 @@ export class Gateway {
         }
         
         AdminServer.gateway = this;
+
         Server.buildServices(this.adminApp, ...adminApi);
     }
 

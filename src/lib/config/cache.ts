@@ -31,6 +31,10 @@ export interface ServerCacheConfig {
     cacheTime: string;
     binary?: boolean;
     preserveHeaders?: Array<string>;
+    /**
+     * If true, disabled the statistical data recording.
+     */
+    disableStats?: boolean;
 }
 
 let ClientCacheValidatorSchema = Joi.object().keys({
@@ -44,7 +48,8 @@ let ClientCacheValidatorSchema = Joi.object().keys({
 let ServerCacheValidatorSchema = Joi.object().keys({
     cacheTime: Joi.string().required(),
     binary: Joi.boolean(),
-    preserveHeaders: Joi.array().items(Joi.string())
+    preserveHeaders: Joi.array().items(Joi.string()),
+    disableStats: Joi.boolean()
 });
 
 export let CacheConfigValidatorSchema = Joi.object().keys({

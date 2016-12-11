@@ -13,42 +13,43 @@ export class Stats {
             this.statsHandler.registerOccurrence(value);
         }, 0);
     }
+
+    getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+        setTimeout(()=>{
+            this.statsHandler.getOccurrences(key, time, callback);
+        }, 0);
+    }
+
+    getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+        setTimeout(()=>{
+            this.statsHandler.getLastOccurrences(key, count, callback);
+        }, 0);
+    }
+
+
+    static getStatsKey(prefix: string, key: string, path: string, ...opt: Array<string>) {
+        let result: Array<string> = [];
+        result.push(prefix);
+        result.push(path);
+        result.push(key);
+
+        if (opt) {
+            result = result.concat(opt);
+        }
+        return result.join(':');
+    }  
 }
 
 export abstract class StatsHandler {
     id: string;
     private config: StatsConfig;
-    private timer: NodeJS.Timer;
 
     constructor(id: string, config: StatsConfig) {
         this.id = id;
         this.config = config;
     }
 
-    registerOccurrence(value: string){
-        if (!this.timer) {
-            this.newWindow();
-        }
-        this.registerOccurenceOnWindow(value);        
-    } 
-
-    getMeasurements() {
-        return this.config.measurements;
-    }
-
-    findOccurrences(){
-        return[];
-    }
-
-    private newWindow() {
-        this.createWindow();
-        this.timer = setTimeout(()=>{
-            this.onWindowClosed();
-            this.timer = null;
-        }, this.config.windowMS);
-    }
-
-    abstract createWindow();
-    abstract registerOccurenceOnWindow(value: string);
-    abstract onWindowClosed();
+    abstract registerOccurrence(value: string);
+    abstract getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void);
+    abstract getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void);
 }

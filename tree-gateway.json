@@ -42,6 +42,13 @@
         }
     },
     "statsConfig": {
-        "windowMS": 60000
+        "granularity": {
+            "duration": "1 hour",
+            "ttl": "2 days"
+        }
+    }, 
+    "database": {
+        "host": "localhost",
+        "port": 6379
     }
 }

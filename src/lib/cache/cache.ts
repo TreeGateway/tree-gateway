@@ -8,9 +8,16 @@ import {ClientCache} from "./client-cache";
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
 import * as Utils from "underscore";
+import {Stats} from "../stats/stats";
 
 let onHeaders = require("on-headers");
 let ServerCache = serverCache.ServerCache;
+
+class StatsController {
+    cacheError: Stats;
+    cacheHit: Stats;
+    cacheMiss: Stats;
+}
 
 export class ApiCache {
     private gateway: Gateway;
@@ -39,13 +46,18 @@ export class ApiCache {
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
-            let cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);        
-            this.gateway.server.use(path, cacheMiddleware);
+            try{
+                let cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);        
+                this.gateway.server.use(path, cacheMiddleware);
+            } catch (e) {
+                this.gateway.logger.error(e);
+            }
         });
     }
 
     private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string): express.RequestHandler {
         let func = new Array<string>();
+        let stats = this.createCacheStats(path, cache.server);
         func.push("function(req, res, next){");
         if (validateGroupFunction) {
             func.push("if (validateGroupFunction(req, res)){");
@@ -60,7 +72,13 @@ export class ApiCache {
         }
         if (cache.server) {
             let serverCache: serverCache.ServerCache = new ServerCache(this.gateway);
-            func.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next'));
+
+            if (stats) {
+                func.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next', 'stats'));
+            }
+            else{
+                func.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next'));
+            }
         }
         
         func.push("}");
@@ -100,5 +118,18 @@ export class ApiCache {
             }
         }
         return caches;
+    }
+
+    private createCacheStats(path: string, serverCache: ServerCacheConfig) : StatsController {
+        if ((!serverCache.disableStats) && (this.gateway.statsConfig)) {
+            let stats: StatsController = new StatsController();
+            stats.cacheError = this.gateway.createStats(Stats.getStatsKey('cache', 'error', path));
+            stats.cacheHit = this.gateway.createStats(Stats.getStatsKey('cache', 'hit', path));
+            stats.cacheMiss = this.gateway.createStats(Stats.getStatsKey('cache', 'miss', path));
+            
+            return stats;
+        }
+
+        return null;
     }
 }

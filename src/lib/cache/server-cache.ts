@@ -3,7 +3,7 @@
 import {CacheEntry, CacheStore} from "./cache-store";
 import {Gateway} from "../gateway";
 import {ServerCacheConfig} from "../config/cache";
-import {calculateSeconds} from "./cache-time";
+import {calculateSeconds} from "../utils/time";
 import {MemoryStore} from "./memory-store";
 import * as StringUtils from "underscore.string";
 
@@ -35,17 +35,24 @@ export class ServerCache {
         }
     }
 
-    buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req, res, next){
+    buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req: string, res: string, 
+                         next: string, stats?: string){
         if (this.gateway.logger.isDebugEnabled()) {
             this.gateway.logger.debug('Configuring Server Cache for path [%s].', path);
         }
         let result = new Array<string>();
         result.push('ServerCache.cacheStore.get('+req+'.originalUrl, function(err, entry){');
         result.push('if (err) {');
+        if (stats) {
+            result.push('stats.cacheError.registerOccurrence('+req+'.path);');
+        }
         result.push('return '+next+'();');
         result.push('}');
         result.push('if (entry) {');
         // cache hit
+        if (stats) {
+            result.push('stats.cacheHit.registerOccurrence('+req+'.path);');
+        }
         result.push(res+'.contentType(entry.mimeType || "text/html");');
         if (serverCache.preserveHeaders) {
             serverCache.preserveHeaders.forEach((header)=>{
@@ -61,6 +68,9 @@ export class ServerCache {
         result.push('}');
         result.push('else {');
         // cache miss
+        if (stats) {
+            result.push('stats.cacheMiss.registerOccurrence('+req+'.path);');
+        }
         result.push('var send = '+res+'.send.bind('+res+');');
         result.push(res+'.send = function (body) {');
         result.push('var ret = send(body);');

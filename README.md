@@ -27,6 +27,7 @@ It is an work in proggress.
 
 ## In progress Features
  - Service Discovery
+ - Load Balancing
  - Authorization
  - Monitoring and Analytics
  - Circuit Breaker

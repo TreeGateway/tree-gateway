@@ -2,7 +2,7 @@
 
 import {Gateway} from "../gateway";
 import {ClientCacheConfig} from "../config/cache";
-import {calculateSeconds} from "./cache-time";
+import {calculateSeconds} from "../utils/time";
 
 let defaults = require('defaults');
 
