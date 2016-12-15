@@ -121,9 +121,9 @@ export class ApiCache {
     private createCacheStats(path: string, serverCache: ServerCacheConfig) : StatsController {
         if ((!serverCache.disableStats) && (this.gateway.statsConfig)) {
             let stats: StatsController = new StatsController();
-            stats.cacheError = this.gateway.createStats(Stats.getStatsKey('cache', 'error', path));
-            stats.cacheHit = this.gateway.createStats(Stats.getStatsKey('cache', 'hit', path));
-            stats.cacheMiss = this.gateway.createStats(Stats.getStatsKey('cache', 'miss', path));
+            stats.cacheError = this.gateway.createStats(Stats.getStatsKey('cache', path, 'error'));
+            stats.cacheHit = this.gateway.createStats(Stats.getStatsKey('cache', path, 'hit'));
+            stats.cacheMiss = this.gateway.createStats(Stats.getStatsKey('cache', path, 'miss'));
             
             return stats;
         }

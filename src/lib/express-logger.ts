@@ -33,7 +33,6 @@ export class AccessLogger {
             fs.ensureDirSync(path.dirname(config.file.filename));
             options.transports.push(new Winston.transports.File(config.file));
         }
-        
         server.use(expressWinston.logger(options));
     }
 }

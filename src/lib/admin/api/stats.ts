@@ -13,22 +13,19 @@ export class StatsService {
     @Path(":api")
     getstats(@PathParam("api")api: string, @QueryParam('path')path: string) : Promise<Array<Array<number>>>{
         return new Promise<Array<Array<number>>>((resolve, reject) =>{
+            let found: boolean = false;
             AdminServer.gateway.apis.forEach((apiConfig)=>{
-                if (api === apiConfig.name) {
+                if (!found && api === apiConfig.name) {
                     if (path) {
-                        let stats = AdminServer.gateway.createStats(Stats.getStatsKey('auth', 'fail', apiConfig.proxy.path))
-                        stats.getLastOccurrences(path, 24, (err, result)=>{
-                            if (err) {
-                                reject(err);
-                            }
-                            else {
-                                resolve(result);
-                            }
-                        });
-
+                        found = true;
+                        let stats = AdminServer.gateway.createStats(Stats.getStatsKey('auth', apiConfig.proxy.path, 'fail'))
+                        return stats.getLastOccurrences(24, path).then(resolve).catch(reject);
                     }
                 }
-            })
+            });
+            if (!found) {
+                reject(new Errors.NotFoundError("API not found"));
+            }
         });
     }
 }

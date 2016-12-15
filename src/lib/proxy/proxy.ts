@@ -73,16 +73,16 @@ export class ApiProxy {
         let self = this;
         if (filterChain && filterChain.length > 0) {            
             result['filter'] = function(req, res) {
-                let result = true;
+                let filterResult = true;
                 filterChain.forEach(f=>{
-                    if (debug) {
-                        self.gateway.logger.debug(`Filter ${(result?'accepted': 'rejected')} the path ${req.path}`);
-                    }
-                    if (result) {
-                        result = f(req, res);
+                    if (filterResult) {
+                        filterResult = f(req, res);
                     } 
+                    if (debug) {
+                        self.gateway.logger.debug(`Filter ${(filterResult?'accepted': 'rejected')} the path ${req.path}`);
+                    }
                 });
-                return result;
+                return filterResult;
             }; 
         }
         let requestInterceptor: Function = this.interceptor.requestInterceptor(api);

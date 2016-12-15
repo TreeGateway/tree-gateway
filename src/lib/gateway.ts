@@ -16,14 +16,19 @@ import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
 import {ApiAuth} from "./authentication/auth";
 import {ApiCache} from "./cache/cache";
-import {StatsRecorder} from "./stats/stats-recorder";
 import {Logger} from "./logger";
 import {AccessLogger} from "./express-logger";
 import * as redis from "ioredis";
 import * as dbConfig from "./redis";
 import * as path from "path";
 import {StatsConfig} from "./config/stats";
+import {Stats} from "./stats/stats";
+import {StatsRecorder} from "./stats/stats-recorder";
 
+class StatsController {
+    requestStats: Stats;
+    statusCodeStats: Stats;
+}
 
 export class Gateway {
     private app: express.Application;
@@ -173,6 +178,9 @@ export class Gateway {
         let apiKey: string = this.getApiKey(api);
         this._apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
+        if (!api.proxy.disableStats) {
+            this.configureStatsMiddleware(this.server, api.proxy.path, api.proxy.path);
+        }
         
         if (api.throttling) {
             if (this._logger.isDebugEnabled()) {
@@ -278,12 +286,57 @@ export class Gateway {
         this.adminApp.disable('x-powered-by'); 
         this.adminApp.use(compression());
         if (this.config.adminLogger) {
+            if (!this.config.disableAdminStats) {
+                this.configureStatsMiddleware(this.adminApp, 'admin');
+            }
             AccessLogger.configureAccessLoger(this.config.adminLogger, 
                         this, this.adminApp, './logs/adminAccessLog.log');
         }
         
         AdminServer.gateway = this;
+
         Server.buildServices(this.adminApp, admin.MiddlewareAPI, admin.APIService, admin.StatsService);
+    }
+
+    private configureStatsMiddleware(server: express.Application, key: string, path?: string) {
+        let stats = this.createStatsController(key);
+        if (stats) {
+            let handler = (req, res, next)=>{
+                let p = req.path;
+                stats.requestStats.registerOccurrence(p);
+                let end = res.end;
+                res.end = function(...args) {
+                    stats.statusCodeStats.registerOccurrence(p, ''+res.statusCode);
+                    res.end = end;
+                    res.end.apply(res, arguments);
+                };
+                next();
+            };
+            if (path){
+                if (this._logger.isDebugEnabled()) {
+                    this._logger.debug(`Configuring Stats collector for accesses to [${path}].`);
+                }
+                server.use(path, handler);
+            }
+            else {
+                if (this._logger.isDebugEnabled()) {
+                    this._logger.debug(`Configuring Stats collector for accesses.`);
+                }
+                server.use(handler);
+            }
+        }
+    }
+
+    private createStatsController(path: string): StatsController {
+        if ((this.statsConfig)) {
+            let stats: StatsController = new StatsController();
+            stats.requestStats = this.createStats(Stats.getStatsKey('access', path, 'request'));
+            stats.statusCodeStats = this.createStats(Stats.getStatsKey('access', path, 'status'));
+            
+            return stats;
+        }
+
+        return null;
     }
 
     private getApiKey(api: ApiConfig) {
