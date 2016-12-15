@@ -90,7 +90,7 @@ export class Gateway {
         this.initialize(this.configFile, (err)=>{
             if (!err) {
                 this.apiServer = this.app.listen(this.config.listenPort, ()=>{
-                    this.logger.info('Gateway listenning on port %d', this.config.listenPort);
+                    this.logger.info(`Gateway listenning on port ${this.config.listenPort}`);
                     if (ready) {
                         ready();
                     }
@@ -102,7 +102,7 @@ export class Gateway {
     startAdmin(ready?: ()=>void) {
         if (this.adminApp) {
             this.adminServer = this.adminApp.listen(this.config.adminPort, ()=>{
-                this.logger.info('Gateway Admin Server listenning on port %d', this.config.adminPort);
+                this.logger.info(`Gateway Admin Server listenning on port ${this.config.adminPort}`);
                 if (ready) {
                     ready();
                 }
@@ -132,7 +132,7 @@ export class Gateway {
         let path = this.apiPath;
         fs.readdir(path, (err, files) => {
             if (err) {
-                this._logger.error("Error reading directory: "+err);
+                this._logger.error(`Error reading directory: ${err}`);
             }
             else {
                 path = ((StringUtils.endsWith(path, '/'))?path:path+'/');
@@ -141,7 +141,7 @@ export class Gateway {
                     if (StringUtils.endsWith(fileName, '.json')) {
                         fs.readJson(path+fileName, (error, apiConfig: ApiConfig)=>{
                             if (error) {
-                                this._logger.error("Error reading directory: "+error);
+                                this._logger.error(`Error reading directory: ${error}`);
                             }
                             else {
                                 this.loadApi(apiConfig, (length -1 === index)?ready: null);
@@ -156,7 +156,7 @@ export class Gateway {
     private loadApi(api: ApiConfig, ready?: (err?) => void) {
         validateApiConfig(api, (err, value: ApiConfig)=>{
             if (err) {
-                this._logger.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
+                this._logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(value)}`);
                 if (ready) {
                     ready(err);
                 }
@@ -169,7 +169,7 @@ export class Gateway {
 
     private loadValidateApi(api: ApiConfig, ready?: (err?) => void) {
         if (this._logger.isInfoEnabled()) {
-            this._logger.info("Configuring API [%s] on path: %s", api.name, api.proxy.path);
+            this._logger.info(`Configuring API [${api.name}] on path: ${api.proxy.path}`);
         }
         let apiKey: string = this.getApiKey(api);
         this._apis.set(apiKey, api);
@@ -211,13 +211,13 @@ export class Gateway {
         
         fs.readJson(configFileName, (error, gatewayConfig: GatewayConfig)=>{
             if (error) {
-                console.error("Error reading tree-gateway.json config file: "+error);
+                console.error(`Error reading tree-gateway.json config file: ${error}`);
             }
             else {
                 this.app = express();
                 validateGatewayConfig(gatewayConfig, (err, value: GatewayConfig)=>{
                     if (err) {
-                        console.error('Error loading api config: %s\n%s', err.message, JSON.stringify(value));
+                        console.error(`Error loading api config: ${err.message}\n${JSON.stringify(value)}`);
                         if (ready) {
                             ready(err);
                         }
@@ -225,9 +225,7 @@ export class Gateway {
                     else {
                         this.initializeConfig(configFileName, value);
                         this._logger = new Logger(this.config.logger, this);
-                        if (this.config.database) {
-                            this._redisClient = dbConfig.initializeRedis(this.config.database);
-                        }
+                        this._redisClient = dbConfig.initializeRedis(this.config.database);
                         this._statsRecorder = new StatsRecorder(this);
                         this.apiProxy = new ApiProxy(this);
                         this.apiRateLimit = new ApiRateLimit(this);
@@ -293,8 +291,3 @@ export class Gateway {
         return api.name + (api.version? '_'+api.version: '_default');
     }
 }
-/*TODO: 
-- Create a global interceptor to add a 'Via' header pointing to Tree-Gateway
-- Manage API versions
-- Create a clsuter program, to initialize the app in cluster
-*/

@@ -18,6 +18,7 @@ describe("Gateway Tests", () => {
 
 	afterAll(function(){
 		gateway.stop();
+		gateway.redisClient.disconnect();
 	});
 
 	describe("The Gateway Proxy", () => {

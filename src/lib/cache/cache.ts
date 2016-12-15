@@ -41,8 +41,8 @@ export class ApiCache {
             if (cache.group){
                 if (this.gateway.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cache.group);
-                    this.gateway.logger.debug('Configuring Group filters for Cache on path [%s]. Groups [%s]', 
-                        api.proxy.target.path, JSON.stringify(groups));
+                    this.gateway.logger.debug(`Configuring Group filters for Cache on path 
+                        [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
@@ -58,12 +58,12 @@ export class ApiCache {
     private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string): express.RequestHandler {
         let func = new Array<string>();
         let stats = this.createCacheStats(path, cache.server);
-        func.push("function(req, res, next){");
+        func.push(`function(req, res, next){`);
         if (validateGroupFunction) {
-            func.push("if (validateGroupFunction(req, res)){");
+            func.push(`if (validateGroupFunction(req, res)){`);
         }
         else {
-            func.push("if (req.method === 'GET'){");
+            func.push(`if (req.method === 'GET'){`);
         }
 
         if (cache.client) {
@@ -81,11 +81,11 @@ export class ApiCache {
             }
         }
         
-        func.push("}");
-        func.push("next();"); 
-        func.push("}");
+        func.push(`}`);
+        func.push(`next();`); 
+        func.push(`}`);
         let f: express.RequestHandler;
-        eval('f = '+func.join(''))
+        eval(`f = ${func.join('')}`);
         return f;
     }
 
@@ -105,8 +105,8 @@ export class ApiCache {
         });
         
         if (generalCaches.length > 1) {
-            this.gateway.logger.error("Invalid cache configuration for api [%s]." 
-                + "Conflicting configurations for default group", path);
+            this.gateway.logger.error(`Invalid cache configuration for api [${path}]. Conflicting 
+                                       configurations for default group`);
                 return [];
         }
 

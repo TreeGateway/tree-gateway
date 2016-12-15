@@ -77,7 +77,7 @@ export class ApiProxy {
                 let result = true;
                 filterChain.forEach(f=>{
                     if (debug) {
-                        self.gateway.logger.debug('Filter %s the path %s',(result?'accepted': 'rejected'),req.path);
+                        self.gateway.logger.debug(`Filter ${(result?'accepted': 'rejected')} the path ${req.path}`);
                     }
                     if (result) {
                         result = f(req, res);

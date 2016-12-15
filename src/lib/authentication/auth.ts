@@ -60,12 +60,12 @@ export class ApiAuth {
                     
                     
                     if (this.gateway.logger.isDebugEnabled) {
-                        this.gateway.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
+                        this.gateway.logger.debug(`Authentication Strategy [${key}] configured for path [${path}]`);
                     }
                 }
             }
             catch(e) {
-                this.gateway.logger.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
+                this.gateway.logger.error(`Error configuring Authentication Strategy [${key}] for path [${path}]`, e);
             }
         });
     }
@@ -98,8 +98,8 @@ export class ApiAuth {
         let path: string = api.proxy.path;
         if (this.gateway.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, authentication.group);
-            this.gateway.logger.debug('Configuring Group filters for Authentication on path [%s]. Groups [%s]', 
-                api.proxy.target.path, JSON.stringify(groups));
+            this.gateway.logger.debug(`Configuring Group filters for Authentication on path 
+                                [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         let stats = this.createAuthStats(path, authentication);

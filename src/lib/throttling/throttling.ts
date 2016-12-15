@@ -7,6 +7,7 @@ import * as Utils from "underscore";
 import * as pathUtil from "path"; 
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
+import {RedisStore} from "./redis-store";
 
 interface ThrottlingInfo{
     limiter?: express.RequestHandler;
@@ -24,27 +25,16 @@ export class ApiRateLimit {
         let path: string = api.proxy.path;
         let throttlings: Array<ThrottlingConfig> = this.sortLimiters(api.throttling, path);
         let RateLimit = require('express-rate-limit');
-        let store = null;
         let throttlingInfos: Array<ThrottlingInfo> = new Array<ThrottlingInfo>();
-
-        if (this.gateway.redisClient) {
-            store = require('./redis-store');
-            if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug("Using Redis as throttling store.");
-            }
-        }
 
         throttlings.forEach((throttling: ThrottlingConfig) => {
             let throttlingInfo: ThrottlingInfo = {}; 
             let rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler", "group");
-
-            if (store) {
-                rateConfig.store = new store.RedisStore({
-                    path: path,
-                    expiry: (throttling.windowMs / 1000) +1,
-                    client: this.gateway.redisClient
-                });
-            }
+            rateConfig.store = new RedisStore({
+                path: path,
+                expiry: (throttling.windowMs / 1000) +1,
+                client: this.gateway.redisClient
+            });
             
             if (throttling.keyGenerator) {
                 let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
@@ -58,13 +48,12 @@ export class ApiRateLimit {
             throttlingInfo.limiter = new RateLimit(rateConfig);
 
             if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug('Configuring Throtlling controller for path [%s].', api.proxy.target.path);
+                this.gateway.logger.debug(`Configuring Throtlling controller for path [${api.proxy.target.path}].`);
             }
             if (throttling.group){
                 if (this.gateway.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, throttling.group);
-                    this.gateway.logger.debug('Configuring Group filters for Throtlling on path [%s]. Groups [%s]', 
-                        api.proxy.target.path, JSON.stringify(groups));
+                    this.gateway.logger.debug(`Configuring Group filters for Throtlling on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 throttlingInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, throttling.group);
             }
@@ -105,8 +94,7 @@ export class ApiRateLimit {
         });
         
         if (generalThrottlings.length > 1) {
-            this.gateway.logger.error("Invalid throttling configuration for api [%s]." 
-                + "Conflicting configurations for default group", path);
+            this.gateway.logger.error(`Invalid throttling configuration for api [${path}]. Conflicting configurations for default group`);
                 return [];
         }
 

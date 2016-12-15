@@ -16,6 +16,10 @@ export interface GatewayConfig {
      */
     adminPort: number;
     /**
+     * Configurations for gateway database (REDIS).
+     */
+    database: RedisConfig;
+    /**
      * The root folder where the gateway will work.
      */
     rootPath?: string;
@@ -35,10 +39,6 @@ export interface GatewayConfig {
      * Configurations for gateway logger.
      */
     logger?: LoggerConfig;
-    /**
-     * Configurations for gateway database (REDIS).
-     */
-    database?: RedisConfig;
     /**
      * Configurations for gateway access logger.
      */
@@ -263,12 +263,12 @@ let AccessLoggerConfigSchema = Joi.object().keys({
 export let GatewayConfigValidatorSchema = Joi.object().keys({
     listenPort: Joi.number().positive().required(),
     adminPort: Joi.number().positive().required(),
+    database: RedisConfigSchema.required(),
     rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     apiPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     underProxy: Joi.boolean(),
     logger: LoggerConfigSchema,
-    database: RedisConfigSchema,
     accessLogger: AccessLoggerConfigSchema,
     adminLogger: AccessLoggerConfigSchema,
     statsConfig: StatsConfigValidatorSchema
