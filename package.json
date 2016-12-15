@@ -10,13 +10,12 @@
     "url": "https://github.com/thiagobustamante/tree-gateway.git"
   },
   "dependencies": {
-    "args": "^2.1.0",
+    "argparse": "^1.0.9",
     "cluster": "^0.7.7",
     "compression": "^1.6.2",
-    "defaults": "^1.0.3",
     "express": "^4.14.0",
     "express-http-proxy": "^0.10.0",
-    "express-rate-limit": "^2.5.0",
+    "express-rate-limit": "^2.6.0",
     "express-winston": "^2.0.0",
     "fs-extra": "^0.30.0",
     "ioredis": "^2.4.0",
@@ -38,8 +37,8 @@
     "winston": "^2.2.0"
   },
   "devDependencies": {
+    "@types/argparse": "^1.0.30",
     "@types/compression": "0.0.33",
-    "@types/defaults": "^1.0.1",
     "@types/es6-promise": "0.0.32",
     "@types/express": "^4.0.33",
     "@types/express-serve-static-core": "^4.0.37",

@@ -3,8 +3,7 @@
 import {Gateway} from "../gateway";
 import {ClientCacheConfig} from "../config/cache";
 import {calculateSeconds} from "../utils/time";
-
-let defaults = require('defaults');
+import * as _ from "lodash";
 
 export class ClientCache {
     private gateway: Gateway;
@@ -26,7 +25,7 @@ export class ClientCache {
     }
 
     private cacheHeaderString(cache: ClientCacheConfig): string {
-        let cacheConfig = defaults(cache, {
+        let cacheConfig = _.defaults(cache, {
             cacheControl: 'public', 
             cacheTime: '0'
         });

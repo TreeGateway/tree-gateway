@@ -8,13 +8,12 @@ import * as fs from "fs-extra";
 import {Gateway} from "./gateway";
 import * as _ from "lodash";
 
-let defaults = require('defaults');
 let expressWinston = require('express-winston');
 
 export class AccessLogger {
     static configureAccessLoger(config: AccessLoggerConfig, gateway: Gateway, 
                                 server: express.Application, defaultFileName: string) {
-        config = defaults(config, {
+        config = _.defaults(config, {
             meta: false, 
             statusLevels: true
         })
@@ -25,7 +24,7 @@ export class AccessLogger {
             options.transports.push(new Winston.transports.Console(config.console));
         }
         if (config && config.file) {
-            config.file = defaults(config.file, {
+            config.file = _.defaults(config.file, {
                 filename: defaultFileName
             })
             if (_.startsWith(config.file.filename, '.')) {

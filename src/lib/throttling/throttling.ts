@@ -8,6 +8,7 @@ import * as pathUtil from "path";
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
 import {RedisStore} from "./redis-store";
+import {Stats} from "../stats/stats";
 
 interface ThrottlingInfo{
     limiter?: express.RequestHandler;
@@ -29,7 +30,11 @@ export class ApiRateLimit {
 
         throttlings.forEach((throttling: ThrottlingConfig) => {
             let throttlingInfo: ThrottlingInfo = {}; 
-            let rateConfig: any = _.omit(throttling, "store", "keyGenerator", "handler", "group");
+            let rateConfig: any = _.defaults(_.omit(throttling, "store", "keyGenerator", "handler", "group"), {
+                statusCode: 429,
+                message: 'Too many requests, please try again later.'
+            }
+            );
             rateConfig.store = new RedisStore({
                 path: path,
                 expiry: (throttling.windowMs / 1000) +1,
@@ -40,11 +45,11 @@ export class ApiRateLimit {
                 let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
                 rateConfig.keyGenerator = require(p);
             }
-            if (throttling.handler) {
-                let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
-                rateConfig.handler = require(p);
+            if (throttling.skip) {
+                let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'skip' , throttling.skip);                
+                rateConfig.skip = require(p);
             }
-
+            this.configureThrottlingHandlerFunction(path, throttling, rateConfig);
             throttlingInfo.limiter = new RateLimit(rateConfig);
 
             if (this.gateway.logger.isDebugEnabled()) {
@@ -61,6 +66,37 @@ export class ApiRateLimit {
         });
         
         this.setupMiddlewares(throttlingInfos, path);
+    }
+
+    private configureThrottlingHandlerFunction(path: string, throttling: ThrottlingConfig, rateConfig: any) {
+        let stats = this.createStats(path, throttling);
+        if (stats) {
+            if (throttling.handler) {
+                let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
+                let customHandler = require(p);
+                rateConfig.handler = function (req, res, next) {
+                    stats.registerOccurrence(req.path);
+                    customHandler(req, res, next);
+                };
+            } 
+            else {
+                rateConfig.handler = function (req, res) {
+                    stats.registerOccurrence(req.path);
+                    res.format({
+                        html: function(){
+                            res.status(rateConfig.statusCode).end(rateConfig.message);
+                        },
+                        json: function(){
+                            res.status(rateConfig.statusCode).json({ message: rateConfig.message });
+                        }
+                    });                        
+                };
+            }
+        }
+        else if (throttling.handler) {
+            let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
+            rateConfig.handler = require(p);
+        }
     }
 
     private setupMiddlewares(throttlingInfos: Array<ThrottlingInfo>, path: string) {
@@ -107,4 +143,13 @@ export class ApiRateLimit {
         }
         return throttlings;
     }
+
+    private createStats(path: string, throttling: ThrottlingConfig) : Stats {
+        if ((!throttling.disableStats) && (this.gateway.statsConfig)) {
+            return this.gateway.createStats(Stats.getStatsKey('throt', 'exceeded', path));
+        }
+
+        return null;
+    }
+    
 }

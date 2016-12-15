@@ -4,8 +4,7 @@ import {Gateway} from "../gateway";
 import {Stats} from "./stats";
 import {StatsConfig} from "../config/stats";
 import {RedisStats} from "./redis-stats";
-
-let defaults = require('defaults');
+import * as _ from "lodash";
 
 export class StatsRecorder {
     private gateway: Gateway;
@@ -17,7 +16,7 @@ export class StatsRecorder {
     createStats(id: string, config: StatsConfig) {
         let stats: Stats = null;
         try{
-            config = defaults(config, {
+            config = _.defaults(config, {
                 prefix: 'stats'
             });
 

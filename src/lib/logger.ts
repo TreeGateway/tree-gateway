@@ -7,8 +7,6 @@ import * as path from "path";
 import * as fs from "fs-extra";
 import {Gateway} from "./gateway";
 
-let defaults = require('defaults');
-
 export class Logger {
     level: LogLevel;
     winston: Winston.LoggerInstance;
@@ -30,7 +28,7 @@ export class Logger {
             options.transports.push(new Winston.transports.Console(config.console));
         }
         if (config && config.file) {
-            config.file = defaults(config.file, {
+            config.file = _.defaults(config.file, {
                 filename: './logs/gateway.log'
             })
             if (_.startsWith(config.file.filename, '.')) {

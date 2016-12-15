@@ -1,6 +1,6 @@
 'use strict';
 import * as redis from "ioredis";
-let defaults = require('defaults');
+import * as _ from "lodash";
 
 interface Options {
     path: string;
@@ -14,7 +14,7 @@ export class RedisStore {
   options: Options;
   
   constructor(options: Options) {
-    this.options = defaults(options, {
+    this.options = _.defaults(options, {
         expiry: 60, // default expiry is one minute
         prefix: "rl"
     });

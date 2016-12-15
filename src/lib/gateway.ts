@@ -24,7 +24,6 @@ import * as dbConfig from "./redis";
 import * as path from "path";
 import {StatsConfig} from "./config/stats";
 
-let defaults = require('defaults');
 
 export class Gateway {
     private app: express.Application;
@@ -241,14 +240,14 @@ export class Gateway {
     }
 
     private initializeConfig(configFileName: string, gatewayConfig: GatewayConfig) {
-        this._config = defaults(gatewayConfig, {
+        this._config = _.defaults(gatewayConfig, {
             rootPath : path.dirname(configFileName),
         });
         if (_.startsWith(this._config.rootPath, '.')) {
             this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
         }
 
-        this._config = defaults(this._config, {
+        this._config = _.defaults(this._config, {
             apiPath : path.join(this._config.rootPath, 'apis'),
             middlewarePath : path.join(this._config.rootPath, 'middleware')
         });
