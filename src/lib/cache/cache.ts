@@ -41,8 +41,7 @@ export class ApiCache {
             if (cache.group){
                 if (this.gateway.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cache.group);
-                    this.gateway.logger.debug(`Configuring Group filters for Cache on path 
-                        [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.gateway.logger.debug(`Configuring Group filters for Cache on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
@@ -105,8 +104,7 @@ export class ApiCache {
         });
         
         if (generalCaches.length > 1) {
-            this.gateway.logger.error(`Invalid cache configuration for api [${path}]. Conflicting 
-                                       configurations for default group`);
+            this.gateway.logger.error(`Invalid cache configuration for api [${path}]. Conflicting configurations for default group`);
                 return [];
         }
 
