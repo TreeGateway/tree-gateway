@@ -1,6 +1,6 @@
 "use string";
 
-import * as StringUtils from "underscore.string";
+import * as _ from "lodash";
 
 const units: any = {};
 
@@ -20,7 +20,7 @@ Object.keys(units).forEach(function (unit) {
 export function calculateSeconds(cacheTime: string): number {
     let unit: string, value: number;
 
-    let parts = StringUtils.clean(cacheTime).split(' ');
+    let parts = (cacheTime).replace(/\s\s+/g, ' ').split(' ');
     if (!parts || parts.length == 0)
     {
         throw new Error(`Invalid time configuration [${cacheTime}].`); 

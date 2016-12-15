@@ -3,11 +3,10 @@
 import * as express from "express";
 import * as Winston from "winston";
 import {AccessLoggerConfig} from "./config/gateway";
-import * as StringUtils from "underscore.string";
 import * as path from "path";
 import * as fs from "fs-extra";
 import {Gateway} from "./gateway";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 
 let defaults = require('defaults');
 let expressWinston = require('express-winston');
@@ -19,7 +18,7 @@ export class AccessLogger {
             meta: false, 
             statusLevels: true
         })
-        const options = Utils.omit(config, "console", "file");
+        const options: any = _.omit(config, "console", "file");
         options.transports = [];
         
         if (config && config.console) {
@@ -29,7 +28,7 @@ export class AccessLogger {
             config.file = defaults(config.file, {
                 filename: defaultFileName
             })
-            if (StringUtils.startsWith(config.file.filename, '.')) {
+            if (_.startsWith(config.file.filename, '.')) {
                 config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
             }
             fs.ensureDirSync(path.dirname(config.file.filename));

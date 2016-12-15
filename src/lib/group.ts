@@ -1,14 +1,14 @@
 "use strict";
 
-import * as ObjectUtils from "underscore";
+import * as _ from "lodash";
 import {Group} from "./config/group";
 import * as Utils from "./proxy/utils";
 
 let pathToRegexp = require('path-to-regexp');
 
 export function filter(groups: Array<Group>, names: Array<string>) {
-    let filtered = ObjectUtils.filter(groups, (g: Group)=>{
-        return ObjectUtils.contains(names, g.name);
+    let filtered = _.filter(groups, (g: Group)=>{
+        return names.indexOf(g.name) >= 0;
     });
     return filtered;
 }

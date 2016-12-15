@@ -5,7 +5,7 @@ import {Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, R
 import "es6-promise";
 import {ApiConfig, validateApiConfig} from "../../config/api";
 import {AdminServer} from "../admin-server";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 
 @Path('apis')
 export class APIService {
@@ -27,7 +27,7 @@ export class APIService {
     @Path(":name")
     getApi(@PathParam("name")name: string) : Promise<Array<ApiConfig>>{
         return new Promise<Array<ApiConfig>>((resolve, reject) =>{
-            resolve(Utils.filter(AdminServer.gateway.apis, (apiConfig)=>{
+            resolve(_.filter(AdminServer.gateway.apis, (apiConfig)=>{
                 return name === apiConfig.name;
             }));
         });

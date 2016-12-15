@@ -1,8 +1,8 @@
 "use strict";
-import * as StringUtils from "underscore.string";
+import * as _ from "lodash";
 
 export function normalizePath(path: string) {
-    path = ((StringUtils.startsWith(path, '/'))?path:'/'+path);
-    path = ((StringUtils.endsWith(path, '/'))?path:path+'/');
+    path = ((_.startsWith(path, '/'))?path:'/'+path);
+    path = ((_.endsWith(path, '/'))?path:path+'/');
     return path;
 }

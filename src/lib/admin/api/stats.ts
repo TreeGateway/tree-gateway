@@ -5,7 +5,6 @@ import {Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, R
 import "es6-promise";
 import {ApiConfig, validateApiConfig} from "../../config/api";
 import {AdminServer} from "../admin-server";
-import * as Utils from "underscore";
 import {Stats} from "../../stats/stats";
 
 @Path('stats')

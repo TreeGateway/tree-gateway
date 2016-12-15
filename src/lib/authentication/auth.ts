@@ -2,7 +2,7 @@
 
 import {ApiConfig} from "../config/api";
 import {AuthenticationConfig} from "../config/authentication";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
 import {Gateway} from "../gateway";
@@ -31,11 +31,11 @@ export class ApiAuth {
     authentication(apiKey: string, api: ApiConfig) {
         let path: string = api.proxy.path;
         let authentication: AuthenticationConfig =  api.authentication
-        Utils.keys(authentication.strategy).forEach(key=>{
+        _.keys(authentication.strategy).forEach(key=>{
             try {
                 let authConfig = authentication.strategy[key];
                 let authStrategy: auth.Strategy;
-                if (Utils.has(providedStrategies, key)) {
+                if (_.has(providedStrategies, key)) {
                     let strategy = providedStrategies[key];
                     authStrategy= strategy(authConfig, this.gateway);
                 }

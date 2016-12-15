@@ -8,7 +8,7 @@ import * as fs from "fs-extra";
 import * as admin from "./admin/api/admin-api";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
-import * as StringUtils from "underscore.string";
+import * as _ from "lodash";
 import {ApiConfig, validateApiConfig} from "./config/api";
 import {GatewayConfig, validateGatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
@@ -135,10 +135,10 @@ export class Gateway {
                 this._logger.error(`Error reading directory: ${err}`);
             }
             else {
-                path = ((StringUtils.endsWith(path, '/'))?path:path+'/');
+                path = ((_.endsWith(path, '/'))?path:path+'/');
                 const length = files.length;
                 files.forEach((fileName, index) =>{
-                    if (StringUtils.endsWith(fileName, '.json')) {
+                    if (_.endsWith(fileName, '.json')) {
                         fs.readJson(path+fileName, (error, apiConfig: ApiConfig)=>{
                             if (error) {
                                 this._logger.error(`Error reading directory: ${error}`);
@@ -205,7 +205,7 @@ export class Gateway {
     }
 
     private initialize(configFileName: string, ready?: (err?)=>void) {
-        if (StringUtils.startsWith(configFileName, '.')) {
+        if (_.startsWith(configFileName, '.')) {
             configFileName = path.join(process.cwd(), configFileName);                
         }
         
@@ -244,7 +244,7 @@ export class Gateway {
         this._config = defaults(gatewayConfig, {
             rootPath : path.dirname(configFileName),
         });
-        if (StringUtils.startsWith(this._config.rootPath, '.')) {
+        if (_.startsWith(this._config.rootPath, '.')) {
             this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
         }
 
@@ -253,10 +253,10 @@ export class Gateway {
             middlewarePath : path.join(this._config.rootPath, 'middleware')
         });
 
-        if (StringUtils.startsWith(this._config.apiPath, '.')) {
+        if (_.startsWith(this._config.apiPath, '.')) {
             this._config.apiPath = path.join(this._config.rootPath, this._config.apiPath);                
         }
-        if (StringUtils.startsWith(this._config.middlewarePath, '.')) {
+        if (_.startsWith(this._config.middlewarePath, '.')) {
             this._config.middlewarePath = path.join(this._config.rootPath, this._config.middlewarePath);                
         }
     }

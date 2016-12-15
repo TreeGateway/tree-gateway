@@ -2,7 +2,7 @@
 
 import * as Winston from "winston";
 import {LoggerConfig, LogLevel} from "./config/gateway";
-import * as StringUtils from "underscore.string";
+import * as _ from "lodash";
 import * as path from "path";
 import * as fs from "fs-extra";
 import {Gateway} from "./gateway";
@@ -33,7 +33,7 @@ export class Logger {
             config.file = defaults(config.file, {
                 filename: './logs/gateway.log'
             })
-            if (StringUtils.startsWith(config.file.filename, '.')) {
+            if (_.startsWith(config.file.filename, '.')) {
                 config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
             }
             fs.ensureDirSync(path.dirname(config.file.filename));

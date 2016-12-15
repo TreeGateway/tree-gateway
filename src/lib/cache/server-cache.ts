@@ -5,7 +5,7 @@ import {Gateway} from "../gateway";
 import {ServerCacheConfig} from "../config/cache";
 import {calculateSeconds} from "../utils/time";
 import {RedisStore} from "./redis-store";
-import * as StringUtils from "underscore.string";
+import * as _ from "lodash";
 
 export class ServerCache {
     static cacheStore: CacheStore<CacheEntry>;
@@ -48,7 +48,7 @@ export class ServerCache {
         result.push(`${res}.contentType(entry.mimeType || "text/html");`);
         if (serverCache.preserveHeaders) {
             serverCache.preserveHeaders.forEach((header)=>{
-                result.push(`${res}.set(${StringUtils.quote(header)}, entry.header[${StringUtils.quote(header)}]);`);
+                result.push(`${res}.set('${header}', entry.header['${header}']);`);
             });
         }
         if(serverCache.binary){
@@ -83,7 +83,7 @@ export class ServerCache {
                 if (index > 0) {
                     result.push(`,`);        
                 }
-                result.push(`${StringUtils.quote(header)}: this._headers[${StringUtils.quote(header)}]`);
+                result.push(`'${header}': this._headers['${header}']`);
             });
             result.push(`}`);
         }

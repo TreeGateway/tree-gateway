@@ -3,7 +3,7 @@
 import * as express from "express";
 import {ApiConfig} from "../config/api";
 import {ThrottlingConfig} from "../config/throttling";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 import * as pathUtil from "path"; 
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
@@ -29,7 +29,7 @@ export class ApiRateLimit {
 
         throttlings.forEach((throttling: ThrottlingConfig) => {
             let throttlingInfo: ThrottlingInfo = {}; 
-            let rateConfig = Utils.omit(throttling, "store", "keyGenerator", "handler", "group");
+            let rateConfig: any = _.omit(throttling, "store", "keyGenerator", "handler", "group");
             rateConfig.store = new RedisStore({
                 path: path,
                 expiry: (throttling.windowMs / 1000) +1,
@@ -86,7 +86,7 @@ export class ApiRateLimit {
     }
 
     private sortLimiters(throttlings: Array<ThrottlingConfig>, path: string): Array<ThrottlingConfig> {
-        let generalThrottlings = Utils.filter(throttlings, (value)=>{
+        let generalThrottlings = _.filter(throttlings, (value)=>{
             if (value.group) {
                 return true;
             }

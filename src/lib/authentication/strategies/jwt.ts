@@ -1,21 +1,21 @@
 "use strict";
 
-import {Strategy, ExtractJwt} from 'passport-jwt';
+import {Strategy, StrategyOptions, ExtractJwt} from 'passport-jwt';
 import {Gateway} from "../../gateway"; 
 import {JWTAuthentication} from "../../config/authentication";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 import * as pathUtil from "path"; 
 
 module.exports = function (authConfig: JWTAuthentication, gateway: Gateway) {
-    let opts = Utils.omit(authConfig, "extractFrom", "verify");
+    let opts = _.omit(authConfig, "extractFrom", "verify");
     if (authConfig.extractFrom) {
-        let extractors: Array<string> = Utils.keys(authConfig.extractFrom);
+        let extractors: Array<string> = _.keys(authConfig.extractFrom);
         if (extractors.length == 1){
             opts['jwtFromRequest'] = getExtractor(extractors[0], authConfig.extractFrom[extractors[0]]);
         }
         else {
             let requestExtractors = new Array<any>()
-            Utils.keys(authConfig.extractFrom).forEach(extractor=>{
+            _.keys(authConfig.extractFrom).forEach(extractor=>{
                 requestExtractors.push(getExtractor(extractor, authConfig.extractFrom[extractor]));
             });
             opts['jwtFromRequest'] = ExtractJwt['fromExtractors'](requestExtractors);
@@ -35,7 +35,7 @@ module.exports = function (authConfig: JWTAuthentication, gateway: Gateway) {
             done(null, jwtPayload);
         };
     }
-    return new Strategy(opts, verifyFunction);
+    return new Strategy(<StrategyOptions>opts, verifyFunction);
 };
 
 function getExtractor(extractor: string, param: string) {

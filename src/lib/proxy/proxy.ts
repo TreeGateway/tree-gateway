@@ -1,7 +1,6 @@
 "use strict";
 
 import * as express from "express";
-import * as StringUtils from "underscore.string";
 import {ApiConfig} from "../config/api";
 import {Proxy} from "../config/proxy";
 import {ProxyFilter} from "./filter";

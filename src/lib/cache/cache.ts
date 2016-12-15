@@ -7,7 +7,7 @@ import * as serverCache from "./server-cache";
 import {ClientCache} from "./client-cache";
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 import {Stats} from "../stats/stats";
 
 let onHeaders = require("on-headers");
@@ -96,7 +96,7 @@ export class ApiCache {
     }
 
     private sortCaches(caches: Array<CacheConfig>, path: string): Array<CacheConfig> {
-        let generalCaches = Utils.filter(caches, (value)=>{
+        let generalCaches = _.filter(caches, (value)=>{
             if (value.group) {
                 return true;
             }
