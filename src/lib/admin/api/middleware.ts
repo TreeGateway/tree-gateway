@@ -51,6 +51,12 @@ export class MiddlewareAPI {
         return MiddlewareService.list('throttling/handler');
     }
 
+    @GET
+    @Path('throttling/skip')
+    throttlingSkip() : Promise<Array<string>>{
+        return MiddlewareService.list('throttling/skip');
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter(@PathParam("name")name: string) : Promise<void>{
@@ -91,6 +97,12 @@ export class MiddlewareAPI {
     @Path('throttling/handlers/:name')
     removeThrottlingHandler(@PathParam("name")name: string) : Promise<void>{
         return MiddlewareService.remove('throttling/handler', name);
+    }
+
+    @DELETE
+    @Path('throttling/skip/:name')
+    removeThrottlingSkip(@PathParam("name")name: string) : Promise<void>{
+        return MiddlewareService.remove('throttling/skip', name);
     }
 
     @PUT
@@ -135,6 +147,11 @@ export class MiddlewareAPI {
         return MiddlewareService.save(path.join('throttling/handler', name), file.buffer);
     }
 
+    @PUT
+    @Path('throttling/skip/:name')
+    saveThrottlingSkip(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
+        return MiddlewareService.save(path.join('throttling/skip', name), file.buffer);
+    }
     @GET
     @Path('filters/:name')
     readFilter(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
@@ -233,6 +250,19 @@ export class MiddlewareAPI {
         });
     }
     
+    @GET
+    @Path('throttling/skip/:name')
+    readThrottlingSkip(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
+        return new Promise<Return.DownloadResource>((resolve, reject)=>{
+            MiddlewareService.read('throttling/skip', name)
+            .then(value=>{
+                resolve(new Return.DownloadResource(value, name+'.js'));
+            })
+            .catch(err=>{
+                reject(new Errors.NotFoundError());
+            });
+        });
+    }
 
     @POST
     @Path('filters')
@@ -339,4 +369,18 @@ export class MiddlewareAPI {
         });
     }
     
+    @POST
+    @Path('throttling/skip')
+    addThrottlingSkip(@FileParam("file") file: Express.Multer.File, 
+                    @FormParam("name") name: string){
+        return new Promise<Return.NewResource>((resolve, reject) =>{
+            MiddlewareService.add(path.join('throttling/skip',name), file.buffer)
+                .then(value=>{
+                    resolve(new Return.NewResource(path.join('throttling/skip',name)));
+                })
+                .catch(err=>{
+                    reject(new Errors.InternalServerError('Error saving handler.'))
+                });
+        });
+    }
 }
