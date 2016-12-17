@@ -2,7 +2,7 @@
 
 import { CacheEntry, CacheStore, StoreCallback } from "./cache-store";
 import * as redis from "ioredis";
-let defaults = require('defaults');
+import * as _ from "lodash";
 
 interface Options {
     maxAge?: number;
@@ -14,7 +14,7 @@ export class RedisStore implements CacheStore<CacheEntry>{
     options: Options;
 
     constructor(options: Options) {
-        this.options = defaults(options, {
+        this.options = _.defaults(options, {
             maxAge: 60, // default expiry is one minute
             prefix: "ca:"
         });

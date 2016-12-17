@@ -16,6 +16,10 @@ export interface GatewayConfig {
      */
     adminPort: number;
     /**
+     * Configurations for gateway database (REDIS).
+     */
+    database: RedisConfig;
+    /**
      * The root folder where the gateway will work.
      */
     rootPath?: string;
@@ -36,10 +40,6 @@ export interface GatewayConfig {
      */
     logger?: LoggerConfig;
     /**
-     * Configurations for gateway database (REDIS).
-     */
-    database?: RedisConfig;
-    /**
      * Configurations for gateway access logger.
      */
     accessLogger?: AccessLoggerConfig;
@@ -49,6 +49,10 @@ export interface GatewayConfig {
     adminLogger?: AccessLoggerConfig;
 
     statsConfig?: StatsConfig;
+    /**
+     * If true, disabled the statistical data recording for admin tasks.
+     */
+    disableAdminStats?: boolean;
 }
 
 export interface AccessLoggerConfig {
@@ -69,6 +73,10 @@ export interface AccessLoggerConfig {
     colorize?: boolean;     
     console?: LogConsoleConfig;
     file?: LogFileConfig;
+    /**
+     * If true, disabled the statistical data recording.
+     */
+    disableStats?: boolean;
 }
 
 export interface RedisConfig {
@@ -257,21 +265,23 @@ let AccessLoggerConfigSchema = Joi.object().keys({
     expressFormat: Joi.boolean(), 
     colorize: Joi.boolean(),     
     console: LogConsoleConfigSchema,
-    file: LogFileConfigSchema
+    file: LogFileConfigSchema,
+    disableStats: Joi.boolean()
 });
 
 export let GatewayConfigValidatorSchema = Joi.object().keys({
     listenPort: Joi.number().positive().required(),
     adminPort: Joi.number().positive().required(),
+    database: RedisConfigSchema.required(),
     rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     apiPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     underProxy: Joi.boolean(),
     logger: LoggerConfigSchema,
-    database: RedisConfigSchema,
     accessLogger: AccessLoggerConfigSchema,
     adminLogger: AccessLoggerConfigSchema,
-    statsConfig: StatsConfigValidatorSchema
+    statsConfig: StatsConfigValidatorSchema,
+    disableAdminStats: Joi.boolean()
 });
 
 export function validateGatewayConfig(gatewayConfig: GatewayConfig, callback: (err, value)=>void) {

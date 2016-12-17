@@ -7,7 +7,7 @@ import * as serverCache from "./server-cache";
 import {ClientCache} from "./client-cache";
 import {Gateway} from "../gateway";
 import * as Groups from "../group";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 import {Stats} from "../stats/stats";
 
 let onHeaders = require("on-headers");
@@ -41,8 +41,7 @@ export class ApiCache {
             if (cache.group){
                 if (this.gateway.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cache.group);
-                    this.gateway.logger.debug('Configuring Group filters for Cache on path [%s]. Groups [%s]', 
-                        api.proxy.target.path, JSON.stringify(groups));
+                    this.gateway.logger.debug(`Configuring Group filters for Cache on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
@@ -58,12 +57,12 @@ export class ApiCache {
     private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string): express.RequestHandler {
         let func = new Array<string>();
         let stats = this.createCacheStats(path, cache.server);
-        func.push("function(req, res, next){");
+        func.push(`function(req, res, next){`);
         if (validateGroupFunction) {
-            func.push("if (validateGroupFunction(req, res)){");
+            func.push(`if (validateGroupFunction(req, res)){`);
         }
         else {
-            func.push("if (req.method === 'GET'){");
+            func.push(`if (req.method === 'GET'){`);
         }
 
         if (cache.client) {
@@ -81,11 +80,11 @@ export class ApiCache {
             }
         }
         
-        func.push("}");
-        func.push("next();"); 
-        func.push("}");
+        func.push(`}`);
+        func.push(`next();`); 
+        func.push(`}`);
         let f: express.RequestHandler;
-        eval('f = '+func.join(''))
+        eval(`f = ${func.join('')}`);
         return f;
     }
 
@@ -97,7 +96,7 @@ export class ApiCache {
     }
 
     private sortCaches(caches: Array<CacheConfig>, path: string): Array<CacheConfig> {
-        let generalCaches = Utils.filter(caches, (value)=>{
+        let generalCaches = _.filter(caches, (value)=>{
             if (value.group) {
                 return true;
             }
@@ -105,8 +104,7 @@ export class ApiCache {
         });
         
         if (generalCaches.length > 1) {
-            this.gateway.logger.error("Invalid cache configuration for api [%s]." 
-                + "Conflicting configurations for default group", path);
+            this.gateway.logger.error(`Invalid cache configuration for api [${path}]. Conflicting configurations for default group`);
                 return [];
         }
 
@@ -123,9 +121,9 @@ export class ApiCache {
     private createCacheStats(path: string, serverCache: ServerCacheConfig) : StatsController {
         if ((!serverCache.disableStats) && (this.gateway.statsConfig)) {
             let stats: StatsController = new StatsController();
-            stats.cacheError = this.gateway.createStats(Stats.getStatsKey('cache', 'error', path));
-            stats.cacheHit = this.gateway.createStats(Stats.getStatsKey('cache', 'hit', path));
-            stats.cacheMiss = this.gateway.createStats(Stats.getStatsKey('cache', 'miss', path));
+            stats.cacheError = this.gateway.createStats(Stats.getStatsKey('cache', path, 'error'));
+            stats.cacheHit = this.gateway.createStats(Stats.getStatsKey('cache', path, 'hit'));
+            stats.cacheMiss = this.gateway.createStats(Stats.getStatsKey('cache', path, 'miss'));
             
             return stats;
         }

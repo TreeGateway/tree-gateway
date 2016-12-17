@@ -23,66 +23,82 @@ export class RedisStats extends StatsHandler {
     /**
      * Record a hit for the specified stats key
      */
-    registerOccurrence(key: string) {
-        let keyTimestamp = this.getRoundedTime(this.ttl);
-        let tmpKey = [this.prefix, this.id, key, keyTimestamp].join(':');
-        let hitTimestamp = this.getRoundedTime(this.duration);
+    registerOccurrence(key: string, ...extra: string[]) {
+        setTimeout(()=>{
+            let keyTimestamp = this.getRoundedTime(this.ttl);
+            let tmpKeys = [this.prefix, this.id, key, keyTimestamp];
+            let tmpKey = tmpKeys.join(':');
+            if (extra && extra.length > 0) {
+                tmpKey += ':'+extra.join(':');
+            }
+            let hitTimestamp = this.getRoundedTime(this.duration);
 
-        this.gateway.redisClient.multi()
-            .hincrby(tmpKey, hitTimestamp, 1)
-            .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
-            .exec((err, res)=>{
-                if (err) {
-                    this.gateway.logger.error(`Error on stats recording: ${err}`);
-                }
-            });
+            this.gateway.redisClient.multi()
+                .hincrby(tmpKey, hitTimestamp, 1)
+                .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
+                .exec((err, res)=>{
+                    if (err) {
+                        this.gateway.logger.error(`Error on stats recording: ${err}`);
+                    }
+                });
+        },0);
     }
 
     /**
      * Get a time serie whit the last 'count' measurements recorded. 
      */
-    getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+    getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
         let currentTime: number = this.getCurrentTime();
         if (count > this.ttl / this.duration) {
-            return callback(new Error(`Count: ${count} exceeds the maximum stored slots for configured granularity.`));
+            return new Promise<Array<Array<number>>>((resolve, reject)=>{
+                setTimeout(()=>{
+                    reject(new Error(`Count: ${count} exceeds the maximum stored slots for configured granularity.`));
+                }, 0);
+            });
         }
-        this.getOccurrencesForTime(key, currentTime - count*this.duration, currentTime, callback);
+        return this.getOccurrencesForTime(currentTime - count*this.duration, currentTime, key, extra);
     }
     
     /**
      * Get a time serie whit starting from the 'time' moment. 
      */
-    getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
+    getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
         let currentTime: number = this.getCurrentTime();
-        this.getOccurrencesForTime(key, time, currentTime, callback);
+        return this.getOccurrencesForTime(time, currentTime, key, extra);
     }
     
-    private getOccurrencesForTime(key: string, time: number, currentTime: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
-        let from: number = this.getRoundedTime(this.duration, time);
-        let to: number = this.getRoundedTime(this.duration, currentTime);
-        let multi: ioredis.Pipeline = this.gateway.redisClient.multi();
+    private getOccurrencesForTime(time: number, currentTime: number, key: string, extra: string[]): Promise<Array<Array<number>>> {
+        return new Promise<Array<Array<number>>>((resolve, reject)=>{
+            let from: number = this.getRoundedTime(this.duration, time);
+            let to: number = this.getRoundedTime(this.duration, currentTime);
+            let multi: ioredis.Pipeline = this.gateway.redisClient.multi();
 
-        for(let ts=from; ts<=to; ts+=this.duration) {
-            let keyTimestamp = this.getRoundedTime(this.ttl, ts);
-            let tmpKey = [this.prefix, this.id, key, keyTimestamp].join(':');
+            for(let ts=from; ts<=to; ts+=this.duration) {
+                let keyTimestamp = this.getRoundedTime(this.ttl, ts);
+                let tmpKeys = [this.prefix, this.id, key, keyTimestamp];
+                let tmpKey = tmpKeys.join(':');
+                if (extra && extra.length > 0) {
+                    tmpKey += ':'+extra.join(':');
+                }
 
-            multi.hget(tmpKey, ts);
-        }
-
-        multi.exec((err, results) => {
-            if (err) {
-                return callback(err);
-            }
-            let data=[];
-            for(let ts=from, i=0; ts<=to; ts+=this.duration, i+=1) {
-                data.push([ts, results[i][1] ? parseInt(results[i][1], 10) : 0]);
+                multi.hget(tmpKey, ts);
             }
 
-            if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
-            }
+            multi.exec((err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                let data=[];
+                for(let ts=from, i=0; ts<=to; ts+=this.duration, i+=1) {
+                    data.push([ts, results[i][1] ? parseInt(results[i][1], 10) : 0]);
+                }
 
-            return callback(null, data);
+                if (this.gateway.logger.isDebugEnabled()) {
+                    this.gateway.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
+                }
+
+                return resolve(data);
+            });
         });
     }
 

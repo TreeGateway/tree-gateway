@@ -8,26 +8,19 @@ export class Stats {
         this.statsHandler = statsHandler;
     }
 
-    registerOccurrence(value: string){
-        setTimeout(()=>{
-            this.statsHandler.registerOccurrence(value);
-        }, 0);
+    registerOccurrence(value: string, ...extra: string[]){
+        return this.statsHandler.registerOccurrence.apply(this.statsHandler, arguments);
     }
 
-    getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
-        setTimeout(()=>{
-            this.statsHandler.getOccurrences(key, time, callback);
-        }, 0);
+    getOccurrences(time: number, key: string): Promise<Array<Array<number>>> {
+        return this.statsHandler.getOccurrences.apply(this.statsHandler, arguments);
     }
 
-    getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void) {
-        setTimeout(()=>{
-            this.statsHandler.getLastOccurrences(key, count, callback);
-        }, 0);
+    getLastOccurrences(count: number, key: string): Promise<Array<Array<number>>> {
+        return this.statsHandler.getLastOccurrences.apply(this.statsHandler, arguments);
     }
 
-
-    static getStatsKey(prefix: string, key: string, path: string, ...opt: Array<string>) {
+    static getStatsKey(prefix: string, path: string, key: string, ...opt: Array<string>) {
         let result: Array<string> = [];
         result.push(prefix);
         result.push(path);
@@ -49,7 +42,7 @@ export abstract class StatsHandler {
         this.config = config;
     }
 
-    abstract registerOccurrence(value: string);
-    abstract getOccurrences(key: string, time: number, callback: (err:Error, serie?: Array<Array<number>>)=>void);
-    abstract getLastOccurrences(key: string, count: number, callback: (err:Error, serie?: Array<Array<number>>)=>void);
+    abstract registerOccurrence(value: string, ...extra: string[]);
+    abstract getOccurrences(time: number, key: string): Promise<Array<Array<number>>> ;
+    abstract getLastOccurrences(count: number, key: string): Promise<Array<Array<number>>>;
 }

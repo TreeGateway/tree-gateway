@@ -2,7 +2,7 @@
 
 import {ApiConfig} from "../config/api";
 import {AuthenticationConfig} from "../config/authentication";
-import * as Utils from "underscore";
+import * as _ from "lodash";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
 import {Gateway} from "../gateway";
@@ -31,11 +31,11 @@ export class ApiAuth {
     authentication(apiKey: string, api: ApiConfig) {
         let path: string = api.proxy.path;
         let authentication: AuthenticationConfig =  api.authentication
-        Utils.keys(authentication.strategy).forEach(key=>{
+        _.keys(authentication.strategy).forEach(key=>{
             try {
                 let authConfig = authentication.strategy[key];
                 let authStrategy: auth.Strategy;
-                if (Utils.has(providedStrategies, key)) {
+                if (_.has(providedStrategies, key)) {
                     let strategy = providedStrategies[key];
                     authStrategy= strategy(authConfig, this.gateway);
                 }
@@ -60,12 +60,12 @@ export class ApiAuth {
                     
                     
                     if (this.gateway.logger.isDebugEnabled) {
-                        this.gateway.logger.debug("Authentication Strategy [%s] configured for path [%s]", key, path);
+                        this.gateway.logger.debug(`Authentication Strategy [${key}] configured for path [${path}]`);
                     }
                 }
             }
             catch(e) {
-                this.gateway.logger.error("Error configuring Authentication Strategy [%s] for path [%s]", key, path, e);
+                this.gateway.logger.error(`Error configuring Authentication Strategy [${key}] for path [${path}]`, e);
             }
         });
     }
@@ -98,8 +98,7 @@ export class ApiAuth {
         let path: string = api.proxy.path;
         if (this.gateway.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, authentication.group);
-            this.gateway.logger.debug('Configuring Group filters for Authentication on path [%s]. Groups [%s]', 
-                api.proxy.target.path, JSON.stringify(groups));
+            this.gateway.logger.debug(`Configuring Group filters for Authentication on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         let stats = this.createAuthStats(path, authentication);
@@ -137,8 +136,8 @@ export class ApiAuth {
     private createAuthStats(path: string, authentication: AuthenticationConfig) : StatsController {
         if ((!authentication.disableStats) && (this.gateway.statsConfig)) {
             let stats: StatsController = new StatsController();
-            stats.failStats = this.gateway.createStats(Stats.getStatsKey('auth', 'fail', path));
-            stats.successStats = this.gateway.createStats(Stats.getStatsKey('auth', 'success', path));
+            stats.failStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'fail'));
+            stats.successStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'success'));
             
             return stats;
         }

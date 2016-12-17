@@ -31,41 +31,39 @@ export class ProxyFilter {
 
     private buildCustomFilter(api: ApiConfig) {
         if (this.proxy.gateway.logger.isDebugEnabled()) {
-            this.proxy.gateway.logger.debug('Configuring custom filters for Proxy target [%s]. Filters [%s]', 
-                api.proxy.target.path, JSON.stringify(api.proxy.filter));
+            this.proxy.gateway.logger.debug(`Configuring custom filters for Proxy target [${api.proxy.target.path}]. Filters [${JSON.stringify(api.proxy.filter)}]`);
         }
         let func = new Array<string>();
-        func.push("function(req, res){");
-        func.push("var accepted = true;");
-        func.push("accepted = (");
+        func.push(`function(req, res){`);
+        func.push(`var accepted = true;`);
+        func.push(`accepted = (`);
         let proxy = api.proxy;
         proxy.filter.forEach((filter, index)=>{
             if (index > 0) {
-                func.push("&&");                
+                func.push(`&&`);                
             }
-            func.push("(");                
+            func.push(`(`);                
             if (filter.group) {
-                func.push("!(");
+                func.push(`!(`);
                 func.push(Groups.buildGroupAllowTest('req', api.group, filter.group));
-                func.push(") ? accepted :");                
+                func.push(`) ? accepted :`);                
             }
             let p = path.join(this.proxy.gateway.middlewarePath, 'filter' ,filter.name);                
-            func.push("require('"+p+"')(req, res)");
-            func.push(")");                
+            func.push(`require('${p}')(req, res)`);
+            func.push(`)`);                
         });
-        func.push(");");
-        func.push("return accepted;");
-        func.push("}");
+        func.push(`);`);
+        func.push(`return accepted;`);
+        func.push(`}`);
         let f;
-        eval('f = '+func.join(''))
+        eval(`f = ${func.join('')}`);
         return f;
     }
 
     private buildAllowFilter(api: ApiConfig) {
         if (this.proxy.gateway.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, api.proxy.target.allow);
-            this.proxy.gateway.logger.debug('Configuring allow filter for Proxy target [%s]. Groups [%s]', 
-                api.proxy.target.path, JSON.stringify(groups));
+            this.proxy.gateway.logger.debug(`Configuring allow filter for Proxy target [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
         }
 
         return Groups.buildGroupAllowFilter(api.group, api.proxy.target.allow);
@@ -74,8 +72,7 @@ export class ProxyFilter {
     private buildDenyFilter(api: ApiConfig) {
         if (this.proxy.gateway.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, api.proxy.target.deny);
-            this.proxy.gateway.logger.debug('Configuring deny filter for Proxy target [%s]. Groups [%s]', 
-                api.proxy.target.path, JSON.stringify(groups));
+            this.proxy.gateway.logger.debug(`Configuring deny filter for Proxy target [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         return Groups.buildGroupDenyFilter(api.group, api.proxy.target.deny);
     }

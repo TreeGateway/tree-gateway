@@ -3,10 +3,8 @@
 import {Gateway} from "../gateway";
 import {Stats} from "./stats";
 import {StatsConfig} from "../config/stats";
-import {MemoryStats} from "./memory-stats";
 import {RedisStats} from "./redis-stats";
-
-let defaults = require('defaults');
+import * as _ from "lodash";
 
 export class StatsRecorder {
     private gateway: Gateway;
@@ -18,22 +16,14 @@ export class StatsRecorder {
     createStats(id: string, config: StatsConfig) {
         let stats: Stats = null;
         try{
-            config = defaults(config, {
+            config = _.defaults(config, {
                 prefix: 'stats'
             });
 
-            if (this.gateway.redisClient) {
-                if (this.gateway.logger.isDebugEnabled()) {
-                    this.gateway.logger.debug('Creating a stats recorder for %s on Redis database', id);
-                }
-                stats = new Stats(new RedisStats(id, config, this.gateway));
+            if (this.gateway.logger.isDebugEnabled()) {
+                this.gateway.logger.debug(`Creating a stats recorder for ${id} on Redis database`);
             }
-            else {
-                if (this.gateway.logger.isDebugEnabled()) {
-                    this.gateway.logger.debug('Creating a memory stats recorder for %s', id);
-                }
-                stats = new Stats(new MemoryStats(id, config));
-            }
+            stats = new Stats(new RedisStats(id, config, this.gateway));
         } catch (e) {
             this.gateway.logger.error(e);
         }

@@ -118,6 +118,10 @@ export interface Proxy {
      * status code and a X-Timeout-Reason header.
      */
     timeout?: number;
+    /**
+     * If true, disabled the statistical data recording.
+     */
+    disableStats?: boolean;
 }
 
 /**
@@ -211,7 +215,8 @@ export let ProxyValidatorSchema = Joi.object().keys({
     filter: Joi.array().items(FilterSchema),
     interceptor: InterceptorsSchema,
     preserveHostHdr: Joi.boolean(),
-    timeout: Joi.number()
+    timeout: Joi.number(),
+    disableStats: Joi.boolean()
 });
 
 export function validateProxyConfig(proxy: Proxy) {

@@ -56,13 +56,28 @@ export interface ThrottlingConfig {
      */
     keyGenerator?: string;
     /**
+     * The name of the function used to skip requests. Returning true from the function
+     *  will skip limiting for that request. Defaults:
+     * 
+     * ```
+     * module.exports = function (req, res) {
+     *    return false;
+     * };
+     * ```
+     * This function must be saved on a js file:
+     * ``` 
+     * middleware/throttling/skip/mySkipFunction.js
+     * ```
+     */
+    skip?: string;
+    /**
      * The name of the function to execute once the max limit is exceeded. It receives the request 
      * and the response objects. The "next" param is available if you need to pass to the 
      * next middleware.
      * 
      * For Example, on myHandler.js file:
      * ```
-     * module.exports = function (req, res) {
+     * module.exports = function (req, res, next) {
      *   res.format({
      *      html: function(){
      *         res.status(options.statusCode).end(options.message);
@@ -85,6 +100,10 @@ export interface ThrottlingConfig {
      * Defaults to *.
      */
     group?: Array<string>;
+    /**
+     * If true, disabled the statistical data recording.
+     */
+    disableStats?: boolean;
 }
 
 export let ThrottlingConfigValidatorSchema = Joi.object().keys({
@@ -96,8 +115,10 @@ export let ThrottlingConfigValidatorSchema = Joi.object().keys({
     statusCode: Joi.number(),
     headers: Joi.boolean(), 
     keyGenerator: Joi.string().alphanum(),
+    skip: Joi.string().alphanum(),
     handler: Joi.string().alphanum(),
-    group: Joi.array().items(Joi.string())
+    group: Joi.array().items(Joi.string()),
+    disableStats: Joi.boolean()
 });
 
 export function validateThrottlingConfig(throttling: ThrottlingConfig) {
