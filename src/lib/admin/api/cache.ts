@@ -27,7 +27,7 @@ export class CacheRest extends RestController {
                 })
                 .then(() => this.service.create(apiName, cache))
                 .then(cacheId => resolve(new Return.NewResource(`apis/${apiName}/cache/${cacheId}`)))
-                .catch(reject);
+                .catch((err) => reject(this.handleError(err)));
         });
     }
 
