@@ -36,6 +36,14 @@ export let GroupValidatorSchema = Joi.object().keys({
     member: Joi.array().items(MemberValidatorSchema).required(),
 });
 
-export function validateGroup(group: Group, callback: (err, value)=>void) {
-    Joi.validate(group, GroupValidatorSchema, callback);
+export function validateGroup(group: Group) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(group, GroupValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }

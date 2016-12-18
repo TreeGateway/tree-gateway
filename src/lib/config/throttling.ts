@@ -4,6 +4,10 @@ import * as Joi from "joi";
 
 export interface ThrottlingConfig {
     /**
+     * Throttling ID.
+     */
+    id?: string;
+    /**
      * milliseconds - how long to keep records of requests in memory. 
      * Defaults to 60000 (1 minute).  
      */
@@ -117,6 +121,14 @@ export let ThrottlingConfigValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean()
 });
 
-export function validateThrottlingConfig(throttling: ThrottlingConfig, callback: (err, value)=>void) {
-    Joi.validate(throttling, ThrottlingConfigValidatorSchema, callback);
+export function validateThrottlingConfig(throttling: ThrottlingConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(throttling, ThrottlingConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }

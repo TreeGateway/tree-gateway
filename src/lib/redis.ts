@@ -9,5 +9,5 @@ export function initializeRedis(config: RedisConfig) {
         host: "localhost", 
         port: 6379
     });    
-    return new redis(config.port, config.host);
+    return new redis(config.port, config.host, config);
 }

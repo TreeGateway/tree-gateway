@@ -91,6 +91,7 @@ export interface MonitorConfig{
 export interface RedisConfig {
     host: string;
     port: number;
+    db: number;
 }
 
 export interface LoggerConfig {
@@ -266,7 +267,8 @@ let LoggerConfigSchema = Joi.object().keys({
 
 let RedisConfigSchema = Joi.object().keys({
     host: Joi.string().hostname().required(),
-    port: Joi.number().positive().required()
+    port: Joi.number().positive().required(),
+    db: Joi.number().positive()
 });
 
 let MonitorConfigSchema = Joi.object().keys({
