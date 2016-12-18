@@ -75,13 +75,13 @@ export class ApiRateLimit {
                 let p = pathUtil.join(this.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
                 let customHandler = require(p);
                 rateConfig.handler = function (req, res, next) {
-                    stats.registerOccurrence(req.path);
+                    stats.registerOccurrence(req.path, 1);
                     customHandler(req, res, next);
                 };
             } 
             else {
                 rateConfig.handler = function (req, res) {
-                    stats.registerOccurrence(req.path);
+                    stats.registerOccurrence(req.path, 1);
                     res.format({
                         html: function(){
                             res.status(rateConfig.statusCode).end(rateConfig.message);

@@ -23,7 +23,7 @@ export class RedisStats extends StatsHandler {
     /**
      * Record a hit for the specified stats key
      */
-    registerOccurrence(key: string, ...extra: string[]) {
+    registerOccurrence(key: string, increment: number, ...extra: string[]) {
         setTimeout(()=>{
             let keyTimestamp = this.getRoundedTime(this.ttl);
             let tmpKeys = [this.prefix, this.id, key, keyTimestamp];
@@ -34,7 +34,7 @@ export class RedisStats extends StatsHandler {
             let hitTimestamp = this.getRoundedTime(this.duration);
 
             this.gateway.redisClient.multi()
-                .hincrby(tmpKey, hitTimestamp, 1)
+                .hincrby(tmpKey, hitTimestamp, increment)
                 .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
                 .exec((err, res)=>{
                     if (err) {

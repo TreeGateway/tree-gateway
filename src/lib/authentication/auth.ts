@@ -78,11 +78,11 @@ export class ApiAuth {
             this.gateway.server.use(path, (req, res, next)=>{
                 authenticator(req, res, (err)=>{
                     if (err) {
-                        stats.failStats.registerOccurrence(req.path);
+                        stats.failStats.registerOccurrence(req.path, 1);
                         next(err);
                     }
                     else {
-                        stats.successStats.registerOccurrence(req.path);
+                        stats.successStats.registerOccurrence(req.path, 1);
                         next();
                     }
                 });
@@ -107,11 +107,11 @@ export class ApiAuth {
                 if (f(req, res)){
                     authenticator(req, res, (err)=>{
                         if (err) {
-                            stats.failStats.registerOccurrence(req.path);
+                            stats.failStats.registerOccurrence(req.path, 1);
                             next(err);
                         }
                         else {
-                            stats.successStats.registerOccurrence(req.path);
+                            stats.successStats.registerOccurrence(req.path, 1);
                             next();
                         }
                     });

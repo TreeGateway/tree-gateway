@@ -53,6 +53,10 @@ export interface GatewayConfig {
      * If true, disabled the statistical data recording for admin tasks.
      */
     disableAdminStats?: boolean;
+    /**
+     * Create monitors for the gateway health
+     */
+    monitor?: Array<MonitorConfig>;
 }
 
 export interface AccessLoggerConfig {
@@ -77,6 +81,11 @@ export interface AccessLoggerConfig {
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
+}
+
+export interface MonitorConfig{
+    name: string;
+    statsConfig: StatsConfig;
 }
 
 export interface RedisConfig {
@@ -260,6 +269,11 @@ let RedisConfigSchema = Joi.object().keys({
     port: Joi.number().positive().required()
 });
 
+let MonitorConfigSchema = Joi.object().keys({
+    name: Joi.string().alphanum().required(),
+    statsConfig: StatsConfigValidatorSchema.required()
+});
+
 let AccessLoggerConfigSchema = Joi.object().keys({
     msg: Joi.string(),
     expressFormat: Joi.boolean(), 
@@ -281,6 +295,7 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: AccessLoggerConfigSchema,
     adminLogger: AccessLoggerConfigSchema,
     statsConfig: StatsConfigValidatorSchema,
+    monitor: Joi.array().items(MonitorConfigSchema),
     disableAdminStats: Joi.boolean()
 });
 

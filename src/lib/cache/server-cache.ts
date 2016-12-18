@@ -36,14 +36,14 @@ export class ServerCache {
         result.push(`ServerCache.cacheStore.get(${req}.originalUrl, function(err, entry){`);
         result.push(`if (err) {`);
         if (stats) {
-            result.push(`${stats}.cacheError.registerOccurrence(${req}.path);`);
+            result.push(`${stats}.cacheError.registerOccurrence(${req}.path, 1);`);
         }
         result.push(`return ${next}();`);
         result.push('}');
         result.push('if (entry) {');
         // cache hit
         if (stats) {
-            result.push(`${stats}.cacheHit.registerOccurrence(${req}.path);`);
+            result.push(`${stats}.cacheHit.registerOccurrence(${req}.path, 1);`);
         }
         result.push(`${res}.contentType(entry.mimeType || "text/html");`);
         if (serverCache.preserveHeaders) {
@@ -61,7 +61,7 @@ export class ServerCache {
         result.push(`else {`);
         // cache miss
         if (stats) {
-            result.push(`${stats}.cacheMiss.registerOccurrence(${req}.path);`);
+            result.push(`${stats}.cacheMiss.registerOccurrence(${req}.path, 1);`);
         }
         result.push(`var send = ${res}.send.bind(${res});`);
         result.push(`${res}.send = function (body) {`);

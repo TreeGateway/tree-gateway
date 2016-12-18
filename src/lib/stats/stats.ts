@@ -8,7 +8,7 @@ export class Stats {
         this.statsHandler = statsHandler;
     }
 
-    registerOccurrence(value: string, ...extra: string[]){
+    registerOccurrence(value: string, increment: number, ...extra: string[]){
         return this.statsHandler.registerOccurrence.apply(this.statsHandler, arguments);
     }
 
@@ -42,7 +42,7 @@ export abstract class StatsHandler {
         this.config = config;
     }
 
-    abstract registerOccurrence(value: string, ...extra: string[]);
+    abstract registerOccurrence(value: string, increment: number, ...extra: string[]);
     abstract getOccurrences(time: number, key: string): Promise<Array<Array<number>>> ;
     abstract getLastOccurrences(count: number, key: string): Promise<Array<Array<number>>>;
 }

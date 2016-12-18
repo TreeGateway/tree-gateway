@@ -303,10 +303,10 @@ export class Gateway {
         if (stats) {
             let handler = (req, res, next)=>{
                 let p = req.path;
-                stats.requestStats.registerOccurrence(p);
+                stats.requestStats.registerOccurrence(p, 1);
                 let end = res.end;
                 res.end = function(...args) {
-                    stats.statusCodeStats.registerOccurrence(p, ''+res.statusCode);
+                    stats.statusCodeStats.registerOccurrence(p, 1, ''+res.statusCode);
                     res.end = end;
                     res.end.apply(res, arguments);
                 };
