@@ -43,7 +43,7 @@ export interface ApiConfig {
     authentication?: AuthenticationConfig;
 
     /**
-     * Configuration for API authentication.
+     * Configuration for API cache.
      */
     cache?: Array<CacheConfig>;
 
@@ -57,7 +57,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     name: Joi.string().alphanum().min(3).max(30).required(),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required(),
     description: Joi.string(),
-    proxy: ProxyValidatorSchema.required(),
+    proxy: ProxyValidatorSchema,
     group: Joi.array().items(GroupValidatorSchema),
     throttling: Joi.array().items(ThrottlingConfigValidatorSchema),
     authentication: AuthenticationValidatorSchema, 
@@ -65,6 +65,14 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 
-export function validateApiConfig(apiConfig: ApiConfig, callback: (err, value)=>void) {
-    Joi.validate(apiConfig, ApiConfigValidatorSchema, callback);
+export function validateApiConfig(apiConfig: ApiConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(apiConfig, ApiConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }

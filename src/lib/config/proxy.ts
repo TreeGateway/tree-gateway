@@ -219,6 +219,14 @@ export let ProxyValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean()
 });
 
-export function validateProxyConfig(proxy: Proxy, callback: (err, value)=>void) {
-    Joi.validate(proxy, ProxyValidatorSchema, callback);
+export function validateProxyConfig(proxy: Proxy) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(proxy, ProxyValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }

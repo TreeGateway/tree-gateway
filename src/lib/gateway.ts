@@ -5,7 +5,7 @@ import * as http from "http";
 import * as compression from "compression";
 import * as express from "express";
 import * as fs from "fs-extra";
-import * as admin from "./admin/api/admin-api";
+import adminApi from "./admin/api/admin-api";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
 import * as _ from "lodash";
@@ -158,17 +158,17 @@ export class Gateway {
     }
 
     private loadApi(api: ApiConfig, ready?: (err?) => void) {
-        validateApiConfig(api, (err, value: ApiConfig)=>{
-            if (err) {
-                this._logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(value)}`);
+        validateApiConfig(api)
+            .then((value:ApiConfig) => {
+                this.loadValidateApi(value, ready);
+            })
+            .catch((err) => {
+                this._logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
+
                 if (ready) {
                     ready(err);
                 }
-            }
-            else {
-                this.loadValidateApi(value, ready);
-            }
-        });
+            });
     }
 
     private loadValidateApi(api: ApiConfig, ready?: (err?) => void) {
@@ -295,7 +295,7 @@ export class Gateway {
         
         AdminServer.gateway = this;
 
-        Server.buildServices(this.adminApp, admin.MiddlewareAPI, admin.APIService, admin.StatsService);
+        Server.buildServices(this.adminApp, ...adminApi);
     }
 
     private configureStatsMiddleware(server: express.Application, key: string, path?: string) {
