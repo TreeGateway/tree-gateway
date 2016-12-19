@@ -9,18 +9,18 @@ let adminAddress: string;
 let adminRequest;
 describe("Admin API", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./tree-gateway.json");
-		gateway.start(()=>{
-            gateway.startAdmin(() => {
+		gateway = new Gateway("./tree-gateway-test.json");
+        gateway.start()
+            .then(() => {
+                return gateway.startAdmin();
+            })
+            .then(() => {
 			    gateway.server.set('env', 'test');
                 adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
 
                 gateway.redisClient.flushdb()
-                    .then(() => {
-                        done();
-                    });
+                    .then(() => done());
             });
-		});
 	});
 
 	afterAll(function(){

@@ -5,8 +5,7 @@ import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescrip
 
 import {ThrottlingConfig, validateThrottlingConfig} from "../../config/throttling";
 
-import {RedisThrottlingService} from "../service/redis";
-import {FileThrottlingService} from "../service/file";
+import {RedisThrottlingService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
@@ -71,11 +70,7 @@ export class ThrottlingRest extends RestController {
         });
     }
 
-    get redisServiceClass() {
+    get serviceClass() {
         return RedisThrottlingService;
-    }
-
-    get fileServiceClass() {
-        return FileThrottlingService;
     }
 }

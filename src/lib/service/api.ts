@@ -2,17 +2,23 @@
 
 import {Redis} from "ioredis";
 
-import {ApiConfig} from "../../config/api";
-import {CacheConfig} from "../../config/cache";
-import {ThrottlingConfig} from "../../config/throttling";
-import {Group} from "../../config/group";
-import {Proxy} from "../../config/proxy";
+import {ApiConfig} from "../config/api";
+import {CacheConfig} from "../config/cache";
+import {ThrottlingConfig} from "../config/throttling";
+import {Group} from "../config/group";
+import {Proxy} from "../config/proxy";
+import {AuthenticationConfig} from "../config/authentication";
 
 import {Errors} from "typescript-rest"
 
 import {RedisService} from "./redis";
 
 export class NotFoundError extends Error {
+    constructor(message?: string) {
+        super(message);
+
+        this["__proto__"] = NotFoundError.prototype;
+    }
 }
 
 export interface ApiService {
@@ -42,4 +48,15 @@ export interface ProxyService {
     create(apiName: string, proxy: Proxy): Promise<void>;
     update(apiName: string, proxy: Proxy): Promise<void>;
     remove(apiName: string): Promise<void>;
+}
+
+export interface AuthenticationService {
+    get(apiName: string);
+    create(apiName: string, auth: AuthenticationConfig): Promise<void>;
+    update(apiName: string, auth: AuthenticationConfig): Promise<void>;
+    remove(apiName: string): Promise<void>;
+}
+
+export interface ConfigService {
+    getAllApiConfig(): Promise<Array<ApiConfig>>;
 }

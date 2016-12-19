@@ -1,6 +1,6 @@
 "use strict";
 
-import {NotFoundError} from "../service/api";
+import {NotFoundError} from "../../service/api";
 import {Errors} from "typescript-rest";
 import {AdminServer} from "../admin-server";
 
@@ -16,16 +16,10 @@ export abstract class RestController {
     }
 
     private init() {
-        if (AdminServer.gateway.redisClient) {
-            this._service = new this.redisServiceClass(AdminServer.gateway.redisClient);
-        } else {
-            this._service = new this.fileServiceClass(AdminServer.gateway.middlewarePath);
-        }
+        this._service = new this.serviceClass(AdminServer.gateway.redisClient);
     }
 
-    abstract get redisServiceClass();
-
-    abstract get fileServiceClass();
+    abstract get serviceClass();
 
     handleError(err: Error) {
         if (err instanceof NotFoundError) {
