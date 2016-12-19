@@ -80,7 +80,7 @@ export class MiddlewareInstaller {
     private saveFile(filePath: string, content: Buffer): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // TODO: support zip files
-            fs.outputFile(filePath + '.js', content, (err) => {
+            fs.outputFile(filePath, content, (err) => {
                 if (err) {
                     reject(err);
                 } else{
@@ -91,6 +91,6 @@ export class MiddlewareInstaller {
     }
 
     private getPath(type: string, name:string):string {
-        return path.join(this.middlewarePath, type, name);
+        return path.join(this.middlewarePath, type, name + ".js");
     }
 }
