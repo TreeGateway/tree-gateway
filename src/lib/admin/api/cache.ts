@@ -6,8 +6,7 @@ import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescrip
 
 import {CacheConfig, validateCacheConfig} from "../../config/cache";
 
-import {RedisCacheService} from "../service/redis";
-import {FileCacheService} from "../service/file";
+import {RedisCacheService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
@@ -71,11 +70,7 @@ export class CacheRest extends RestController {
         });
     }
 
-    get redisServiceClass() {
+    get serviceClass() {
         return RedisCacheService;
-    }
-
-    get fileServiceClass() {
-        return null;
     }
 }

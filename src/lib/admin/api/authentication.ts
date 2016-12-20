@@ -4,17 +4,17 @@ import "es6-promise";
 
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 
-import {Proxy, validateProxyConfig} from "../../config/proxy";
+import {AuthenticationConfig, validateAuthenticationConfig} from "../../config/authentication";
 
-import {RedisProxyService} from "../../service/redis";
+import {RedisAuthenticationService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
-@Path('apis/:apiName/proxy')
-export class ProxyRest extends RestController {
+@Path('apis/:apiName/authentication')
+export class AuthenticationRest extends RestController {
     @GET
-    getProxy(@PathParam("apiName") apiName: string): Promise<Proxy> {
-        return new Promise<Proxy>((resolve, reject) => {
+    get(@PathParam("apiName") apiName: string): Promise<AuthenticationConfig> {
+        return new Promise<AuthenticationConfig>((resolve, reject) => {
             this.service.get(apiName)
                 .then(resolve)
                 .catch(err => reject(this.handleError(err)));
@@ -22,35 +22,34 @@ export class ProxyRest extends RestController {
     }
 
     @POST
-    addProxy(@PathParam("apiName") apiName: string, proxy: Proxy): Promise<Return.NewResource> {
+    add(@PathParam("apiName") apiName: string, auth: AuthenticationConfig): Promise<Return.NewResource> {
         return new Promise<Return.NewResource>((resolve, reject) => {
-            validateProxyConfig(proxy)
+            validateAuthenticationConfig(auth)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.create(apiName, proxy))
-                .then(() => resolve(new Return.NewResource(`apis/${apiName}/proxy`)))
+                .then(() => this.service.create(apiName, auth))
+                .then(() => resolve(new Return.NewResource(`apis/${apiName}/authentication`)))
                 .catch(reject);
         });
     }
 
     @PUT
-    updateProxy(@PathParam("apiName") apiName: string,
-                proxy: Proxy): Promise<void> {
+    update(@PathParam("apiName") apiName: string, auth: AuthenticationConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // TODO: publish event
-            validateProxyConfig(proxy)
+            validateAuthenticationConfig(auth)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.update(apiName, proxy))
+                .then(() => this.service.update(apiName, auth))
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
     }
 
     @DELETE
-    deleteProxy(@PathParam("apiName") apiName: string): Promise<void> {
+    delete(@PathParam("apiName") apiName: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // TODO: publish event
             this.service.remove(apiName)
@@ -60,6 +59,6 @@ export class ProxyRest extends RestController {
     }
 
     get serviceClass() {
-        return RedisProxyService;
+        return RedisAuthenticationService;
     }
 }

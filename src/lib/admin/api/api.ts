@@ -4,8 +4,7 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "typescript-rest";
 import {ApiConfig, validateApiConfig} from "../../config/api";
 
-import {RedisApiService} from "../service/redis";
-import {FileApiService} from "../service/file";
+import {RedisApiService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
@@ -67,11 +66,7 @@ export class APIRest extends RestController {
         });
     }
 
-    get redisServiceClass() {
+    get serviceClass() {
         return RedisApiService;
-    }
-
-    get fileServiceClass() {
-        return FileApiService;
     }
 }

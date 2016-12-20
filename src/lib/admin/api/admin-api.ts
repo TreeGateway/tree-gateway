@@ -7,5 +7,6 @@ import {GroupRest} from "./group";
 import {ThrottlingRest} from "./throttling";
 import {CacheRest} from "./cache";
 import {ProxyRest} from "./proxy";
+import {AuthenticationRest} from "./authentication";
 
-export default [StatsService, MiddlewareRest, APIRest, GroupRest, ThrottlingRest, CacheRest, ProxyRest];
+export default [StatsService, MiddlewareRest, APIRest, GroupRest, ThrottlingRest, CacheRest, ProxyRest, AuthenticationRest];
