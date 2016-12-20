@@ -136,6 +136,14 @@ export let AuthenticationValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean()
 });
 
-export function validateAuthenticationConfig(authentication: AuthenticationConfig, callback: (err, value)=>void) {
-    Joi.validate(authentication, AuthenticationValidatorSchema, callback);
+export function validateAuthenticationConfig(authentication: AuthenticationConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(authentication, AuthenticationValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }

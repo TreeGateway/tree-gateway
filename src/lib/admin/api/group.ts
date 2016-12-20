@@ -6,8 +6,7 @@ import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "t
 
 import {Group, validateGroup} from "../../config/group";
 
-import {RedisGroupService} from "../service/redis";
-import {FileGroupService} from "../service/file";
+import {RedisGroupService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
@@ -70,11 +69,7 @@ export class GroupRest extends RestController {
         });
     }
 
-    get redisServiceClass() {
+    get serviceClass() {
         return RedisGroupService;
-    }
-
-    get fileServiceClass() {
-        return FileGroupService;
     }
 }

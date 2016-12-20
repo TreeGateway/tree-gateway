@@ -1,13 +1,14 @@
 import {Redis} from "ioredis";
 
 import {ApiService, ApiComponentService, GroupService, ThrottlingService,
-    CacheService, ProxyService, NotFoundError} from "./api";
+    CacheService, ProxyService, AuthenticationService, ConfigService, NotFoundError} from "./api";
 
-import {ApiConfig} from "../../config/api";
-import {CacheConfig} from "../../config/cache";
-import {ThrottlingConfig} from "../../config/throttling";
-import {Group} from "../../config/group";
-import {Proxy} from "../../config/proxy";
+import {ApiConfig} from "../config/api";
+import {CacheConfig} from "../config/cache";
+import {ThrottlingConfig} from "../config/throttling";
+import {Group} from "../config/group";
+import {Proxy} from "../config/proxy";
+import {AuthenticationConfig} from "../config/authentication";
 
 class Constants {
     static CONFIG_EVENTS_TOPIC = "configEvents";
@@ -39,9 +40,11 @@ export class RedisService {
 
 export class RedisApiService implements ApiService {
     private redisClient:Redis;
+    private proxyService:ProxyService;
 
     constructor(redisClient) {
         this.redisClient = redisClient;
+        this.proxyService = new RedisProxyService(redisClient);
     }
 
     list(): Promise<Array<ApiConfig>> {
@@ -106,6 +109,27 @@ export class RedisApiService implements ApiService {
                     }
 
                     resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    getApiConfig(name: string): Promise<ApiConfig> {
+        return new Promise<ApiConfig>((resolve, reject) => {
+            let apiConfig;
+
+            this.redisClient.hget(Constants.APIS_PREFIX, name)
+                .then(api => {
+                    if (!api) {
+                        throw new NotFoundError(`API ${name} not found.`);
+                    }
+
+                    apiConfig = api;
+
+                    return this.proxyService.get(name);
+                })
+                .then(proxy =>  {
+                    apiConfig.proxy = proxy;
                 })
                 .catch(reject);
         });
@@ -277,6 +301,142 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
                     resolve();
                 })
+                .catch(reject);
+        });
+    }
+}
+
+export class RedisAuthenticationService extends RedisService implements AuthenticationService {
+
+    get(apiName: string): Promise<AuthenticationConfig> {
+        return new Promise((resolve, reject) => {
+            this.redisClient.get(`${Constants.APIS_PREFIX}:${apiName}:authentication`)
+                .then((auth) => {
+                    if (!auth) {
+                        throw new NotFoundError('Authentication config not found.');
+                    }
+
+                    resolve(JSON.parse(auth));
+                })
+                .catch(reject);
+        });
+    }
+
+    create(apiName: string, auth: AuthenticationConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.redisClient.set(`${Constants.APIS_PREFIX}:${apiName}:authentication`, JSON.stringify(auth))
+                .then(() => resolve())
+                .catch(reject);
+        });
+    }
+
+    update(apiName: string, auth: AuthenticationConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const key = `${Constants.APIS_PREFIX}:${apiName}:authentication`;
+
+            this.redisClient.exists(key)
+                .then((exists) => {
+                    if (!exists) {
+                        throw new NotFoundError('Authentication config not found.');
+                    }
+
+                    return this.redisClient.set(key, JSON.stringify(auth));
+                })
+                .then(() => resolve())
+                .catch(reject);
+        });
+    }
+
+    remove(apiName: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.redisClient.del(`${Constants.APIS_PREFIX}:${apiName}:authentication`)
+                .then((count) => {
+                    if (count === 0) {
+                        throw new NotFoundError('Authentication config not found.');
+                    }
+
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+}
+
+export class RedisConfigService extends RedisService implements ConfigService {
+    private _apiService: ApiService;
+    private _proxyService: ProxyService;
+    private _groupService: GroupService;
+    private _throttlingService: ThrottlingService;
+    private _cacheService: CacheService;
+    private _authService: AuthenticationService;
+
+    constructor(redisClient) {
+        super(redisClient);
+        this._apiService = new RedisApiService(redisClient);
+        this._proxyService = new RedisProxyService(redisClient);
+        this._groupService = new RedisGroupService(redisClient);
+        this._throttlingService = new RedisThrottlingService(redisClient);
+        this._cacheService = new RedisCacheService(redisClient);
+        this._authService = new RedisAuthenticationService(redisClient);
+    }
+
+    getAllApiConfig(): Promise<Array<ApiConfig>> {
+        return new Promise<Array<ApiConfig>>((resolve, reject) => {
+            this._apiService.list()
+                .then((apis) => {
+                    return Promise.all(apis.map((el) => this.loadProxy(el)));
+                })
+                .then((apis) => {
+                    apis = apis.filter(el => el ? true : false);
+
+                    return Promise.all(apis.map(el => this.loadApiDetails(el)));
+                })
+                .then(resolve)
+                .catch(reject);
+        });
+    }
+
+    private loadProxy(apiConfig: ApiConfig): Promise<ApiConfig> {
+        return new Promise((resolve, reject) => {
+            this._proxyService.get(apiConfig.name)
+                .then((proxy) => {
+                    apiConfig.proxy = proxy;
+                    resolve(apiConfig);
+                })
+                .catch((err) => {
+                    resolve(null);
+                });
+        });
+    }
+
+    private loadApiDetails(apiConfig: ApiConfig): Promise<ApiConfig> {
+        return new Promise((resolve, reject) => {
+            this._groupService.list(apiConfig.name)
+                .then((groups) => {
+                    apiConfig.group = groups;
+                    return this._throttlingService.list(apiConfig.name);
+                })
+                .then((throttling) => {
+                    apiConfig.throttling = throttling;
+                    return this._cacheService.list(apiConfig.name);
+                })
+                .then((cache) => {
+                    apiConfig.cache = cache;
+                    return this._authService.get(apiConfig.name);
+                })
+                .then((auth) => {
+                    if (auth) {
+                        apiConfig.authentication = auth;
+                    }
+                    return apiConfig;
+                }, (err) => {
+                    if (!(err instanceof NotFoundError)) {
+                        throw err;
+                    }
+
+                    return apiConfig;
+                })
+                .then(resolve)
                 .catch(reject);
         });
     }

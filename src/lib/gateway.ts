@@ -4,13 +4,11 @@
 import * as http from "http";
 import * as compression from "compression";
 import * as express from "express";
-import * as fs from "fs-extra";
 import adminApi from "./admin/api/admin-api";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
-import * as _ from "lodash";
 import {ApiConfig, validateApiConfig} from "./config/api";
-import {GatewayConfig, validateGatewayConfig} from "./config/gateway";
+import {GatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
@@ -20,11 +18,14 @@ import {Logger} from "./logger";
 import {AccessLogger} from "./express-logger";
 import * as redis from "ioredis";
 import * as dbConfig from "./redis";
-import * as path from "path";
 import {StatsConfig} from "./config/stats";
 import {Stats} from "./stats/stats";
 import {StatsRecorder} from "./stats/stats-recorder";
 import {Monitors} from "./monitor/monitors";
+import {ConfigService} from "./service/api";
+import {RedisConfigService} from "./service/redis";
+import loadConfigFile from "./utils/config-loader";
+import {MiddlewareInstaller} from "./utils/middleware-installer";
 
 class StatsController {
     requestStats: Stats;
@@ -46,10 +47,12 @@ export class Gateway {
     private _config: GatewayConfig;
     private _logger: Logger;
     private _redisClient: redis.Redis;
+    private _configService: ConfigService;
+    private _middlewareInstaller: MiddlewareInstaller;
 
     constructor(gatewayConfigFile: string) {
         this.configFile = gatewayConfigFile;
-    }    
+    }
     
     get server(): express.Application {
         return this.app;
@@ -65,10 +68,6 @@ export class Gateway {
 
     get redisClient(): redis.Redis {
         return this._redisClient;
-    }
-
-    get apiPath(): string {
-        return this.config.apiPath;
     }
 
     get statsConfig() : StatsConfig {
@@ -87,35 +86,45 @@ export class Gateway {
         return result;
     }
 
+    get configService(): ConfigService {
+        return this._configService;
+    }
+
+    get middlewareInstaller(): MiddlewareInstaller {
+        return this._middlewareInstaller;
+    }
+
     createStats(id: string) {
         return this._statsRecorder.createStats(id, this._config.statsConfig);
     }
 
-    start(ready?: (err?)=>void) {
-        this.initialize(this.configFile, (err)=>{
-            if (!err) {
-                this.apiServer = this.app.listen(this.config.listenPort, ()=>{
-                    this.logger.info(`Gateway listenning on port ${this.config.listenPort}`);
-                    if (ready) {
-                        ready();
-                    }
-                });
-            }
-        });  
+    start(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.initialize()
+                .then(() => {
+                    this.apiServer = this.app.listen(this.config.listenPort, ()=>{
+                        this.logger.info(`Gateway listenning on port ${this.config.listenPort}`);
+                        resolve();
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        });
     }
 
-    startAdmin(ready?: ()=>void) {
-        if (this.adminApp) {
-            this.adminServer = this.adminApp.listen(this.config.adminPort, ()=>{
-                this.logger.info(`Gateway Admin Server listenning on port ${this.config.adminPort}`);
-                if (ready) {
-                    ready();
-                }
-            });
-        }
-        else {
-            console.error("You must start the Tree-Gateway before.");
-        }
+    startAdmin(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.adminApp) {
+                this.adminServer = this.adminApp.listen(this.config.adminPort, ()=>{
+                    this.logger.info(`Gateway Admin Server listenning on port ${this.config.adminPort}`);
+                    resolve();
+                });                
+            }
+            else {
+                reject("You must start the Tree-Gateway before.");
+            }
+        });
     }
 
     stop() {
@@ -132,49 +141,44 @@ export class Gateway {
         }
     }
 
-    private loadApis(ready?: (err?) => void) {
-        this._apis = new Map<string,ApiConfig>();
-        let path = this.apiPath;
-        fs.readdir(path, (err, files) => {
-            if (err) {
-                this._logger.error(`Error reading directory: ${err}`);
-            }
-            else {
-                path = ((_.endsWith(path, '/'))?path:path+'/');
-                const length = files.length;
-                files.forEach((fileName, index) =>{
-                    if (_.endsWith(fileName, '.json')) {
-                        fs.readJson(path+fileName, (error, apiConfig: ApiConfig)=>{
-                            if (error) {
-                                this._logger.error(`Error reading directory: ${error}`);
-                            }
-                            else {
-                                this.loadApi(apiConfig, (length -1 === index)?ready: null);
-                            }
-                        });
-                    }
+    private loadApis(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this._apis = new Map<string, ApiConfig>();
+
+            this.configService.getAllApiConfig()
+                .then((configs) => {
+                    const loaders = configs.map((config) => {
+                        return this.loadApi(config);
+                    });
+
+                    return Promise.all(loaders);
+                })
+                .then(() => resolve())
+                .catch((err) => {
+                    this.logger.error(`Error while installing API's: ${err}`);
+                    reject(err);
                 });
-            }
         });
     }
 
-    private loadApi(api: ApiConfig, ready?: (err?) => void) {
-        validateApiConfig(api)
-            .then((value:ApiConfig) => {
-                this.loadValidateApi(value, ready);
-            })
-            .catch((err) => {
-                this._logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
+    private loadApi(api: ApiConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            validateApiConfig(api)
+                .then((value:ApiConfig) => {
+                    this.loadValidateApi(value);
+                    resolve();
+                })
+                .catch((err) => {
+                    this._logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
 
-                if (ready) {
-                    ready(err);
-                }
-            });
+                    reject(err);
+                });
+        });
     }
 
-    private loadValidateApi(api: ApiConfig, ready?: (err?) => void) {
-        if (this._logger.isInfoEnabled()) {
-            this._logger.info(`Configuring API [${api.name}] on path: ${api.proxy.path}`);
+    private loadValidateApi(api: ApiConfig) {
+        if (this.logger.isInfoEnabled()) {
+            this.logger.info(`Configuring API [${api.name}] on path: ${api.proxy.path}`);
         }
         let apiKey: string = this.getApiKey(api);
         this._apis.set(apiKey, api);
@@ -184,104 +188,79 @@ export class Gateway {
         }
         
         if (api.throttling) {
-            if (this._logger.isDebugEnabled()) {
-                this._logger.debug("Configuring API Rate Limits");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Configuring API Rate Limits");
             }
             this.apiRateLimit.throttling(api);
         }
         if (api.authentication) {
-            if (this._logger.isDebugEnabled()) {
-                this._logger.debug("Configuring API Authentication");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Configuring API Authentication");
             }
             this.apiAuth.authentication(apiKey, api);
         }
         this.apiProxy.configureProxyHeader(api);
         if (api.cache) {
-            if (this._logger.isDebugEnabled()) {
-                this._logger.debug("Configuring API Cache");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Configuring API Cache");
             }
             this.apiCache.cache(api);
         }
-        if (this._logger.isDebugEnabled()) {
-            this._logger.debug("Configuring API Proxy");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Configuring API Proxy");
         }
         this.apiProxy.proxy(api);
-        
-        if (ready) {
-            ready();
-        }
     }
 
-    private initialize(configFileName: string, ready?: (err?)=>void) {
-        if (_.startsWith(configFileName, '.')) {
-            configFileName = path.join(process.cwd(), configFileName);                
-        }
-        
-        fs.readJson(configFileName, (error, gatewayConfig: GatewayConfig)=>{
-            if (error) {
-                console.error(`Error reading tree-gateway.json config file: ${error}`);
-            }
-            else {
-                this.app = express();
-                validateGatewayConfig(gatewayConfig, (err, value: GatewayConfig)=>{
-                    if (err) {
-                        console.error(`Error loading api config: ${err.message}\n${JSON.stringify(value)}`);
-                        if (ready) {
-                            ready(err);
-                        }
-                    }
-                    else {
-                        this.initializeConfig(configFileName, value);
-                        this._logger = new Logger(this.config.logger, this);
-                        this._redisClient = dbConfig.initializeRedis(this.config.database);
-                        this._statsRecorder = new StatsRecorder(this);
-                        this.apiProxy = new ApiProxy(this);
-                        this.apiRateLimit = new ApiRateLimit(this);
-                        this.apiAuth = new ApiAuth(this);
-                        this.apiCache = new ApiCache(this);
+    private initialize(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+		    loadConfigFile(this.configFile)
+                .then((gatewayConfig) => {
+                    this._config = gatewayConfig;
+                    this.app = express();
 
-                        Monitors.startMonitors(this);
+                    this._logger = new Logger(this.config.logger, this);
+                    this._redisClient = dbConfig.initializeRedis(this.config.database);
+                    this._configService = new RedisConfigService(this.redisClient);
+                    this._middlewareInstaller = new MiddlewareInstaller(this.redisClient, this.config.middlewarePath, this.logger);
+                    this._statsRecorder = new StatsRecorder(this);
+                    this.apiProxy = new ApiProxy(this);
+                    this.apiRateLimit = new ApiRateLimit(this);
+                    this.apiAuth = new ApiAuth(this);
+                    this.apiCache = new ApiCache(this);
+                    
+                    Monitors.startMonitors(this);
 
-                        this.configureServer(ready);
-                        this.configureAdminServer();
-                    }
+                    this.configureServer()
+                        .then(() => {
+                            this.configureAdminServer();
+                            resolve();
+                        })
+                        .catch((err) => {
+                            console.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
+                            reject(err);
+                        });
                 });
+        });
+    }
+
+    private configureServer(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.app.disable('x-powered-by'); 
+            this.app.use(compression());
+            if (this.config.underProxy) {
+                this.app.enable('trust proxy'); 
             }
+            if (this.config.accessLogger) {
+                AccessLogger.configureAccessLoger(this.config.accessLogger, 
+                            this, this.app, './logs/accessLog.log');
+            }
+
+            this.middlewareInstaller.installAll()
+                .then(() => this.loadApis())
+                .then(resolve)
+                .catch(reject);
         });
-    }
-
-    private initializeConfig(configFileName: string, gatewayConfig: GatewayConfig) {
-        this._config = _.defaults(gatewayConfig, {
-            rootPath : path.dirname(configFileName),
-        });
-        if (_.startsWith(this._config.rootPath, '.')) {
-            this._config.rootPath = path.join(path.dirname(configFileName), this._config.rootPath);
-        }
-
-        this._config = _.defaults(this._config, {
-            apiPath : path.join(this._config.rootPath, 'apis'),
-            middlewarePath : path.join(this._config.rootPath, 'middleware')
-        });
-
-        if (_.startsWith(this._config.apiPath, '.')) {
-            this._config.apiPath = path.join(this._config.rootPath, this._config.apiPath);                
-        }
-        if (_.startsWith(this._config.middlewarePath, '.')) {
-            this._config.middlewarePath = path.join(this._config.rootPath, this._config.middlewarePath);                
-        }
-    }
-
-    private configureServer(ready: (err?)=>void) {
-        this.app.disable('x-powered-by'); 
-        this.app.use(compression());
-        if (this.config.underProxy) {
-            this.app.enable('trust proxy'); 
-        }
-        if (this.config.accessLogger) {
-            AccessLogger.configureAccessLoger(this.config.accessLogger, 
-                        this, this.app, './logs/accessLog.log');
-        }
-        this.loadApis(ready);
     }
 
     private configureAdminServer() {

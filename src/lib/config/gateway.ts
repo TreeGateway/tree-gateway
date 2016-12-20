@@ -24,10 +24,6 @@ export interface GatewayConfig {
      */
     rootPath?: string;
     /**
-     * Folder where the gateway will search for installed APIs.
-     */
-    apiPath?: string;
-    /**
      * Folder where the gateway will search for its middleware functions.
      */
     middlewarePath?: string;
@@ -290,7 +286,6 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     adminPort: Joi.number().positive().required(),
     database: RedisConfigSchema.required(),
     rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
-    apiPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     underProxy: Joi.boolean(),
     logger: LoggerConfigSchema,
@@ -301,6 +296,14 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     disableAdminStats: Joi.boolean()
 });
 
-export function validateGatewayConfig(gatewayConfig: GatewayConfig, callback: (err, value)=>void) {
-    Joi.validate(gatewayConfig, GatewayConfigValidatorSchema, callback);
+export function validateGatewayConfig(gatewayConfig: GatewayConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(gatewayConfig, GatewayConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
 }

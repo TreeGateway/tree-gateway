@@ -6,14 +6,17 @@ import {Gateway} from "../lib/gateway";
 let server;
 let gateway: Gateway;
 let gatewayAddress: string;
+
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./tree-gateway.json");
-		gateway.start(()=>{
-			gateway.server.set('env', 'test');
-			gatewayAddress = "http://localhost:"+gateway.config.listenPort;
-			done();
-		});
+		gateway = new Gateway("./tree-gateway-test.json");
+
+        gateway.start()
+            .then(() => {
+			    gateway.server.set('env', 'test');
+			    gatewayAddress = "http://localhost:"+gateway.config.listenPort;
+			    done();
+		    });
 	});
 
 	afterAll(function(){
@@ -24,6 +27,8 @@ describe("Gateway Tests", () => {
 	describe("The Gateway Proxy", () => {
 		it("should be able to proxy an API", (done) => {
 			request(gatewayAddress+"/test/get?arg=1", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				expect(body).toBeDefined();
 				let result = JSON.parse(body);
 				expect(result.args.arg).toEqual("1");
 				done();				
