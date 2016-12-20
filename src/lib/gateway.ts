@@ -24,6 +24,7 @@ import * as path from "path";
 import {StatsConfig} from "./config/stats";
 import {Stats} from "./stats/stats";
 import {StatsRecorder} from "./stats/stats-recorder";
+import {Monitors} from "./monitor/monitors";
 
 class StatsController {
     requestStats: Stats;
@@ -238,6 +239,8 @@ export class Gateway {
                         this.apiRateLimit = new ApiRateLimit(this);
                         this.apiAuth = new ApiAuth(this);
                         this.apiCache = new ApiCache(this);
+
+                        Monitors.startMonitors(this);
 
                         this.configureServer(ready);
                         this.configureAdminServer();

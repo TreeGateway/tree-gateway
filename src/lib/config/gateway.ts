@@ -272,7 +272,7 @@ let RedisConfigSchema = Joi.object().keys({
 });
 
 let MonitorConfigSchema = Joi.object().keys({
-    name: Joi.string().alphanum().required(),
+    name: Joi.string().valid('cpu', 'mem').required(),
     statsConfig: StatsConfigValidatorSchema.required()
 });
 

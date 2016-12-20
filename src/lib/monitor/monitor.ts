@@ -5,33 +5,32 @@ import {StatsRecorder} from "../stats/stats-recorder";
 import {Gateway} from "../gateway";
 import {MonitorConfig} from "../config/gateway";
 import {calculateSeconds} from "../utils/time";
+import * as os from "os";
 
 export abstract class Monitor {
     private interval: NodeJS.Timer;
     private gateway: Gateway;
     private stats: Stats;
     private config: MonitorConfig;
+    private machineId: string;
+    private period: number;
 
     constructor(gateway: Gateway, config: MonitorConfig) {
         this.gateway = gateway;
         this.config = config;
-        this.stats = this.gateway.createStats(this.config.name);
-    }
-
-
-    createStats(id: string) {
-        let statsRecorder = new StatsRecorder(this.gateway);
-        return statsRecorder.createStats(id, this.config.statsConfig);
+        this.stats = this.createStats(this.config.name);
+        this.machineId = `${os.hostname()}:${this.gateway.config.listenPort}`;
     }
 
     start() {
-        let time: number = calculateSeconds(this.config.statsConfig.granularity.duration) * 1000;
+        this.period = calculateSeconds(this.config.statsConfig.granularity.duration) * 1000;
+        let self = this;
         this.interval = setInterval(()=>{
-            this.run().then(this.registerStats).catch(err=>{
+            this.run(this.period).then(value=>self.registerStats(value)).catch(err=>{
                 this.gateway.logger.error(`Error on monitor [${this.config.name}]: ${err}`);
                 this.stop();
             });
-        }, time);
+        }, this.period);
     }
 
     stop() {
@@ -44,9 +43,14 @@ export abstract class Monitor {
         }
     }
 
-    registerStats(value: number) {
-        this.stats.registerOccurrence('value', value);
+    private registerStats(value: number) {
+        this.stats.registerOccurrence(this.machineId, value);
     }
 
-    abstract run(): Promise<number>;
+    private createStats(id: string) {
+        let statsRecorder = new StatsRecorder(this.gateway);
+        return statsRecorder.createStats(id, this.config.statsConfig);
+    }
+
+    abstract run(period: number): Promise<number>;
 }
