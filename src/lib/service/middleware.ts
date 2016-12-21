@@ -1,7 +1,6 @@
 "use strict";
 
 import "es6-promise";
-import * as fs from "fs-extra";
 import * as path from "path";
 import {Redis} from "ioredis";
 

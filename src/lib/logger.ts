@@ -4,7 +4,7 @@ import * as Winston from "winston";
 import {LoggerConfig, LogLevel} from "./config/gateway";
 import * as _ from "lodash";
 import * as path from "path";
-import * as fs from "fs-extra";
+import * as fs from "fs-extra-promise";
 import {Gateway} from "./gateway";
 
 export class Logger {

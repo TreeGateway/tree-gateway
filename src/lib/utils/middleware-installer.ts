@@ -1,5 +1,5 @@
 import {MiddlewareService, RedisMiddlewareService} from "../service/middleware";
-import * as fs from "fs-extra";
+import * as fs from "fs-extra-promise";
 //import * as _ from "lodash";
 import * as path from "path";
 import {Logger} from "../logger";
@@ -67,26 +67,18 @@ export class MiddlewareInstaller {
                 this.logger.debug(`Uninstalling middleware ${type}/${name}`);
             }
 
-            fs.remove(this.getPath(type, name), (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
+            fs.removeAsync(this.getPath(type, name))
+                .then(resolve)
+                .catch(reject);
         });
     }
 
     private saveFile(filePath: string, content: Buffer): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // TODO: support zip files
-            fs.outputFile(filePath, content, (err) => {
-                if (err) {
-                    reject(err);
-                } else{
-                    resolve();
-                }
-            });
+            fs.outputFileAsync(filePath, content)
+                .then(resolve)
+                .catch(reject);
         });
     }
 

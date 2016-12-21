@@ -63,7 +63,7 @@ gulp.task('remap-istanbul-reports', function () {
 });
 
 gulp.task('test-run', function() {
-	return gulp.src('bin/test/spec/*.spec.js')
+	return gulp.src(['bin/test/spec/test-admin.spec.js', 'bin/test/spec/test-gateway.spec.js'])
 		.pipe(jasmine({
 	        timeout: 10000,
 	        includeStackTrace: false,

@@ -2,6 +2,7 @@ import * as express from "express";
 import * as request from "request";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
+import * as dbConfig from "../lib/redis";
 
 let server;
 let gateway: Gateway;
@@ -10,17 +11,21 @@ let adminRequest;
 describe("Admin API", () => {
 	beforeAll(function(done){
 		gateway = new Gateway("./tree-gateway-test.json");
-        gateway.start()
-            .then(() => {
-                return gateway.startAdmin();
-            })
-            .then(() => {
-			    gateway.server.set('env', 'test');
-                adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+        clearConfig()
+        .then(()=>{
+            return gateway.start();
+        })
+        .then(()=>{
+            return gateway.startAdmin();
+        })
+        .then(() => {
+            gateway.server.set('env', 'test');
+            adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
 
-                gateway.redisClient.flushdb()
-                    .then(() => done());
-            });
+            return gateway.redisClient.flushdb();
+        })
+        .then(done)
+        .catch(fail);
 	});
 
 	afterAll(function(){
@@ -372,4 +377,29 @@ describe("Admin API", () => {
             });
         });
     });
+
+    function clearConfig(): Promise<void> {
+        return new Promise<void>((resolve, reject)=>{
+            const redisClient = dbConfig.initializeRedis({
+                host: "localhost",
+                port: 6379,
+                db: 1
+            });
+            let stream = redisClient.scanStream({
+                match: 'config:*'
+            });
+            stream.on('data', keys => {
+                if (keys.length) {
+                    var pipeline = redisClient.pipeline();
+                    keys.forEach(key => {
+                        pipeline.del(key);
+                    });
+                    pipeline.exec();
+                }
+            });
+            stream.on('end', function () {
+                resolve();
+            });        
+        });
+    }
 });
