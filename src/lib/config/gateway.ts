@@ -87,7 +87,7 @@ export interface MonitorConfig{
 export interface RedisConfig {
     host: string;
     port: number;
-    db: number;
+    db?: number;
 }
 
 export interface LoggerConfig {

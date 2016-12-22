@@ -49,7 +49,6 @@
     }, 
     "database": {
         "host": "localhost",
-        "port": 6379,
-        "db": 1
+        "port": 6379
     }
 }
