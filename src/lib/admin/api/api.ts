@@ -2,7 +2,7 @@
 
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "typescript-rest";
-import {ApiConfig, validateApiConfig} from "../../config/api";
+import {ApiConfig, validateSimpleApiConfig} from "../../config/api";
 
 import {RedisApiService} from "../../service/redis";
 
@@ -20,7 +20,7 @@ export class APIRest extends RestController {
     addApi(api: ApiConfig): Promise<string> {
         return new Promise((resolve, reject) => {
             // TODO: publish event
-            validateApiConfig(api)
+            validateSimpleApiConfig(api)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
@@ -35,7 +35,7 @@ export class APIRest extends RestController {
     updateApi(@PathParam("name") name:string, api: ApiConfig): Promise<string> {
         return new Promise((resolve, reject) => {
             // TODO: publish event
-            validateApiConfig(api)
+            validateSimpleApiConfig(api)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })

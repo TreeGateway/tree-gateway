@@ -65,9 +65,27 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 
+export let SimpleApiConfigValidatorSchema = Joi.object().keys({
+    name: Joi.string().alphanum().min(3).max(30).required(),
+    version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required(),
+    description: Joi.string()
+});
+
 export function validateApiConfig(apiConfig: ApiConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(apiConfig, ApiConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        })
+    });
+}
+
+export function validateSimpleApiConfig(apiConfig: ApiConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(apiConfig, SimpleApiConfigValidatorSchema, (err, value) => {
             if (err) {
                 reject(err);
             } else {

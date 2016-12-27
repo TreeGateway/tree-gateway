@@ -5,6 +5,8 @@ import "jasmine";
 import {Gateway} from "../lib/gateway";
 import * as path from "path";
 import * as dbConfig from "../lib/redis";
+import {ApiConfig} from "../lib/config/api";
+import * as _ from "lodash";
 
 let server;
 let gateway: Gateway;
@@ -265,16 +267,126 @@ describe("Gateway Tests", () => {
                     resolve();
                 }
                 files.forEach(apiConfig=>{
-                    adminRequest.post("/apis", {body: apiConfig, json: true}, (error, response, body) => {
+					let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery')
+                    adminRequest.post("/apis", {body: api, json: true}, (error, response, body) => {
                         expect(error).toBeNull();
                         expect(response.statusCode).toEqual(201);
-                        returned++;
-                        if (returned == expected) {
-                            resolve();
-                        }
+						installApiCache(apiConfig.name, apiConfig.cache).then(()=>{
+							return installApiProxy(apiConfig.name, apiConfig.proxy);
+						}).then(()=>{
+							return installApiThrottling(apiConfig.name, apiConfig.throttling);
+						}).then(()=>{
+							return installApiAuthentication(apiConfig.name, apiConfig.authentication);
+						}).then(()=>{
+							if (!apiConfig.group) {
+								returned++;
+								if (returned == expected) {
+									resolve();
+								}
+							}
+							else {
+								let promises = apiConfig.group.map(group=>{
+									return installApiGroup(apiConfig.name, group);
+								})
+								Promise.all(promises).then(()=>{
+									returned++;
+									if (returned == expected) {
+										resolve();
+									}
+								});
+							}
+						})
+						.catch(reject);
                     });
                 })
             }).catch(reject);    
+		});
+	}
+
+	function installApiAuthentication(apiName: string, authentication): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!authentication) {
+				return resolve();
+			}
+			adminRequest.post(`/apis/${apiName}/authentication`, {body: authentication, json: true}, (error, response, body) => {
+				if(error) {
+					reject(error);
+				}
+				expect(response.statusCode).toEqual(201);
+				resolve();
+			});
+		});
+	}
+
+	function installApiCache(apiName: string, apiCache): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!apiCache) {
+				return resolve();
+			}
+			let returned=0, expected = apiCache.length;
+			apiCache.forEach(cache=>{
+				adminRequest.post(`/apis/${apiName}/cache`, {body: cache, json: true}, (error, response, body) => {
+					if(error) {
+						reject(error);
+					}
+					expect(response.statusCode).toEqual(201);
+					returned++;
+					if (returned === expected) {
+						resolve();
+					}
+				});
+			});
+		});
+	}
+
+	function installApiThrottling(apiName: string, throttling): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!throttling) {
+				return resolve();
+			}
+			let returned=0, expected = throttling.length;
+			throttling.forEach(throt=>{
+				adminRequest.post(`/apis/${apiName}/throttling`, {body: throt, json: true}, (error, response, body) => {
+					if(error) {
+						reject(error);
+					}
+					expect(response.statusCode).toEqual(201);
+					returned++;
+					if (returned === expected) {
+						resolve();
+					}
+				});
+			});	
+		});
+	}
+
+	function installApiProxy(apiName: string, apiProxy): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!apiProxy) {
+				return resolve();
+			}
+			adminRequest.post(`/apis/${apiName}/proxy`, {body: apiProxy, json: true}, (error, response, body) => {
+				if(error) {
+					reject(error);
+				}
+				expect(response.statusCode).toEqual(201);
+				resolve();
+			});
+		});
+	}
+
+	function installApiGroup(apiName: string, group): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!group) {
+				return resolve();
+			}
+			adminRequest.post(`/apis/${apiName}/groups`, {body: group, json: true}, (error, response, body) => {
+				if(error) {
+					reject(error);
+				}
+				expect(response.statusCode).toEqual(201);
+				resolve();
+			});
 		});
 	}
 
