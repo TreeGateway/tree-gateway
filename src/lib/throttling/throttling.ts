@@ -22,7 +22,7 @@ export class ApiRateLimit {
         this.gateway = gateway;
     }
 
-    throttling(api: ApiConfig) {
+    throttling(apiRouter: express.Router, api: ApiConfig) {
         let path: string = api.proxy.path;
         let throttlings: Array<ThrottlingConfig> = this.sortLimiters(api.throttling, path);
         let RateLimit = require('express-rate-limit');
@@ -65,7 +65,7 @@ export class ApiRateLimit {
             throttlingInfos.push(throttlingInfo);
         });
         
-        this.setupMiddlewares(throttlingInfos, path);
+        this.setupMiddlewares(apiRouter, throttlingInfos);
     }
 
     private configureThrottlingHandlerFunction(path: string, throttling: ThrottlingConfig, rateConfig: any) {
@@ -99,9 +99,9 @@ export class ApiRateLimit {
         }
     }
 
-    private setupMiddlewares(throttlingInfos: Array<ThrottlingInfo>, path: string) {
+    private setupMiddlewares(apiRouter: express.Router, throttlingInfos: Array<ThrottlingInfo>) {
         throttlingInfos.forEach((throttlingInfo: ThrottlingInfo) =>{
-            this.gateway.server.use(path, this.buildMiddleware(throttlingInfo));
+            apiRouter.use(this.buildMiddleware(throttlingInfo));
         });
     }
 

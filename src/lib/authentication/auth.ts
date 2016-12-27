@@ -28,7 +28,7 @@ export class ApiAuth {
         this.gateway = gateway;
     }
 
-    authentication(apiKey: string, api: ApiConfig) {
+    authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig) {
         let path: string = api.proxy.path;
         let authentication: AuthenticationConfig =  api.authentication
         _.keys(authentication.strategy).forEach(key=>{
@@ -52,10 +52,10 @@ export class ApiAuth {
 
                     let authenticator =  auth.authenticate(apiKey, { session: false, failWithError: true });
                     if (authentication.group) {
-                        this.createAuthenticatorForGroup(api, authentication, authenticator);
+                        this.createAuthenticatorForGroup(apiRouter, api, authentication, authenticator);
                     }
                     else {
-                        this.createAuthenticator(api, authentication, authenticator);
+                        this.createAuthenticator(apiRouter, api, authentication, authenticator);
                     }
                     
                     
@@ -70,12 +70,12 @@ export class ApiAuth {
         });
     }
     
-    private createAuthenticator(api: ApiConfig, authentication: AuthenticationConfig, 
+    private createAuthenticator(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig, 
                                 authenticator: express.RequestHandler) {
         let path: string = api.proxy.path;
         let stats = this.createAuthStats(path, authentication);
         if (stats) {
-            this.gateway.server.use(path, (req, res, next)=>{
+            apiRouter.use((req, res, next)=>{
                 authenticator(req, res, (err)=>{
                     if (err) {
                         stats.failStats.registerOccurrence(req.path, 1);
@@ -89,11 +89,11 @@ export class ApiAuth {
             });
         }
         else {
-            this.gateway.server.use(path, authenticator);
+            apiRouter.use(authenticator);
         }
     }
 
-    private createAuthenticatorForGroup(api: ApiConfig, authentication: AuthenticationConfig, 
+    private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig, 
                                         authenticator: express.RequestHandler) {
         let path: string = api.proxy.path;
         if (this.gateway.logger.isDebugEnabled()) {
@@ -103,7 +103,7 @@ export class ApiAuth {
         let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         let stats = this.createAuthStats(path, authentication);
         if (stats) {
-            this.gateway.server.use(path, (req, res, next)=>{
+            apiRouter.use((req, res, next)=>{
                 if (f(req, res)){
                     authenticator(req, res, (err)=>{
                         if (err) {
@@ -122,7 +122,7 @@ export class ApiAuth {
             });
         }
         else {
-            this.gateway.server.use(path, (req, res, next)=>{
+            apiRouter.use((req, res, next)=>{
                 if (f(req, res)){
                     authenticator(req, res, next);
                 }

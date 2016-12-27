@@ -27,16 +27,15 @@ export class ApiProxy {
     /**
      * Configure a proxy for a given API
      */
-    proxy(api: ApiConfig) {
-        this.gateway.server.use(api.proxy.path, proxy(api.proxy.target.path, this.configureProxy(api)));
+    proxy(apiRouter: express.Router, api: ApiConfig) {
+        apiRouter.use(proxy(api.proxy.target.path, this.configureProxy(api)));
     }
 
-    configureProxyHeader(api: ApiConfig) {
+    configureProxyHeader(apiRouter: express.Router, api: ApiConfig) {
         if (!api.proxy.supressViaHeader) {
             let onHeaders = require("on-headers");
             const gatewayId = 'Tree-Gateway';
-            this.gateway.server.use(api.proxy.path, 
-                (req: express.Request, res: express.Response, next: express.NextFunction)=>{
+            apiRouter.use((req: express.Request, res: express.Response, next: express.NextFunction)=>{
                     onHeaders(res, ()=>{
                         let viaHeader = res.get('Via') 
                         if (viaHeader) {

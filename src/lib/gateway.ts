@@ -49,6 +49,7 @@ export class Gateway {
     private _redisClient: redis.Redis;
     private _configService: ConfigService;
     private _middlewareInstaller: MiddlewareInstaller;
+    private apiRoutes: Map<string, express.Router> = new Map<string, express.Router>();
 
     constructor(gatewayConfigFile: string) {
         this.configFile = gatewayConfigFile;
@@ -176,40 +177,51 @@ export class Gateway {
         });
     }
 
+
     private loadValidateApi(api: ApiConfig) {
         if (this.logger.isInfoEnabled()) {
             this.logger.info(`Configuring API [${api.name}] on path: ${api.proxy.path}`);
         }
-        let apiKey: string = this.getApiKey(api);
+        const apiKey: string = this.getApiKey(api);
         this._apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
+        
+        const apiRouter = express.Router();
         if (!api.proxy.disableStats) {
-            this.configureStatsMiddleware(this.server, api.proxy.path, api.proxy.path);
+            this.configureStatsMiddleware(apiRouter, api.proxy.path);
         }
         
         if (api.throttling) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Configuring API Rate Limits");
             }
-            this.apiRateLimit.throttling(api);
+            this.apiRateLimit.throttling(apiRouter, api);
         }
         if (api.authentication) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Configuring API Authentication");
             }
-            this.apiAuth.authentication(apiKey, api);
+            this.apiAuth.authentication(apiRouter, apiKey, api);
         }
-        this.apiProxy.configureProxyHeader(api);
+        this.apiProxy.configureProxyHeader(apiRouter, api);
         if (api.cache) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Configuring API Cache");
             }
-            this.apiCache.cache(api);
+            this.apiCache.cache(apiRouter, api);
         }
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Configuring API Proxy");
         }
-        this.apiProxy.proxy(api);
+        this.apiProxy.proxy(apiRouter, api);
+
+        const initializeRouter = !this.apiRoutes.has(apiKey);
+        this.apiRoutes.set(apiKey, apiRouter);
+        if (initializeRouter) {
+            this.server.use(api.proxy.path, (req, res, next)=>{
+                this.apiRoutes.get(apiKey)(req, res, next);
+            });
+        }
     }
 
     private initialize(): Promise<void> {
@@ -280,7 +292,7 @@ export class Gateway {
         Server.buildServices(this.adminApp, ...adminApi);
     }
 
-    private configureStatsMiddleware(server: express.Application, key: string, path?: string) {
+    private configureStatsMiddleware(server: express.Router, key: string) {
         let stats = this.createStatsController(key);
         if (stats) {
             let handler = (req, res, next)=>{
@@ -294,18 +306,10 @@ export class Gateway {
                 };
                 next();
             };
-            if (path){
-                if (this._logger.isDebugEnabled()) {
-                    this._logger.debug(`Configuring Stats collector for accesses to [${path}].`);
-                }
-                server.use(path, handler);
+            if (this._logger.isDebugEnabled()) {
+                this._logger.debug(`Configuring Stats collector for accesses.`);
             }
-            else {
-                if (this._logger.isDebugEnabled()) {
-                    this._logger.debug(`Configuring Stats collector for accesses.`);
-                }
-                server.use(handler);
-            }
+            server.use(handler);
         }
     }
 

@@ -26,13 +26,13 @@ export class ApiCache {
         this.gateway = gateway;
     }
 
-    cache(api: ApiConfig) {
+    cache(apiRouter: express.Router, api: ApiConfig) {
         if (this.useCache(api)) {
-            this.configureCache(api);
+            this.configureCache(apiRouter, api);
         }
     }
 
-    private configureCache(api: ApiConfig) {
+    private configureCache(apiRouter: express.Router, api: ApiConfig) {
         let path: string = api.proxy.path;
         let cacheConfigs: Array<CacheConfig> = this.sortCaches(api.cache, path);
 
@@ -47,7 +47,7 @@ export class ApiCache {
             }
             try{
                 let cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);        
-                this.gateway.server.use(path, cacheMiddleware);
+                apiRouter.use(cacheMiddleware);
             } catch (e) {
                 this.gateway.logger.error(e);
             }
