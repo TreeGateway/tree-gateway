@@ -24,7 +24,7 @@ export class ThrottlingRest extends RestController {
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.create(apiName, throttling))
+                .then(() => this.service.create(apiName, apiVersion, throttling))
                 .then(cacheId => resolve(new Return.NewResource(`apis/${apiName}/${apiVersion}/throttling/${throttling.id}`)))
                 .catch(reject);
         });

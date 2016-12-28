@@ -68,7 +68,7 @@ describe("Admin API", () => {
         it("should be able to update an API", (done) => {
             apiMock.description = 'Updated api';
 
-            adminRequest.put(`/apis/${apiMock.name}`, {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.name}/${apiMock.version}`, {body: apiMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -76,7 +76,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to get an API", (done) => {
-            adminRequest(`/apis/${apiMock.name}`, (error, response, body) => {
+            adminRequest(`/apis/${apiMock.name}/${apiMock.version}`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let api = JSON.parse(body);
@@ -86,7 +86,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete an API", (done) => {
-            adminRequest.delete(`/apis/${apiMock.name}`, (error, response, body) => {
+            adminRequest.delete(`/apis/${apiMock.name}/${apiMock.version}`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -118,7 +118,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to create a new cache config", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/cache`, {body: cacheMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/cache`, {body: cacheMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 done();
@@ -126,7 +126,7 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid cache config", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/cache`, {body: {test: 1}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/cache`, {body: {test: 1}, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -134,7 +134,7 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all cache configs", (done) => {
-			adminRequest(`/apis/${apiMock.name}/cache`, (error, response, body)=>{
+			adminRequest(`/apis/${apiMock.name}/${apiMock.version}/cache`, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let configs = JSON.parse(body);
@@ -144,7 +144,7 @@ describe("Admin API", () => {
 		});
 
         it("should be able to update a cache config", (done) => {
-            adminRequest.put(`/apis/${apiMock.name}/cache/1`, {body: cacheMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.name}/${apiMock.version}/cache/1`, {body: cacheMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -152,7 +152,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a cache config", (done) => {
-            adminRequest(`/apis/${apiMock.name}/cache/1`, (error, response, body) => {
+            adminRequest(`/apis/${apiMock.name}/${apiMock.version}/cache/1`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let cache = JSON.parse(body);
@@ -163,7 +163,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a cache config", (done) => {
-            adminRequest.delete(`/apis/${apiMock.name}/cache/1`, (error, response, body) => {
+            adminRequest.delete(`/apis/${apiMock.name}/${apiMock.version}/cache/1`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -194,7 +194,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to create a new group", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/groups`, {body: groupMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/groups`, {body: groupMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 done();
@@ -202,7 +202,7 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid group", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/groups`, {body: {}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/groups`, {body: {}, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -210,7 +210,7 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all groups", (done) => {
-			adminRequest(`/apis/${apiMock.name}/groups`, (error, response, body)=>{
+			adminRequest(`/apis/${apiMock.name}/${apiMock.version}/groups`, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let groups = JSON.parse(body);
@@ -220,7 +220,7 @@ describe("Admin API", () => {
 		});
 
         it("should be able to update a group", (done) => {
-            adminRequest.put(`/apis/${apiMock.name}/groups/group1`, {body: groupMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.name}/${apiMock.version}/groups/group1`, {body: groupMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -228,7 +228,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a group", (done) => {
-            adminRequest(`/apis/${apiMock.name}/groups/group1`, (error, response, body) => {
+            adminRequest(`/apis/${apiMock.name}/${apiMock.version}/groups/group1`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body)).toEqual(groupMock);
@@ -237,7 +237,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a group", (done) => {
-            adminRequest.delete(`/apis/${apiMock.name}/groups/group1`, (error, response, body) => {
+            adminRequest.delete(`/apis/${apiMock.name}/${apiMock.version}/groups/group1`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -247,7 +247,7 @@ describe("Admin API", () => {
 
 	describe("/proxy", () => {
         const apiMock = {
-            name: 'apiGroup',
+            name: 'apiProxy',
             description: 'API mock',
             version: '1.0'
         };
@@ -266,7 +266,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to create a new proxy config", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/proxy`, {body: proxyMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/proxy`, {body: proxyMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 done();
@@ -274,7 +274,7 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid proxy config", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/proxy`, {body: {}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/proxy`, {body: {}, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -282,7 +282,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to update a proxy config", (done) => {
-            adminRequest.put(`/apis/${apiMock.name}/proxy`, {body: proxyMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.name}/${apiMock.version}/proxy`, {body: proxyMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -290,7 +290,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a proxy config", (done) => {
-            adminRequest(`/apis/${apiMock.name}/proxy`, (error, response, body) => {
+            adminRequest(`/apis/${apiMock.name}/${apiMock.version}/proxy`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body)).toEqual(proxyMock);
@@ -299,7 +299,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a proxy config", (done) => {
-            adminRequest.delete(`/apis/${apiMock.name}/proxy`, (error, response, body) => {
+            adminRequest.delete(`/apis/${apiMock.name}/${apiMock.version}/proxy`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -328,7 +328,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to create a throttling config", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/throttling`, {body: throttlingMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/throttling`, {body: throttlingMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 done();
@@ -336,7 +336,7 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid throttling config", (done) => {
-            adminRequest.post(`/apis/${apiMock.name}/throttling`, {body: {test: 1}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.name}/${apiMock.version}/throttling`, {body: {test: 1}, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -344,7 +344,7 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all throttling configs", (done) => {
-			adminRequest(`/apis/${apiMock.name}/throttling`, (error, response, body)=>{
+			adminRequest(`/apis/${apiMock.name}/${apiMock.version}/throttling`, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body).length).toEqual(1);
@@ -353,7 +353,7 @@ describe("Admin API", () => {
 		});
 
         it("should be able to update a throttling config", (done) => {
-            adminRequest.put(`/apis/${apiMock.name}/throttling/1`, {body: throttlingMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.name}/${apiMock.version}/throttling/1`, {body: throttlingMock, json: true}, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -361,7 +361,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a throttling config", (done) => {
-            adminRequest(`/apis/${apiMock.name}/throttling/1`, (error, response, body) => {
+            adminRequest(`/apis/${apiMock.name}/${apiMock.version}/throttling/1`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body).windowMs).toEqual(throttlingMock.windowMs);
@@ -370,7 +370,7 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a throttling config", (done) => {
-            adminRequest.delete(`/apis/${apiMock.name}/throttling/1`, (error, response, body) => {
+            adminRequest.delete(`/apis/${apiMock.name}/${apiMock.version}/throttling/1`, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
