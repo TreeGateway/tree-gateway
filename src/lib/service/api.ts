@@ -68,5 +68,5 @@ export interface AuthenticationService {
 
 export interface ConfigService {
     getAllApiConfig(): Promise<Array<ApiConfig>>;
-    getApiConfig(apiKey: string): Promise<ApiConfig>;
+    getApiConfig(apiName: string, apiVersion: string): Promise<ApiConfig>;
 }

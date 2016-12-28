@@ -6,4 +6,7 @@ export class ConfigTopics {
     static API_ADDED = `${ConfigTopics.BASE_TOPIC}:api-added`;
     static API_REMOVED = `${ConfigTopics.BASE_TOPIC}:api-removed`;
     static API_UPDATED = `${ConfigTopics.BASE_TOPIC}:api-updated`;
+    static MIDDLEWARE_ADDED = `${ConfigTopics.BASE_TOPIC}:middleware-added`;
+    static MIDDLEWARE_REMOVED = `${ConfigTopics.BASE_TOPIC}:middleware-removed`;
+    static MIDDLEWARE_UPDATED = `${ConfigTopics.BASE_TOPIC}:middleware-updated`;
 }

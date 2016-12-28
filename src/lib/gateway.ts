@@ -235,8 +235,22 @@ export class Gateway {
         }
     }
 
-    private removeApi(apiKey: string) {
-        this.apiRoutes.delete(apiKey);
+    private removeApi(apiName: string, apiVersion: string) {
+        this.apiRoutes.delete(createApiKey(apiName, apiVersion));
+    }
+
+    private updateApi(apiName: string, apiVersion: string) {
+        const apiKey = createApiKey(apiName, apiVersion);
+
+        this.configService.getApiConfig(apiName, apiVersion)
+            .then((apiConfig) => {
+                if (apiConfig) {
+                    this.loadApi(apiConfig);
+                }
+            })
+            .catch((err) => {
+                this.logger.error(`Config event lost ${apiKey}: ${err.message}`);
+            });
     }
 
     private initialize(): Promise<void> {
@@ -282,7 +296,11 @@ export class Gateway {
             this.redisEvents.psubscribe(topicPattern)
                 .then(() => {
                     return this.redisEvents.on('pmessage', (pattern, channel, message) => {
-                        this.onConfigUpdated(channel, message);
+                        try {
+                            this.onConfigUpdated(channel, JSON.parse(message));
+                        } catch (err) {
+                            this.logger.error(`Error processing config event: ${err.message}`);
+                        }
                     });
                 })
                 .then(() => {
@@ -296,26 +314,32 @@ export class Gateway {
         });
     }
 
-    private onConfigUpdated(eventTopic: string, apiKey: string) {
+    private onConfigUpdated(eventTopic: string, message: any) {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Config updated ${eventTopic} - ${apiKey}`);
+            this.logger.debug(`Config updated ${eventTopic}`);
         }
 
-        if (eventTopic === ConfigTopics.API_REMOVED) {
-            this.removeApi(apiKey);
-        }
-        else {
-            this.configService.getApiConfig(apiKey)
-                .then((apiConfig) => {
-                    if (apiConfig) {
-                        this.loadApi(apiConfig);
-                    }
-                })
-                .catch((err) => {
-                    this.logger.error(`Config event lost ${eventTopic} - ${apiKey}: ${err.message}`);
-                });
+        switch(eventTopic) {
+            case ConfigTopics.API_REMOVED:
+                this.removeApi(message.name, message.version);
+                break;
+            case ConfigTopics.API_ADDED:
+            case ConfigTopics.API_UPDATED:
+                this.updateApi(message.name, message.version);
+                break;
+            case ConfigTopics.MIDDLEWARE_ADDED:
+            case ConfigTopics.MIDDLEWARE_UPDATED:
+                this.middlewareInstaller.install(message.type, message.name);
+                break;
+            case ConfigTopics.MIDDLEWARE_REMOVED:
+                this.middlewareInstaller.uninstall(message.type, message.name);
+                break;
+            default:
+                this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
         }
     }
+
+    
 
     private configureServer(): Promise<void> {
         return new Promise<void>((resolve, reject) => {

@@ -73,7 +73,7 @@ export class RedisApiService extends RedisService implements ApiService {
 
                     return this.redisClient.multi()
                                .hmset(`${Constants.APIS_PREFIX}`, apiKey, JSON.stringify(api))
-                               .publish(ConfigTopics.API_ADDED, apiKey)
+                               .publish(ConfigTopics.API_ADDED, JSON.stringify({name: api.name, version: api.version}))
                                .exec()
                 })
                 .then(() => {
@@ -98,7 +98,7 @@ export class RedisApiService extends RedisService implements ApiService {
 
                     return this.redisClient.multi()
                                .hmset(`${Constants.APIS_PREFIX}`, apiKey, JSON.stringify(api))
-                               .publish(ConfigTopics.API_UPDATED, apiKey)
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name, version}))
                                .exec();
                 })
                 .then(() => {
@@ -115,7 +115,7 @@ export class RedisApiService extends RedisService implements ApiService {
             // TODO: remove children
             this.redisClient.multi()
                 .hdel(`${Constants.APIS_PREFIX}`, apiKey)
-                .publish(ConfigTopics.API_REMOVED, apiKey)
+                .publish(ConfigTopics.API_REMOVED, JSON.stringify({name, version}))
                 .exec()
                 .then((count) => {
                     // FIXME: multi() does not return count.
@@ -174,7 +174,7 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
 
                     return this.redisClient.multi()
                                .hmset(this.getMapKey(apiName, apiVersion), key, JSON.stringify(component))
-                               .publish(ConfigTopics.API_UPDATED, createApiKey(apiName, apiVersion))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                                .exec();
                 })
                 .then(() => {
@@ -196,7 +196,7 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
 
                     return this.redisClient.multi()
                                .hmset(mapKey, componentId, JSON.stringify(component))
-                               .publish(ConfigTopics.API_UPDATED, createApiKey(apiName, apiVersion))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                                .exec();
                 })
                 .then(() => {
@@ -210,7 +210,7 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
         return new Promise<void>((resolve, reject) => {
             return this.redisClient.multi()
                        .hdel(this.getMapKey(apiName, apiVersion), componentId)
-                       .publish(ConfigTopics.API_UPDATED, createApiKey(apiName, apiVersion))
+                       .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                        .exec()
                        .then((count) => {
                             // FIXME: multi() does not return count.
@@ -285,7 +285,7 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
                     return this.redisClient.multi()
                                .set(`${Constants.APIS_PREFIX}:${apiKey}:proxy`, JSON.stringify(proxy))
-                               .publish(ConfigTopics.API_UPDATED, apiKey)
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -307,7 +307,7 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
                     return this.redisClient.multi()
                                .set(key, JSON.stringify(proxy))
-                               .publish(ConfigTopics.API_UPDATED, apiKey)
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -329,7 +329,7 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
                     return this.redisClient.multi()
                                .del(key)
-                               .publish(ConfigTopics.API_UPDATED, apiKey)
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -362,7 +362,7 @@ export class RedisAuthenticationService extends RedisService implements Authenti
 
             this.redisClient.multi()
                 .set(`${Constants.APIS_PREFIX}:${apiKey}:authentication`, JSON.stringify(auth))
-                .publish(ConfigTopics.API_UPDATED, apiKey)
+                .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                 .exec()
                 .then(() => resolve())
                 .catch(reject);
@@ -383,7 +383,7 @@ export class RedisAuthenticationService extends RedisService implements Authenti
 
                     return this.redisClient.multi()
                                .set(key, JSON.stringify(auth))
-                               .publish(ConfigTopics.API_UPDATED, apiKey)
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -397,7 +397,7 @@ export class RedisAuthenticationService extends RedisService implements Authenti
 
             this.redisClient.multi()
                 .del(`${Constants.APIS_PREFIX}:${apiKey}:authentication`)
-                .publish(ConfigTopics.API_UPDATED, apiKey)
+                .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
                 .exec()
                 .then((count) => {
                     // FIXME: multi() don't return count.
@@ -430,9 +430,9 @@ export class RedisConfigService extends RedisService implements ConfigService {
         this._authService = new RedisAuthenticationService(redisClient);
     }
 
-    getApiConfig(key: string): Promise<ApiConfig> {
+    getApiConfig(apiName: string, apiVersion: string): Promise<ApiConfig> {
         return new Promise<ApiConfig>((resolve, reject) => {
-            this._apiService.getByKey(key)
+            this._apiService.get(apiName, apiVersion)
                 .then((api) => {
                     return this.loadProxy(api);
                 })
