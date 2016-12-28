@@ -94,3 +94,7 @@ export function validateSimpleApiConfig(apiConfig: ApiConfig) {
         })
     });
 }
+
+export function createApiKey(name: string, version: string) {
+    return name + (version ? '_' + version : '_default');
+}

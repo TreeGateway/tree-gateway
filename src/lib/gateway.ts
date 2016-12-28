@@ -7,7 +7,7 @@ import * as express from "express";
 import adminApi from "./admin/api/admin-api";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
-import {ApiConfig, validateApiConfig} from "./config/api";
+import {ApiConfig, validateApiConfig, createApiKey} from "./config/api";
 import {GatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
@@ -26,6 +26,7 @@ import {ConfigService} from "./service/api";
 import {RedisConfigService} from "./service/redis";
 import loadConfigFile from "./utils/config-loader";
 import {MiddlewareInstaller} from "./utils/middleware-installer";
+import {ConfigTopics} from "./config/events";
 
 class StatsController {
     requestStats: Stats;
@@ -47,6 +48,7 @@ export class Gateway {
     private _config: GatewayConfig;
     private _logger: Logger;
     private _redisClient: redis.Redis;
+    private _redisEvents: redis.Redis;
     private _configService: ConfigService;
     private _middlewareInstaller: MiddlewareInstaller;
     private apiRoutes: Map<string, express.Router> = new Map<string, express.Router>();
@@ -69,6 +71,10 @@ export class Gateway {
 
     get redisClient(): redis.Redis {
         return this._redisClient;
+    }
+
+    get redisEvents(): redis.Redis {
+        return this._redisEvents;
     }
 
     get statsConfig() : StatsConfig {
@@ -182,7 +188,7 @@ export class Gateway {
         if (this.logger.isInfoEnabled()) {
             this.logger.info(`Configuring API [${api.name}] on path: ${api.proxy.path}`);
         }
-        const apiKey: string = this.getApiKey(api);
+        const apiKey: string = createApiKey(api.name, api.version);
         this._apis.set(apiKey, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
         
@@ -219,9 +225,18 @@ export class Gateway {
         this.apiRoutes.set(apiKey, apiRouter);
         if (initializeRouter) {
             this.server.use(api.proxy.path, (req, res, next)=>{
-                this.apiRoutes.get(apiKey)(req, res, next);
+                if (this.apiRoutes.has(apiKey)) {
+                    this.apiRoutes.get(apiKey)(req, res, next);
+                }
+                else {
+                    next();
+                }
             });
         }
+    }
+
+    private removeApi(apiKey: string) {
+        this.apiRoutes.delete(apiKey);
     }
 
     private initialize(): Promise<void> {
@@ -233,6 +248,7 @@ export class Gateway {
 
                     this._logger = new Logger(this.config.logger, this);
                     this._redisClient = dbConfig.initializeRedis(this.config.database);
+                    this._redisEvents = dbConfig.initializeRedis(this.config.database);
                     this._configService = new RedisConfigService(this.redisClient);
                     this._middlewareInstaller = new MiddlewareInstaller(this.redisClient, this.config.middlewarePath, this.logger);
                     this._statsRecorder = new StatsRecorder(this);
@@ -245,6 +261,9 @@ export class Gateway {
 
                     this.configureServer()
                         .then(() => {
+                            return this.subscribeEvents();
+                        })
+                        .then(() => {
                             this.configureAdminServer();
                             resolve();
                         })
@@ -254,6 +273,48 @@ export class Gateway {
                         });
                 });
         });
+    }
+
+    private subscribeEvents(): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            const topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
+
+            this.redisEvents.psubscribe(topicPattern)
+                .then(() => {
+                    return this.redisEvents.on('pmessage', (pattern, channel, message) => {
+                        this.onConfigUpdated(channel, message);
+                    });
+                })
+                .then(() => {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Listening to events on topic ${topicPattern}`);
+                    }
+
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private onConfigUpdated(eventTopic: string, apiKey: string) {
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Config updated ${eventTopic} - ${apiKey}`);
+        }
+
+        if (eventTopic === ConfigTopics.API_REMOVED) {
+            this.removeApi(apiKey);
+        }
+        else {
+            this.configService.getApiConfig(apiKey)
+                .then((apiConfig) => {
+                    if (apiConfig) {
+                        this.loadApi(apiConfig);
+                    }
+                })
+                .catch((err) => {
+                    this.logger.error(`Config event lost ${eventTopic} - ${apiKey}: ${err.message}`);
+                });
+        }
     }
 
     private configureServer(): Promise<void> {
@@ -323,9 +384,5 @@ export class Gateway {
         }
 
         return null;
-    }
-
-    private getApiKey(api: ApiConfig) {
-        return api.name + (api.version? '_'+api.version: '_default');
     }
 }

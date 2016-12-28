@@ -10,23 +10,23 @@ import {RedisGroupService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
-@Path('apis/:apiName/groups')
+@Path('apis/:apiName/:apiVersion/groups')
 export class GroupRest extends RestController {
 
     @GET
-    list(@PathParam("apiName") apiName: string): Promise<Array<Group>>{
-        return this.service.list(apiName);
+    list(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string): Promise<Array<Group>>{
+        return this.service.list(apiName, apiVersion);
     }
 
     @POST
-    addGroup(@PathParam("apiName") apiName: string, group: Group): Promise<string> {
+    addGroup(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string, group: Group): Promise<string> {
         return new Promise((resolve, reject) => {
             validateGroup(group)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.create(apiName, group))
-                .then(cacheId => resolve(new Return.NewResource(`apis/${apiName}/groups/${group.name}`)))
+                .then(() => this.service.create(apiName, apiVersion, group))
+                .then(cacheId => resolve(new Return.NewResource(`apis/${apiName}/${apiVersion}/groups/${group.name}`)))
                 .catch(reject);
         });
     }
@@ -34,15 +34,15 @@ export class GroupRest extends RestController {
     @PUT
     @Path("/:groupName")
     updateGroup(@PathParam("apiName") apiName: string,
+              @PathParam("apiVersion") apiVersion: string,
               @PathParam("groupName") groupName: string,
               group: Group): Promise<string> {
         return new Promise((resolve, reject) => {
-            // TODO: publish event
             validateGroup(group)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.update(apiName, groupName, group))
+                .then(() => this.service.update(apiName, apiVersion, groupName, group))
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
@@ -50,10 +50,11 @@ export class GroupRest extends RestController {
 
     @DELETE
     @Path("/:groupName")
-    deleteGroup(@PathParam("apiName") apiName: string, @PathParam("groupName") groupName: string): Promise<void> {
+    deleteGroup(@PathParam("apiName") apiName: string,
+                @PathParam("apiVersion") apiVersion: string,
+                @PathParam("groupName") groupName: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            // TODO: publish event
-            this.service.remove(apiName, groupName)
+            this.service.remove(apiName, apiVersion, groupName)
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
@@ -61,9 +62,11 @@ export class GroupRest extends RestController {
 
     @GET
     @Path("/:groupName")
-    getGroup(@PathParam("apiName") apiName: string, @PathParam("groupName") groupName: string) : Promise<Group>{
+    getGroup(@PathParam("apiName") apiName: string,
+             @PathParam("apiVersion") apiVersion: string,
+             @PathParam("groupName") groupName: string) : Promise<Group>{
         return new Promise((resolve, reject) => {
-            this.service.get(apiName, groupName)
+            this.service.get(apiName, apiVersion, groupName)
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
