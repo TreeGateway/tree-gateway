@@ -1,6 +1,6 @@
 "use strict";
 
-import {NotFoundError} from "../../service/api";
+import {NotFoundError, DuplicatedError} from "../../service/api";
 import {Errors} from "typescript-rest";
 import {AdminServer} from "../admin-server";
 
@@ -23,7 +23,9 @@ export abstract class RestController {
 
     handleError(err: Error) {
         if (err instanceof NotFoundError) {
-            return new Errors.NotFoundError();
+            return new Errors.NotFoundError(err.message);
+        } else if (err instanceof DuplicatedError) {
+            return new Errors.ConflictError(err.message);
         } else if(err instanceof Errors.ForbidenError) {
             return err;
         } else {
