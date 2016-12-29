@@ -287,7 +287,7 @@ export class Gateway {
                             console.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
                             reject(err);
                         });
-                });
+                }).catch(reject);
         });
     }
 
