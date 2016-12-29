@@ -33,7 +33,8 @@ export class Logger {
             if (_.startsWith(outputDir, '.')) {
                 outputDir = path.join(gateway.config.rootPath, outputDir);
             }
-            config.file['filename'] = path.join(outputDir, `gateway-${process.pid}.log`);
+            const fileName = (process.env.processNumber?`gateway-${process.env.processNumber}.log`:`gateway.log`)
+            config.file['filename'] = path.join(outputDir, fileName);
             fs.ensureDirSync(path.dirname(config.file['filename']));
             options.transports.push(new Winston.transports.File(config.file));
         }

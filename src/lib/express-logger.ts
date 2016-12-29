@@ -29,7 +29,8 @@ export class AccessLogger {
             if (_.startsWith(outputDir, '.')) {
                 outputDir = path.join(gateway.config.rootPath, outputDir);
             }
-            config.file['filename'] = path.join(outputDir, `access-${process.pid}.log`);
+            const fileName = (process.env.processNumber?`access-${process.env.processNumber}.log`:`access.log`)
+            config.file['filename'] = path.join(outputDir, fileName);
             fs.ensureDirSync(path.dirname(config.file['filename']));
             options.transports.push(new Winston.transports.File(config.file));
         }
