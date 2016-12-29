@@ -1,12 +1,11 @@
 import * as express from "express";
 import * as request from "request";
 import * as fs from "fs-extra-promise";
+import * as path from "path";
+import * as _ from "lodash";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
-import * as path from "path";
-import * as dbConfig from "../lib/redis";
 import {ApiConfig} from "../lib/config/api";
-import * as _ from "lodash";
 
 let server;
 let gateway: Gateway;
@@ -15,38 +14,40 @@ let adminRequest;
 
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./tree-gateway-test.json");
-        clearConfig()
-        .then(()=>{
-            return gateway.start();
-        })
-        .then(()=>{
-            return gateway.startAdmin();
-        })
-        .then(() => {
-            gateway.server.set('env', 'test');
-            gatewayRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.listenPort}`});
-            adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+		gateway = new Gateway("./src/spec/test-data/tree-gateway-test.json");
 
-            return gateway.redisClient.flushdb();
-        })
-        .then(()=>{
-			return installMiddlewares();
-		})
-        .then(()=>{
-			return installApis();
-		})
-		.then(done)
-		.catch(fail);
+		gateway.start()
+			.then(()=>{
+				return gateway.startAdmin();
+			})
+			.then(() => {
+				gateway.server.set('env', 'test');
+				gatewayRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.listenPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+
+				return gateway.redisClient.flushdb();
+			})
+			.then(()=>{
+				return installMiddlewares();
+			})
+			.then(()=>{
+				return installApis();
+			})
+			.then(() => {
+				setTimeout(done, 2000);
+			})
+			.catch(fail);
 	});
 
 	afterAll(function(done){
-		uninstallMiddlewares()
-		.then(()=>{
-			gateway.stopAdmin();
-			gateway.stop();
-			gateway.redisClient.disconnect();
-		}).catch(fail);
+		gateway.redisClient.flushdb()
+			.then(() => {
+				gateway.stopAdmin();
+				gateway.stop();
+				return fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp'));
+			})
+			.then(done)
+			.catch(fail);
 	});
 
 	describe("The Gateway Proxy", () => {
@@ -271,12 +272,12 @@ describe("Gateway Tests", () => {
                     adminRequest.post("/apis", {body: api, json: true}, (error, response, body) => {
                         expect(error).toBeNull();
                         expect(response.statusCode).toEqual(201);
-						installApiCache(apiConfig.name, apiConfig.cache).then(()=>{
-							return installApiProxy(apiConfig.name, apiConfig.proxy);
+						installApiCache(apiConfig.name, apiConfig.version, apiConfig.cache).then(()=>{
+							return installApiProxy(apiConfig.name, apiConfig.version, apiConfig.proxy);
 						}).then(()=>{
-							return installApiThrottling(apiConfig.name, apiConfig.throttling);
+							return installApiThrottling(apiConfig.name, apiConfig.version, apiConfig.throttling);
 						}).then(()=>{
-							return installApiAuthentication(apiConfig.name, apiConfig.authentication);
+							return installApiAuthentication(apiConfig.name, apiConfig.version, apiConfig.authentication);
 						}).then(()=>{
 							if (!apiConfig.group) {
 								returned++;
@@ -286,7 +287,7 @@ describe("Gateway Tests", () => {
 							}
 							else {
 								let promises = apiConfig.group.map(group=>{
-									return installApiGroup(apiConfig.name, group);
+									return installApiGroup(apiConfig.name, apiConfig.version, group);
 								})
 								Promise.all(promises).then(()=>{
 									returned++;
@@ -303,12 +304,12 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiAuthentication(apiName: string, authentication): Promise<void> {
+	function installApiAuthentication(apiName: string, apiVersion: string, authentication): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!authentication) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiName}/authentication`, {body: authentication, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiName}/${apiVersion}/authentication`, {body: authentication, json: true}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -318,14 +319,14 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiCache(apiName: string, apiCache): Promise<void> {
+	function installApiCache(apiName: string, apiVersion: string, apiCache): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!apiCache) {
 				return resolve();
 			}
 			let returned=0, expected = apiCache.length;
 			apiCache.forEach(cache=>{
-				adminRequest.post(`/apis/${apiName}/cache`, {body: cache, json: true}, (error, response, body) => {
+				adminRequest.post(`/apis/${apiName}/${apiVersion}/cache`, {body: cache, json: true}, (error, response, body) => {
 					if(error) {
 						reject(error);
 					}
@@ -339,14 +340,14 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiThrottling(apiName: string, throttling): Promise<void> {
+	function installApiThrottling(apiName: string, apiVersion: string, throttling): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!throttling) {
 				return resolve();
 			}
 			let returned=0, expected = throttling.length;
 			throttling.forEach(throt=>{
-				adminRequest.post(`/apis/${apiName}/throttling`, {body: throt, json: true}, (error, response, body) => {
+				adminRequest.post(`/apis/${apiName}/${apiVersion}/throttling`, {body: throt, json: true}, (error, response, body) => {
 					if(error) {
 						reject(error);
 					}
@@ -360,12 +361,12 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiProxy(apiName: string, apiProxy): Promise<void> {
+	function installApiProxy(apiName: string, apiVersion: string, apiProxy): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!apiProxy) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiName}/proxy`, {body: apiProxy, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiName}/${apiVersion}/proxy`, {body: apiProxy, json: true}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -375,12 +376,12 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiGroup(apiName: string, group): Promise<void> {
+	function installApiGroup(apiName: string, apiVersion: string, group): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!group) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiName}/groups`, {body: group, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiName}/${apiVersion}/groups`, {body: group, json: true}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -454,62 +455,5 @@ describe("Gateway Tests", () => {
 			 .then(resolve)
 			 .catch(reject);
 		});
-	}
-
-	function uninstallMiddlewares():Promise<void>{
-         return new Promise<void>((resolve, reject)=>{
-			 uninstallMiddleware('myJwtStrategy', '/authentication/strategies/')
-			 .then(()=>{
-				 return uninstallMiddleware('verifyBasicUser', '/authentication/verify/')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('verifyJwtUser', '/authentication/verify/')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('myCustomFilter', '/filters')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('mySecondFilter', '/filters')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('myRequestInterceptor', 'interceptors/request')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('mySecondRequestInterceptor', 'interceptors/request')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('myResponseInterceptor', 'interceptors/response')
-			 })
-			 .then(()=>{
-				 return uninstallMiddleware('SecondInterceptor', 'interceptors/response')
-			 })
-			 .then(resolve)
-			 .catch(reject);
-		});
-	}
-
-    function clearConfig(): Promise<void> {
-        return new Promise<void>((resolve, reject)=>{
-            const redisClient = dbConfig.initializeRedis({
-                host: "localhost",
-                port: 6379,
-                db: 1
-            });
-            let stream = redisClient.scanStream({
-                match: 'config:*'
-            });
-            stream.on('data', keys => {
-                if (keys.length) {
-                    var pipeline = redisClient.pipeline();
-                    keys.forEach(key => {
-                        pipeline.del(key);
-                    });
-                    pipeline.exec();
-                }
-            });
-            stream.on('end', function () {
-                resolve();
-            });        
-        });
-    }		
+	}	
 });

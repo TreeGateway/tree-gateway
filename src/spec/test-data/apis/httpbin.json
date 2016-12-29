@@ -7,11 +7,11 @@
             "description": "Endpoints Group One",
             "member": [
                 {
-                    "path": ["get/"], 
+                    "path": ["get"], 
                     "method": ["GET"]
                 }, 
                 {
-                    "path": ["post/"], 
+                    "path": ["post"], 
                     "method": ["GET"]
                 }
             ] 
