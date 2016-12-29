@@ -28,13 +28,13 @@ export class Logger {
             options.transports.push(new Winston.transports.Console(config.console));
         }
         if (config && config.file) {
-            config.file = _.defaults(config.file, {
-                filename: './logs/gateway.log'
-            })
-            if (_.startsWith(config.file.filename, '.')) {
-                config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
+            config.file = _.omit(config.file, 'outputDir');
+            let outputDir: string = config.file.outputDir || './logs';
+            if (_.startsWith(outputDir, '.')) {
+                outputDir = path.join(gateway.config.rootPath, outputDir);
             }
-            fs.ensureDirSync(path.dirname(config.file.filename));
+            config.file['filename'] = path.join(outputDir, `gateway-${process.pid}.log`);
+            fs.ensureDirSync(path.dirname(config.file['filename']));
             options.transports.push(new Winston.transports.File(config.file));
         }
         
