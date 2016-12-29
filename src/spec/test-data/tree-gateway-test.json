@@ -7,7 +7,7 @@
         "level": "error",
         "file": {
             "timestamp": true,
-            "filename": "./logs/gateway.log",
+            "outputDir": "./logs",
             "json": false, 
             "prettyPrint": true 
         }
