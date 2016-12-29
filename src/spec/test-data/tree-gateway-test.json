@@ -1,0 +1,26 @@
+{
+    "underProxy": false,
+    "listenPort": 8000,
+    "adminPort": 8001,
+    "rootPath": "./temp",
+    "logger": {
+        "level": "error",
+        "file": {
+            "timestamp": true,
+            "filename": "./logs/gateway.log",
+            "json": false, 
+            "prettyPrint": true 
+        }
+    },
+    "statsConfig": {
+        "granularity": {
+            "duration": "1 hour",
+            "ttl": "2 days"
+        }
+    }, 
+    "database": {
+        "host": "localhost",
+        "port": 6379,
+        "db": 1
+    }
+}

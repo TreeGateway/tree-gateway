@@ -1,5 +1,7 @@
 import * as express from "express";
 import * as request from "request";
+import * as fs from "fs-extra-promise";
+import * as path from "path";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
 import * as dbConfig from "../lib/redis";
@@ -10,28 +12,31 @@ let adminAddress: string;
 let adminRequest;
 describe("Admin API", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./tree-gateway-test.json");
-        clearConfig()
-        .then(()=>{
-            return gateway.start();
-        })
-        .then(()=>{
-            return gateway.startAdmin();
-        })
-        .then(() => {
-            gateway.server.set('env', 'test');
-            adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+		gateway = new Gateway("./src/spec/test-data/tree-gateway-test.json");
 
-            return gateway.redisClient.flushdb();
-        })
-        .then(done)
-        .catch(fail);
+		gateway.start()
+			.then(()=>{
+				return gateway.startAdmin();
+			})
+			.then(() => {
+				gateway.server.set('env', 'test');
+				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+
+				return gateway.redisClient.flushdb();
+			})
+			.then(done)
+			.catch(fail);
 	});
 
-	afterAll(function(){
-        gateway.stopAdmin();
-		gateway.stop();
-		gateway.redisClient.disconnect();
+	afterAll(function(done){
+		gateway.redisClient.flushdb()
+			.then(() => {
+				gateway.stopAdmin();
+				gateway.stop();
+				return fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp'));
+			})
+			.then(done)
+			.catch(fail);
 	});
 
 	describe("/apis", () => {
@@ -377,29 +382,4 @@ describe("Admin API", () => {
             });
         });
     });
-
-    function clearConfig(): Promise<void> {
-        return new Promise<void>((resolve, reject)=>{
-            const redisClient = dbConfig.initializeRedis({
-                host: "localhost",
-                port: 6379,
-                db: 1
-            });
-            let stream = redisClient.scanStream({
-                match: 'config:*'
-            });
-            stream.on('data', keys => {
-                if (keys.length) {
-                    var pipeline = redisClient.pipeline();
-                    keys.forEach(key => {
-                        pipeline.del(key);
-                    });
-                    pipeline.exec();
-                }
-            });
-            stream.on('end', function () {
-                resolve();
-            });        
-        });
-    }
 });
