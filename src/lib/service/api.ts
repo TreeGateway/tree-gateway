@@ -69,4 +69,5 @@ export interface AuthenticationService {
 export interface ConfigService {
     getAllApiConfig(): Promise<Array<ApiConfig>>;
     getApiConfig(apiName: string, apiVersion: string): Promise<ApiConfig>;
+    subscribeEvents(): Promise<void>;
 }

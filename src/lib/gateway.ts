@@ -237,11 +237,11 @@ export class Gateway {
         }
     }
 
-    private removeApi(apiName: string, apiVersion: string) {
+    removeApi(apiName: string, apiVersion: string) {
         this.apiRoutes.delete(createApiKey(apiName, apiVersion));
     }
 
-    private updateApi(apiName: string, apiVersion: string) {
+    updateApi(apiName: string, apiVersion: string) {
         const apiKey = createApiKey(apiName, apiVersion);
 
         this.configService.getApiConfig(apiName, apiVersion)
@@ -265,7 +265,7 @@ export class Gateway {
                     this._logger = new Logger(this.config.logger, this);
                     this._redisClient = dbConfig.initializeRedis(this.config.database);
                     this._redisEvents = dbConfig.initializeRedis(this.config.database);
-                    this._configService = new RedisConfigService(this.redisClient);
+                    this._configService = new RedisConfigService(this);
                     this._middlewareInstaller = new MiddlewareInstaller(this.redisClient, this.config.middlewarePath, this.logger);
                     this._statsRecorder = new StatsRecorder(this);
                     this.apiProxy = new ApiProxy(this);
@@ -277,7 +277,7 @@ export class Gateway {
 
                     this.configureServer()
                         .then(() => {
-                            return this.subscribeEvents();
+                            return this.configService.subscribeEvents();
                         })
                         .then(() => {
                             this.configureAdminServer();
@@ -290,58 +290,6 @@ export class Gateway {
                 });
         });
     }
-
-    private subscribeEvents(): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            const topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
-
-            this.redisEvents.psubscribe(topicPattern)
-                .then(() => {
-                    return this.redisEvents.on('pmessage', (pattern, channel, message) => {
-                        try {
-                            this.onConfigUpdated(channel, JSON.parse(message));
-                        } catch (err) {
-                            this.logger.error(`Error processing config event: ${err.message}`);
-                        }
-                    });
-                })
-                .then(() => {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Listening to events on topic ${topicPattern}`);
-                    }
-
-                    resolve();
-                })
-                .catch(reject);
-        });
-    }
-
-    private onConfigUpdated(eventTopic: string, message: any) {
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Config updated ${eventTopic}`);
-        }
-
-        switch(eventTopic) {
-            case ConfigTopics.API_REMOVED:
-                this.removeApi(message.name, message.version);
-                break;
-            case ConfigTopics.API_ADDED:
-            case ConfigTopics.API_UPDATED:
-                this.updateApi(message.name, message.version);
-                break;
-            case ConfigTopics.MIDDLEWARE_ADDED:
-            case ConfigTopics.MIDDLEWARE_UPDATED:
-                this.middlewareInstaller.install(message.type, message.name);
-                break;
-            case ConfigTopics.MIDDLEWARE_REMOVED:
-                this.middlewareInstaller.uninstall(message.type, message.name);
-                break;
-            default:
-                this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
-        }
-    }
-
-    
 
     private configureServer(): Promise<void> {
         return new Promise<void>((resolve, reject) => {

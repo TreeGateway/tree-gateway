@@ -11,6 +11,7 @@ import {Group} from "../config/group";
 import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
 import {ConfigTopics} from "../config/events";
+import {Gateway} from "../gateway";
 
 class Constants {
     static APIS_PREFIX = "config:apis";
@@ -419,15 +420,17 @@ export class RedisConfigService extends RedisService implements ConfigService {
     private _throttlingService: ThrottlingService;
     private _cacheService: CacheService;
     private _authService: AuthenticationService;
+    private gateway: Gateway;
 
-    constructor(redisClient) {
-        super(redisClient);
-        this._apiService = new RedisApiService(redisClient);
-        this._proxyService = new RedisProxyService(redisClient);
-        this._groupService = new RedisGroupService(redisClient);
-        this._throttlingService = new RedisThrottlingService(redisClient);
-        this._cacheService = new RedisCacheService(redisClient);
-        this._authService = new RedisAuthenticationService(redisClient);
+    constructor(gateway: Gateway) {
+        super(gateway.redisClient);
+        this._apiService = new RedisApiService(gateway.redisClient);
+        this._proxyService = new RedisProxyService(gateway.redisClient);
+        this._groupService = new RedisGroupService(gateway.redisClient);
+        this._throttlingService = new RedisThrottlingService(gateway.redisClient);
+        this._cacheService = new RedisCacheService(gateway.redisClient);
+        this._authService = new RedisAuthenticationService(gateway.redisClient);
+        this.gateway = gateway;
     }
 
     getApiConfig(apiName: string, apiVersion: string): Promise<ApiConfig> {
@@ -462,6 +465,56 @@ export class RedisConfigService extends RedisService implements ConfigService {
                 .then(resolve)
                 .catch(reject);
         });
+    }
+
+    subscribeEvents(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
+
+            this.gateway.redisEvents.psubscribe(topicPattern)
+                .then(() => {
+                    return this.gateway.redisEvents.on('pmessage', (pattern, channel, message) => {
+                        try {
+                            this.onConfigUpdated(channel, JSON.parse(message));
+                        } catch (err) {
+                            this.gateway.logger.error(`Error processing config event: ${err.message}`);
+                        }
+                    });
+                })
+                .then(() => {
+                    if (this.gateway.logger.isDebugEnabled()) {
+                        this.gateway.logger.debug(`Listening to events on topic ${topicPattern}`);
+                    }
+
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private onConfigUpdated(eventTopic: string, message: any) {
+        if (this.gateway.logger.isDebugEnabled()) {
+            this.gateway.logger.debug(`Config updated ${eventTopic}`);
+        }
+
+        switch(eventTopic) {
+            case ConfigTopics.API_REMOVED:
+                this.gateway.removeApi(message.name, message.version);
+                break;
+            case ConfigTopics.API_ADDED:
+            case ConfigTopics.API_UPDATED:
+                this.gateway.updateApi(message.name, message.version);
+                break;
+            case ConfigTopics.MIDDLEWARE_ADDED:
+            case ConfigTopics.MIDDLEWARE_UPDATED:
+                this.gateway.middlewareInstaller.install(message.type, message.name);
+                break;
+            case ConfigTopics.MIDDLEWARE_REMOVED:
+                this.gateway.middlewareInstaller.uninstall(message.type, message.name);
+                break;
+            default:
+                this.gateway.logger.error(`Unknown event type ${eventTopic}: ${message}`);
+        }
     }
 
     private loadProxy(apiConfig: ApiConfig): Promise<ApiConfig> {
