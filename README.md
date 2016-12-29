@@ -1,5 +1,5 @@
 # tree-gateway
-A complete and free API Gateway
+A full featured and free API Gateway in node JS
 
 It is an work in proggress. 
 
@@ -11,7 +11,6 @@ It is an work in proggress.
      - Request Interceptors
      - Response Interceptors
  - Throttling (Rate Limits)
-   - In Memory controller
    - Redis
  - Authentication
    - Passport integration
@@ -22,16 +21,23 @@ It is an work in proggress.
  - Caching
    - Client Cache (via cache control)
    - Server Cache
-     - In Memory (lru-cache)
      - Redis 
+ - Monitoring and Analytics
+   - Accesses / status codes
+   - Authentication attempts / fails
+   - quota exceeded
+   - cache hits / misses / errors
+   - CPU usage
+   - Memory Usage
+ - Admin API
+   - Hot reloading of changes
+   - Multi process notifications
 
 ## In progress Features
  - Service Discovery
  - Load Balancing
  - Authorization
- - Monitoring and Analytics
  - Circuit Breaker
- - Admin API
  - Clustering
  - Dockering
  - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
@@ -42,3 +48,6 @@ It is an work in proggress.
   - API composition
   - Virtual Paths
   - Protocol Transformations
+
+
+We accept Pull Requests!
