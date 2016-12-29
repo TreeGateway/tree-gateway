@@ -34,7 +34,7 @@ gulp.task('docs-clean', function() {
 	return del(['doc/']);
 });
 
-gulp.task('test-build', function(done) {
+gulp.task('test-build', function() {
  	return gulp.src('src/spec/test-*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
@@ -43,7 +43,7 @@ gulp.task('test-build', function(done) {
 		.pipe(gulp.dest('bin/test/spec'));
 });
 
-gulp.task('test-coverage', function(done) {
+gulp.task('test-coverage', function() {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
@@ -82,11 +82,11 @@ gulp.task('test-run', function() {
 });
 
 gulp.task('test', function(done) {
-    runSequence('test-build', 'test-coverage', 'test-run', 
-				'remap-istanbul-reports', function() {
-        console.log('test completed.');
-        done();
-    });
+	runSequence('test-build', 'test-coverage', 'test-run',
+			 'remap-istanbul-reports', function() {
+		console.log('test completed.');
+		done();
+	});
 });
 
 gulp.task("docs", ['docs-clean'], function() {

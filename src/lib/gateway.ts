@@ -138,6 +138,8 @@ export class Gateway {
         if (this.apiServer) {
             this.apiServer.close();
             this.apiServer = null;
+            this.redisClient.disconnect();
+            this.redisEvents.disconnect();
         }
     }
 
