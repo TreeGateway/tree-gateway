@@ -1,3 +1,5 @@
+"use strict";
+
 import {Redis} from "ioredis";
 
 import {ApiService, ApiComponentService, GroupService, ThrottlingService,

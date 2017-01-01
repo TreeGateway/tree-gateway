@@ -1,3 +1,5 @@
+"use strict";
+
 import {MiddlewareService, RedisMiddlewareService} from "../service/middleware";
 import * as fs from "fs-extra-promise";
 //import * as _ from "lodash";

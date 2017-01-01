@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Topics used to publish config related events.
  */
