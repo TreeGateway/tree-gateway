@@ -320,7 +320,7 @@ let LoggerConfigSchema = Joi.object().keys({
 });
 
 let RedisNodeSchema = Joi.object().keys({
-    host: Joi.string(),
+    host: Joi.string().hostname(),
     port: Joi.number().positive(),
     password: Joi.string()
 });
