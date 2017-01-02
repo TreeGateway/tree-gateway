@@ -19,8 +19,12 @@
         }
     }, 
     "database": {
-        "host": "localhost",
-        "port": 6379,
-        "db": 1
+        "standalone": {
+            "host": "localhost",
+            "port": 6379
+        },
+        "options": {
+            "db": 1
+        }
     }
 }

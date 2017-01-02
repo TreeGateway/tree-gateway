@@ -14,7 +14,7 @@ import {ConfigTopics} from "../config/events";
 import {Gateway} from "../gateway";
 
 class Constants {
-    static APIS_PREFIX = "config:apis";
+    static APIS_PREFIX = "{config}:apis";
 }
 
 export class RedisService {
