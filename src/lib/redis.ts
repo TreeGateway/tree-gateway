@@ -7,7 +7,7 @@ import * as _ from "lodash";
 export function initializeRedis(config: RedisConfig) {
     let client;
 
-    _.defaults(config, {
+    config = _.defaults(config, {
         options: {}
     });
 
