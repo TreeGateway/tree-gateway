@@ -85,9 +85,67 @@ export interface MonitorConfig{
 }
 
 export interface RedisConfig {
-    host: string;
-    port: number;
-    db?: number;
+    /**
+     * Standalone redis configuration.
+     */
+    standalone?: RedisNodeConfig,
+    /**
+     * Configure client to use Redis Sentinel.
+     */
+    sentinel?: RedisSentinelConfig,
+    /**
+     * List of cluster nodes.
+     */
+    cluster?: RedisNodeConfig[],
+    /**
+     * Redis connection options.
+     */
+    options?: RedisOptionsConfig
+}
+
+export interface RedisNodeConfig {
+    /**
+     * Node host.
+     */
+    host: string,
+    /**
+     * Node port.
+     */
+    port?: number,
+    /**
+     * Node password.
+     */
+    password?: string
+}
+
+export interface RedisSentinelConfig {
+    /**
+     * List of sentinel nodes.
+     */
+    nodes: RedisNodeConfig[],
+    /**
+     * Group os instances to connect (master/slaves group).
+     */
+    name: string
+}
+
+export interface RedisOptionsConfig {
+    /**
+     * Fallback password. Used when not defined in a node.
+     */
+    password?: string,
+    /**
+     * Prefix to be appended to all keys (defaults to '').
+     */
+    keyPrefix?: string,
+    /**
+     * Connection name, for monitoring purposes.
+     */
+    connectionName?: string,
+    /**
+     * Database index.
+     */
+    db?: number
 }
 
 export interface LoggerConfig {
@@ -261,11 +319,26 @@ let LoggerConfigSchema = Joi.object().keys({
     file: LogFileConfigSchema
 });
 
-let RedisConfigSchema = Joi.object().keys({
-    host: Joi.string().hostname().required(),
-    port: Joi.number().positive().required(),
-    db: Joi.number().positive()
+let RedisNodeSchema = Joi.object().keys({
+    host: Joi.string().hostname(),
+    port: Joi.number().positive(),
+    password: Joi.string()
 });
+
+let RedisConfigSchema = Joi.object().keys({
+    standalone: RedisNodeSchema,
+    sentinel: Joi.object().keys({
+        nodes: Joi.array().items(RedisNodeSchema).required(),
+        name: Joi.string().required()
+    }),
+    cluster: Joi.array().items(RedisNodeSchema),
+    options: Joi.object().keys({
+        password: Joi.string(),
+        keyPrefix: Joi.string(),
+        connectionName: Joi.string(),
+        db: Joi.number().positive()
+    })
+}).xor('standalone', 'sentinel', 'cluster');
 
 let MonitorConfigSchema = Joi.object().keys({
     name: Joi.string().valid('cpu', 'mem').required(),

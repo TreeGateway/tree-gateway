@@ -48,8 +48,10 @@
         }
     }, 
     "database": {
-        "host": "localhost",
-        "port": 6379
+        "standalone": {
+            "host": "localhost",
+            "port": 6379
+        }
     }, 
     "monitor": [
         {
