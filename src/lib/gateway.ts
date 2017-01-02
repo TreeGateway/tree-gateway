@@ -287,7 +287,7 @@ export class Gateway {
                             console.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
                             reject(err);
                         });
-                });
+                }).catch(reject);
         });
     }
 
@@ -300,7 +300,7 @@ export class Gateway {
             }
             if (this.config.accessLogger) {
                 AccessLogger.configureAccessLoger(this.config.accessLogger, 
-                            this, this.app, './logs/accessLog.log');
+                            this, this.app, './logs');
             }
 
             this.middlewareInstaller.installAll()
@@ -319,7 +319,7 @@ export class Gateway {
                 this.configureStatsMiddleware(this.adminApp, 'admin');
             }
             AccessLogger.configureAccessLoger(this.config.adminLogger, 
-                        this, this.adminApp, './logs/adminAccessLog.log');
+                        this, this.adminApp, './logs/admin');
         }
         
         AdminServer.gateway = this;

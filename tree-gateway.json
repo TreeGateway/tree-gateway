@@ -10,7 +10,7 @@
         },
         "file": {
             "timestamp": true,
-            "filename": "./logs/gateway.log",
+            "outputDir": "./logs",
             "json": false, 
             "prettyPrint": true 
         }
@@ -25,7 +25,7 @@
             "timestamp": true,
             "json": false,
             "prettyPrint": true,
-            "filename": "./logs/accessLog.log"
+            "outputDir": "./logs"
         }
     },
     "adminLogger": {
@@ -38,7 +38,7 @@
             "timestamp": true,
             "json": false,
             "prettyPrint": true,
-            "filename": "./logs/adminAccessLog.log"
+            "outputDir": "./logs"
         }
     },
     "statsConfig": {

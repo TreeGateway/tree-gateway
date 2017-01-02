@@ -12,7 +12,7 @@ let expressWinston = require('express-winston');
 
 export class AccessLogger {
     static configureAccessLoger(config: AccessLoggerConfig, gateway: Gateway, 
-                                server: express.Application, defaultFileName: string) {
+                                server: express.Application, defaultDir: string) {
         config = _.defaults(config, {
             meta: false, 
             statusLevels: true
@@ -24,13 +24,14 @@ export class AccessLogger {
             options.transports.push(new Winston.transports.Console(config.console));
         }
         if (config && config.file) {
-            config.file = _.defaults(config.file, {
-                filename: defaultFileName
-            })
-            if (_.startsWith(config.file.filename, '.')) {
-                config.file.filename = path.join(gateway.config.rootPath, config.file.filename);
+            config.file = _.omit(config.file, 'outputDir');
+            let outputDir: string = config.file.outputDir || defaultDir;
+            if (_.startsWith(outputDir, '.')) {
+                outputDir = path.join(gateway.config.rootPath, outputDir);
             }
-            fs.ensureDirSync(path.dirname(config.file.filename));
+            const fileName = (process.env.processNumber?`access-${process.env.processNumber}.log`:`access.log`)
+            config.file['filename'] = path.join(outputDir, fileName);
+            fs.ensureDirSync(path.dirname(config.file['filename']));
             options.transports.push(new Winston.transports.File(config.file));
         }
         server.use(expressWinston.logger(options));

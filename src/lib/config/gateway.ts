@@ -208,9 +208,9 @@ export interface LogConsoleConfig {
 
 export interface LogFileConfig {
     /**
-     * The filename of the logfile to write output to.
+     * The directory name where the logfiles will be saved.
      */
-    filename?: string;
+    outputDir?: string;
     /**
      * flag indicating if we should prepend output with timestamps (default true). 
      */
@@ -296,7 +296,7 @@ let LogConsoleConfigSchema = Joi.object().keys({
 });
 
 let LogFileConfigSchema = Joi.object().keys({
-    filename: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
+    outputDir: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\.\/]*$/),
     timestamp: Joi.boolean(),
     silent: Joi.boolean(), 
     colorize: Joi.boolean(), 
