@@ -128,12 +128,7 @@ export class Gateway {
                     }
                     if (self.config.protocol.https) {
                         expected ++;
-                        let privateKey  = fs.readFileSync(self.config.protocol.https.privateKey, 'utf8');
-                        let certificate = fs.readFileSync(self.config.protocol.https.certificate, 'utf8');
-                        let credentials = {key: privateKey, cert: certificate};
-                        let https = require('https');
-                        let httpsServer = https.createServer(credentials, self.app);
-
+                        let httpsServer = self.createHttpServer();
                         self.apiServer.set('https', httpsServer.listen(self.config.protocol.https.listenPort, ()=>{
                             self.logger.info(`Gateway listenning HTTPS on port ${self.config.protocol.https.listenPort}`);
                             started ++;
@@ -170,12 +165,7 @@ export class Gateway {
                 }
                 if (self.config.protocol.https) {
                     expected ++;
-                    let privateKey  = fs.readFileSync(self.config.protocol.https.privateKey, 'utf8');
-                    let certificate = fs.readFileSync(self.config.protocol.https.certificate, 'utf8');
-                    let credentials = {key: privateKey, cert: certificate};
-                    let https = require('https');
-                    let httpsServer = https.createServer(credentials, self.adminApp);
-
+                    let httpsServer = self.createHttpServer();
                     self.adminServer.set('https', httpsServer.listen(self.config.protocol.https.adminPort, ()=>{
                         self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.protocol.https.adminPort}`);
                         started ++;
@@ -209,6 +199,14 @@ export class Gateway {
             });
             this.adminServer = null;
         }
+    }
+
+    private createHttpServer() {
+        let privateKey  = fs.readFileSync(this.config.protocol.https.privateKey, 'utf8');
+        let certificate = fs.readFileSync(this.config.protocol.https.certificate, 'utf8');
+        let credentials = {key: privateKey, cert: certificate};
+        let https = require('https');
+        return https.createServer(credentials, this.app);        
     }
 
     private loadApis(): Promise<void> {
