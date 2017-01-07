@@ -1,7 +1,11 @@
 {
     "underProxy": false,
-    "listenPort": 8000,
-    "adminPort": 8001,
+    "protocol": {
+        "http": {
+            "listenPort": 8000,
+            "adminPort": 8001            
+        }
+    },
     "rootPath": ".",
     "logger": {
         "level": "debug",

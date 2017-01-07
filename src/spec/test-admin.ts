@@ -20,7 +20,7 @@ describe("Admin API", () => {
 			})
 			.then(() => {
 				gateway.server.set('env', 'test');
-				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.adminPort}`});
 
 				return gateway.redisClient.flushdb();
 			})

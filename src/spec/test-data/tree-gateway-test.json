@@ -1,7 +1,17 @@
 {
     "underProxy": false,
-    "listenPort": 8000,
-    "adminPort": 8001,
+    "protocol": {
+        "http": {
+            "listenPort": 8000,
+            "adminPort": 8001            
+        },
+        "https": {
+            "listenPort": 8002,
+            "adminPort": 8003,
+            "privateKey": "../server.key",
+            "certificate": "../server.crt"                        
+        }
+    },
     "rootPath": "./temp",
     "logger": {
         "level": "error",

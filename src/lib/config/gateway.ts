@@ -8,13 +8,9 @@ import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
  */
 export interface GatewayConfig {
     /**
-     * The gateway port
-     */
-    listenPort: number;
-    /**
      * The gateway admin server port
      */
-    adminPort: number;
+    protocol: ProtocolConfig;
     /**
      * Configurations for gateway database (REDIS).
      */
@@ -43,7 +39,9 @@ export interface GatewayConfig {
      * Configurations for gateway access logger.
      */
     adminLogger?: AccessLoggerConfig;
-
+    /**
+     * Configurations for gateway stats
+     */
     statsConfig?: StatsConfig;
     /**
      * If true, disabled the statistical data recording for admin tasks.
@@ -53,6 +51,41 @@ export interface GatewayConfig {
      * Create monitors for the gateway health
      */
     monitor?: Array<MonitorConfig>;
+}
+
+export interface ProtocolConfig {
+    http?: HttpConfig;
+    https?: HttpsConfig;
+}
+
+export interface HttpConfig {
+    /**
+     * The gateway port
+     */
+    listenPort: number;
+    /**
+     * The gateway admin server port
+     */
+    adminPort: number;
+}
+
+export interface HttpsConfig {
+    /**
+     * The gateway port
+     */
+    listenPort: number;
+    /**
+     * The gateway admin server port
+     */
+    adminPort: number;
+    /**
+     * Path to the private key file.
+     */
+    privateKey: string;
+    /**
+     * Path to the certificate file.
+     */
+    certificate: string;
 }
 
 export interface AccessLoggerConfig {
@@ -354,9 +387,26 @@ let AccessLoggerConfigSchema = Joi.object().keys({
     disableStats: Joi.boolean()
 });
 
-export let GatewayConfigValidatorSchema = Joi.object().keys({
+let HttpConfigSchema = Joi.object().keys({
+    listenPort: Joi.number().positive().required(),
+    adminPort: Joi.number().positive().required()
+});
+
+let HttpsConfigSchema = Joi.object().keys({
     listenPort: Joi.number().positive().required(),
     adminPort: Joi.number().positive().required(),
+    privateKey: Joi.string().required(),
+    certificate: Joi.string().required()
+
+});
+
+let ProtocolConfigSchema = Joi.object().keys({
+    http: HttpConfigSchema,
+    https: HttpsConfigSchema
+}).min(1);
+
+export let GatewayConfigValidatorSchema = Joi.object().keys({
+    protocol: ProtocolConfigSchema.required(),
     database: RedisConfigSchema.required(),
     rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),
     middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),

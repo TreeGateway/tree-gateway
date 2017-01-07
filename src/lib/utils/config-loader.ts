@@ -35,6 +35,14 @@ export default function loadConfigFile(configFileName:string): Promise<GatewayCo
                         gatewayConfig.middlewarePath = path.join(gatewayConfig.rootPath, gatewayConfig.middlewarePath);                
                     }
 
+                    if (gatewayConfig.protocol.https) {
+                        if (_.startsWith(gatewayConfig.protocol.https.privateKey, ".")) {
+                            gatewayConfig.protocol.https.privateKey = path.join(gatewayConfig.rootPath, gatewayConfig.protocol.https.privateKey);                
+                        }
+                        if (_.startsWith(gatewayConfig.protocol.https.certificate, ".")) {
+                            gatewayConfig.protocol.https.certificate = path.join(gatewayConfig.rootPath, gatewayConfig.protocol.https.certificate);                
+                        }
+                    }
                     resolve(gatewayConfig);
                 })
                 .catch(err => reject(err));

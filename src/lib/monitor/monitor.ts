@@ -19,7 +19,7 @@ export abstract class Monitor {
         this.gateway = gateway;
         this.config = config;
         this.stats = this.createStats(this.config.name);
-        this.machineId = `${os.hostname()}:${this.gateway.config.listenPort}`;
+        this.machineId = (process.env.processNumber?`${os.hostname()}:${process.env.processNumber}`:`${os.hostname()}`);
     }
 
     start() {

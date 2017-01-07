@@ -27,6 +27,7 @@ import {RedisConfigService} from "./service/redis";
 import loadConfigFile from "./utils/config-loader";
 import {MiddlewareInstaller} from "./utils/middleware-installer";
 import {ConfigTopics} from "./config/events";
+import * as fs from "fs-extra-promise";
 
 class StatsController {
     requestStats: Stats;
@@ -42,8 +43,8 @@ export class Gateway {
     private apiAuth: ApiAuth;
     private _statsRecorder: StatsRecorder;
     private configFile: string;
-    private apiServer: http.Server;
-    private adminServer: http.Server;
+    private apiServer: Map<string,http.Server>;
+    private adminServer: Map<string,http.Server>;
     private _apis: Map<string, ApiConfig>;
     private _config: GatewayConfig;
     private _logger: Logger;
@@ -106,13 +107,41 @@ export class Gateway {
     }
 
     start(): Promise<void> {
+        let self = this;
         return new Promise<void>((resolve, reject) => {
-            this.initialize()
+            self.initialize()
                 .then(() => {
-                    this.apiServer = this.app.listen(this.config.listenPort, ()=>{
-                        this.logger.info(`Gateway listenning on port ${this.config.listenPort}`);
-                        resolve();
-                    });
+                    self.apiServer = new Map<string,http.Server>();
+                    let started = 0;
+                    let expected = 0;
+                    if (self.config.protocol.http) {
+                        expected ++;
+                        let httpServer = http.createServer(self.app);
+
+                        self.apiServer.set('http', <http.Server>httpServer.listen(self.config.protocol.http.listenPort, ()=>{
+                            self.logger.info(`Gateway listenning HTTP on port ${self.config.protocol.http.listenPort}`);
+                            started ++;
+                            if (started == expected) {
+                                resolve();
+                            }
+                        }));
+                    }
+                    if (self.config.protocol.https) {
+                        expected ++;
+                        let privateKey  = fs.readFileSync(self.config.protocol.https.privateKey, 'utf8');
+                        let certificate = fs.readFileSync(self.config.protocol.https.certificate, 'utf8');
+                        let credentials = {key: privateKey, cert: certificate};
+                        let https = require('https');
+                        let httpsServer = https.createServer(credentials, self.app);
+
+                        self.apiServer.set('https', httpsServer.listen(self.config.protocol.https.listenPort, ()=>{
+                            self.logger.info(`Gateway listenning HTTPS on port ${self.config.protocol.https.listenPort}`);
+                            started ++;
+                            if (started == expected) {
+                                resolve();
+                            }
+                        }));
+                    }
                 })
                 .catch((err) => {
                     reject(err);
@@ -121,12 +150,40 @@ export class Gateway {
     }
 
     startAdmin(): Promise<void> {
+        let self = this;
         return new Promise<void>((resolve, reject) => {
-            if (this.adminApp) {
-                this.adminServer = this.adminApp.listen(this.config.adminPort, ()=>{
-                    this.logger.info(`Gateway Admin Server listenning on port ${this.config.adminPort}`);
-                    resolve();
-                });                
+            if (self.adminApp) {
+                self.adminServer = new Map<string,http.Server>();
+                let started = 0;
+                let expected = 0;
+                if (self.config.protocol.http) {
+                    expected ++;
+                    let httpServer = http.createServer(self.adminApp);
+
+                    self.adminServer.set('http', <http.Server>httpServer.listen(self.config.protocol.http.adminPort, ()=>{
+                        self.logger.info(`Gateway Admin Server listenning HTTP on port ${self.config.protocol.http.adminPort}`);
+                        started ++;
+                        if (started == expected) {
+                            resolve();
+                        }
+                    }));
+                }
+                if (self.config.protocol.https) {
+                    expected ++;
+                    let privateKey  = fs.readFileSync(self.config.protocol.https.privateKey, 'utf8');
+                    let certificate = fs.readFileSync(self.config.protocol.https.certificate, 'utf8');
+                    let credentials = {key: privateKey, cert: certificate};
+                    let https = require('https');
+                    let httpsServer = https.createServer(credentials, self.adminApp);
+
+                    self.adminServer.set('https', httpsServer.listen(self.config.protocol.https.adminPort, ()=>{
+                        self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.protocol.https.adminPort}`);
+                        started ++;
+                        if (started == expected) {
+                            resolve();
+                        }
+                    }));
+                }
             }
             else {
                 reject("You must start the Tree-Gateway before.");
@@ -136,7 +193,9 @@ export class Gateway {
 
     stop() {
         if (this.apiServer) {
-            this.apiServer.close();
+            this.apiServer.forEach(value=>{
+                value.close()
+            });
             this.apiServer = null;
             this.redisClient.disconnect();
             this.redisEvents.disconnect();
@@ -145,7 +204,9 @@ export class Gateway {
 
     stopAdmin() {
         if (this.adminServer) {
-            this.adminServer.close();
+            this.adminServer.forEach(value=>{
+                value.close()
+            });
             this.adminServer = null;
         }
     }
@@ -276,9 +337,7 @@ export class Gateway {
                     Monitors.startMonitors(this);
 
                     this.configureServer()
-                        .then(() => {
-                            return this.configService.subscribeEvents();
-                        })
+                        .then(() => this.configService.subscribeEvents())
                         .then(() => {
                             this.configureAdminServer();
                             resolve();

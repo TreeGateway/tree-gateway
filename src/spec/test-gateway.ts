@@ -22,8 +22,8 @@ describe("Gateway Tests", () => {
 			})
 			.then(() => {
 				gateway.server.set('env', 'test');
-				gatewayRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.listenPort}`});
-				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.adminPort}`});
+				gatewayRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.listenPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.adminPort}`});
 
 				return gateway.redisClient.flushdb();
 			})
