@@ -21,13 +21,15 @@ export interface Group {
 }
 
 export interface Member {
-    path: Array<string>;
-    method: Array<string>;
+    path?: Array<string>;
+    method?: Array<string>;
+    protocol?: Array<string>;
 }
 
 let MemberValidatorSchema = Joi.object().keys({
     path: Joi.array().items(Joi.string().regex(/^[a-z\-\/]+$/i)),
     method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')),
+    protocol: Joi.array().items(Joi.string().alphanum())
 }).min(1);
 
 export let GroupValidatorSchema = Joi.object().keys({

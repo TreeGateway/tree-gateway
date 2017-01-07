@@ -8,7 +8,8 @@
             "member": [
                 {
                     "path": ["get/", "/user-agent"],
-                    "method": ["GET"]
+                    "method": ["GET"],
+                    "protocol": ["http"]
                 }
             ] 
         }

@@ -48,8 +48,23 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, names
                 });
                 func.push(`)`);
             }
-            if (member.path && member.path.length > 0) {
+            let hasProtocolFilter = false;
+            if (member.protocol && member.protocol.length > 0) {
                 if (hasMethodFilter) {
+                    func.push(`&&`);                
+                }
+                func.push(`(`);
+                hasProtocolFilter = true;
+                member.protocol.forEach((protocol,i)=>{
+                    if (i > 0) {
+                        func.push(`||`);                
+                    }                
+                    func.push(`(${request}.protocol === '${protocol.toLowerCase()}')`)
+                });
+                func.push(`)`);
+            }
+            if (member.path && member.path.length > 0) {
+                if (hasMethodFilter || hasProtocolFilter) {
                     func.push(`&&`);                
                 }
                 func.push(`(`);
@@ -104,8 +119,23 @@ export function buildGroupDenyTest(request: string, groups: Array<Group>, names:
                 });
                 func.push(`)`);
             }
-            if (member.path && member.path.length > 0) {
+            let hasProtocolFilter = false;
+            if (member.protocol && member.protocol.length > 0) {
                 if (hasMethodFilter) {
+                    func.push(`&&`);                
+                }
+                func.push(`(`);
+                hasProtocolFilter = true;
+                member.protocol.forEach((protocol,i)=>{
+                    if (i > 0) {
+                        func.push(`&&`);                
+                    }                
+                    func.push(`(${request}.protocol !== '${protocol.toLowerCase()}')`)
+                });
+                func.push(`)`);
+            }
+            if (member.path && member.path.length > 0) {
+                if (hasMethodFilter || hasProtocolFilter) {
                     func.push(`&&`);                
                 }
                 func.push(`(`);
@@ -151,9 +181,23 @@ export function buildGroupNotAllowTest(request: string, groups: Array<Group>, na
                 });
                 func.push(`)`);
             }
-
-            if (member.path && member.path.length > 0) {
+            let hasProtocolFilter = false;
+            if (member.protocol && member.protocol.length > 0) {
                 if (hasMethodFilter) {
+                    func.push(`||`);                
+                }
+                func.push(`(`);
+                hasProtocolFilter = true;
+                member.protocol.forEach((protocol,i)=>{
+                    if (i > 0) {
+                        func.push(`&&`);                
+                    }                
+                    func.push(`(${request}.protocol ==! '${protocol.toLowerCase()}')`);
+                });
+                func.push(`)`);
+            }
+            if (member.path && member.path.length > 0) {
+                if (hasMethodFilter || hasProtocolFilter) {
                     func.push(`||`);                
                 }
                 func.push(`(`);
