@@ -8,5 +8,6 @@ import {ThrottlingRest} from "./throttling";
 import {CacheRest} from "./cache";
 import {ProxyRest} from "./proxy";
 import {AuthenticationRest} from "./authentication";
+import {HealthCheck} from "./health-check";
 
-export default [StatsService, MiddlewareRest, APIRest, GroupRest, ThrottlingRest, CacheRest, ProxyRest, AuthenticationRest];
+export default [StatsService, MiddlewareRest, APIRest, GroupRest, ThrottlingRest, CacheRest, ProxyRest, AuthenticationRest, HealthCheck];
