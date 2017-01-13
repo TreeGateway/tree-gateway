@@ -102,6 +102,11 @@ export class Gateway {
         return this._middlewareInstaller;
     }
 
+    getApiConfig(apiName: string, apiVersion: string): ApiConfig {
+        const apiKey: string = createApiKey(apiName, apiVersion);
+        return this._apis.get(apiKey);
+    }
+
     createStats(id: string) {
         return this._statsRecorder.createStats(id, this._config.statsConfig);
     }
