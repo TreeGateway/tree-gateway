@@ -4,7 +4,7 @@ import {Stats} from "../stats/stats";
 import {StatsRecorder} from "../stats/stats-recorder";
 import {Gateway} from "../gateway";
 import {MonitorConfig} from "../config/gateway";
-import {calculateSeconds} from "../utils/time";
+import * as humanInterval from "human-interval";
 import * as os from "os";
 
 export abstract class Monitor {
@@ -23,7 +23,7 @@ export abstract class Monitor {
     }
 
     start() {
-        this.period = calculateSeconds(this.config.statsConfig.granularity.duration) * 1000;
+        this.period = humanInterval(this.config.statsConfig.granularity.duration);
         let self = this;
         this.interval = setInterval(()=>{
             this.run(this.period).then(value=>self.registerStats(value)).catch(err=>{

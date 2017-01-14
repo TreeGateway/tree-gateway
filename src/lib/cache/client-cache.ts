@@ -2,8 +2,8 @@
 
 import {Gateway} from "../gateway";
 import {ClientCacheConfig} from "../config/cache";
-import {calculateSeconds} from "../utils/time";
 import * as _ from "lodash";
+import * as humanInterval from "human-interval";
 
 export class ClientCache {
     private gateway: Gateway;
@@ -30,7 +30,7 @@ export class ClientCache {
             cacheTime: '0'
         });
         
-        let cacheTime = calculateSeconds(cache.cacheTime);
+        let cacheTime = (humanInterval(cache.cacheTime) / 1000);
         let result = new Array<string>();
         
         if (cacheTime > 0) {
