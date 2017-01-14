@@ -18,7 +18,12 @@ var tsProject = ts.createProject('tsconfig.json', {
 	noResolve: false
 }, ts.reporter.fullReporter(true));
 
-gulp.task('build', function() {
+
+gulp.task('copy-files', function() {
+ 	return gulp.src('src/lib/**/*.json')
+		.pipe(gulp.dest('bin/lib'));
+});
+gulp.task('build', ['copy-files'], function() {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
@@ -62,7 +67,7 @@ gulp.task('remap-istanbul-reports', function () {
         }));
 });
 
-gulp.task('test-run', function() {
+gulp.task('test-run', ['copy-files'],  function() {
 	return gulp.src(['bin/test/spec/test-admin.spec.js', 'bin/test/spec/test-gateway.spec.js'])
 		.pipe(jasmine({
 	        timeout: 10000,

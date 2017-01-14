@@ -31,6 +31,7 @@
     "passport-local": "^1.0.0",
     "path-to-regexp": "^1.6.0",
     "serve-favicon": "~2.3.0",
+    "swagger-ui-express": "^1.0.2",
     "typescript-rest": "^0.2.10",
     "winston": "^2.2.0"
   },

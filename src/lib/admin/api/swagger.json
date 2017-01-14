@@ -1,0 +1,2606 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "tree-gateway-dashboard",
+        "description": "A Dashboard to manage the Tree Gateway",
+        "version": "1.0.0"
+    },
+    "host": "tree-gateway.com",
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/config": {
+            "get": {
+                "description": "Get all basic configurations",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/GatewayConfig"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update configuration",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "An object with all configuration options.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GatewayConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation."
+                    },
+                    "405": {
+                        "description": "Invalid configuration.",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/apis": {
+            "get": {
+                "description": "Get all API's",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Api"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new API",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "API data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Api"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid API",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}": {
+            "put": {
+                "description": "Update the API with the given name",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "API data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Api"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid API",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "API cannot be deleted",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/version": {
+            "get": {
+                "description": "Get all Versions's",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Version"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new Version",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Version data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid Version",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/version/{versionName}": {
+            "put": {
+                "description": "Update the Version with the given name",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "versionName",
+                        "description": "Version name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Version data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Version not found"
+                    },
+                    "409": {
+                        "description": "Invalid Version",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "versionName",
+                        "description": "Version name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Version cannot be deleted",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Version not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/groups": {
+            "get": {
+                "description": "Get all groups for a specific API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new group",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Group data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid group data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/groups/{groupName}": {
+            "get": {
+                "description": "Get a group by name",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "groupName",
+                        "description": "Group name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    },
+                    "404": {
+                        "description": "API/Group not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a group",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "groupName",
+                        "description": "Group name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Group data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API/Group not found"
+                    },
+                    "409": {
+                        "description": "Invalid group data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a group",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "groupName",
+                        "description": "Group name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete group",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API/Group not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/routing": {
+            "get": {
+                "description": "Get all routing for a specific API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Routing"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new routing",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Routing data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Routing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid routing data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/routing/{routingName}": {
+            "get": {
+                "description": "Get a routing by name",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "routingName",
+                        "description": "Routing name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Routing"
+                        }
+                    },
+                    "404": {
+                        "description": "API/Routing not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a routing",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "routingName",
+                        "description": "Routing name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Routing data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Routing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API/Routing not found"
+                    },
+                    "409": {
+                        "description": "Invalid routing data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a routing",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "routingName",
+                        "description": "Routing name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete routing",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API/Routing not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/throttling": {
+            "get": {
+                "description": "Get a list of throttling configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Throttling"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new throttling configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Throttling data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Throttling"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/throttling/{throttlingId}": {
+            "get": {
+                "description": "Get a throttling configuration by ID.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "throttlingId",
+                        "description": "Throttling ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Throttling"
+                        }
+                    },
+                    "404": {
+                        "description": "API/Throttling not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a throttling configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "throttlingId",
+                        "description": "Throttling ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Throttling config",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Throttling"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "API/Throttling not found"
+                    },
+                    "409": {
+                        "description": "Invalid throttling config",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a throttling configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "throttlingId",
+                        "description": "Throttling ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete throttling config",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API/Throttling not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/authentication": {
+            "get": {
+                "description": "Get the API authentication configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/APIAuthentication"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the API authentication configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/APIAuthentication"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the API authentication configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete the configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/cache": {
+            "get": {
+                "description": "Get all cache configurations for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Cache"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new cache configuration for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Cache"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/cache/{cacheId}": {
+            "get": {
+                "description": "Get the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "cacheId",
+                        "description": "Cache ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Cache"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "cacheId",
+                        "description": "Cache ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Cache"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Cannot update cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "cacheId",
+                        "description": "Cache ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiName}/proxy": {
+            "get": {
+                "description": "Get the proxy configuration for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Proxy"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the proxy configuration for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Proxy configuration",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Proxy"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid configuration data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the proxy configuration for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiName",
+                        "description": "API name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete configuration data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/filters": {
+            "get": {
+                "description": "List all filters.",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new filter",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Filter name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Filter file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid filter",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/filters/{filterName}": {
+            "get": {
+                "description": "Get a filter code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "filterName",
+                        "description": "Filter name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Filter not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing filter",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "filterName",
+                        "description": "Filter name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Filter file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Filter not found"
+                    },
+                    "409": {
+                        "description": "Invalid filter data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a filter",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "filterName",
+                        "description": "Filter name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Filter not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete filter",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/interceptors/{interceptorType}": {
+            "get": {
+                "description": "Get all request interceptors for the given type",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "interceptorType",
+                        "description": "Interceptor type (request or response).",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new interceptor",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "interceptorType",
+                        "description": "Interceptor type (request or response).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Interceptor name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Interceptor file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid interceptor",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/interceptors/{interceptorType}/{interceptorName}": {
+            "get": {
+                "description": "Get the interceptor code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "interceptorType",
+                        "description": "Interceptor type (request or response).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "interceptorName",
+                        "description": "Interceptor name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Interceptor not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing interceptor",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "interceptorType",
+                        "description": "Interceptor type (request or response).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "interceptorName",
+                        "description": "Interceptor name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Interceptor file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Interceptor not found"
+                    },
+                    "409": {
+                        "description": "Invalid interceptor",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an interceptor",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "interceptorType",
+                        "description": "Interceptor type (request or response).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "interceptorName",
+                        "description": "Interceptor name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Interceptor not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete interceptor",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/authentication/strategies": {
+            "get": {
+                "description": "Get all authentication strategies",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new strategy",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Strategy name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Strategy file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid strategy",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/authentication/strategies/{strategyName}": {
+            "get": {
+                "description": "Get the strategy code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "strategyName",
+                        "description": "Strategy name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Strategy not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing strategy",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "strategyName",
+                        "description": "Strategy name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Strategy file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Interceptor not found"
+                    },
+                    "409": {
+                        "description": "Invalid strategy",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a strategy",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "strategyName",
+                        "description": "Strategy name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Strategy not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete strategy",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/authentication/verifiers": {
+            "get": {
+                "description": "Get all verifiers",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new verifiers",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Verifier name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Verifier file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid verifier",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/authentication/verifiers/{verifierName}": {
+            "get": {
+                "description": "Get the verifier code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "verifierName",
+                        "description": "Verifier name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Verifier not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing verifier",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "verifierName",
+                        "description": "Verifier name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Verifier file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Verifier not found"
+                    },
+                    "409": {
+                        "description": "Invalid verifier",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a verifier",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "verifierName",
+                        "description": "Verifier name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Verifier not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete verifier",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/throttling/keyGenerators": {
+            "get": {
+                "description": "Get all key generators",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new key generator",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Generator name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Generator file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid key generator",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/throttling/keyGenerators/{generatorName}": {
+            "get": {
+                "description": "Get the key generator code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "generatorName",
+                        "description": "Generator name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Key generator not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing key generator",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "generatorName",
+                        "description": "Generator name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Generator file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Key generator not found"
+                    },
+                    "409": {
+                        "description": "Invalid key generator",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a key generator",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "generatorName",
+                        "description": "Generator name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Key generator not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete key generator",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/throttling/handlers": {
+            "get": {
+                "description": "Get all handlers",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new handler",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Handler file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Invalid handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/throttling/handlers/{handlerName}": {
+            "get": {
+                "description": "Get the handler code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Handler not found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing handler",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Handler file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Handler not found"
+                    },
+                    "409": {
+                        "description": "Invalid handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a handler",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Handler not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete the handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "GatewayConfig": {
+            "type": "object",
+            "properties": {
+                "listenPort": {
+                    "type": "integer",
+                    "description": "The Gateway port."
+                },
+                "adminPort": {
+                    "type": "integer",
+                    "description": "The Gateway admin port."
+                },
+                "rootPath": {
+                    "type": "string",
+                    "description": "The root folder where the gateway will work."
+                },
+                "apiPath": {
+                    "type": "string",
+                    "description": "Folder where the gateway will search for installed APIs."
+                },
+                "middlewarePath": {
+                    "type": "string",
+                    "description": "Folder where the gateway will search for its middleware functions."
+                },
+                "underProxy": {
+                    "type": "boolean",
+                    "description": "If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)"
+                },
+                "logger": {
+                    "$ref": "#/definitions/LoggerConfig"
+                },
+                "database": {
+                    "$ref": "#/definitions/RedisConfig"
+                },
+                "accessLogger": {
+                    "$ref": "#/definitions/AccessLoggerConfig"
+                },
+                "adminLogger": {
+                    "$ref": "#/definitions/AccessLoggerConfig"
+                }
+            }
+        },
+        "LoggerConfig": {
+            "type": "object",
+            "description": "Configurations for gateway logger.",
+            "properties": {
+                "level": {
+                    "type": "string",
+                    "description": "Level of messages that this logger should log."
+                },
+                "console": {
+                    "$ref": "#/definitions/LogConsoleConfig"
+                },
+                "file": {
+                    "$ref": "#/definitions/LogFileConfig"
+                }
+            }
+        },
+        "LogConsoleConfig": {
+            "type": "object",
+            "description": "Configuration for console logging.",
+            "properties": {
+                "timestamp": {
+                    "type": "boolean",
+                    "description": "Flag indicating if we should prepend output with timestamps (default true)."
+                },
+                "silent": {
+                    "type": "boolean",
+                    "description": "Flag indicating whether to suppress output."
+                },
+                "colorize": {
+                    "type": "boolean",
+                    "description": "Flag indicating if we should colorize output."
+                },
+                "json": {
+                    "type": "boolean",
+                    "description": "If true, messages will be logged as JSON (default true)."
+                },
+                "stringify": {
+                    "type": "boolean",
+                    "description": "Flag indiciating if the output should be passed through JSON.stringify, resulting in single-line output. Most useful when used in conjunction with the json flag. (default false)."
+                },
+                "prettyPrint": {
+                    "type": "boolean",
+                    "description": "If true, additional JSON metadata objects that are added to logging string messages will be displayed as a JSON string representation."
+                },
+                "depth": {
+                    "type": "integer",
+                    "description": "Numeric indicating how many times to recurse while formatting the object with util.inspect."
+                },
+                "humanReadableUnhandledException": {
+                    "type": "boolean",
+                    "description": "Flag indicating if uncaught exception should be output as human readable, instead of a single line."
+                },
+                "showLevel": {
+                    "type": "boolean",
+                    "description": "Flag indicating if we should prepend output with level (default true)."
+                },
+                "stderrLevels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Array of strings containing the levels to log to stderr instead of stdout, for example ['error', 'debug', 'info']. (default ['error', 'debug'])."
+                }
+            }
+        },
+        "LogFileConfig": {
+            "type": "object",
+            "description": "Configuration for file logging.",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "The filename of the logfile to write output to."
+                },
+                "timestamp": {
+                    "type": "boolean",
+                    "description": "Flag indicating if we should prepend output with timestamps (default true)."
+                },
+                "silent": {
+                    "type": "boolean",
+                    "description": "Flag indicating whether to suppress output."
+                },
+                "colorize": {
+                    "type": "boolean",
+                    "description": "Flag indicating if we should colorize output."
+                },
+                "maxsize": {
+                    "type": "integer",
+                    "description": "Max size in bytes of the logfile, if the size is exceeded then a new file is created, a counter will become a suffix of the log file."
+                },
+                "maxFiles": {
+                    "type": "integer",
+                    "description": "Limit the number of files created when the size of the logfile is exceeded."
+                },
+                "json": {
+                    "type": "boolean",
+                    "description": "If true, messages will be logged as JSON (default true)."
+                },
+                "eol": {
+                    "type": "string",
+                    "description": "String indicating the end-of-line characters to use (default to \\n)."
+                },
+                "prettyPrint": {
+                    "type": "boolean",
+                    "description": "If true, additional JSON metadata objects that are added to logging string messages will be displayed as a JSON string representation."
+                },
+                "depth": {
+                    "type": "integer",
+                    "description": "Numeric indicating how many times to recurse while formatting the object with util.inspect (only used with prettyPrint true) (default null, unlimited)."
+                },
+                "logstash": {
+                    "type": "boolean",
+                    "description": "If true, messages will be logged as JSON and formatted for logstash (default false)."
+                },
+                "showLevel": {
+                    "type": "boolean",
+                    "description": "Flag indicating if we should prepend output with level (default true)."
+                },
+                "tailable": {
+                    "type": "boolean",
+                    "description": "If true, log files will be rolled based on maxsize and maxfiles, but in ascending order. The filename will always have the most recent log lines. The larger the appended number, the older the log file. This option requires maxFiles to be set, or it will be ignored."
+                },
+                "maxRetries": {
+                    "type": "integer",
+                    "description": "The number of stream creation retry attempts before entering a failed state. In a failed state the transport stays active but performs a NOOP on it's log function. (default 2)"
+                },
+                "zippedArchive": {
+                    "type": "boolean",
+                    "description": "If true, all log files but the current one will be zipped."
+                }
+            }
+        },
+        "RedisConfig": {
+            "type": "object",
+            "description": "Configurations for gateway database (REDIS).",
+            "properties": {
+                "host": {
+                    "type": "string",
+                    "description": "Redis host name or IP address."
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "Redis port."
+                }
+            }
+        },
+        "AccessLoggerConfig": {
+            "type": "object",
+            "description": "Configurations for gateway access logger.",
+            "properties": {
+                "msg": {
+                    "type": "string",
+                    "description": "Customize the default logging message. E.g. \"{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}\", \"HTTP {{req.method}} {{req.url}}\"."
+                },
+                "expressFormat": {
+                    "type": "boolean",
+                    "description": "Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors when colorize set to true."
+                },
+                "colorize": {
+                    "type": "boolean",
+                    "description": "Color the text and status code, using the Express/morgan color palette."
+                },
+                "console": {
+                    "$ref": "#/definitions/LogConsoleConfig"
+                },
+                "file": {
+                    "$ref": "#/definitions/LogFileConfig"
+                }
+            }
+        },
+        "Api": {
+            "type": "object",
+            "description": "API configuration",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "The id unique identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "API name"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "API description"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The URL for this API"
+                }
+            }
+        },
+        "Version": {
+            "type": "object",
+            "description": "Version configuration",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "The id unique identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Version name"
+                },
+                "description": {
+                    "type": "number",
+                    "description": "Version type"
+                },
+                "sufix": {
+                    "type": "boolean",
+                    "description": "If true, the version will be at the prefix otherwise it will be as the prefix."
+                },
+                "idApi": {
+                    "type": "number",
+                    "description": "The API for this version"
+                }
+            }
+        },
+        "Routing": {
+            "type": "object",
+            "description": "Routing data",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "The id unique identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Routing name"
+                },
+                "protocol": {
+                    "type": "string",
+                    "description": "Routing protocol"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Routing description"
+                },
+                "allowGroups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/GroupItem"
+                    }
+                },
+                "denyGroups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/GroupItem"
+                    }
+                },
+                "to": {
+                    "type": "string",
+                    "description": "Routing to"
+                }
+            }
+        },
+        "Group": {
+            "type": "object",
+            "description": "Group data",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "The id unique identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Group name"
+                }
+            }
+        },
+        "GroupItem": {
+            "type": "object",
+            "description": "Group item data",
+            "properties": {
+                "selectedGroupId": {
+                    "type": "number",
+                    "description": "The selected group id"
+                }
+            }
+        },
+        "Throttling": {
+            "type": "object",
+            "description": "Throttling configuration",
+            "properties": {
+                "windowMs": {
+                    "type": "integer",
+                    "description": "How long to keep records of requests in memor (milliseconds)."
+                },
+                "delayAfter": {
+                    "type": "integer",
+                    "description": "Max number of connections during windowMs before starting to delay responses. Defaults to 1. Set to 0 to disable delaying."
+                },
+                "delayMs": {
+                    "type": "integer",
+                    "description": "How long to delay the response, multiplied by (number of recent hits - delayAfter). Defaults to 1000 (1 second). Set to 0 to disable delaying."
+                },
+                "max": {
+                    "type": "integer",
+                    "description": "Max number of connections during windowMs milliseconds before sending a 429 response. Defaults to 5. Set to 0 to disable."
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Error message returned when max is exceeded. Defaults to 'Too many requests, please try again later.'"
+                },
+                "statusCode": {
+                    "type": "integer",
+                    "description": "HTTP status code returned when max is exceeded. Defaults to 429."
+                },
+                "headers": {
+                    "type": "boolean",
+                    "description": "Enable header to show request limit and current usage."
+                },
+                "keyGenerator": {
+                    "type": "string",
+                    "description": "The name of the function used to generate keys. By default user IP address (req.ip) is used."
+                },
+                "handler": {
+                    "type": "string",
+                    "description": "The name of the function to execute once the max limit is exceeded. It receives the request and the response objects. The \"next\" param is available if you need to pass to the next middleware."
+                },
+                "groups": {
+                    "type": "array",
+                    "description": "A list of groups that should be handled by this limiter. If not provided, everything will be handled. Defaults to *.",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "APIAuthentication": {
+            "type": "object",
+            "description": "Configuration for API authentication",
+            "properties": {
+                "strategy": {
+                    "type": "string",
+                    "description": "Strategy name"
+                },
+                "groups": {
+                    "description": "A list of groups that should be handled by this authenticator. If not provided, everything will be handled.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "Proxy": {
+            "type": "object",
+            "description": "Configuration for the API proxy engine.",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "The path where the gateway will listen for requests that should be proxied for the current API."
+                },
+                "target": {
+                    "$ref": "#/definitions/ProxyTarget"
+                },
+                "https": {
+                    "type": "boolean",
+                    "description": "If set to true, will enforce the requests to the API target to use HTTPS protocol. If your path already define a protocol on target URL, this option is ignored."
+                },
+                "supressViaHeader": {
+                    "type": "boolean",
+                    "description": "If True, no Via header will be added to proxied responses."
+                },
+                "filters": {
+                    "description": "Add filters to the request pipeline. A Filter is a function that receives the request and the response object and must return a boolean value to inform it the given request should target the destination API or if it should be ignored.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProxyFilter"
+                    }
+                },
+                "interceptors": {
+                    "$ref": "#/definitions/ProxyInterceptorList"
+                },
+                "preserveHostHdr": {
+                    "type": "boolean",
+                    "description": "If true, the gateway will copy the host HTTP header to the proxied express server."
+                },
+                "timeout": {
+                    "type": "integer",
+                    "description": "Configure a specific timeout for requests. Timed-out requests will respond with 504 status code and a X-Timeout-Reason header."
+                }
+            }
+        },
+        "ProxyTarget": {
+            "type": "object",
+            "description": "The target address of the proxied API. You can force the protocol to be used on the URL.",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Target endpoint"
+                },
+                "allow": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of allowed groups."
+                },
+                "deny": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of denied groups."
+                }
+            }
+        },
+        "ProxyFilter": {
+            "type": "object",
+            "description": "Add a filter to the request pipeline.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The filter name."
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of groups that should be filtered by this filter. If not provided, everything will be filtered. Defaults to *."
+                }
+            }
+        },
+        "ProxyInterceptorList": {
+            "type": "object",
+            "description": "A list of interceptors for the request pipeline.",
+            "properties": {
+                "request": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProxyInterceptor"
+                    },
+                    "description": "A list of request interceptors."
+                },
+                "response": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProxyInterceptor"
+                    },
+                    "description": "A list of response interceptors."
+                }
+            }
+        },
+        "ProxyInterceptor": {
+            "type": "object",
+            "description": "An Interceptor is a function that receives the request or the response object and can modify these objects.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The interceptor name."
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of groups that should be filtered by this filter. If not provided, everything will be filtered. Defaults to *."
+                }
+            }
+        },
+        "Authentication": {
+            "type": "object",
+            "description": "Configuration for API authentication",
+            "properties": {
+                "strategy": {
+                    "$ref": "#/definitions/AuthenticationStrategy"
+                }
+            }
+        },
+        "AuthenticationStrategy": {
+            "type": "object",
+            "description": "The strategy used for authentication",
+            "properties": {
+                "jwt": {
+                    "$ref": "#/definitions/JWTAuthentication"
+                },
+                "basic": {
+                    "$ref": "#/definitions/BasicAuthentication"
+                },
+                "local": {
+                    "$ref": "#/definitions/LocalAuthentication"
+                }
+            }
+        },
+        "BasicAuthentication": {
+            "type": "object",
+            "description": "Basic authentication strategy",
+            "properties": {
+                "verify": {
+                    "type": "string",
+                    "description": "Is a function with the parameters verify(userid, password, done)."
+                }
+            }
+        },
+        "LocalAuthentication": {
+            "type": "object",
+            "description": "Local authentication strategy",
+            "properties": {
+                "verify": {
+                    "type": "string",
+                    "description": "Is a function with the parameters verify(userid, password, done)."
+                },
+                "usernameField": {
+                    "type": "string",
+                    "description": "The user name field. Defaults to 'username'."
+                },
+                "passwordField": {
+                    "type": "string",
+                    "description": "The password field. Defaults to 'password'."
+                }
+            }
+        },
+        "JWTAuthentication": {
+            "type": "object",
+            "properties": {
+                "secreteOrKey": {
+                    "type": "string",
+                    "description": "A REQUIRED string or buffer containing the secret (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's signature."
+                },
+                "extractFrom": {
+                    "$ref": "#/definitions/JWTRequestExtractor"
+                },
+                "issuer": {
+                    "type": "string",
+                    "description": "If defined the token issuer (iss) will be verified against this value."
+                },
+                "audience": {
+                    "type": "string",
+                    "description": "If defined, the token audience (aud) will be verified against this value."
+                },
+                "algorithms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "List of strings with the names of the allowed algorithms. For instance, [\"HS256\", \"HS384\"]."
+                },
+                "ignoreExpiration": {
+                    "type": "boolean",
+                    "description": "If true do not validate the expiration of the token."
+                },
+                "verify": {
+                    "type": "string",
+                    "description": "Is a function with the parameters verify(request, jwt_payload, done)."
+                }
+            }
+        },
+        "JWTRequestExtractor": {
+            "type": "object",
+            "description": "Defines how the JWT token will be extracted from request.",
+            "properties": {
+                "header": {
+                    "description": "Extracts the token from the specified header.",
+                    "type": "string"
+                },
+                "queryParam": {
+                    "description": "Extracts the token from the specified query param.",
+                    "type": "string"
+                },
+                "authHeader": {
+                    "description": "Extracts the token from the 'auth' header.",
+                    "type": "string"
+                },
+                "bodyField": {
+                    "description": "Extracts the token from the specified body param.",
+                    "type": "string"
+                },
+                "cookie": {
+                    "description": "Extract the token from the specified cookie param.",
+                    "type": "string"
+                }
+            }
+        },
+        "Cache": {
+            "type": "object",
+            "description": "Configuration for API cache.",
+            "properties": {
+                "client": {
+                    "$ref": "#/definitions/ClientCache"
+                },
+                "server": {
+                    "$ref": "#/definitions/ServerCache"
+                },
+                "groups": {
+                    "description": "List of groups that should be handled by this limiter. If not provided, everything will be handled.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "ClientCache": {
+            "type": "object",
+            "description": "Configuration for a client side cache (in browser).",
+            "properties": {
+                "cacheTime": {
+                    "type": "string"
+                },
+                "cacheControl": {
+                    "type": "string"
+                },
+                "mustRevalidate": {
+                    "type": "boolean"
+                },
+                "noTransform": {
+                    "type": "boolean"
+                },
+                "proxyRevalidate": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ServerCache": {
+            "type": "object",
+            "description": "Configuration for a server side cache (in Memory or with a Redis store)",
+            "properties": {
+                "cacheTime": {
+                    "type": "string"
+                },
+                "binary": {
+                    "type": "boolean"
+                },
+                "preserveHeaders": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Error code."
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Error message"
+                }
+            }
+        }
+    }
+}

@@ -6,6 +6,7 @@
             "adminPort": 8001            
         }
     },
+    "apiDocs": "api-docs",
     "rootPath": ".",
     "logger": {
         "level": "debug",
