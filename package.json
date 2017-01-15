@@ -61,6 +61,7 @@
     "gulp-istanbul": "^1.0.0",
     "gulp-istanbul-enforcer": "^1.0.3",
     "gulp-jasmine": "^2.4.0",
+    "gulp-process-env": "0.0.2",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.4.0",
     "gulp-typedoc": "^2.0.2",

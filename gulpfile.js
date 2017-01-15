@@ -11,6 +11,7 @@ var typedoc = require("gulp-typedoc");
 var istanbul = require('gulp-istanbul');
 var remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul');
 var coverageEnforcer = require("gulp-istanbul-enforcer");
+var processEnv = require('gulp-process-env')
 
 var tsProject = ts.createProject('tsconfig.json', { 
 	declaration: false,
@@ -18,11 +19,11 @@ var tsProject = ts.createProject('tsconfig.json', {
 	noResolve: false
 }, ts.reporter.fullReporter(true));
 
-
 gulp.task('copy-files', function() {
  	return gulp.src('src/lib/**/*.json')
 		.pipe(gulp.dest('bin/lib'));
 });
+
 gulp.task('build', ['copy-files'], function() {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
@@ -48,7 +49,7 @@ gulp.task('test-build', function() {
 		.pipe(gulp.dest('bin/test/spec'));
 });
 
-gulp.task('test-coverage', function() {
+gulp.task('test-coverage', ['copy-files-test'], function() {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
@@ -56,6 +57,12 @@ gulp.task('test-coverage', function() {
 		.pipe(sourcemaps.write('./')) 
 		.pipe(gulp.dest('bin/test/lib'));
 });
+
+gulp.task('copy-files-test', function() {
+ 	return gulp.src('src/lib/**/*.json')
+		.pipe(gulp.dest('bin/test/lib'));
+});
+
 
 gulp.task('remap-istanbul-reports', function () {
     return gulp.src('bin/test/coverage/coverage-final.json')
@@ -68,7 +75,9 @@ gulp.task('remap-istanbul-reports', function () {
 });
 
 gulp.task('test-run', ['copy-files'],  function() {
+	var env = processEnv({NODE_ENV: 'test'});
 	return gulp.src(['bin/test/spec/test-admin.spec.js', 'bin/test/spec/test-gateway.spec.js'])
+		.pipe(env)
 		.pipe(jasmine({
 	        timeout: 10000,
 	        includeStackTrace: false,
@@ -80,6 +89,7 @@ gulp.task('test-run', ['copy-files'],  function() {
 				activity: false
 			})
 	    }))
+		.pipe(env.restore())
 		.pipe(istanbul.writeReports({
 			dir: "bin/test/coverage"
 		}))
