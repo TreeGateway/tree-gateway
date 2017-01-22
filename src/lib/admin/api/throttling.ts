@@ -9,31 +9,30 @@ import {RedisThrottlingService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
-@Path('apis/:apiName/:apiVersion/throttling')
+@Path('apis/:apiId/throttling')
 export class ThrottlingRest extends RestController {
  
     @GET
-    list(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string): Promise<Array<ThrottlingConfig>>{
-        return this.service.list(apiName, apiVersion);
+    list(@PathParam("apiId") apiId: string): Promise<Array<ThrottlingConfig>>{
+        return this.service.list(apiId);
     }
 
     @POST
-    addThrottling(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string, throttling: ThrottlingConfig): Promise<string> {
+    addThrottling(@PathParam("apiId") apiId: string, throttling: ThrottlingConfig): Promise<string> {
         return new Promise((resolve, reject) => {
             validateThrottlingConfig(throttling)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.create(apiName, apiVersion, throttling))
-                .then(cacheId => resolve(new Return.NewResource(`apis/${apiName}/${apiVersion}/throttling/${throttling.id}`)))
+                .then(() => this.service.create(apiId, throttling))
+                .then(throttlingId => resolve(new Return.NewResource(`apis/${apiId}/throttling/${throttlingId}`)))
                 .catch(reject);
         });
     }
 
     @PUT
     @Path("/:throttlingId")
-    updateThrottling(@PathParam("apiName") apiName: string,
-                     @PathParam("apiVersion") apiVersion: string,
+    updateThrottling(@PathParam("apiId") apiId: string,
                      @PathParam("throttlingId") throttlingId: string,
                      throttling: ThrottlingConfig): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -41,7 +40,7 @@ export class ThrottlingRest extends RestController {
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.update(apiName, apiVersion, throttlingId, throttling))
+                .then(() => this.service.update(apiId, throttlingId, throttling))
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
@@ -49,11 +48,10 @@ export class ThrottlingRest extends RestController {
 
     @DELETE
     @Path("/:throttlingId")
-    deleteThrottling(@PathParam("apiName") apiName: string,
-                     @PathParam("apiVersion") apiVersion: string,
+    deleteThrottling(@PathParam("apiId") apiId: string,
                      @PathParam("throttlingId") throttlingId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.service.remove(apiName, apiVersion, throttlingId)
+            this.service.remove(apiId, throttlingId)
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
@@ -61,11 +59,10 @@ export class ThrottlingRest extends RestController {
 
     @GET
     @Path("/:throttlingId")
-    getThrottling(@PathParam("apiName") apiName: string,
-                  @PathParam("apiVersion") apiVersion: string,
+    getThrottling(@PathParam("apiId") apiId: string,
                   @PathParam("throttlingId") throttlingId: string) : Promise<ThrottlingConfig> {
         return new Promise((resolve, reject) => {
-            this.service.get(apiName, apiVersion, throttlingId)
+            this.service.get(apiId, throttlingId)
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });

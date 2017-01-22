@@ -7,7 +7,7 @@ import * as express from "express";
 import adminApi from "./admin/api/admin-api";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
-import {ApiConfig, validateApiConfig, createApiKey} from "./config/api";
+import {ApiConfig, validateApiConfig} from "./config/api";
 import {GatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
@@ -104,9 +104,8 @@ export class Gateway {
         return this._middlewareInstaller;
     }
 
-    getApiConfig(apiName: string, apiVersion: string): ApiConfig {
-        const apiKey: string = createApiKey(apiName, apiVersion);
-        return this._apis.get(apiKey);
+    getApiConfig(apiId: string): ApiConfig {
+        return this._apis.get(apiId);
     }
 
     createStats(id: string) {
@@ -244,7 +243,7 @@ export class Gateway {
                     resolve();
                 })
                 .catch((err) => {
-                    this._logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
+                    this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
 
                     reject(err);
                 });
@@ -254,10 +253,10 @@ export class Gateway {
 
     private loadValidateApi(api: ApiConfig) {
         if (this.logger.isInfoEnabled()) {
-            this.logger.info(`Configuring API [${api.name}] on path: ${api.proxy.path}`);
+            this.logger.info(`Configuring API [${api.id}] on path: ${api.proxy.path}`);
         }
-        const apiKey: string = createApiKey(api.name, api.version);
-        this._apis.set(apiKey, api);
+
+        this._apis.set(api.id, api);
         api.proxy.path = Utils.normalizePath(api.proxy.path);
         
         const apiRouter = express.Router();
@@ -275,7 +274,7 @@ export class Gateway {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Configuring API Authentication");
             }
-            this.apiAuth.authentication(apiRouter, apiKey, api);
+            this.apiAuth.authentication(apiRouter, api.id, api);
         }
         this.apiProxy.configureProxyHeader(apiRouter, api);
         if (api.cache) {
@@ -287,14 +286,15 @@ export class Gateway {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Configuring API Proxy");
         }
+
         this.apiProxy.proxy(apiRouter, api);
 
-        const initializeRouter = !this.apiRoutes.has(apiKey);
-        this.apiRoutes.set(apiKey, apiRouter);
+        const initializeRouter = !this.apiRoutes.has(api.id);
+        this.apiRoutes.set(api.id, apiRouter);
         if (initializeRouter) {
             this.server.use(api.proxy.path, (req, res, next)=>{
-                if (this.apiRoutes.has(apiKey)) {
-                    this.apiRoutes.get(apiKey)(req, res, next);
+                if (this.apiRoutes.has(api.id)) {
+                    this.apiRoutes.get(api.id)(req, res, next);
                 }
                 else {
                     next();
@@ -303,21 +303,19 @@ export class Gateway {
         }
     }
 
-    removeApi(apiName: string, apiVersion: string) {
-        this.apiRoutes.delete(createApiKey(apiName, apiVersion));
+    removeApi(apiId: string) {
+        this.apiRoutes.delete(apiId);
     }
 
-    updateApi(apiName: string, apiVersion: string) {
-        const apiKey = createApiKey(apiName, apiVersion);
-
-        this.configService.getApiConfig(apiName, apiVersion)
+    updateApi(apiId: string) {
+        this.configService.getApiConfig(apiId)
             .then((apiConfig) => {
                 if (apiConfig) {
                     this.loadApi(apiConfig);
                 }
             })
             .catch((err) => {
-                this.logger.error(`Config event lost ${apiKey}: ${err.message}`);
+                this.logger.error(`Config event lost ${apiId}: ${err.message}`);
             });
     }
 

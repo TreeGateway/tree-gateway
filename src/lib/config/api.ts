@@ -13,6 +13,10 @@ import * as Joi from "joi";
  */
 export interface ApiConfig {
     /**
+     * The API ID.
+     */
+    id?: string;
+    /**
      * The API name. Used to identify the API on admin console. 
      */
     name: string;
@@ -54,6 +58,7 @@ export interface ApiConfig {
 }
 
 export let ApiConfigValidatorSchema = Joi.object().keys({
+    id: Joi.string().guid(),
     name: Joi.string().alphanum().min(3).max(30).required(),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required(),
     description: Joi.string(),
@@ -66,6 +71,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
 });
 
 export let SimpleApiConfigValidatorSchema = Joi.object().keys({
+    id: Joi.string().guid(),
     name: Joi.string().alphanum().min(3).max(30).required(),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required(),
     description: Joi.string()
@@ -93,8 +99,4 @@ export function validateSimpleApiConfig(apiConfig: ApiConfig) {
             }
         })
     });
-}
-
-export function createApiKey(name: string, version: string) {
-    return name + (version ? '_' + version : '_default');
 }

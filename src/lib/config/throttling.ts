@@ -107,6 +107,7 @@ export interface ThrottlingConfig {
 }
 
 export let ThrottlingConfigValidatorSchema = Joi.object().keys({
+    id: Joi.string().guid(),
     windowMs: Joi.number(),
     delayAfter: Joi.number(),
     delayMs: Joi.number(),

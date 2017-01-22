@@ -12,6 +12,11 @@ let gateway: Gateway;
 let gatewayRequest;
 let adminRequest;
 
+const getIdFromResponse = (response) => {
+    const parts = response.headers["location"].split("/");
+    return parts[parts.length-1];
+};
+
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
 		gateway = new Gateway("./tree-gateway.json");
@@ -36,7 +41,10 @@ describe("Gateway Tests", () => {
 			.then(() => {
 				setTimeout(done, 2000);
 			})
-			.catch(fail);
+			.catch(err => {
+				console.error(err);
+				fail();
+			});
 	});
 
 	afterAll(function(done){
@@ -44,8 +52,9 @@ describe("Gateway Tests", () => {
 			.then(() => {
 				gateway.stopAdmin();
 				gateway.stop();
-				return fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp'));
+				return fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'middleware'));
 			})
+			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'logs')))
 			.then(done)
 			.catch(fail);
 	});
@@ -255,6 +264,7 @@ describe("Gateway Tests", () => {
 			});
 		});
 	});
+
 	function installApis():Promise<void>{
          return new Promise<void>((resolve, reject)=>{
 		    let pathApi = './src/spec/test-data/apis/';
@@ -272,12 +282,13 @@ describe("Gateway Tests", () => {
                     adminRequest.post("/apis", {body: api, json: true}, (error, response, body) => {
                         expect(error).toBeNull();
                         expect(response.statusCode).toEqual(201);
-						installApiCache(apiConfig.name, apiConfig.version, apiConfig.cache).then(()=>{
-							return installApiProxy(apiConfig.name, apiConfig.version, apiConfig.proxy);
+						apiConfig.id = getIdFromResponse(response);
+						installApiCache(apiConfig.id, apiConfig.cache).then(()=>{
+							return installApiProxy(apiConfig.id, apiConfig.proxy);
 						}).then(()=>{
-							return installApiThrottling(apiConfig.name, apiConfig.version, apiConfig.throttling);
+							return installApiThrottling(apiConfig.id, apiConfig.throttling);
 						}).then(()=>{
-							return installApiAuthentication(apiConfig.name, apiConfig.version, apiConfig.authentication);
+							return installApiAuthentication(apiConfig.id, apiConfig.authentication);
 						}).then(()=>{
 							if (!apiConfig.group) {
 								returned++;
@@ -287,7 +298,7 @@ describe("Gateway Tests", () => {
 							}
 							else {
 								let promises = apiConfig.group.map(group=>{
-									return installApiGroup(apiConfig.name, apiConfig.version, group);
+									return installApiGroup(apiConfig.id, group);
 								})
 								Promise.all(promises).then(()=>{
 									returned++;
@@ -304,12 +315,12 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiAuthentication(apiName: string, apiVersion: string, authentication): Promise<void> {
+	function installApiAuthentication(apiId: string, authentication): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!authentication) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiName}/${apiVersion}/authentication`, {body: authentication, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiId}/authentication`, {body: authentication, json: true}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -319,14 +330,14 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiCache(apiName: string, apiVersion: string, apiCache): Promise<void> {
+	function installApiCache(apiId: string, apiCache): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!apiCache) {
 				return resolve();
 			}
 			let returned=0, expected = apiCache.length;
 			apiCache.forEach(cache=>{
-				adminRequest.post(`/apis/${apiName}/${apiVersion}/cache`, {body: cache, json: true}, (error, response, body) => {
+				adminRequest.post(`/apis/${apiId}/cache`, {body: cache, json: true}, (error, response, body) => {
 					if(error) {
 						reject(error);
 					}
@@ -340,14 +351,14 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiThrottling(apiName: string, apiVersion: string, throttling): Promise<void> {
+	function installApiThrottling(apiId: string, throttling): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!throttling) {
 				return resolve();
 			}
 			let returned=0, expected = throttling.length;
 			throttling.forEach(throt=>{
-				adminRequest.post(`/apis/${apiName}/${apiVersion}/throttling`, {body: throt, json: true}, (error, response, body) => {
+				adminRequest.post(`/apis/${apiId}/throttling`, {body: throt, json: true}, (error, response, body) => {
 					if(error) {
 						reject(error);
 					}
@@ -361,12 +372,12 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiProxy(apiName: string, apiVersion: string, apiProxy): Promise<void> {
+	function installApiProxy(apiId: string, apiProxy): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!apiProxy) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiName}/${apiVersion}/proxy`, {body: apiProxy, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiId}/proxy`, {body: apiProxy, json: true}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -376,12 +387,12 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiGroup(apiName: string, apiVersion: string, group): Promise<void> {
+	function installApiGroup(apiId: string, group): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
 			if (!group) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiName}/${apiVersion}/groups`, {body: group, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiId}/groups`, {body: group, json: true}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
