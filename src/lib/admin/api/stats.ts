@@ -10,21 +10,97 @@ import {Stats} from "../../stats/stats";
 @Path('stats')
 export class StatsService {
     @GET
-    @Path(":api")
-    getstats(@PathParam("api")api: string, @QueryParam('path')path: string) : Promise<Array<Array<number>>>{
+    @Path("auth/fail/:apiName/:apiVersion")
+    getAuthFail(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'auth', path, 'fail', count);
+    }
+
+    @GET
+    @Path("auth/success/:apiName/:apiVersion")
+    getAuthSuccess(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'auth', path, 'success', count);
+    }
+
+    @GET
+    @Path("cache/hit/:apiName/:apiVersion")
+    getCahcheHit(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'cache', path, 'hit', count);
+    }
+
+    @GET
+    @Path("cache/miss/:apiName/:apiVersion")
+    getCahcheMiss(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'cache', path, 'miss', count);
+    }
+
+    @GET
+    @Path("cache/error/:apiName/:apiVersion")
+    getCahcheError(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'cache', path, 'error', count);
+    }
+
+    @GET
+    @Path("throttling/exceeded/:apiName/:apiVersion")
+    getThrottlingExceeded(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'throttling', path, 'exceeded', count);
+    }
+
+    @GET
+    @Path("access/request/:apiName/:apiVersion")
+    getAccessRequest(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'access', path, 'request', count);
+    }
+    
+    @GET
+    @Path("access/status/:code/:apiName/:apiVersion")
+    getAccessStatus(@PathParam("apiName")apiName: string, 
+                @PathParam("apiVersion")apiVersion: string, 
+                @QueryParam('path')path: string, 
+                @QueryParam('count')count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiName, apiVersion, 'access', path, 'request', count);
+    }
+
+    protected getStats(apiName: string, 
+                apiVersion: string,
+                prefix: string,                 
+                path: string,
+                key: string, 
+                count?: number) : Promise<Array<Array<number>>>{
         return new Promise<Array<Array<number>>>((resolve, reject) =>{
-            let found: boolean = false;
-            AdminServer.gateway.apis.forEach((apiConfig)=>{
-                if (!found && api === apiConfig.name) {
-                    if (path) {
-                        found = true;
-                        let stats = AdminServer.gateway.createStats(Stats.getStatsKey('auth', apiConfig.proxy.path, 'fail'))
-                        return stats.getLastOccurrences(24, path).then(resolve).catch(reject);
-                    }
-                }
-            });
-            if (!found) {
-                reject(new Errors.NotFoundError("API not found"));
+            let apiConfig = AdminServer.gateway.getApiConfig(apiName, apiVersion);
+            
+            if (!apiConfig) {
+                return reject(new Errors.NotFoundError("API not found"));
+            }
+            if (path) {
+                let stats = AdminServer.gateway.createStats(Stats.getStatsKey(prefix, apiConfig.proxy.path, key))
+                stats.getLastOccurrences(count||24, path)
+                .then(resolve)
+                .catch(reject);
+            }
+            else {
+                return reject(new Errors.ForbidenError("Path parameter is required."));
             }
         });
     }

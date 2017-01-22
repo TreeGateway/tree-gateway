@@ -14,7 +14,7 @@ let adminRequest;
 
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./src/spec/test-data/tree-gateway-test.json");
+		gateway = new Gateway("./tree-gateway.json");
 
 		gateway.start()
 			.then(()=>{

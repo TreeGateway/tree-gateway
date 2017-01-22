@@ -3,7 +3,7 @@
 import {CacheEntry, CacheStore} from "./cache-store";
 import {Gateway} from "../gateway";
 import {ServerCacheConfig} from "../config/cache";
-import {calculateSeconds} from "../utils/time";
+import * as humanInterval from "human-interval";
 import {RedisStore} from "./redis-store";
 import * as _ from "lodash";
 
@@ -73,7 +73,7 @@ export class ServerCache {
         result.push(`return ret;`);
         result.push(`}`);
 
-        let cacheTime = calculateSeconds(serverCache.cacheTime)*1000;
+        let cacheTime = humanInterval(serverCache.cacheTime);
         result.push(`ServerCache.cacheStore.set(${req}.originalUrl, {`);
         result.push(`content: body,`);
         result.push(`mimeType: this._headers["content-type"]`);

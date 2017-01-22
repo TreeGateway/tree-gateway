@@ -3,7 +3,7 @@
 import {StatsConfig, GranularityConfig} from "../config/stats";
 import {StatsHandler} from "./stats";
 import * as ioredis from "ioredis";
-import {calculateSeconds} from "../utils/time";
+import * as humanInterval from "human-interval";
 import {Gateway} from "../gateway";
 
 export class RedisStats extends StatsHandler {
@@ -16,8 +16,8 @@ export class RedisStats extends StatsHandler {
         super(id, config);
         this.gateway = gateway;
         this.prefix = config.prefix;
-        this.duration = calculateSeconds(config.granularity.duration);
-        this.ttl = calculateSeconds(config.granularity.ttl);
+        this.duration = humanInterval(config.granularity.duration)/1000;
+        this.ttl = humanInterval(config.granularity.ttl)/1000;
     }
 
     /**

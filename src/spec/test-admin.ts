@@ -12,7 +12,7 @@ let adminAddress: string;
 let adminRequest;
 describe("Admin API", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./src/spec/test-data/tree-gateway-test.json");
+		gateway = new Gateway("./tree-gateway.json");
 
 		gateway.start()
 			.then(()=>{

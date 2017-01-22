@@ -15,9 +15,17 @@ export default function loadConfigFile(configFileName:string): Promise<GatewayCo
                 configFileName = path.join(process.cwd(), configFileName);
             }
 
-            let config:GatewayConfig = fs.readJsonSync(configFileName);
-
-            validateGatewayConfig(config)
+            fs.readJsonAsync(configFileName)
+                .then((config:GatewayConfig) => {
+                    if (process.env.NODE_ENV) {
+                        let envConfigFileName = configFileName.replace(`.json`, `-${process.env.NODE_ENV}.json`);
+                        if (fs.existsSync(envConfigFileName)) {
+                            let envConfig = fs.readJsonSync(envConfigFileName);
+                            config = <GatewayConfig>_.defaultsDeep(envConfig, config);
+                        }                
+                    }
+                    return validateGatewayConfig(config);
+                })
                 .then((gatewayConfig:GatewayConfig) => {
                     gatewayConfig = _.defaults(gatewayConfig, {
                         rootPath : path.dirname(configFileName),

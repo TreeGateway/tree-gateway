@@ -51,6 +51,10 @@ export interface GatewayConfig {
      * Create monitors for the gateway health
      */
     monitor?: Array<MonitorConfig>;
+    /**
+     * If provided, the service will publish all api documentation under this path.
+     */
+    apiDocs?: string;
 }
 
 export interface ProtocolConfig {
@@ -416,7 +420,8 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     adminLogger: AccessLoggerConfigSchema,
     statsConfig: StatsConfigValidatorSchema,
     monitor: Joi.array().items(MonitorConfigSchema),
-    disableAdminStats: Joi.boolean()
+    disableAdminStats: Joi.boolean(), 
+    apiDocs: Joi.string()
 });
 
 export function validateGatewayConfig(gatewayConfig: GatewayConfig) {

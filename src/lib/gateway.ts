@@ -28,6 +28,8 @@ import loadConfigFile from "./utils/config-loader";
 import {MiddlewareInstaller} from "./utils/middleware-installer";
 import {ConfigTopics} from "./config/events";
 import * as fs from "fs-extra-promise";
+import * as path from "path";
+import * as os from "os";
 
 class StatsController {
     requestStats: Stats;
@@ -100,6 +102,11 @@ export class Gateway {
 
     get middlewareInstaller(): MiddlewareInstaller {
         return this._middlewareInstaller;
+    }
+
+    getApiConfig(apiName: string, apiVersion: string): ApiConfig {
+        const apiKey: string = createApiKey(apiName, apiVersion);
+        return this._apis.get(apiKey);
     }
 
     createStats(id: string) {
@@ -378,10 +385,29 @@ export class Gateway {
             AccessLogger.configureAccessLoger(this.config.adminLogger, 
                         this, this.adminApp, './logs/admin');
         }
-        
+        this.configureApiDocs();
+
         AdminServer.gateway = this;
 
         Server.buildServices(this.adminApp, ...adminApi);
+    }
+
+    private configureApiDocs() {
+        if (this.config.apiDocs){
+            const swaggerUi = require('swagger-ui-express');
+            const swaggerDocument = require('./admin/api/swagger.json');
+
+            if (this.config.protocol.https) {
+                swaggerDocument.host = `${os.hostname()}:${this.config.protocol.https.adminPort}`
+                swaggerDocument.schemes = ['https'];
+            }
+            else if (this.config.protocol.http) {
+                swaggerDocument.host = `${os.hostname()}:${this.config.protocol.http.adminPort}`
+                swaggerDocument.schemes = ['http'];
+            }
+            
+            this.adminApp.use(path.join('/', this.config.apiDocs), swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+        }
     }
 
     private configureStatsMiddleware(server: express.Router, key: string) {

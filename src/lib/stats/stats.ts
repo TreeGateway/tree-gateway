@@ -9,15 +9,15 @@ export class Stats {
     }
 
     registerOccurrence(value: string, increment: number, ...extra: string[]){
-        return this.statsHandler.registerOccurrence.apply(this.statsHandler, arguments);
+        return this.statsHandler.registerOccurrence(value, increment, ...extra);
     }
 
     getOccurrences(time: number, key: string): Promise<Array<Array<number>>> {
-        return this.statsHandler.getOccurrences.apply(this.statsHandler, arguments);
+        return this.statsHandler.getOccurrences(time, key);
     }
 
     getLastOccurrences(count: number, key: string): Promise<Array<Array<number>>> {
-        return this.statsHandler.getLastOccurrences.apply(this.statsHandler, arguments);
+        return this.statsHandler.getLastOccurrences(count, key);
     }
 
     static getStatsKey(prefix: string, path: string, key: string, ...opt: Array<string>) {
