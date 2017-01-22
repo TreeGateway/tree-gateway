@@ -71,7 +71,8 @@ export class RedisStats extends StatsHandler {
         return new Promise<Array<Array<number>>>((resolve, reject)=>{
             let from: number = this.getRoundedTime(this.duration, time);
             let to: number = this.getRoundedTime(this.duration, currentTime);
-            let multi: ioredis.Pipeline = this.gateway.redisClient.multi();
+
+            let hgets = new Array();
 
             for(let ts=from; ts<=to; ts+=this.duration) {
                 let keyTimestamp = this.getRoundedTime(this.ttl, ts);
@@ -81,24 +82,23 @@ export class RedisStats extends StatsHandler {
                     tmpKey += ':'+extra.join(':');
                 }
 
-                multi.hget(tmpKey, ts);
+                hgets.push(this.gateway.redisClient.hget(tmpKey, ts));
             }
 
-            multi.exec((err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                let data=[];
-                for(let ts=from, i=0; ts<=to; ts+=this.duration, i+=1) {
-                    data.push([ts, results[i][1] ? parseInt(results[i][1], 10) : 0]);
-                }
+            Promise.all(hgets)
+                   .then((results) => {
+                        let data=[];
+                        for(let ts=from, i=0; ts<=to; ts+=this.duration, i+=1) {
+                            data.push([ts, results[i][1] ? parseInt(results[i][1], 10) : 0]);
+                        }
 
-                if (this.gateway.logger.isDebugEnabled()) {
-                    this.gateway.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
-                }
+                        if (this.gateway.logger.isDebugEnabled()) {
+                            this.gateway.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
+                        }
 
-                return resolve(data);
-            });
+                        return resolve(data);
+                   })
+                   .catch(reject);
         });
     }
 
