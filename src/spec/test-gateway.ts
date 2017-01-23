@@ -38,9 +38,6 @@ describe("Gateway Tests", () => {
 			.then(()=>{
 				return installApis();
 			})
-			.then(() => {
-				setTimeout(done, 2000);
-			})
 			.catch(err => {
 				console.error(err);
 				fail();
@@ -268,51 +265,50 @@ describe("Gateway Tests", () => {
 	function installApis():Promise<void>{
          return new Promise<void>((resolve, reject)=>{
 		    let pathApi = './src/spec/test-data/apis/';
+
             fs.readdirAsync(pathApi)
-            .then(files=>{
-                let promises = files.map(file => {return fs.readJsonAsync(pathApi+file)})
-                return Promise.all(promises);
-            }).then(files=>{
-                let returned = 0, expected = files.length;;
-                if (expected == 0) {
-                    resolve();
-                }
-                files.forEach(apiConfig=>{
-					let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery')
-                    adminRequest.post("/apis", {body: api, json: true}, (error, response, body) => {
-                        expect(error).toBeNull();
-                        expect(response.statusCode).toEqual(201);
-						apiConfig.id = getIdFromResponse(response);
-						installApiCache(apiConfig.id, apiConfig.cache).then(()=>{
-							return installApiProxy(apiConfig.id, apiConfig.proxy);
-						}).then(()=>{
-							return installApiThrottling(apiConfig.id, apiConfig.throttling);
-						}).then(()=>{
-							return installApiAuthentication(apiConfig.id, apiConfig.authentication);
-						}).then(()=>{
-							if (!apiConfig.group) {
-								returned++;
-								if (returned == expected) {
-									resolve();
-								}
-							}
-							else {
-								let promises = apiConfig.group.map(group=>{
-									return installApiGroup(apiConfig.id, group);
-								})
-								Promise.all(promises).then(()=>{
-									returned++;
-									if (returned == expected) {
-										resolve();
-									}
-								});
-							}
-						})
-						.catch(reject);
-                    });
-                })
-            }).catch(reject);    
+				.then((files) => {
+                	let promises = files.map(file => {return fs.readJsonAsync(pathApi+file)})
+                	return Promise.all(promises);
+            	})
+				.then((files) => {
+					const promises = files.map(apiConfig => installApi(apiConfig));
+
+					return Promise.all(promises);
+            	})
+				.catch(reject);
 		});
+	}
+
+	function installApi(apiConfig: ApiConfig): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery');
+
+			adminRequest.post("/apis", {body: api, json: true}, (error, response, body) => {
+				expect(error).toBeNull();
+				expect(response.statusCode).toEqual(201);
+				apiConfig.id = getIdFromResponse(response);
+
+				installApiGroups(apiConfig.id, apiConfig.group)
+					.then(() => installApiCache(apiConfig.id, apiConfig.cache))
+					.then(() => installApiThrottling(apiConfig.id, apiConfig.throttling))
+					.then(() => installApiAuthentication(apiConfig.id, apiConfig.authentication))
+					.then(() => {
+						setTimeout(resolve, 1000);
+					})
+					.catch(reject);
+			});
+		});
+	}
+
+	function installApiGroups(apiId: string, groups): Promise<any> {
+		if (groups) {
+			const promises = groups.map((group) => installApiGroup(apiId, group));
+
+			return Promise.all(promises);
+		} else {
+			return Promise.resolve();
+		}
 	}
 
 	function installApiAuthentication(apiId: string, authentication): Promise<void> {
@@ -463,7 +459,9 @@ describe("Gateway Tests", () => {
 			 .then(()=>{
 				 return installMiddleware('SecondInterceptor', '/interceptors/response', '/interceptor/response')
 			 })
-			 .then(resolve)
+			 .then(() => {
+				 setTimeout(resolve, 2000);
+			 })
 			 .catch(reject);
 		});
 	}	
