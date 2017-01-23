@@ -47,11 +47,9 @@ describe("Gateway Tests", () => {
 
 	afterAll(function(done){
 		gateway.redisClient.flushdb()
-			.then(() => {
-				gateway.stopAdmin();
-				gateway.stop();
-				return fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'middleware'));
-			})
+            .then(() => gateway.stopAdmin())
+            .then(() => gateway.stop())
+			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'middleware')))
 			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'logs')))
 			.then(done)
 			.catch(fail);

@@ -40,11 +40,9 @@ describe("Admin API", () => {
 
 	afterAll(function(done){
 		gateway.redisClient.flushdb()
-			.then(() => {
-				gateway.stopAdmin();
-				gateway.stop();
-				return fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp'));
-			})
+            .then(() => gateway.stopAdmin())
+            .then(() => gateway.stop())
+			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp')))
 			.then(done)
 			.catch(fail);
 	});

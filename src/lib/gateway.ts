@@ -187,24 +187,59 @@ export class Gateway {
         });
     }
 
-    stop() {
-        if (this.apiServer) {
-            this.apiServer.forEach(value=>{
-                value.close()
-            });
-            this.apiServer = null;
-            this.redisClient.disconnect();
-            this.redisEvents.disconnect();
-        }
+    stop(): Promise<void> {
+        return new Promise<void>((resolve, reject)=>{
+            let self = this;
+            Monitors.stopMonitors();
+            if (this.apiServer) {
+                let toClose = this.apiServer.size;
+                if (toClose === 0) {
+                    self.redisClient.disconnect();
+                    self.redisEvents.disconnect();
+                    return resolve();
+                }
+                this.apiServer.forEach(server=>{
+                    server.close(()=>{
+                        toClose--;
+                        if (toClose === 0) {
+                            self.logger.info('Gateway server stopped');
+                            self.redisClient.disconnect();
+                            self.redisEvents.disconnect();
+                            resolve();
+                        }
+                    });
+                });
+                this.apiServer = null;
+            }
+            else {
+                resolve();
+            }
+        });
     }
 
     stopAdmin() {
-        if (this.adminServer) {
-            this.adminServer.forEach(value=>{
-                value.close()
-            });
-            this.adminServer = null;
-        }
+        return new Promise<void>((resolve, reject)=>{
+            let self = this;
+            if (this.adminServer) {
+                let toClose = this.adminServer.size;
+                if (toClose === 0) {
+                    return resolve();
+                }
+                this.adminServer.forEach(server=>{
+                    server.close(()=>{
+                        toClose--;
+                        if (toClose === 0) {
+                            self.logger.info('Gateway Admin server stopped');
+                            resolve();
+                        }
+                    });
+                });
+                this.adminServer = null;
+            }
+            else {
+                resolve();
+            }
+        });
     }
 
     private createHttpServer() {
