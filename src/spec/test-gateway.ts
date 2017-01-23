@@ -38,6 +38,7 @@ describe("Gateway Tests", () => {
 			.then(()=>{
 				return installApis();
 			})
+			.then(done)
 			.catch(err => {
 				console.error(err);
 				fail();
@@ -271,11 +272,14 @@ describe("Gateway Tests", () => {
                 	let promises = files.map(file => {return fs.readJsonAsync(pathApi+file)})
                 	return Promise.all(promises);
             	})
-				.then((files) => {
-					const promises = files.map(apiConfig => installApi(apiConfig));
+				.then((apis) => {
+					let promises = apis.map(apiConfig => installApi(apiConfig));
 
 					return Promise.all(promises);
             	})
+				.then(() => {
+					setTimeout(resolve, 1000);
+				})
 				.catch(reject);
 		});
 	}
@@ -290,19 +294,18 @@ describe("Gateway Tests", () => {
 				apiConfig.id = getIdFromResponse(response);
 
 				installApiGroups(apiConfig.id, apiConfig.group)
+					.then(() => installApiProxy(apiConfig.id, apiConfig.proxy))
 					.then(() => installApiCache(apiConfig.id, apiConfig.cache))
 					.then(() => installApiThrottling(apiConfig.id, apiConfig.throttling))
 					.then(() => installApiAuthentication(apiConfig.id, apiConfig.authentication))
-					.then(() => {
-						setTimeout(resolve, 1000);
-					})
+					.then(resolve)
 					.catch(reject);
 			});
 		});
 	}
 
 	function installApiGroups(apiId: string, groups): Promise<any> {
-		if (groups) {
+		if (groups && groups.length > 0) {
 			const promises = groups.map((group) => installApiGroup(apiId, group));
 
 			return Promise.all(promises);
@@ -332,6 +335,7 @@ describe("Gateway Tests", () => {
 				return resolve();
 			}
 			let returned=0, expected = apiCache.length;
+
 			apiCache.forEach(cache=>{
 				adminRequest.post(`/apis/${apiId}/cache`, {body: cache, json: true}, (error, response, body) => {
 					if(error) {
@@ -460,7 +464,7 @@ describe("Gateway Tests", () => {
 				 return installMiddleware('SecondInterceptor', '/interceptors/response', '/interceptor/response')
 			 })
 			 .then(() => {
-				 setTimeout(resolve, 2000);
+				 setTimeout(resolve, 1500);
 			 })
 			 .catch(reject);
 		});
