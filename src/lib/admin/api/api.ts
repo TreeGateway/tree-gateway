@@ -24,40 +24,42 @@ export class APIRest extends RestController {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
                 .then(() => this.service.create(api))
-                .then(() => resolve(new Return.NewResource(`apis/${api.name}/${api.version}`)))
+                .then(() => resolve(new Return.NewResource(`apis/${api.id}`)))
                 .catch(err => reject(this.handleError(err)));
         });
     }
 
     @PUT
-    @Path("/:name/:version")
-    updateApi(@PathParam("name") name: string, @PathParam("version") version: string, api: ApiConfig): Promise<string> {
+    @Path("/:id")
+    updateApi(@PathParam("id") id: string, api: ApiConfig): Promise<string> {
         return new Promise((resolve, reject) => {
+            api.id = id;
+
             validateSimpleApiConfig(api)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.update(name, version, api))
+                .then(() => this.service.update(api))
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
     }
 
     @DELETE
-    @Path("/:name/:version")
-    deleteApi(@PathParam("name") name: string, @PathParam("version") version: string): Promise<void> {
+    @Path("/:id")
+    deleteApi(@PathParam("id") id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.service.remove(name, version)
+            this.service.remove(id)
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
     }
 
     @GET
-    @Path("/:name/:version")
-    getApi(@PathParam("name") name: string, @PathParam("version") version: string) : Promise<ApiConfig>{
+    @Path("/:id")
+    getApi(@PathParam("id") id: string) : Promise<ApiConfig>{
         return new Promise((resolve, reject) => {
-            this.service.get(name, version)
+            this.service.get(id)
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });

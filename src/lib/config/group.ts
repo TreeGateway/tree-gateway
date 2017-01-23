@@ -7,6 +7,10 @@ import * as Joi from "joi";
  */
 export interface Group {
     /**
+     * The Group ID.
+     */
+    id?: string;
+    /**
      * The Group name. Used to identify the Group on admin console. 
      */
     name: string;
@@ -33,6 +37,7 @@ let MemberValidatorSchema = Joi.object().keys({
 }).min(1);
 
 export let GroupValidatorSchema = Joi.object().keys({
+    id: Joi.string().guid(),
     name: Joi.string().alphanum().min(3).max(30).required(),
     description: Joi.string(),
     member: Joi.array().items(MemberValidatorSchema).required(),

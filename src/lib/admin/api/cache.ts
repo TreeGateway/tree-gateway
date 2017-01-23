@@ -10,30 +10,29 @@ import {RedisCacheService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
-@Path('apis/:apiName/:apiVersion/cache')
+@Path('apis/:apiId/cache')
 export class CacheRest extends RestController {
     @GET
-    list(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string): Promise<Array<CacheConfig>> {
-        return this.service.list(apiName, apiVersion);
+    list(@PathParam("apiId") apiId: string): Promise<Array<CacheConfig>> {
+        return this.service.list(apiId);
     }
 
     @POST
-    addCache(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string, cache: CacheConfig): Promise<string> {
+    addCache(@PathParam("apiId") apiId: string, cache: CacheConfig): Promise<string> {
         return new Promise((resolve, reject) => {
             validateCacheConfig(cache)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.create(apiName, apiVersion, cache))
-                .then(cacheId => resolve(new Return.NewResource(`apis/${apiName}/${apiVersion}/cache/${cacheId}`)))
+                .then(() => this.service.create(apiId, cache))
+                .then(cacheId => resolve(new Return.NewResource(`apis/${apiId}/cache/${cacheId}`)))
                 .catch((err) => reject(this.handleError(err)));
         });
     }
 
     @PUT
     @Path("/:cacheId")
-    updateCache(@PathParam("apiName") apiName: string,
-                @PathParam("apiVersion") apiVersion: string,
+    updateCache(@PathParam("apiId") apiId: string,
                 @PathParam("cacheId") cacheId: string,
                 cache: CacheConfig): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -41,7 +40,7 @@ export class CacheRest extends RestController {
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.update(apiName, apiVersion, cacheId, cache))
+                .then(() => this.service.update(apiId, cacheId, cache))
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
@@ -49,11 +48,10 @@ export class CacheRest extends RestController {
 
     @DELETE
     @Path("/:cacheId")
-    deleteCache(@PathParam("apiName") apiName: string,
-                @PathParam("apiVersion") apiVersion: string,
+    deleteCache(@PathParam("apiId") apiId: string,
                 @PathParam("cacheId") cacheId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.service.remove(apiName, apiVersion, cacheId)
+            this.service.remove(apiId, cacheId)
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
@@ -61,11 +59,10 @@ export class CacheRest extends RestController {
 
     @GET
     @Path("/:cacheId")
-    getCache(@PathParam("apiName") apiName: string,
-             @PathParam("apiVersion") apiVersion: string,
+    getCache(@PathParam("apiId") apiId: string,
              @PathParam("cacheId") cacheId: string) : Promise<CacheConfig> {
         return new Promise((resolve, reject) => {
-            this.service.get(apiName, apiVersion, cacheId)
+            this.service.get(apiId, cacheId)
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });

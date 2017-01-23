@@ -6,7 +6,7 @@ import {ApiService, ApiComponentService, GroupService, ThrottlingService,
     CacheService, ProxyService, AuthenticationService, ConfigService,
     NotFoundError, DuplicatedError} from "./api";
 
-import {ApiConfig, createApiKey} from "../config/api";
+import {ApiConfig} from "../config/api";
 import {CacheConfig} from "../config/cache";
 import {ThrottlingConfig} from "../config/throttling";
 import {Group} from "../config/group";
@@ -14,6 +14,7 @@ import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
 import {ConfigTopics} from "../config/events";
 import {Gateway} from "../gateway";
+import * as uuid from "uuid";
 
 class Constants {
     static APIS_PREFIX = "{config}:apis";
@@ -46,13 +47,9 @@ export class RedisApiService extends RedisService implements ApiService {
         });
     }
 
-    get(name: string, version: string): Promise<ApiConfig> {
-        return this.getByKey(createApiKey(name, version));
-    }
-
-    getByKey(key: string): Promise<ApiConfig> {
+    get(id: string): Promise<ApiConfig> {
         return new Promise((resolve, reject) => {
-            this.redisClient.hget(Constants.APIS_PREFIX, key)
+            this.redisClient.hget(Constants.APIS_PREFIX, id)
                 .then((api) => {
                     if (!api) {
                         throw new NotFoundError('Api not found.');
@@ -66,42 +63,37 @@ export class RedisApiService extends RedisService implements ApiService {
 
     create(api: ApiConfig): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            const apiKey = createApiKey(api.name, api.version);
+            api.id = uuid();
 
-            this.redisClient.hexists(`${Constants.APIS_PREFIX}`, apiKey)
+            this.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists) => {
                     if (exists) {
-                        throw new DuplicatedError(`Api ${apiKey} already exists`)
+                        throw new DuplicatedError(`Api ${api.id} already exists`)
                     }
 
                     return this.redisClient.multi()
-                               .hmset(`${Constants.APIS_PREFIX}`, apiKey, JSON.stringify(api))
-                               .publish(ConfigTopics.API_ADDED, JSON.stringify({name: api.name, version: api.version}))
+                               .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
+                               .publish(ConfigTopics.API_ADDED, JSON.stringify({id: api.id}))
                                .exec()
                 })
                 .then(() => {
-                    resolve(api.name);
+                    resolve(api.id);
                 })
                 .catch(reject);
         });
     }
 
-    update(name: string, version: string, api: ApiConfig): Promise<void> {
+    update(api: ApiConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            api.name = name;
-            api.version = version;
-
-            const apiKey = createApiKey(name, version);
-
-            this.redisClient.hexists(`${Constants.APIS_PREFIX}`, apiKey)
+            this.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists) => {
                     if (!exists) {
                         throw new NotFoundError('Api not found.');
                     }
 
                     return this.redisClient.multi()
-                               .hmset(`${Constants.APIS_PREFIX}`, apiKey, JSON.stringify(api))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name, version}))
+                               .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: api.id}))
                                .exec();
                 })
                 .then(() => {
@@ -111,14 +103,12 @@ export class RedisApiService extends RedisService implements ApiService {
         });
     }
 
-    remove(name: string, version: string): Promise<void> {
+    remove(id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(name, version);
-
             // TODO: remove children
             this.redisClient.multi()
-                .hdel(`${Constants.APIS_PREFIX}`, apiKey)
-                .publish(ConfigTopics.API_REMOVED, JSON.stringify({name, version}))
+                .hdel(`${Constants.APIS_PREFIX}`, id)
+                .publish(ConfigTopics.API_REMOVED, JSON.stringify({id}))
                 .exec()
                 .then((count) => {
                     // FIXME: multi() does not return count.
@@ -134,17 +124,19 @@ export class RedisApiService extends RedisService implements ApiService {
 }
 
 export abstract class RedisApiComponentService<T> extends RedisService implements ApiComponentService<T> {
-    abstract getComponentKey(component: T): Promise<string>;
-
     abstract getMapName(): string;
 
-    private getMapKey(apiName: string, apiVersion: string): string {
-        return `${Constants.APIS_PREFIX}:${createApiKey(apiName, apiVersion)}:${this.getMapName()}`;
+    getComponentKey(component: T): Promise<string> {
+        return Promise.resolve(uuid());
     }
 
-    list(apiName: string, apiVersion: string): Promise<Array<T>> {
+    private getMapKey(apiId: string): string {
+        return `${Constants.APIS_PREFIX}:${apiId}:${this.getMapName()}`;
+    }
+
+    list(apiId: string): Promise<Array<T>> {
         return new Promise((resolve, reject) => {
-            this.redisClient.hgetall(this.getMapKey(apiName, apiVersion))
+            this.redisClient.hgetall(this.getMapKey(apiId))
                 .then((items) => {
                     items = Object.keys(items).map(key => JSON.parse(items[key]));
                     resolve(items);
@@ -153,9 +145,9 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
         });
     }
 
-    get(apiName: string, apiVersion: string, componentId: string): Promise<T> {
+    get(apiId: string, componentId: string): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.redisClient.hget(this.getMapKey(apiName, apiVersion), componentId)
+            this.redisClient.hget(this.getMapKey(apiId), componentId)
                 .then((component) => {
                     if (!component) {
                         throw new NotFoundError('Component not found.');
@@ -167,7 +159,7 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
         });
     }
 
-    create(apiName: string, apiVersion: string, component: T): Promise<string> {
+    create(apiId: string, component: T): Promise<string> {
         return new Promise((resolve, reject) => {
             let location;
 
@@ -176,8 +168,8 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
                     location = key;
 
                     return this.redisClient.multi()
-                               .hmset(this.getMapKey(apiName, apiVersion), key, JSON.stringify(component))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                               .hmset(this.getMapKey(apiId), key, JSON.stringify(component))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                                .exec();
                 })
                 .then(() => {
@@ -187,9 +179,9 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
         });
     }
 
-    update(apiName: string, apiVersion: string, componentId: string, component: T): Promise<void> {
+    update(apiId: string, componentId: string, component: T): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const mapKey = this.getMapKey(apiName, apiVersion);
+            const mapKey = this.getMapKey(apiId);
 
             this.redisClient.hexists(mapKey, componentId)
                 .then((exists) => {
@@ -199,7 +191,7 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
 
                     return this.redisClient.multi()
                                .hmset(mapKey, componentId, JSON.stringify(component))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                                .exec();
                 })
                 .then(() => {
@@ -209,11 +201,11 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
         });
     }
 
-    remove(apiName: string, apiVersion: string, componentId: string): Promise<void> {
+    remove(apiId: string, componentId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             return this.redisClient.multi()
-                       .hdel(this.getMapKey(apiName, apiVersion), componentId)
-                       .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                       .hdel(this.getMapKey(apiId), componentId)
+                       .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                        .exec()
                        .then((count) => {
                             // FIXME: multi() does not return count.
@@ -229,30 +221,18 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
 }
 
 export class RedisGroupService extends RedisApiComponentService<Group> implements GroupService {
-    getComponentKey(group: Group): Promise<string> {
-        return Promise.resolve(group.name);
-    }
-
     getMapName(): string {
         return "groups";
     }
 }
 
 export class RedisThrottlingService extends RedisApiComponentService<ThrottlingConfig> implements ThrottlingService {
-    getComponentKey(throttling: ThrottlingConfig): Promise<string> {
-        return this.redisClient.incr(`${Constants.APIS_PREFIX}:throttlingSequence`);
-    }
-
     getMapName(): string {
         return "throttling";
     }
 }
 
 export class RedisCacheService extends RedisApiComponentService<CacheConfig> implements CacheService {
-    getComponentKey(cache: CacheConfig): Promise<string> {
-        return this.redisClient.incr(`${Constants.APIS_PREFIX}:cacheSequence`);
-    }
-
     getMapName(): string {
         return "cache";
     }
@@ -260,11 +240,9 @@ export class RedisCacheService extends RedisApiComponentService<CacheConfig> imp
 
 export class RedisProxyService extends RedisService implements ProxyService {
 
-    get(apiName: string, apiVersion: string): Promise<Proxy> {
+    get(apiId: string): Promise<Proxy> {
         return new Promise((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
-            this.redisClient.get(`${Constants.APIS_PREFIX}:${apiKey}:proxy`)
+            this.redisClient.get(`${Constants.APIS_PREFIX}:${apiId}:proxy`)
                 .then((proxy) => {
                     if (!proxy) {
                         throw new NotFoundError('Proxy not found.');
@@ -276,19 +254,17 @@ export class RedisProxyService extends RedisService implements ProxyService {
         });
     }
 
-    create(apiName: string, apiVersion: string, proxy: Proxy): Promise<void> {
+    create(apiId: string, proxy: Proxy): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
-            this.redisClient.hexists(`${Constants.APIS_PREFIX}`, apiKey)
+            this.redisClient.hexists(`${Constants.APIS_PREFIX}`, apiId)
                 .then((exists) => {
                     if (!exists) {
                         throw new NotFoundError('Api not found.');
                     }
 
                     return this.redisClient.multi()
-                               .set(`${Constants.APIS_PREFIX}:${apiKey}:proxy`, JSON.stringify(proxy))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                               .set(`${Constants.APIS_PREFIX}:${apiId}:proxy`, JSON.stringify(proxy))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -296,11 +272,9 @@ export class RedisProxyService extends RedisService implements ProxyService {
         });
     }
 
-    update(apiName: string, apiVersion: string, proxy: Proxy): Promise<void> {
+    update(apiId: string, proxy: Proxy): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
-            const key = `${Constants.APIS_PREFIX}:${apiKey}:proxy`;
+            const key = `${Constants.APIS_PREFIX}:${apiId}:proxy`;
 
             this.redisClient.exists(key)
                 .then((exists) => {
@@ -310,7 +284,7 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
                     return this.redisClient.multi()
                                .set(key, JSON.stringify(proxy))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -318,11 +292,9 @@ export class RedisProxyService extends RedisService implements ProxyService {
         });
     }
 
-    remove(apiName: string, apiVersion: string): Promise<void> {
+    remove(apiId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
-            const key = `${Constants.APIS_PREFIX}:${apiKey}:proxy`;
+            const key = `${Constants.APIS_PREFIX}:${apiId}:proxy`;
 
             this.redisClient.exists(key)
                 .then((exists) => {
@@ -332,7 +304,7 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
                     return this.redisClient.multi()
                                .del(key)
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -343,11 +315,9 @@ export class RedisProxyService extends RedisService implements ProxyService {
 
 export class RedisAuthenticationService extends RedisService implements AuthenticationService {
 
-    get(apiName: string, apiVersion: string): Promise<AuthenticationConfig> {
+    get(apiId: string): Promise<AuthenticationConfig> {
         return new Promise((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
-            this.redisClient.get(`${Constants.APIS_PREFIX}:${apiKey}:authentication`)
+            this.redisClient.get(`${Constants.APIS_PREFIX}:${apiId}:authentication`)
                 .then((auth) => {
                     if (!auth) {
                         throw new NotFoundError('Authentication config not found.');
@@ -359,24 +329,20 @@ export class RedisAuthenticationService extends RedisService implements Authenti
         });
     }
 
-    create(apiName: string, apiVersion: string, auth: AuthenticationConfig): Promise<void> {
+    create(apiId: string, auth: AuthenticationConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
             this.redisClient.multi()
-                .set(`${Constants.APIS_PREFIX}:${apiKey}:authentication`, JSON.stringify(auth))
-                .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                .set(`${Constants.APIS_PREFIX}:${apiId}:authentication`, JSON.stringify(auth))
+                .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                 .exec()
                 .then(() => resolve())
                 .catch(reject);
         });
     }
 
-    update(apiName: string, apiVersion: string, auth: AuthenticationConfig): Promise<void> {
+    update(apiId: string, auth: AuthenticationConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
-            const key = `${Constants.APIS_PREFIX}:${apiKey}:authentication`;
+            const key = `${Constants.APIS_PREFIX}:${apiId}:authentication`;
 
             this.redisClient.exists(key)
                 .then((exists) => {
@@ -386,7 +352,7 @@ export class RedisAuthenticationService extends RedisService implements Authenti
 
                     return this.redisClient.multi()
                                .set(key, JSON.stringify(auth))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                                .exec();
                 })
                 .then(() => resolve())
@@ -394,13 +360,11 @@ export class RedisAuthenticationService extends RedisService implements Authenti
         });
     }
 
-    remove(apiName: string, apiVersion: string): Promise<void> {
+    remove(apiId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const apiKey = createApiKey(apiName, apiVersion);
-
             this.redisClient.multi()
-                .del(`${Constants.APIS_PREFIX}:${apiKey}:authentication`)
-                .publish(ConfigTopics.API_UPDATED, JSON.stringify({name: apiName, version: apiVersion}))
+                .del(`${Constants.APIS_PREFIX}:${apiId}:authentication`)
+                .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: apiId}))
                 .exec()
                 .then((count) => {
                     // FIXME: multi() don't return count.
@@ -435,9 +399,9 @@ export class RedisConfigService extends RedisService implements ConfigService {
         this.gateway = gateway;
     }
 
-    getApiConfig(apiName: string, apiVersion: string): Promise<ApiConfig> {
+    getApiConfig(apiId: string): Promise<ApiConfig> {
         return new Promise<ApiConfig>((resolve, reject) => {
-            this._apiService.get(apiName, apiVersion)
+            this._apiService.get(apiId)
                 .then((api) => {
                     return this.loadProxy(api);
                 })
@@ -501,11 +465,11 @@ export class RedisConfigService extends RedisService implements ConfigService {
 
         switch(eventTopic) {
             case ConfigTopics.API_REMOVED:
-                this.gateway.removeApi(message.name, message.version);
+                this.gateway.removeApi(message.id);
                 break;
             case ConfigTopics.API_ADDED:
             case ConfigTopics.API_UPDATED:
-                this.gateway.updateApi(message.name, message.version);
+                this.gateway.updateApi(message.id);
                 break;
             case ConfigTopics.MIDDLEWARE_ADDED:
             case ConfigTopics.MIDDLEWARE_UPDATED:
@@ -521,7 +485,7 @@ export class RedisConfigService extends RedisService implements ConfigService {
 
     private loadProxy(apiConfig: ApiConfig): Promise<ApiConfig> {
         return new Promise((resolve, reject) => {
-            this._proxyService.get(apiConfig.name, apiConfig.version)
+            this._proxyService.get(apiConfig.id)
                 .then((proxy) => {
                     apiConfig.proxy = proxy;
                     resolve(apiConfig);
@@ -534,18 +498,26 @@ export class RedisConfigService extends RedisService implements ConfigService {
 
     private loadApiDetails(apiConfig: ApiConfig): Promise<ApiConfig> {
         return new Promise((resolve, reject) => {
-            this._groupService.list(apiConfig.name, apiConfig.version)
+            this._groupService.list(apiConfig.id)
                 .then((groups) => {
-                    apiConfig.group = groups;
-                    return this._throttlingService.list(apiConfig.name, apiConfig.version);
+                    if (groups && groups.length > 0) {
+                        apiConfig.group = groups;
+                    }
+
+                    return this._throttlingService.list(apiConfig.id);
                 })
                 .then((throttling) => {
-                    apiConfig.throttling = throttling;
-                    return this._cacheService.list(apiConfig.name, apiConfig.version);
+                    if (throttling && throttling.length > 0) {
+                        apiConfig.throttling = throttling;
+                    }
+
+                    return this._cacheService.list(apiConfig.id);
                 })
                 .then((cache) => {
-                    apiConfig.cache = cache;
-                    return this._authService.get(apiConfig.name, apiConfig.version);
+                    if (cache && cache.length > 0) {
+                        apiConfig.cache = cache;
+                    }
+                    return this._authService.get(apiConfig.id);
                 })
                 .then((auth) => {
                     if (auth) {

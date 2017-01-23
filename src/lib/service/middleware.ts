@@ -17,7 +17,7 @@ export interface MiddlewareService {
 }
 
 export class RedisMiddlewareService implements MiddlewareService {
-    private static MIDDLEWARE_PREFIX = "config:middleware";
+    private static MIDDLEWARE_PREFIX = "{config}:middleware";
     private redisClient:Redis;
 
     constructor(redisClient) {

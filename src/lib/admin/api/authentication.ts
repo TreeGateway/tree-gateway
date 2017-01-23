@@ -10,50 +10,48 @@ import {RedisAuthenticationService} from "../../service/redis";
 
 import {RestController} from "./admin-util";
 
-@Path('apis/:apiName/:apiVersion/authentication')
+@Path('apis/:apiId/authentication')
 export class AuthenticationRest extends RestController {
     @GET
-    get(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string): Promise<AuthenticationConfig> {
+    get(@PathParam("apiId") apiId: string): Promise<AuthenticationConfig> {
         return new Promise<AuthenticationConfig>((resolve, reject) => {
-            this.service.get(apiName, apiVersion)
+            this.service.get(apiId)
                 .then(resolve)
                 .catch(err => reject(this.handleError(err)));
         })
     }
 
     @POST
-    add(@PathParam("apiName") apiName: string,
-        @PathParam("apiVersion") apiVersion: string,
-        auth: AuthenticationConfig): Promise<Return.NewResource> {
+    add(@PathParam("apiId") apiId: string, auth: AuthenticationConfig): Promise<Return.NewResource> {
 
         return new Promise<Return.NewResource>((resolve, reject) => {
             validateAuthenticationConfig(auth)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.create(apiName, apiVersion, auth))
-                .then(() => resolve(new Return.NewResource(`apis/${apiName}/authentication`)))
+                .then(() => this.service.create(apiId, auth))
+                .then(() => resolve(new Return.NewResource(`apis/${apiId}/authentication`)))
                 .catch(reject);
         });
     }
 
     @PUT
-    update(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string, auth: AuthenticationConfig): Promise<void> {
+    update(@PathParam("apiId") apiId: string, auth: AuthenticationConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             validateAuthenticationConfig(auth)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
-                .then(() => this.service.update(apiName, apiVersion, auth))
+                .then(() => this.service.update(apiId, auth))
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
     }
 
     @DELETE
-    delete(@PathParam("apiName") apiName: string, @PathParam("apiVersion") apiVersion: string): Promise<void> {
+    delete(@PathParam("apiId") apiId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.service.remove(apiName, apiVersion)
+            this.service.remove(apiId)
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
