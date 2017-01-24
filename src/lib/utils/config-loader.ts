@@ -39,6 +39,10 @@ export default function loadConfigFile(configFileName:string): Promise<GatewayCo
                         middlewarePath : path.join(gatewayConfig.rootPath, "middleware")
                     });
 
+                    if (gatewayConfig.admin && gatewayConfig.admin.users.userService && _.startsWith(gatewayConfig.admin.users.userService, ".")) {
+                        gatewayConfig.admin.users.userService = path.join(gatewayConfig.rootPath, gatewayConfig.admin.users.userService);                
+                    }
+
                     if (_.startsWith(gatewayConfig.middlewarePath, ".")) {
                         gatewayConfig.middlewarePath = path.join(gatewayConfig.rootPath, gatewayConfig.middlewarePath);                
                     }

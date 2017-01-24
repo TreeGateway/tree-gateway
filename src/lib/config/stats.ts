@@ -38,6 +38,14 @@ export let StatsConfigValidatorSchema = Joi.object().keys({
     prefix: Joi.string()
 });
 
-export function validateStatsConfig(stats: StatsConfig, callback: (err, value)=>void) {
-    Joi.validate(stats, StatsConfigValidatorSchema, callback);
+export function validateStatsConfig(stats: StatsConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(stats, StatsConfigValidatorSchema, (err, value)=>{
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        });
+    })
 }

@@ -8,6 +8,14 @@ export interface ServiceDiscoveryConfig {
 export let ServiceDiscoveryConfigValidatorSchema = Joi.object().keys({
 });
 
-export function validateServiceDiscoveryConfig(serviceDiscovery: ServiceDiscoveryConfig, callback: (err, value)=>void) {
-    Joi.validate(serviceDiscovery, ServiceDiscoveryConfigValidatorSchema, callback);
+export function validateServiceDiscoveryConfig(serviceDiscovery: ServiceDiscoveryConfig) {
+    return new Promise((resolve, reject) => {
+        Joi.validate(serviceDiscovery, ServiceDiscoveryConfigValidatorSchema, (err, value)=>{
+            if (err) {
+                reject(err);
+            } else {
+                resolve(value);
+            }
+        });
+    })
 }

@@ -5,6 +5,7 @@ import * as http from "http";
 import * as compression from "compression";
 import * as express from "express";
 import adminApi from "./admin/api/admin-api";
+import {UsersRest} from "./admin/api/users";
 import {AdminServer} from "./admin/admin-server";
 import {Server} from "typescript-rest";
 import {ApiConfig, validateApiConfig} from "./config/api";
@@ -153,6 +154,9 @@ export class Gateway {
     startAdmin(): Promise<void> {
         let self = this;
         return new Promise<void>((resolve, reject) => {
+            if (!self.config.admin) {
+                return resolve();
+            }
             if (self.adminApp) {
                 self.adminServer = new Map<string,http.Server>();
                 let started = 0;
@@ -161,8 +165,8 @@ export class Gateway {
                     expected ++;
                     let httpServer = http.createServer(self.adminApp);
 
-                    self.adminServer.set('http', <http.Server>httpServer.listen(self.config.protocol.http.adminPort, ()=>{
-                        self.logger.info(`Gateway Admin Server listenning HTTP on port ${self.config.protocol.http.adminPort}`);
+                    self.adminServer.set('http', <http.Server>httpServer.listen(self.config.admin.protocol.http.listenPort, ()=>{
+                        self.logger.info(`Gateway Admin Server listenning HTTP on port ${self.config.admin.protocol.http.listenPort}`);
                         started ++;
                         if (started == expected) {
                             resolve();
@@ -172,8 +176,8 @@ export class Gateway {
                 if (self.config.protocol.https) {
                     expected ++;
                     let httpsServer = self.createHttpServer();
-                    self.adminServer.set('https', httpsServer.listen(self.config.protocol.https.adminPort, ()=>{
-                        self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.protocol.https.adminPort}`);
+                    self.adminServer.set('https', httpsServer.listen(self.config.admin.protocol.https.listenPort, ()=>{
+                        self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.admin.protocol.https.listenPort}`);
                         started ++;
                         if (started == expected) {
                             resolve();
@@ -408,21 +412,25 @@ export class Gateway {
     }
 
     private configureAdminServer() {
-        this.adminApp = express();
-        this.adminApp.disable('x-powered-by'); 
-        this.adminApp.use(compression());
-        if (this.config.adminLogger) {
-            if (!this.config.disableAdminStats) {
-                this.configureStatsMiddleware(this.adminApp, 'admin');
+        if (this.config.admin) {
+            this.adminApp = express();
+            this.adminApp.disable('x-powered-by'); 
+            this.adminApp.use(compression());
+            if (this.config.admin.accessLogger) {
+                if (!this.config.admin.disableStats) {
+                    this.configureStatsMiddleware(this.adminApp, 'admin');
+                }
+                AccessLogger.configureAccessLoger(this.config.admin.accessLogger, 
+                            this, this.adminApp, './logs/admin');
             }
-            AccessLogger.configureAccessLoger(this.config.adminLogger, 
-                        this, this.adminApp, './logs/admin');
+            this.configureApiDocs();
+
+            AdminServer.gateway = this;
+
+            UsersRest.configureAuthMiddleware(this.adminApp);
+            Server.buildServices(this.adminApp, ...adminApi);
+
         }
-        this.configureApiDocs();
-
-        AdminServer.gateway = this;
-
-        Server.buildServices(this.adminApp, ...adminApi);
     }
 
     private configureApiDocs() {
@@ -431,11 +439,11 @@ export class Gateway {
             const swaggerDocument = require('./admin/api/swagger.json');
 
             if (this.config.protocol.https) {
-                swaggerDocument.host = `${os.hostname()}:${this.config.protocol.https.adminPort}`
+                swaggerDocument.host = `${os.hostname()}:${this.config.admin.protocol.https.listenPort}`
                 swaggerDocument.schemes = ['https'];
             }
             else if (this.config.protocol.http) {
-                swaggerDocument.host = `${os.hostname()}:${this.config.protocol.http.adminPort}`
+                swaggerDocument.host = `${os.hostname()}:${this.config.admin.protocol.http.listenPort}`
                 swaggerDocument.schemes = ['http'];
             }
             

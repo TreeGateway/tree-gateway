@@ -1,7 +1,7 @@
 "use strict";
 
 import * as Winston from "winston";
-import {LoggerConfig, LogLevel} from "./config/gateway";
+import {LoggerConfig, LogLevel} from "./config/logger";
 import * as _ from "lodash";
 import * as path from "path";
 import * as fs from "fs-extra-promise";

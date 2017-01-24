@@ -1,14 +1,24 @@
 {
     "protocol": {
         "http": {
-            "listenPort": 8010,
-            "adminPort": 8011            
+            "listenPort": 8010
         },
         "https": {
             "listenPort": 8012,
-            "adminPort": 8013,
             "privateKey": "./server.key",
             "certificate": "./server.crt"                        
+        }
+    },
+    "admin": {
+        "protocol": {
+            "http": {
+                "listenPort": 8011
+            },
+            "https": {
+                "listenPort": 8013,
+                "privateKey": "./server.key",
+                "certificate": "./server.crt"                        
+            }          
         }
     },
     "rootPath": "./src/spec/test-data/root",

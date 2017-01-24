@@ -13,6 +13,14 @@ import {Errors} from "typescript-rest"
 
 import {RedisService} from "./redis";
 
+export class UnauthorizedError extends Error {
+    constructor(message?: string) {
+        super(message);
+
+        this["__proto__"] = UnauthorizedError.prototype;
+    }
+}
+
 export class NotFoundError extends Error {
     constructor(message?: string) {
         super(message);

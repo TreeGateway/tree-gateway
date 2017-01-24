@@ -9,15 +9,55 @@ import {ApiConfig} from "../lib/config/api";
 import {CacheConfig} from "../lib/config/cache";
 import {Group} from "../lib/config/group";
 import {ThrottlingConfig} from "../lib/config/throttling";
+import {UserService, loadUserService} from "../lib/service/users";
 
 let server;
 let gateway: Gateway;
+let userService: UserService;
 let adminAddress: string;
 let adminRequest;
+let adminToken; 
+let configToken; 
+let simpleToken; 
+
+const adminUser = {
+    name: "Admin user",
+    login: "admin",
+    password: "123test",
+    email: "test@mail.com",
+    roles: ["tree-gateway-admin", "tree-gateway-config"]
+};
+
+const configUser = {
+    name: "Config user",
+    login: "config",
+    password: "123test",
+    email: "test@mail.com",
+    roles: ["tree-gateway-config"]
+};
+
+const simpleUser = {
+    name: "Simple user",
+    login: "simple",
+    password: "123test",
+    email: "test@mail.com",
+    roles: []
+};
 
 const getIdFromResponse = (response) => {
     const parts = response.headers["location"].split("/");
     return parts[parts.length-1];
+};
+
+const createUsers = () => {
+    return new Promise<void>((resolve, reject)=>{
+        userService = loadUserService(gateway.redisClient, gateway.config.admin.users);
+        userService.create(adminUser)
+        .then(() => userService.create(configUser))
+        .then(() => userService.create(simpleUser))
+        .then(resolve)
+        .catch(reject);
+    });
 };
 
 describe("Admin API", () => {
@@ -30,10 +70,13 @@ describe("Admin API", () => {
 			})
 			.then(() => {
 				gateway.server.set('env', 'test');
-				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.adminPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.admin.protocol.http.listenPort}`});
 
 				return gateway.redisClient.flushdb();
 			})
+			.then(()=>{
+                return createUsers();
+            })
 			.then(done)
 			.catch(fail);
 	});
@@ -47,6 +90,58 @@ describe("Admin API", () => {
 			.catch(fail);
 	});
 
+	describe("/users", () => {
+        it("should reject unauthenticated requests", (done) => {
+            adminRequest.get("/users/admin", (error, response, body) => {
+                expect(response.statusCode).toEqual(401);
+                done();
+            });
+        });
+        it("should be able to sign users in", (done) => {
+            let form = {
+				'login': 'admin',
+				'password': '123test'
+			};
+            adminRequest.post({
+                url:"/users/authentication", 
+                form: form
+            }, (error, response, body) => {
+                expect(response.statusCode).toEqual(200);
+                adminToken = body;
+                done();
+            });
+        });
+        it("should be able to sign users in", (done) => {
+            let form = {
+				'login': 'config',
+				'password': '123test'
+			};
+            adminRequest.post({
+                url:"/users/authentication", 
+                form: form
+            }, (error, response, body) => {
+                expect(response.statusCode).toEqual(200);
+                configToken = body;
+                done();
+            });
+        });
+                it("should be able to sign users in", (done) => {
+            let form = {
+				'login': 'simple',
+				'password': '123test'
+			};
+            adminRequest.post({
+                url:"/users/authentication", 
+                form: form
+            }, (error, response, body) => {
+                expect(response.statusCode).toEqual(200);
+                simpleToken = body;
+                done();
+            });
+        });
+
+    });
+
 	describe("/apis", () => {
         const apiMock = <ApiConfig> {
             name: 'apiMock',
@@ -55,7 +150,10 @@ describe("Admin API", () => {
         };
 
         it("should be able to create a new API", (done) => {
-            adminRequest.post("/apis", {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: apiMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 apiMock.id = getIdFromResponse(response);
@@ -64,8 +162,21 @@ describe("Admin API", () => {
             });
         });
 
+        it("should reject unauthenticated request to admin apis", (done) => {
+            adminRequest.post("/apis", {
+                body: apiMock, json: true
+            }, (error, response, body) => {
+                expect(error).toBeNull();
+                expect(response.statusCode).toEqual(401);
+                done();
+            });
+        });
+
         it("should reject an invalid API", (done) => {
-            adminRequest.post("/apis", {body: {}, json: true}, (error, response, body) => {
+            adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: {}, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -73,7 +184,10 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all APIs", (done) => {
-			adminRequest("/apis", (error, response, body)=>{
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:"/apis"
+            }, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
 				done();
@@ -83,7 +197,10 @@ describe("Admin API", () => {
         it("should be able to update an API", (done) => {
             apiMock.description = 'Updated api';
 
-            adminRequest.put(`/apis/${apiMock.id}`, {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.id}`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: apiMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -91,7 +208,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to get an API", (done) => {
-            adminRequest(`/apis/${apiMock.id}`, (error, response, body) => {
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let api = JSON.parse(body);
@@ -101,7 +221,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete an API", (done) => {
-            adminRequest.delete(`/apis/${apiMock.id}`, (error, response, body) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -127,14 +250,20 @@ describe("Admin API", () => {
         };
 
         beforeAll((done) => {
-            adminRequest.post("/apis", {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: apiMock, json: true
+            }, (error, response, body) => {
                 apiMock.id = getIdFromResponse(response);
                 done();
             });
         });
 
         it("should be able to create a new cache config", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/cache`, {body: cacheMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/cache`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: cacheMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 cacheMock.id = getIdFromResponse(response);
@@ -143,7 +272,10 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid cache config", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/cache`, {body: {test: 1}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/cache`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: {test: 1}, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -151,7 +283,10 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all cache configs", (done) => {
-			adminRequest(`/apis/${apiMock.id}/cache`, (error, response, body)=>{
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/cache`
+            }, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let configs = JSON.parse(body);
@@ -161,7 +296,10 @@ describe("Admin API", () => {
 		});
 
         it("should be able to update a cache config", (done) => {
-            adminRequest.put(`/apis/${apiMock.id}/cache/${cacheMock.id}`, {body: cacheMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.id}/cache/${cacheMock.id}`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: cacheMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -169,7 +307,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a cache config", (done) => {
-            adminRequest(`/apis/${apiMock.id}/cache/${cacheMock.id}`, (error, response, body) => {
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/cache/${cacheMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let cache = JSON.parse(body);
@@ -180,7 +321,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a cache config", (done) => {
-            adminRequest.delete(`/apis/${apiMock.id}/cache/${cacheMock.id}`, (error, response, body) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/cache/${cacheMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -205,14 +349,20 @@ describe("Admin API", () => {
         };
 
         beforeAll((done) => {
-            adminRequest.post("/apis", {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: apiMock, json: true
+            }, (error, response, body) => {
                 apiMock.id = getIdFromResponse(response);
                 done();
             });
         });
 
         it("should be able to create a new group", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/groups`, {body: groupMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/groups`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: groupMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 groupMock.id = getIdFromResponse(response);
@@ -221,7 +371,10 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid group", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/groups`, {body: {}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/groups`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: {}, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -229,7 +382,10 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all groups", (done) => {
-			adminRequest(`/apis/${apiMock.id}/groups`, (error, response, body)=>{
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/groups`
+            }, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 let groups = JSON.parse(body);
@@ -239,7 +395,10 @@ describe("Admin API", () => {
 		});
 
         it("should be able to update a group", (done) => {
-            adminRequest.put(`/apis/${apiMock.id}/groups/${groupMock.id}`, {body: groupMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.id}/groups/${groupMock.id}`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: groupMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -247,7 +406,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a group", (done) => {
-            adminRequest(`/apis/${apiMock.id}/groups/${groupMock.id}`, (error, response, body) => {
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/groups/${groupMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body)).toEqual(groupMock);
@@ -256,7 +418,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a group", (done) => {
-            adminRequest.delete(`/apis/${apiMock.id}/groups/${groupMock.id}`, (error, response, body) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/groups/${groupMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -279,14 +444,20 @@ describe("Admin API", () => {
         };
 
         beforeAll((done) => {
-            adminRequest.post("/apis", {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: apiMock, json: true
+            }, (error, response, body) => {
                 apiMock.id = getIdFromResponse(response);
                 done();
             });
         });
 
         it("should be able to create a new proxy config", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/proxy`, {body: proxyMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/proxy`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: proxyMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 done();
@@ -294,7 +465,10 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid proxy config", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/proxy`, {body: {}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/proxy`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: {}, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -302,7 +476,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to update a proxy config", (done) => {
-            adminRequest.put(`/apis/${apiMock.id}/proxy`, {body: proxyMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.id}/proxy`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: proxyMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -310,7 +487,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a proxy config", (done) => {
-            adminRequest(`/apis/${apiMock.id}/proxy`, (error, response, body) => {
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/proxy`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body)).toEqual(proxyMock);
@@ -319,7 +499,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a proxy config", (done) => {
-            adminRequest.delete(`/apis/${apiMock.id}/proxy`, (error, response, body) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/proxy`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -342,14 +525,20 @@ describe("Admin API", () => {
         };
 
         beforeAll((done) => {
-            adminRequest.post("/apis", {body: apiMock, json: true}, (error, response, body) => {
+            adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: apiMock, json: true
+            }, (error, response, body) => {
                 apiMock.id = getIdFromResponse(response);
                 done();
             });
         });
 
         it("should be able to create a throttling config", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/throttling`, {body: throttlingMock, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/throttling`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: throttlingMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(201);
                 throttlingMock.id = getIdFromResponse(response);
@@ -358,7 +547,10 @@ describe("Admin API", () => {
         });
 
         it("should reject an invalid throttling config", (done) => {
-            adminRequest.post(`/apis/${apiMock.id}/throttling`, {body: {test: 1}, json: true}, (error, response, body) => {
+            adminRequest.post(`/apis/${apiMock.id}/throttling`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: {test: 1}, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(403);
                 done();
@@ -366,7 +558,10 @@ describe("Admin API", () => {
         });
 
 		it("should be able to list all throttling configs", (done) => {
-			adminRequest(`/apis/${apiMock.id}/throttling`, (error, response, body)=>{
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/throttling`
+            }, (error, response, body)=>{
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body).length).toEqual(1);
@@ -375,7 +570,10 @@ describe("Admin API", () => {
 		});
 
         it("should be able to update a throttling config", (done) => {
-            adminRequest.put(`/apis/${apiMock.id}/throttling/${throttlingMock.id}`, {body: throttlingMock, json: true}, (error, response, body) => {
+            adminRequest.put(`/apis/${apiMock.id}/throttling/${throttlingMock.id}`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+                body: throttlingMock, json: true
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
@@ -383,7 +581,10 @@ describe("Admin API", () => {
         });
 
         it("should be able to get a throttling config", (done) => {
-            adminRequest(`/apis/${apiMock.id}/throttling/${throttlingMock.id}`, (error, response, body) => {
+            adminRequest.get({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/throttling/${throttlingMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(200);
                 expect(JSON.parse(body).windowMs).toEqual(throttlingMock.windowMs);
@@ -392,11 +593,37 @@ describe("Admin API", () => {
         });
 
         it("should be able to delete a throttling config", (done) => {
-            adminRequest.delete(`/apis/${apiMock.id}/throttling/${throttlingMock.id}`, (error, response, body) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/apis/${apiMock.id}/throttling/${throttlingMock.id}`
+            }, (error, response, body) => {
                 expect(error).toBeNull();
                 expect(response.statusCode).toEqual(204);
                 done();
             });
         });
     });
+
+	describe("/users", () => {
+        it("should reject requests with low privileges", (done) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+                url:`/users/simple`
+            }, (error, response, body) => {
+                expect(error).toBeNull();
+                expect(response.statusCode).toEqual(403);
+                done();
+            });
+        });
+        it("should be able to remove users", (done) => {
+            adminRequest.delete({
+                headers: { 'authorization': `JWT ${adminToken}` },
+                url:`/users/simple`
+            }, (error, response, body) => {
+                expect(error).toBeNull();
+                expect(response.statusCode).toEqual(204);
+                done();
+            });
+        });
+    });    
 });

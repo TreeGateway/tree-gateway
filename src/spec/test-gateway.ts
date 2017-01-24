@@ -6,11 +6,50 @@ import * as _ from "lodash";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
 import {ApiConfig} from "../lib/config/api";
+import {UserService, loadUserService} from "../lib/service/users";
 
 let server;
 let gateway: Gateway;
 let gatewayRequest;
 let adminRequest;
+let userService: UserService;
+let configToken; 
+
+const configUser = {
+    name: "Config user",
+    login: "config",
+    password: "123test",
+    email: "test@mail.com",
+    roles: ["tree-gateway-config"]
+};
+
+const createUser = () => {
+    return new Promise<void>((resolve, reject)=>{
+        userService = loadUserService(gateway.redisClient, gateway.config.admin.users);
+        userService.create(configUser)
+        .then(resolve)
+        .catch(reject);
+    });
+};
+
+
+const authenticate = () => {
+	return new Promise<void>((resolve, reject)=>{
+		let form = {
+			'login': 'config',
+			'password': '123test'
+		};
+		adminRequest.post("/users/authentication",{				
+			form: form
+		}, (error, response, body) => {
+			if (error) {
+				return reject(error);
+			}
+			configToken = body;
+			resolve();
+		});
+	});
+};	
 
 const getIdFromResponse = (response) => {
     const parts = response.headers["location"].split("/");
@@ -28,9 +67,15 @@ describe("Gateway Tests", () => {
 			.then(() => {
 				gateway.server.set('env', 'test');
 				gatewayRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.listenPort}`});
-				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.adminPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.admin.protocol.http.listenPort}`});
 
 				return gateway.redisClient.flushdb();
+			})
+			.then(()=>{
+                return createUser();
+            })
+			.then(()=>{
+				return authenticate();
 			})
 			.then(()=>{
 				return installMiddlewares();
@@ -286,7 +331,10 @@ describe("Gateway Tests", () => {
 		return new Promise<void>((resolve, reject) => {
 			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery');
 
-			adminRequest.post("/apis", {body: api, json: true}, (error, response, body) => {
+			adminRequest.post("/apis", {
+                headers: { 'authorization': `JWT ${configToken}` },
+				body: api, json: true
+			}, (error, response, body) => {
 				expect(error).toBeNull();
 				expect(response.statusCode).toEqual(201);
 				apiConfig.id = getIdFromResponse(response);
@@ -317,7 +365,10 @@ describe("Gateway Tests", () => {
 			if (!authentication) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiId}/authentication`, {body: authentication, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiId}/authentication`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+				body: authentication, json: true
+			}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -335,7 +386,10 @@ describe("Gateway Tests", () => {
 			let returned=0, expected = apiCache.length;
 
 			apiCache.forEach(cache=>{
-				adminRequest.post(`/apis/${apiId}/cache`, {body: cache, json: true}, (error, response, body) => {
+				adminRequest.post(`/apis/${apiId}/cache`, {
+	                headers: { 'authorization': `JWT ${configToken}` },
+					body: cache, json: true
+				}, (error, response, body) => {
 					if(error) {
 						reject(error);
 					}
@@ -356,7 +410,10 @@ describe("Gateway Tests", () => {
 			}
 			let returned=0, expected = throttling.length;
 			throttling.forEach(throt=>{
-				adminRequest.post(`/apis/${apiId}/throttling`, {body: throt, json: true}, (error, response, body) => {
+				adminRequest.post(`/apis/${apiId}/throttling`, {
+	                headers: { 'authorization': `JWT ${configToken}` },
+					body: throt, json: true
+				}, (error, response, body) => {
 					if(error) {
 						reject(error);
 					}
@@ -375,7 +432,10 @@ describe("Gateway Tests", () => {
 			if (!apiProxy) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiId}/proxy`, {body: apiProxy, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiId}/proxy`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+				body: apiProxy, json: true
+			}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -390,7 +450,10 @@ describe("Gateway Tests", () => {
 			if (!group) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiId}/groups`, {body: group, json: true}, (error, response, body) => {
+			adminRequest.post(`/apis/${apiId}/groups`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+				body: group, json: true
+			}, (error, response, body) => {
 				if(error) {
 					reject(error);
 				}
@@ -405,7 +468,9 @@ describe("Gateway Tests", () => {
 		    let pathMiddleware = './src/spec/test-data/middleware/';
 			let filePath = path.join(pathMiddleware, dir, fileName+'.js');
 
-			let req = adminRequest.post('/middleware'+servicePath, (error, response, body) => {
+			let req = adminRequest.post('/middleware'+servicePath, {
+                headers: { 'authorization': `JWT ${configToken}` }				
+			}, (error, response, body) => {
 				if (error) {
 					return reject(error);
 				}
@@ -422,7 +487,10 @@ describe("Gateway Tests", () => {
 
 	function uninstallMiddleware(fileName: string, servicePath: string): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
-			let req = adminRequest.delete('/middleware'+servicePath+fileName, (error, response, body) => {
+			let req = adminRequest.delete({
+                headers: { 'authorization': `JWT ${configToken}` },
+				url: '/middleware'+servicePath+fileName
+			}, (error, response, body) => {
 				if (error) {
 					return reject(error);
 				}
@@ -466,5 +534,5 @@ describe("Gateway Tests", () => {
 			 })
 			 .catch(reject);
 		});
-	}	
+	}
 });

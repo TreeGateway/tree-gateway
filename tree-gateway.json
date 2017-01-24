@@ -2,9 +2,33 @@
     "underProxy": false,
     "protocol": {
         "http": {
-            "listenPort": 8000,
-            "adminPort": 8001            
+            "listenPort": 8000
         }
+    },
+    "admin": {
+        "protocol": {
+            "http": {
+                "listenPort": 8001
+            }
+        },
+        "accessLogger": {
+            "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+            "console": {
+                "timestamp": true,
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "json": false,
+                "prettyPrint": true,
+                "outputDir": "./logs"
+            }
+        },
+        "users": {
+            "defaultService": {
+                "jwtSecret": "secret"
+            }
+        }        
     },
     "apiDocs": "api-docs",
     "rootPath": ".",
@@ -21,19 +45,6 @@
         }
     },
     "accessLogger": {
-        "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
-        "console": {
-            "timestamp": true,
-            "colorize": true
-        },
-        "file": {
-            "timestamp": true,
-            "json": false,
-            "prettyPrint": true,
-            "outputDir": "./logs"
-        }
-    },
-    "adminLogger": {
         "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
         "console": {
             "timestamp": true,

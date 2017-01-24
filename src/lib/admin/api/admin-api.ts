@@ -9,5 +9,6 @@ import {CacheRest} from "./cache";
 import {ProxyRest} from "./proxy";
 import {AuthenticationRest} from "./authentication";
 import {HealthCheck} from "./health-check";
+import {UsersRest} from "./users";
 
-export default [StatsService, MiddlewareRest, APIRest, GroupRest, ThrottlingRest, CacheRest, ProxyRest, AuthenticationRest, HealthCheck];
+export default [StatsService, MiddlewareRest, APIRest, GroupRest, ThrottlingRest, CacheRest, ProxyRest, AuthenticationRest, HealthCheck, UsersRest];
