@@ -22,407 +22,6 @@
         "application/json"
     ],
     "paths": {
-        "/stats/auth/fail/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about authentication failures for the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/auth/success/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about authentication successes for the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/cache/hit/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about cache hits for the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/cache/miss/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about cache misses for the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/cache/error/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "description": "Get statistics about cache errors for the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/throttling/exceeded/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about quota excceeded events for the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/access/request/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about the number of requests to the given API",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/access/status/{code}/{apiId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "apiId",
-                    "description": "API identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "path",
-                    "name": "code",
-                    "description": "HTTP status code",
-                    "required": true,
-                    "type": "integer"
-                },
-                {
-                    "in": "query",
-                    "name": "path",
-                    "description": "The path in API call",
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about the requests to the given API that returned the given status code",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/monitors/machines": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get the name of all tree-gateway cluster active member",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/monitors/cpu/{machineId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "machineId",
-                    "description": "tree-gateway cluster member identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about the number CPU usage for the given machine",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/stats/monitors/mem/{machineId}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "machineId",
-                    "description": "tree-gateway cluster member identifier",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "in": "query",
-                    "name": "count",
-                    "description": "The number of measures to be returned",
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics about the number Memory usage for the given machine",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/StatsResult"
-                        }
-                    }
-                }
-            }
-        },
         "/apis": {
             "get": {
                 "security": [
@@ -564,6 +163,296 @@
                     },
                     "403": {
                         "description": "API cannot be deleted",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiId}/authentication": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get the API authentication configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Authentication"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update the API authentication configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Authentication"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "API not found"
+                    },
+                    "409": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete the API authentication configuration",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete the configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiId}/cache": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all cache configurations for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Cache"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new cache configuration for the specified API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Cache"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "403": {
+                        "description": "Invalid cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/apis/{apiId}/cache/{cacheId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "cacheId",
+                        "description": "Cache ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Cache"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "cacheId",
+                        "description": "Cache ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Cache"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot update cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API identifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "cacheId",
+                        "description": "Cache ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete cache configuration",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
@@ -1101,451 +990,6 @@
                     },
                     "404": {
                         "description": "API/Throttling not found"
-                    }
-                }
-            }
-        },
-        "/apis/{apiId}/authentication": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get the API authentication configuration",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Authentication"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update the API authentication configuration",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Configuration data.",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Authentication"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
-                        "description": "Invalid data",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete the API authentication configuration",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "403": {
-                        "description": "Cannot delete the configuration",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            }
-        },
-        "/apis/{apiId}/cache": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all cache configurations for the specified API",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Cache"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new cache configuration for the specified API",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Configuration data",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Cache"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "403": {
-                        "description": "Invalid cache configuration",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            }
-        },
-        "/apis/{apiId}/cache/{cacheId}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get the specified cache configuration.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "path",
-                        "name": "cacheId",
-                        "description": "Cache ID",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Cache"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update the specified cache configuration.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "path",
-                        "name": "cacheId",
-                        "description": "Cache ID",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Configuration data",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Cache"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "403": {
-                        "description": "Cannot update cache configuration",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete the specified cache configuration.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiId",
-                        "description": "API identifier",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "path",
-                        "name": "cacheId",
-                        "description": "Cache ID",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "403": {
-                        "description": "Cannot delete cache configuration",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            }
-        },
-        "/users": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get all gateway users",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/User"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new user",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Configuration data",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "403": {
-                        "description": "Invalid cache configuration",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            }
-        },
-        "/users/{userLogin}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get the specified user.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "userLogin",
-                        "description": "user login",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update the specified user.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "userLogin",
-                        "description": "user login",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "User data",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "403": {
-                        "description": "Cannot update user",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete the specified cache configuration.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "userLogin",
-                        "description": "user login",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "403": {
-                        "description": "Cannot delete user",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found"
                     }
                 }
             }
@@ -2376,6 +1820,597 @@
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    }
+                }
+            }
+        },
+        "/stats/access/request/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about the number of requests to the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/access/status/{code}/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "path",
+                    "name": "code",
+                    "description": "HTTP status code",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about the requests to the given API that returned the given status code",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/auth/fail/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about authentication failures for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/auth/success/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about authentication successes for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/cache/hit/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about cache hits for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/cache/miss/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about cache misses for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/cache/error/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about cache errors for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/monitors/machines": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get the name of all tree-gateway cluster active member",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/monitors/cpu/{machineId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "machineId",
+                    "description": "tree-gateway cluster member identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about the number CPU usage for the given machine",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/monitors/mem/{machineId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "machineId",
+                    "description": "tree-gateway cluster member identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about the number Memory usage for the given machine",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/throttling/exceeded/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about quota excceeded events for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all gateway users",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new user",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "403": {
+                        "description": "Invalid cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/users/authentication": {
+            "post": {
+                "description": "Autenticate a user",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "login",
+                        "description": "User login",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "password",
+                        "description": "User password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The autentication token. Should be sent in all requests to Admin API, as a header. Authorization: JWT <token>",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userLogin}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get the specified user.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userLogin",
+                        "description": "user login",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update the specified user.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userLogin",
+                        "description": "user login",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot update user",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userLogin",
+                        "description": "user login",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete user",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
                     }
                 }
             }
