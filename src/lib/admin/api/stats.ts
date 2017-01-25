@@ -6,6 +6,7 @@ import "es6-promise";
 import {ApiConfig, validateApiConfig} from "../../config/api";
 import {AdminServer} from "../admin-server";
 import {Stats} from "../../stats/stats";
+import {Monitors} from "../../monitor/monitors";
 
 @Path('stats')
 export class StatsService {
@@ -73,6 +74,26 @@ export class StatsService {
         return this.getStats(apiId, 'access', path, 'request', count);
     }
 
+    @GET
+    @Path("monitors/machines")
+    getMachines() : Promise<Array<string>>{
+        return Monitors.getActiveMachines(AdminServer.gateway);
+    }
+
+    @GET
+    @Path("monitors/cpu/:machineId")
+    getCpuMonitor(@PathParam("machineId") machineId: string, 
+                @QueryParam('count') count: number) : Promise<Array<Array<number>>>{
+        return this.getMonitorStats("cpu", machineId, count);
+    }
+
+    @GET
+    @Path("monitors/mem/:machineId")
+    getMemMonitor(@PathParam("machineId") machineId: string, 
+                @QueryParam('count') count: number) : Promise<Array<Array<number>>>{
+        return this.getMonitorStats("mem", machineId, count);
+    }
+
     protected getStats(apiId: string, 
                 prefix: string,                 
                 path: string,
@@ -93,6 +114,18 @@ export class StatsService {
             else {
                 return reject(new Errors.ForbidenError("Path parameter is required."));
             }
+        });
+    }
+
+    protected getMonitorStats(
+                name: string,
+                machineId: string,
+                count?: number) : Promise<Array<Array<number>>>{
+        return new Promise<Array<Array<number>>>((resolve, reject) =>{
+            let stats = AdminServer.gateway.createStats(name)
+            stats.getLastOccurrences(count||24, machineId)
+            .then(resolve)
+            .catch(reject);
         });
     }
 }

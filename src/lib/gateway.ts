@@ -194,7 +194,7 @@ export class Gateway {
     stop(): Promise<void> {
         return new Promise<void>((resolve, reject)=>{
             let self = this;
-            Monitors.stopMonitors();
+            Monitors.stopMonitors(this);
             if (this.apiServer) {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {

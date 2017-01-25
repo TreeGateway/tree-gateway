@@ -19,7 +19,7 @@ export abstract class Monitor {
         this.gateway = gateway;
         this.config = config;
         this.stats = this.createStats(this.config.name);
-        this.machineId = (process.env.processNumber?`${os.hostname()}:${process.env.processNumber}`:`${os.hostname()}`);
+        this.machineId = Monitor.getMachineId();
     }
 
     start() {
@@ -53,4 +53,8 @@ export abstract class Monitor {
     }
 
     abstract run(period: number): Promise<number>;
+
+    static getMachineId() {
+        return (process.env.processNumber?`${os.hostname()}:${process.env.processNumber}`:`${os.hostname()}`);
+    }
 }
