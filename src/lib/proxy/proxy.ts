@@ -6,6 +6,7 @@ import {Proxy} from "../config/proxy";
 import {ProxyFilter} from "./filter";
 import {ProxyInterceptor} from "./interceptor";
 import {Gateway} from "../gateway";
+import * as _ from "lodash";
 
 let proxy = require("express-http-proxy");
 
@@ -53,25 +54,31 @@ export class ApiProxy {
 
     private configureProxy(api: ApiConfig) {
         const proxy: Proxy = api.proxy;
-        let result = {
+        let result: any = {
             forwardPath: function(req: express.Request, res: express.Response) {
                 return req.url;
             }
         };
         if (proxy.preserveHostHdr) {
-            result['preserveHostHdr']  = proxy.preserveHostHdr; 
+            result.preserveHostHdr  = proxy.preserveHostHdr; 
         }
         if (proxy.timeout) {
-            result['timeout']  = proxy.timeout; 
+            result.timeout  = proxy.timeout; 
         }
         if (proxy.https) {
-            result['https']  = proxy.https; 
+            result.https  = proxy.https; 
+        }
+        if (proxy.limit) {
+            result.limit  = proxy.limit; 
+        }
+        if (!_.isUndefined(proxy.memoizeHost)) {
+            result.memoizeHost  = proxy.memoizeHost; 
         }
         let filterChain: Array<Function> = this.filter.buildFilters(api);
         let debug = this.gateway.logger.isDebugEnabled();
         let self = this;
         if (filterChain && filterChain.length > 0) {            
-            result['filter'] = function(req, res) {
+            result.filter = function(req, res) {
                 let filterResult = true;
                 filterChain.forEach(f=>{
                     if (filterResult) {
@@ -86,11 +93,11 @@ export class ApiProxy {
         }
         let requestInterceptor: Function = this.interceptor.requestInterceptor(api);
         if (requestInterceptor) {            
-            result['decorateRequest'] = requestInterceptor; 
+            result.decorateRequest = requestInterceptor; 
         }
         let responseInterceptor: Function = this.interceptor.responseInterceptor(api);
         if (responseInterceptor) {            
-            result['intercept'] = responseInterceptor; 
+            result.intercept = responseInterceptor; 
         }
         return result;
     }

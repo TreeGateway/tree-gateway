@@ -122,6 +122,18 @@ export interface Proxy {
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
+    /**
+     * This sets the body size limit (default: 1mb). If the body size is larger than the specified (or default) 
+     * limit, a 413 Request Entity Too Large error will be returned. See [bytes.js](https://www.npmjs.com/package/bytes) 
+     * for a list of supported formats.
+     */
+    limit?: string;
+    /**
+     * Defaults to true.
+     * When true, the host argument will be parsed on first request, and memoized for all subsequent requests.
+     * When false, host argument will be parsed on each request.
+     */
+    memoizeHost?: boolean;
 }
 
 /**
@@ -216,7 +228,9 @@ export let ProxyValidatorSchema = Joi.object().keys({
     interceptor: InterceptorsSchema,
     preserveHostHdr: Joi.boolean(),
     timeout: Joi.number(),
-    disableStats: Joi.boolean()
+    disableStats: Joi.boolean(), 
+    limit: Joi.string(),
+    memoizeHost: Joi.boolean()
 });
 
 export function validateProxyConfig(proxy: Proxy) {
