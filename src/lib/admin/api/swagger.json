@@ -1,12 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "tree-gateway-dashboard",
-        "description": "A Dashboard to manage the Tree Gateway",
+        "title": "Tree-gateway",
+        "description": "The Tree Gateway Administration API",
         "version": "1.0.0"
     },
     "host": "tree-gateway.com",
     "schemes": [
+        "http",
         "https"
     ],
     "basePath": "/",
@@ -14,6 +15,357 @@
         "application/json"
     ],
     "paths": {
+        "/stats/auth/fail/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about authentication failures for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/auth/success/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about authentication successes for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/cache/hit/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about cache hits for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/cache/miss/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about cache misses for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/cache/error/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about cache errors for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/throttling/exceeded/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about quota excceeded events for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/access/request/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about the number of requests to the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/access/status/{code}/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "path",
+                    "name": "code",
+                    "description": "HTTP status code",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "in": "query",
+                    "name": "path",
+                    "description": "The path in API call",
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about the requests to the given API that returned the given status code",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/monitors/machines": {
+            "get": {
+                "description": "Get the name of all tree-gateway cluster active member",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/monitors/cpu/{machineId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "machineId",
+                    "description": "tree-gateway cluster member identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about the number CPU usage for the given machine",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/monitors/mem/{machineId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "machineId",
+                    "description": "tree-gateway cluster member identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "description": "Get statistics about the number Memory usage for the given machine",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
         "/config": {
             "get": {
                 "description": "Get all basic configurations",
@@ -1914,6 +2266,15 @@
         }
     },
     "definitions": {
+        "StatsResult": {
+            "type": "array",
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "number"
+                }
+            }
+        },
         "GatewayConfig": {
             "type": "object",
             "properties": {
