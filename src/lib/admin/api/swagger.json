@@ -10,6 +10,13 @@
         "http",
         "https"
     ],
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
     "basePath": "/",
     "produces": [
         "application/json"
@@ -38,6 +45,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about authentication failures for the given API",
                 "responses": {
                     "200": {
@@ -72,6 +84,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about authentication successes for the given API",
                 "responses": {
                     "200": {
@@ -106,6 +123,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about cache hits for the given API",
                 "responses": {
                     "200": {
@@ -140,6 +162,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about cache misses for the given API",
                 "responses": {
                     "200": {
@@ -208,6 +235,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about quota excceeded events for the given API",
                 "responses": {
                     "200": {
@@ -242,6 +274,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about the number of requests to the given API",
                 "responses": {
                     "200": {
@@ -283,6 +320,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about the requests to the given API that returned the given status code",
                 "responses": {
                     "200": {
@@ -296,6 +338,11 @@
         },
         "/stats/monitors/machines": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the name of all tree-gateway cluster active member",
                 "responses": {
                     "200": {
@@ -327,6 +374,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about the number CPU usage for the given machine",
                 "responses": {
                     "200": {
@@ -355,6 +407,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about the number Memory usage for the given machine",
                 "responses": {
                     "200": {
@@ -366,62 +423,37 @@
                 }
             }
         },
-        "/config": {
-            "get": {
-                "description": "Get all basic configurations",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/GatewayConfig"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update configuration",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "An object with all configuration options.",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/GatewayConfig"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation."
-                    },
-                    "405": {
-                        "description": "Invalid configuration.",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
         "/apis": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all API's",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
                         "schema": {
-                            "$ref": "#/definitions/Api"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Api"
+                            }
                         }
                     }
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create new API",
                 "parameters": [
                     {
                         "in": "body",
-                        "name": "body",
+                        "name": "apiData",
                         "description": "API data",
                         "required": true,
                         "schema": {
@@ -433,8 +465,8 @@
                     "201": {
                         "description": "Created"
                     },
-                    "409": {
-                        "description": "Invalid API",
+                    "403": {
+                        "description": "Invalid API or Invalid privileges",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
@@ -442,20 +474,53 @@
                 }
             }
         },
-        "/apis/{apiName}": {
-            "put": {
-                "description": "Update the API with the given name",
+        "/apis/{apiId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve the API configuration for the given id",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API Identifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Api"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update the API with the given id",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "apiId",
+                        "description": "API Identifier",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "body",
-                        "name": "body",
+                        "name": "apiData",
                         "description": "API data",
                         "required": true,
                         "schema": {
@@ -467,23 +532,28 @@
                     "204": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Invalid API",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API not found"
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API Identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -504,114 +574,19 @@
                 }
             }
         },
-        "/version": {
+        "/apis/{apiId}/groups": {
             "get": {
-                "description": "Get all Versions's",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Version"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create new Version",
-                "parameters": [
+                "security": [
                     {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Version data",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Version"
-                        }
+                        "Bearer": []
                     }
                 ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "409": {
-                        "description": "Invalid Version",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/version/{versionName}": {
-            "put": {
-                "description": "Update the Version with the given name",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "versionName",
-                        "description": "Version name",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Version data",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Version"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "404": {
-                        "description": "Version not found"
-                    },
-                    "409": {
-                        "description": "Invalid Version",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "versionName",
-                        "description": "Version name",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "403": {
-                        "description": "Version cannot be deleted",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Version not found"
-                    }
-                }
-            }
-        },
-        "/apis/{apiName}/groups": {
-            "get": {
                 "description": "Get all groups for a specific API",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -632,12 +607,17 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new group",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -655,33 +635,38 @@
                     "201": {
                         "description": "Created"
                     },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Invalid group data",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API not found"
                     }
                 }
             }
         },
-        "/apis/{apiName}/groups/{groupName}": {
+        "/apis/{apiId}/groups/{groupId}": {
             "get": {
-                "description": "Get a group by name",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a group by id",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "path",
-                        "name": "groupName",
-                        "description": "Group name",
+                        "name": "groupId",
+                        "description": "Group identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -699,19 +684,24 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a group",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "path",
-                        "name": "groupName",
-                        "description": "Group name",
+                        "name": "groupId",
+                        "description": "Group identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -729,31 +719,36 @@
                     "200": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "API/Group not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Invalid group data",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API/Group not found"
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a group",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "path",
-                        "name": "groupName",
-                        "description": "Group name",
+                        "name": "groupId",
+                        "description": "Group identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -774,14 +769,19 @@
                 }
             }
         },
-        "/apis/{apiName}/routing": {
+        "/apis/{apiId}/proxy": {
             "get": {
-                "description": "Get all routing for a specific API",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all proxy configuration for a specific API",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -792,7 +792,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Routing"
+                                "$ref": "#/definitions/Proxy"
                             }
                         }
                     },
@@ -802,22 +802,27 @@
                 }
             },
             "post": {
-                "description": "Create a new routing",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new proxy configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "body",
                         "name": "body",
-                        "description": "Routing data",
+                        "description": "Proxy config data",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Routing"
+                            "$ref": "#/definitions/Proxy"
                         }
                     }
                 ],
@@ -825,133 +830,102 @@
                     "201": {
                         "description": "Created"
                     },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
-                        "description": "Invalid routing data",
+                    "403": {
+                        "description": "Invalid proxy data",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
-                    }
-                }
-            }
-        },
-        "/apis/{apiName}/routing/{routingName}": {
-            "get": {
-                "description": "Get a routing by name",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "path",
-                        "name": "routingName",
-                        "description": "Routing name",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Routing"
-                        }
                     },
                     "404": {
-                        "description": "API/Routing not found"
+                        "description": "API not found"
                     }
                 }
             },
             "put": {
-                "description": "Update a routing",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update the api proxy configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "path",
-                        "name": "routingName",
-                        "description": "Routing name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "body",
                         "name": "body",
-                        "description": "Routing data",
+                        "description": "Proxy config data",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Routing"
+                            "$ref": "#/definitions/Proxy"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "API/Routing not found"
-                    },
-                    "409": {
-                        "description": "Invalid routing data",
+                    "403": {
+                        "description": "Invalid proxy data",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API not found"
                     }
                 }
             },
             "delete": {
-                "description": "Delete a routing",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Remove the api proxy configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "path",
-                        "name": "routingName",
-                        "description": "Routing name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Successful operation"
                     },
                     "403": {
-                        "description": "Cannot delete routing",
+                        "description": "Can not delete proxy data",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
                     },
                     "404": {
-                        "description": "API/Routing not found"
+                        "description": "API not found"
                     }
                 }
             }
         },
-        "/apis/{apiName}/throttling": {
+        "/apis/{apiId}/throttling": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of throttling configuration.",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -969,12 +943,17 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new throttling configuration.",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -992,26 +971,31 @@
                     "201": {
                         "description": "Created"
                     },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Invalid data",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API not found"
                     }
                 }
             }
         },
-        "/apis/{apiName}/throttling/{throttlingId}": {
+        "/apis/{apiId}/throttling/{throttlingId}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a throttling configuration by ID.",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1036,12 +1020,17 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a throttling configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1066,24 +1055,29 @@
                     "200": {
                         "description": "Success"
                     },
-                    "404": {
-                        "description": "API/Throttling not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Invalid throttling config",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API/Throttling not found"
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a throttling configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1357,92 +1351,6 @@
                     },
                     "404": {
                         "description": "API not found"
-                    }
-                }
-            }
-        },
-        "/apis/{apiName}/proxy": {
-            "get": {
-                "description": "Get the proxy configuration for the specified API",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Proxy"
-                        }
-                    },
-                    "404": {
-                        "description": "API not found"
-                    }
-                }
-            },
-            "put": {
-                "description": "Update the proxy configuration for the specified API",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Proxy configuration",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Proxy"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
-                        "description": "Invalid configuration data",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete the proxy configuration for the specified API",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful operation"
-                    },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
-                        "description": "Cannot delete configuration data",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
                     }
                 }
             }
@@ -2533,7 +2441,7 @@
                 }
             }
         },
-        "Routing": {
+        "ApiProxy": {
             "type": "object",
             "description": "Routing data",
             "properties": {
