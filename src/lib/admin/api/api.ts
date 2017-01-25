@@ -17,8 +17,8 @@ export class APIRest extends RestController {
     }
 
     @POST
-    addApi(api: ApiConfig): Promise<string> {
-        return new Promise((resolve, reject) => {
+    addApi(api: ApiConfig): Promise<Return.NewResource> {
+        return new Promise<Return.NewResource>((resolve, reject) => {
             validateSimpleApiConfig(api)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
@@ -31,8 +31,8 @@ export class APIRest extends RestController {
 
     @PUT
     @Path("/:id")
-    updateApi(@PathParam("id") id: string, api: ApiConfig): Promise<string> {
-        return new Promise((resolve, reject) => {
+    updateApi(@PathParam("id") id: string, api: ApiConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             api.id = id;
 
             validateSimpleApiConfig(api)
