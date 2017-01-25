@@ -13,3 +13,13 @@ gateway.start()
         console.log(`Error starting gateway: ${err.message}`);
         process.exit(-1);
     });
+
+function graceful() {
+    gateway.stopAdmin()
+    .then(() => gateway.stop())
+    .then(() => process.exit(0));
+}
+
+// Stop graceful
+process.on('SIGTERM', graceful);
+process.on('SIGINT' , graceful);

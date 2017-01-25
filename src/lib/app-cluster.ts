@@ -37,6 +37,10 @@ else {
             console.log(`Error starting gateway: ${err.message}`);
             process.exit(-1);
         });
+
+    process.on('SIGTERM', () => gateway.stopAdmin().then(()=>gateway.stop()).then(()=>process.exit(0)));
+    process.on('SIGINT' , () => gateway.stopAdmin().then(()=>gateway.stop()).then(()=>process.exit(0)));
+        
 }
 
 process.on('uncaughtException', function (err) {
