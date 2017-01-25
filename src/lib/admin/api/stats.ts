@@ -68,10 +68,11 @@ export class StatsService {
     
     @GET
     @Path("access/status/:code/:apiId")
-    getAccessStatus(@PathParam("apiId") apiId: string, 
+    getAccessStatus(@PathParam("apiId") apiId: string,
+                @PathParam("code") code: number, 
                 @QueryParam('path') path: string, 
                 @QueryParam('count') count: number) : Promise<Array<Array<number>>>{
-        return this.getStats(apiId, 'access', path, 'request', count);
+        return this.getStats(apiId, 'access', path, 'request', count||24, `${code}`);
     }
 
     @GET
@@ -97,8 +98,9 @@ export class StatsService {
     protected getStats(apiId: string, 
                 prefix: string,                 
                 path: string,
-                key: string, 
-                count?: number) : Promise<Array<Array<number>>>{
+                key: string,                 
+                count?: number,
+                ...extra: string[]) : Promise<Array<Array<number>>>{
         return new Promise<Array<Array<number>>>((resolve, reject) =>{
             let apiConfig = AdminServer.gateway.getApiConfig(apiId);
             
@@ -107,7 +109,7 @@ export class StatsService {
             }
             if (path) {
                 let stats = AdminServer.gateway.createStats(Stats.getStatsKey(prefix, apiConfig.proxy.path, key))
-                stats.getLastOccurrences(count||24, path)
+                stats.getLastOccurrences(count||24, path, ...extra)
                 .then(resolve)
                 .catch(reject);
             }

@@ -12,12 +12,12 @@ export class Stats {
         return this.statsHandler.registerOccurrence(value, increment, ...extra);
     }
 
-    getOccurrences(time: number, key: string): Promise<Array<Array<number>>> {
-        return this.statsHandler.getOccurrences(time, key);
+    getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
+        return this.statsHandler.getOccurrences(time, key, ...extra);
     }
 
-    getLastOccurrences(count: number, key: string): Promise<Array<Array<number>>> {
-        return this.statsHandler.getLastOccurrences(count, key);
+    getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
+        return this.statsHandler.getLastOccurrences(count, key, ...extra);
     }
 
     static getStatsKey(prefix: string, path: string, key: string, ...opt: Array<string>) {
@@ -43,6 +43,6 @@ export abstract class StatsHandler {
     }
 
     abstract registerOccurrence(value: string, increment: number, ...extra: string[]);
-    abstract getOccurrences(time: number, key: string): Promise<Array<Array<number>>> ;
-    abstract getLastOccurrences(count: number, key: string): Promise<Array<Array<number>>>;
+    abstract getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> ;
+    abstract getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>>;
 }
