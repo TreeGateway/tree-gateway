@@ -18,8 +18,8 @@ export class ThrottlingRest extends RestController {
     }
 
     @POST
-    addThrottling(@PathParam("apiId") apiId: string, throttling: ThrottlingConfig): Promise<string> {
-        return new Promise((resolve, reject) => {
+    addThrottling(@PathParam("apiId") apiId: string, throttling: ThrottlingConfig): Promise<Return.NewResource> {
+        return new Promise<Return.NewResource>((resolve, reject) => {
             validateThrottlingConfig(throttling)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
@@ -34,8 +34,8 @@ export class ThrottlingRest extends RestController {
     @Path("/:throttlingId")
     updateThrottling(@PathParam("apiId") apiId: string,
                      @PathParam("throttlingId") throttlingId: string,
-                     throttling: ThrottlingConfig): Promise<string> {
-        return new Promise((resolve, reject) => {
+                     throttling: ThrottlingConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             validateThrottlingConfig(throttling)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));

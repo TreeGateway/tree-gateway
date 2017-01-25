@@ -28,9 +28,9 @@
             "defaultService": {
                 "jwtSecret": "secret"
             }
-        }        
+        },
+        "apiDocs": "api-docs"                
     },
-    "apiDocs": "api-docs",
     "rootPath": ".",
     "logger": {
         "level": "debug",

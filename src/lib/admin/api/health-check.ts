@@ -11,7 +11,7 @@ import {MiddlewareService, RedisMiddlewareService} from "../../service/middlewar
 export class HealthCheck {
     @GET
     check(): Promise<string> {
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
             AdminServer.gateway.redisClient.ping().then(() => {
                 resolve("OK");
             })

@@ -23,7 +23,11 @@ export interface AdminConfig {
     /**
      * If true, disabled the statistical data recording for admin tasks.
      */
-    disableStats?: boolean;    
+    disableStats?: boolean;
+    /**
+     * If provided, the service will publish all api documentation under this path.
+     */
+    apiDocs?: string;
 }
 
 export let AdminConfigValidatorSchema = Joi.object().keys({
@@ -31,7 +35,7 @@ export let AdminConfigValidatorSchema = Joi.object().keys({
     users: UsersConfigValidatorSchema.required(),
     accessLogger: AccessLoggerConfigSchema,
     disableStats: Joi.boolean(), 
-
+    apiDocs: Joi.string()
 });
 
 export function validateAdminConfig(config: AdminConfig) {

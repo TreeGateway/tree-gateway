@@ -19,8 +19,8 @@ export class GroupRest extends RestController {
     }
 
     @POST
-    addGroup(@PathParam("apiId") apiId: string, group: Group): Promise<string> {
-        return new Promise((resolve, reject) => {
+    addGroup(@PathParam("apiId") apiId: string, group: Group): Promise<Return.NewResource> {
+        return new Promise<Return.NewResource>((resolve, reject) => {
             validateGroup(group)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
@@ -35,8 +35,8 @@ export class GroupRest extends RestController {
     @Path("/:groupId")
     updateGroup(@PathParam("apiId") apiId: string,
               @PathParam("groupId") groupId: string,
-              group: Group): Promise<string> {
-        return new Promise((resolve, reject) => {
+              group: Group): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             validateGroup(group)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));

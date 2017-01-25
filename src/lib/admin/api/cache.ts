@@ -18,8 +18,8 @@ export class CacheRest extends RestController {
     }
 
     @POST
-    addCache(@PathParam("apiId") apiId: string, cache: CacheConfig): Promise<string> {
-        return new Promise((resolve, reject) => {
+    addCache(@PathParam("apiId") apiId: string, cache: CacheConfig): Promise<Return.NewResource> {
+        return new Promise<Return.NewResource>((resolve, reject) => {
             validateCacheConfig(cache)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
@@ -34,8 +34,8 @@ export class CacheRest extends RestController {
     @Path("/:cacheId")
     updateCache(@PathParam("apiId") apiId: string,
                 @PathParam("cacheId") cacheId: string,
-                cache: CacheConfig): Promise<string> {
-        return new Promise((resolve, reject) => {
+                cache: CacheConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             validateCacheConfig(cache)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));

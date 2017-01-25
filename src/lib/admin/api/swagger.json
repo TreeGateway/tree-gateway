@@ -1105,14 +1105,19 @@
                 }
             }
         },
-        "/apis/{apiName}/authentication": {
+        "/apis/{apiId}/authentication": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the API authentication configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -1121,18 +1126,23 @@
                     "200": {
                         "description": "Successful operation",
                         "schema": {
-                            "$ref": "#/definitions/APIAuthentication"
+                            "$ref": "#/definitions/Authentication"
                         }
                     }
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update the API authentication configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1142,7 +1152,7 @@
                         "description": "Configuration data.",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/APIAuthentication"
+                            "$ref": "#/definitions/Authentication"
                         }
                     }
                 ],
@@ -1162,12 +1172,17 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete the API authentication configuration",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -1188,14 +1203,19 @@
                 }
             }
         },
-        "/apis/{apiName}/cache": {
+        "/apis/{apiId}/cache": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all cache configurations for the specified API",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     }
@@ -1213,12 +1233,17 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new cache configuration for the specified API",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1236,26 +1261,31 @@
                     "201": {
                         "description": "Created"
                     },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Invalid cache configuration",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API not found"
                     }
                 }
             }
         },
-        "/apis/{apiName}/cache/{cacheId}": {
+        "/apis/{apiId}/cache/{cacheId}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the specified cache configuration.",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1280,12 +1310,17 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update the specified cache configuration.",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1310,24 +1345,29 @@
                     "204": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "API not found"
-                    },
-                    "409": {
+                    "403": {
                         "description": "Cannot update cache configuration",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
+                    },
+                    "404": {
+                        "description": "API not found"
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete the specified cache configuration.",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "apiName",
-                        "description": "API name",
+                        "name": "apiId",
+                        "description": "API identifier",
                         "required": true,
                         "type": "string"
                     },
@@ -1351,6 +1391,174 @@
                     },
                     "404": {
                         "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all gateway users",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new user",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Configuration data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "403": {
+                        "description": "Invalid cache configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "API not found"
+                    }
+                }
+            }
+        },
+        "/users/{userLogin}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get the specified user.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userLogin",
+                        "description": "user login",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update the specified user.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userLogin",
+                        "description": "user login",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot update user",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete the specified cache configuration.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userLogin",
+                        "description": "user login",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot delete user",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        },
+        "/healthcheck": {
+            "get": {
+                "description": "Verify if the cluster node is up and running OK.",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -2183,213 +2391,31 @@
                 }
             }
         },
-        "GatewayConfig": {
+        "User": {
             "type": "object",
             "properties": {
-                "listenPort": {
-                    "type": "integer",
-                    "description": "The Gateway port."
-                },
-                "adminPort": {
-                    "type": "integer",
-                    "description": "The Gateway admin port."
-                },
-                "rootPath": {
+                "name": {
                     "type": "string",
-                    "description": "The root folder where the gateway will work."
+                    "description": "The user name."
                 },
-                "apiPath": {
+                "login": {
                     "type": "string",
-                    "description": "Folder where the gateway will search for installed APIs."
+                    "description": "The user login."
                 },
-                "middlewarePath": {
+                "password": {
                     "type": "string",
-                    "description": "Folder where the gateway will search for its middleware functions."
+                    "description": "The user password."
                 },
-                "underProxy": {
-                    "type": "boolean",
-                    "description": "If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)"
-                },
-                "logger": {
-                    "$ref": "#/definitions/LoggerConfig"
-                },
-                "database": {
-                    "$ref": "#/definitions/RedisConfig"
-                },
-                "accessLogger": {
-                    "$ref": "#/definitions/AccessLoggerConfig"
-                },
-                "adminLogger": {
-                    "$ref": "#/definitions/AccessLoggerConfig"
-                }
-            }
-        },
-        "LoggerConfig": {
-            "type": "object",
-            "description": "Configurations for gateway logger.",
-            "properties": {
-                "level": {
+                "email": {
                     "type": "string",
-                    "description": "Level of messages that this logger should log."
+                    "description": "The user email."
                 },
-                "console": {
-                    "$ref": "#/definitions/LogConsoleConfig"
-                },
-                "file": {
-                    "$ref": "#/definitions/LogFileConfig"
-                }
-            }
-        },
-        "LogConsoleConfig": {
-            "type": "object",
-            "description": "Configuration for console logging.",
-            "properties": {
-                "timestamp": {
-                    "type": "boolean",
-                    "description": "Flag indicating if we should prepend output with timestamps (default true)."
-                },
-                "silent": {
-                    "type": "boolean",
-                    "description": "Flag indicating whether to suppress output."
-                },
-                "colorize": {
-                    "type": "boolean",
-                    "description": "Flag indicating if we should colorize output."
-                },
-                "json": {
-                    "type": "boolean",
-                    "description": "If true, messages will be logged as JSON (default true)."
-                },
-                "stringify": {
-                    "type": "boolean",
-                    "description": "Flag indiciating if the output should be passed through JSON.stringify, resulting in single-line output. Most useful when used in conjunction with the json flag. (default false)."
-                },
-                "prettyPrint": {
-                    "type": "boolean",
-                    "description": "If true, additional JSON metadata objects that are added to logging string messages will be displayed as a JSON string representation."
-                },
-                "depth": {
-                    "type": "integer",
-                    "description": "Numeric indicating how many times to recurse while formatting the object with util.inspect."
-                },
-                "humanReadableUnhandledException": {
-                    "type": "boolean",
-                    "description": "Flag indicating if uncaught exception should be output as human readable, instead of a single line."
-                },
-                "showLevel": {
-                    "type": "boolean",
-                    "description": "Flag indicating if we should prepend output with level (default true)."
-                },
-                "stderrLevels": {
+                "roles": {
+                    "description": "All user roles.",
                     "type": "array",
                     "items": {
                         "type": "string"
-                    },
-                    "description": "Array of strings containing the levels to log to stderr instead of stdout, for example ['error', 'debug', 'info']. (default ['error', 'debug'])."
-                }
-            }
-        },
-        "LogFileConfig": {
-            "type": "object",
-            "description": "Configuration for file logging.",
-            "properties": {
-                "filename": {
-                    "type": "string",
-                    "description": "The filename of the logfile to write output to."
-                },
-                "timestamp": {
-                    "type": "boolean",
-                    "description": "Flag indicating if we should prepend output with timestamps (default true)."
-                },
-                "silent": {
-                    "type": "boolean",
-                    "description": "Flag indicating whether to suppress output."
-                },
-                "colorize": {
-                    "type": "boolean",
-                    "description": "Flag indicating if we should colorize output."
-                },
-                "maxsize": {
-                    "type": "integer",
-                    "description": "Max size in bytes of the logfile, if the size is exceeded then a new file is created, a counter will become a suffix of the log file."
-                },
-                "maxFiles": {
-                    "type": "integer",
-                    "description": "Limit the number of files created when the size of the logfile is exceeded."
-                },
-                "json": {
-                    "type": "boolean",
-                    "description": "If true, messages will be logged as JSON (default true)."
-                },
-                "eol": {
-                    "type": "string",
-                    "description": "String indicating the end-of-line characters to use (default to \\n)."
-                },
-                "prettyPrint": {
-                    "type": "boolean",
-                    "description": "If true, additional JSON metadata objects that are added to logging string messages will be displayed as a JSON string representation."
-                },
-                "depth": {
-                    "type": "integer",
-                    "description": "Numeric indicating how many times to recurse while formatting the object with util.inspect (only used with prettyPrint true) (default null, unlimited)."
-                },
-                "logstash": {
-                    "type": "boolean",
-                    "description": "If true, messages will be logged as JSON and formatted for logstash (default false)."
-                },
-                "showLevel": {
-                    "type": "boolean",
-                    "description": "Flag indicating if we should prepend output with level (default true)."
-                },
-                "tailable": {
-                    "type": "boolean",
-                    "description": "If true, log files will be rolled based on maxsize and maxfiles, but in ascending order. The filename will always have the most recent log lines. The larger the appended number, the older the log file. This option requires maxFiles to be set, or it will be ignored."
-                },
-                "maxRetries": {
-                    "type": "integer",
-                    "description": "The number of stream creation retry attempts before entering a failed state. In a failed state the transport stays active but performs a NOOP on it's log function. (default 2)"
-                },
-                "zippedArchive": {
-                    "type": "boolean",
-                    "description": "If true, all log files but the current one will be zipped."
-                }
-            }
-        },
-        "RedisConfig": {
-            "type": "object",
-            "description": "Configurations for gateway database (REDIS).",
-            "properties": {
-                "host": {
-                    "type": "string",
-                    "description": "Redis host name or IP address."
-                },
-                "port": {
-                    "type": "integer",
-                    "description": "Redis port."
-                }
-            }
-        },
-        "AccessLoggerConfig": {
-            "type": "object",
-            "description": "Configurations for gateway access logger.",
-            "properties": {
-                "msg": {
-                    "type": "string",
-                    "description": "Customize the default logging message. E.g. \"{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}\", \"HTTP {{req.method}} {{req.url}}\"."
-                },
-                "expressFormat": {
-                    "type": "boolean",
-                    "description": "Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors when colorize set to true."
-                },
-                "colorize": {
-                    "type": "boolean",
-                    "description": "Color the text and status code, using the Express/morgan color palette."
-                },
-                "console": {
-                    "$ref": "#/definitions/LogConsoleConfig"
-                },
-                "file": {
-                    "$ref": "#/definitions/LogFileConfig"
+                    }
                 }
             }
         },
@@ -2412,70 +2438,6 @@
                 "url": {
                     "type": "string",
                     "description": "The URL for this API"
-                }
-            }
-        },
-        "Version": {
-            "type": "object",
-            "description": "Version configuration",
-            "properties": {
-                "id": {
-                    "type": "number",
-                    "description": "The id unique identifier"
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Version name"
-                },
-                "description": {
-                    "type": "number",
-                    "description": "Version type"
-                },
-                "sufix": {
-                    "type": "boolean",
-                    "description": "If true, the version will be at the prefix otherwise it will be as the prefix."
-                },
-                "idApi": {
-                    "type": "number",
-                    "description": "The API for this version"
-                }
-            }
-        },
-        "ApiProxy": {
-            "type": "object",
-            "description": "Routing data",
-            "properties": {
-                "id": {
-                    "type": "number",
-                    "description": "The id unique identifier"
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Routing name"
-                },
-                "protocol": {
-                    "type": "string",
-                    "description": "Routing protocol"
-                },
-                "description": {
-                    "type": "string",
-                    "description": "Routing description"
-                },
-                "allowGroups": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/GroupItem"
-                    }
-                },
-                "denyGroups": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/GroupItem"
-                    }
-                },
-                "to": {
-                    "type": "string",
-                    "description": "Routing to"
                 }
             }
         },
@@ -2546,23 +2508,6 @@
                 "groups": {
                     "type": "array",
                     "description": "A list of groups that should be handled by this limiter. If not provided, everything will be handled. Defaults to *.",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "APIAuthentication": {
-            "type": "object",
-            "description": "Configuration for API authentication",
-            "properties": {
-                "strategy": {
-                    "type": "string",
-                    "description": "Strategy name"
-                },
-                "groups": {
-                    "description": "A list of groups that should be handled by this authenticator. If not provided, everything will be handled.",
-                    "type": "array",
                     "items": {
                         "type": "string"
                     }

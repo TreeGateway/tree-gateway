@@ -434,7 +434,7 @@ export class Gateway {
     }
 
     private configureApiDocs() {
-        if (this.config.apiDocs){
+        if (this.config.admin.apiDocs){
             const swaggerUi = require('swagger-ui-express');
             const swaggerDocument = require('./admin/api/swagger.json');
 
@@ -447,7 +447,7 @@ export class Gateway {
                 swaggerDocument.schemes = ['http'];
             }
             
-            this.adminApp.use(path.join('/', this.config.apiDocs), swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+            this.adminApp.use(path.join('/', this.config.admin.apiDocs), swaggerUi.serve, swaggerUi.setup(swaggerDocument));
         }
     }
 

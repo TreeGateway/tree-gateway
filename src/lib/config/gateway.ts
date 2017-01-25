@@ -47,10 +47,6 @@ export interface GatewayConfig {
      */
     monitor?: Array<MonitorConfig>;
     /**
-     * If provided, the service will publish all api documentation under this path.
-     */
-    apiDocs?: string;
-    /**
      * If provided, Configure the admin service for the gateway
      */
     admin?: AdminConfig;
@@ -161,7 +157,6 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: AccessLoggerConfigSchema,
     statsConfig: StatsConfigValidatorSchema,
     monitor: Joi.array().items(MonitorConfigSchema),
-    apiDocs: Joi.string(),
     admin: AdminConfigValidatorSchema
 });
 
