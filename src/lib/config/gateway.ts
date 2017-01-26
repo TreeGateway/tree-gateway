@@ -53,7 +53,13 @@ export interface GatewayConfig {
 }
 
 export interface MonitorConfig{
+    /**
+     * The name of the monitor
+     */
     name: string;
+    /**
+     * Configure how statistical data will be collected
+     */
     statsConfig: StatsConfig;
 }
 

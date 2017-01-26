@@ -32,13 +32,17 @@ It is an work in proggress.
  - Admin API
    - Hot reloading of changes
    - Multi process notifications
+ - Cluster support
+   - Huge clusters of gateways
+   - Clustered Redis
+   - Monitoring for cluster nodes
 
 ## In progress Features
+ - Alarms (when stats collected by gateway reaches some thresholds)
  - Service Discovery
  - Load Balancing
  - Authorization
  - Circuit Breaker
- - Clustering
  - Dockering
  - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
 
