@@ -166,118 +166,118 @@ export class MiddlewareRest {
     saveThrottlingSkip(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
         return this.service.save('throttling/skip', name, file.buffer);
     }
-    // @GET
-    // @Path('filters/:name')
-    // readFilter(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         // FIXME: 'read' should return a Buffer
-    //         this.service.read('filter', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('filters/:name')
+    readFilter(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            // FIXME: 'read' should return a Buffer
+            this.service.read('filter', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
-    // @GET
-    // @Path('interceptors/request/:name')
-    // readRequestInterceptors(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('interceptor/request', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('interceptors/request/:name')
+    readRequestInterceptors(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('interceptor/request', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
-    // @GET
-    // @Path('interceptors/response/:name')
-    // readResponseInterceptors(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('interceptor/response', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('interceptors/response/:name')
+    readResponseInterceptors(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('interceptor/response', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
-    // @GET
-    // @Path('authentication/strategies/:name')
-    // readAuthStrategies(@PathParam("name")name: string): Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('authentication/strategies', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('authentication/strategies/:name')
+    readAuthStrategies(@PathParam("name")name: string): Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('authentication/strategies', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
-    // @GET
-    // @Path('authentication/verify/:name')
-    // readAuthVerify(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('authentication/verify', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('authentication/verify/:name')
+    readAuthVerify(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('authentication/verify', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
-    // @GET
-    // @Path('throttling/keyGenerators/:name')
-    // readThrottlingKeyGenerator(@PathParam("name")name: string): Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('throttling/keyGenerator', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('throttling/keyGenerators/:name')
+    readThrottlingKeyGenerator(@PathParam("name")name: string): Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('throttling/keyGenerator', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
-    // @GET
-    // @Path('throttling/handlers/:name')
-    // readThrottlingHandler(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('throttling/handler', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('throttling/handlers/:name')
+    readThrottlingHandler(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('throttling/handler', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
     
-    // @GET
-    // @Path('throttling/skip/:name')
-    // readThrottlingSkip(@PathParam("name")name: string) : Promise<Return.DownloadResource>{
-    //     return new Promise<Return.DownloadResource>((resolve, reject)=>{
-    //         this.service.read('throttling/skip', name)
-    //             .then(value=>{
-    //                 resolve(new Return.DownloadResource(value, name+'.js'));
-    //             })
-    //             .catch(err=>{
-    //                 reject(new Errors.NotFoundError());
-    //             });
-    //     });
-    // }
+    @GET
+    @Path('throttling/skip/:name')
+    readThrottlingSkip(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('throttling/skip', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
 
     @POST
     @Path('filters')
