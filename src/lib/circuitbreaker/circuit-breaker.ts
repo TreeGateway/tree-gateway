@@ -9,6 +9,7 @@ import {CircuitBreaker} from "./express-circuit-breaker"
 import {Gateway} from "../gateway"
 import * as Groups from "../group";
 import * as pathUtil from "path";
+import {RedisStateHandler} from "./redis-state-handler";
 
 class StatsController {
     open: Stats;
@@ -42,7 +43,8 @@ export class ApiCircuitBreaker {
             let cbOptions: any = {
                 timeout: cbConfig.timeout || 30000,
                 resetTimeout: cbConfig.resetTimeout || 120000,
-                maxFailures: (cbConfig.maxFailures || 10)    
+                maxFailures: (cbConfig.maxFailures || 10),
+                stateHandler: new RedisStateHandler(api.proxy.path, this.gateway)
             };
             if (this.gateway.logger.isDebugEnabled()) {
                 this.gateway.logger.debug(`Configuring Circuit Breaker for path [${api.proxy.path}].`);

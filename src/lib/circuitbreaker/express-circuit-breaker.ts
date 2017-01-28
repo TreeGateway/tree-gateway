@@ -3,19 +3,28 @@
 import {EventEmitter} from "events";
 import * as express from "express";
 
-enum State {OPEN, CLOSED, HALF_OPEN};
+export enum State {OPEN, CLOSED, HALF_OPEN};
 
-interface Options {
+export interface Options {
     timeout: number;
     resetTimeout: number;
-    maxFailures: number;    
+    maxFailures: number;
+    stateHandler: StateHandler;    
+}
+
+export interface StateHandler {
+    halfOpenCallPending: boolean;
+    isOpen(): boolean;
+    isHalfOpen(): boolean;
+    isClosed(): boolean;
+    forceOpen(): boolean;
+    forceHalfOpen(): boolean;
+    forceClose(): boolean;
+    incrementFailures(): Promise<number>;
 }
 
 export class CircuitBreaker extends EventEmitter {
     private options: Options;
-    private numFailures: number;
-    private state: State;
-    private halfOpenCallPending: boolean;
 
     constructor(options: Options) {
         super();
@@ -24,26 +33,23 @@ export class CircuitBreaker extends EventEmitter {
     }
     
     isOpen() {
-        return this.state === State.OPEN;
+        return this.options.stateHandler.isOpen();
     }
 
     isHalfOpen() {
-        return this.state === State.HALF_OPEN;
+        return this.options.stateHandler.isHalfOpen();
     }
 
     isClosed() {
-        return this.state === State.CLOSED;
+        return this.options.stateHandler.isClosed();
     }
 
     forceOpen() {
-        let self = this;
-
-        if(this.state === State.OPEN) {
+        if(!this.options.stateHandler.forceOpen()) {
             return;
         }
 
-        this.state = State.OPEN;
-
+        let self = this;
         // After reset timeout circuit should enter half open state
         setTimeout(function () {
             self.forceHalfOpen();
@@ -53,24 +59,16 @@ export class CircuitBreaker extends EventEmitter {
     }
 
     forceClosed() {
-        this.numFailures = 0;
-        this.halfOpenCallPending = false;
-
-        if(this.state === State.CLOSED) {
+        if(!this.options.stateHandler.forceClose()) {
             return;
         }
-
-        this.state = State.CLOSED;
         this.emit('close');
     }
 
     forceHalfOpen() {
-        if(this.state === State.HALF_OPEN) {
+        if(!this.options.stateHandler.forceHalfOpen()) {
             return;
         }
-
-        this.state = State.HALF_OPEN;
-
         this.emit('halfOpen');
     }
 
@@ -78,11 +76,11 @@ export class CircuitBreaker extends EventEmitter {
         let self = this;
         return (req, res, next) => {
             // self.emit('request');
-            if(self.isOpen() || (self.isHalfOpen() && self.halfOpenCallPending)) {
+            if(self.isOpen() || (self.isHalfOpen() && self.options.stateHandler.halfOpenCallPending)) {
                 return self.fastFail(res);
             } 
-            else if(self.isHalfOpen() && !self.halfOpenCallPending) {
-                self.halfOpenCallPending = true;
+            else if(self.isHalfOpen() && !self.options.stateHandler.halfOpenCallPending) {
+                self.options.stateHandler.halfOpenCallPending = true;
                 return self.invokeApi(req, res, next);                
             } 
             else {
@@ -93,18 +91,22 @@ export class CircuitBreaker extends EventEmitter {
 
     private invokeApi(requ, res, next) {
         let self = this;
+        let operationTimeout = false;
         let timeoutID = setTimeout(()=>{
+            operationTimeout = true;
             self.handleTimeout(res);
         }, self.options.timeout);
         let end = res.end;
         res.end = function(...args) {
-            clearTimeout(timeoutID);
-            if (res.statusCode >= 500) {
-                self.halfOpenCallPending = false;
-                self.handleFailure(new Error("Circuit breaker API call failure"));//TODO pegar mensagem e status do response
-            }
-            else {
-                self.handleSuccess();
+            if (!operationTimeout) {
+                clearTimeout(timeoutID);
+                if (res.statusCode >= 500) {
+                    self.options.stateHandler.halfOpenCallPending = false;
+                    self.handleFailure(new Error("Circuit breaker API call failure"));//TODO pegar mensagem e status do response
+                }
+                else {
+                    self.handleSuccess();
+                }
             }
             res.end = end;
             res.end.apply(res, arguments);
@@ -135,11 +137,12 @@ export class CircuitBreaker extends EventEmitter {
     }
 
     private handleFailure(err: Error) {
-        ++this.numFailures;
-
-        if(this.isHalfOpen() || this.numFailures >= this.options.maxFailures) {
-            this.forceOpen();
-        }
+        this.options.stateHandler.incrementFailures()
+        .then(numFailures => {
+            if(this.isHalfOpen() || numFailures >= this.options.maxFailures) {
+                this.forceOpen();
+            }
+        })
 
         // this.emit('failure', err);
     }
