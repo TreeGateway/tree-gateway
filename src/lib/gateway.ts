@@ -13,6 +13,7 @@ import {GatewayConfig} from "./config/gateway";
 import {ApiProxy} from "./proxy/proxy";
 import * as Utils from "./proxy/utils";
 import {ApiRateLimit} from "./throttling/throttling";
+import {ApiCircuitBreaker} from "./circuitbreaker/circuit-breaker";
 import {ApiAuth} from "./authentication/auth";
 import {ApiCache} from "./cache/cache";
 import {Logger} from "./logger";
@@ -42,6 +43,7 @@ export class Gateway {
     private adminApp: express.Application;
     private apiProxy: ApiProxy;
     private apiRateLimit: ApiRateLimit;
+    private apiCircuitBreaker: ApiCircuitBreaker;
     private apiCache: ApiCache;
     private apiAuth: ApiAuth;
     private _statsRecorder: StatsRecorder;
@@ -309,6 +311,12 @@ export class Gateway {
             }
             this.apiRateLimit.throttling(apiRouter, api);
         }
+        if (api.circuitBreaker) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Configuring API Circuit Breaker");
+            }
+            this.apiCircuitBreaker.circuitBreaker(apiRouter, api);
+        }
         if (api.authentication) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Configuring API Authentication");
@@ -373,6 +381,7 @@ export class Gateway {
                     this._statsRecorder = new StatsRecorder(this);
                     this.apiProxy = new ApiProxy(this);
                     this.apiRateLimit = new ApiRateLimit(this);
+                    this.apiCircuitBreaker = new ApiCircuitBreaker(this);
                     this.apiAuth = new ApiAuth(this);
                     this.apiCache = new ApiCache(this);
                     

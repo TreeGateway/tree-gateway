@@ -9,7 +9,8 @@ import {Logger} from "../logger";
 export class MiddlewareInstaller {
     private types = ["filter", "interceptor/request", "interceptor/response",
                         "authentication/strategies", "authentication/verify",
-                        "throttling/keyGenerator", "throttling/handler", "throttling/skip"];
+                        "throttling/keyGenerator", "throttling/handler", 
+                        "throttling/skip", "circuitbreaker"];
 
     private service:MiddlewareService;
     private middlewarePath:string;

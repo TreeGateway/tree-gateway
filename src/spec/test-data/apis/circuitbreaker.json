@@ -1,0 +1,15 @@
+{
+    "name": "TestCircuitBreakerAPI",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "circuitbreaker/",
+        "target": {
+            "path": "http://httpbin.org"
+        }
+    },
+    "circuitbreaker": {
+        "timeout": "1 second",
+        "resetTimeout": "30 seconds",
+        "maxFailures": 1
+    }
+}

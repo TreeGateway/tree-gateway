@@ -16,6 +16,7 @@
     "bcrypt": "^1.0.2",
     "cluster": "^0.7.7",
     "compression": "^1.6.2",
+    "events": "^1.1.1",
     "express": "^4.14.0",
     "express-http-proxy": "^0.10.0",
     "express-rate-limit": "^2.6.0",

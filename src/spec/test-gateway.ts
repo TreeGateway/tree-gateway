@@ -344,6 +344,7 @@ describe("Gateway Tests", () => {
 					.then(() => installApiCache(apiConfig.id, apiConfig.cache))
 					.then(() => installApiThrottling(apiConfig.id, apiConfig.throttling))
 					.then(() => installApiAuthentication(apiConfig.id, apiConfig.authentication))
+					.then(() => installApiCircuitBreaker(apiConfig.id, apiConfig.circuitBreaker))
 					.then(resolve)
 					.catch(reject);
 			});
@@ -368,6 +369,24 @@ describe("Gateway Tests", () => {
 			adminRequest.post(`/apis/${apiId}/authentication`, {
                 headers: { 'authorization': `JWT ${configToken}` },
 				body: authentication, json: true
+			}, (error, response, body) => {
+				if(error) {
+					reject(error);
+				}
+				expect(response.statusCode).toEqual(201);
+				resolve();
+			});
+		});
+	}
+
+	function installApiCircuitBreaker(apiId: string, circuitbreaker): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!circuitbreaker) {
+				return resolve();
+			}
+			adminRequest.post(`/apis/${apiId}/circuitbreaker`, {
+                headers: { 'authorization': `JWT ${configToken}` },
+				body: circuitbreaker, json: true
 			}, (error, response, body) => {
 				if(error) {
 					reject(error);
@@ -528,6 +547,9 @@ describe("Gateway Tests", () => {
 			 })
 			 .then(()=>{
 				 return installMiddleware('SecondInterceptor', '/interceptors/response', '/interceptor/response')
+			 })
+			 .then(()=>{
+				 return installMiddleware('myOpenHandler', '/circuitbreaker', '/circuitbreaker')
 			 })
 			 .then(() => {
 				 setTimeout(resolve, 1500);

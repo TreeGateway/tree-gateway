@@ -59,6 +59,27 @@ export class StatsService {
     }
 
     @GET
+    @Path("circuitbreaker/open/:apiId")
+    getCircuitBreakerOpen(@PathParam("apiId") apiId: string, 
+                @QueryParam('count') count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiId, 'circuitbreaker', 'total', 'open', count);
+    }
+
+    @GET
+    @Path("circuitbreaker/close/:apiId")
+    getCircuitBreakerClose(@PathParam("apiId") apiId: string, 
+                @QueryParam('count') count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiId, 'circuitbreaker', 'total', 'close', count);
+    }
+
+    @GET
+    @Path("circuitbreaker/rejected/:apiId")
+    getCircuitBreaker(@PathParam("apiId") apiId: string, 
+                @QueryParam('count') count: number) : Promise<Array<Array<number>>>{
+        return this.getStats(apiId, 'circuitbreaker', 'total', 'rejected', count);
+    }
+
+    @GET
     @Path("access/request/:apiId")
     getAccessRequest(@PathParam("apiId") apiId: string, 
                 @QueryParam('path')path: string, 

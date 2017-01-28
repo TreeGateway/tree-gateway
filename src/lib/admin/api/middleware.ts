@@ -71,6 +71,12 @@ export class MiddlewareRest {
         return this.service.list('throttling/skip');
     }
 
+    @GET
+    @Path('circuitbreaker')
+    circuitBreakerOpen() : Promise<Array<string>>{
+        return this.service.list('circuitbreaker');
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter(@PathParam("name")name: string) : Promise<void>{
@@ -117,6 +123,12 @@ export class MiddlewareRest {
     @Path('throttling/skip/:name')
     removeThrottlingSkip(@PathParam("name")name: string) : Promise<void>{
         return this.service.remove('throttling/skip', name);
+    }
+
+    @DELETE
+    @Path('circuitbreaker/:name')
+    removeCircuitBreaker(@PathParam("name")name: string) : Promise<void>{
+        return this.service.remove('circuitbreaker', name);
     }
 
     @PUT
@@ -166,6 +178,13 @@ export class MiddlewareRest {
     saveThrottlingSkip(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
         return this.service.save('throttling/skip', name, file.buffer);
     }
+
+    @PUT
+    @Path('circuitbreaker/:name')
+    saveCircuitBreaker(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
+        return this.service.save('circuitbreaker', name, file.buffer);
+    }
+
     @GET
     @Path('filters/:name')
     readFilter(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
@@ -270,6 +289,20 @@ export class MiddlewareRest {
     readThrottlingSkip(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
         return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
             this.service.read('throttling/skip', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
+
+    @GET
+    @Path('circuitbreaker/:name')
+    readCircuitBreakerMiddleware(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('circuitbreaker', name)
                 .then(value=>{
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
                 })
@@ -398,4 +431,20 @@ export class MiddlewareRest {
                 });
         });
     }
+
+    @POST
+    @Path('circuitbreaker')
+    addCircuitBreaker(@FileParam("file") file: Express.Multer.File, 
+                    @FormParam("name") name: string){
+        return new Promise<Return.NewResource>((resolve, reject) =>{
+            this.service.add('circuitbreaker', name, file.buffer)
+                .then(value=>{
+                    resolve(new Return.NewResource(path.join('circuitbreaker',name)));
+                })
+                .catch(err=>{
+                    reject(new Errors.InternalServerError('Error saving handler.'))
+                });
+        });
+    }
+    
 }

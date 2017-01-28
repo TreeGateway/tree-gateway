@@ -5,6 +5,7 @@ import {ThrottlingConfig, ThrottlingConfigValidatorSchema} from "./throttling";
 import {CacheConfig, CacheConfigValidatorSchema} from "./cache";
 import {Proxy, ProxyValidatorSchema} from "./proxy";
 import {Group, GroupValidatorSchema} from "./group";
+import {CircuitBreakerConfig, CircuitBreakerConfigValidatorSchema} from "./circuit-breaker";
 import {ServiceDiscoveryConfig, ServiceDiscoveryConfigValidatorSchema} from "./serviceDiscovery";
 import * as Joi from "joi";
 
@@ -52,6 +53,12 @@ export interface ApiConfig {
     cache?: Array<CacheConfig>;
 
     /**
+     * Configuration for api circuit breaker, following the pattern 
+     * [Circuit Breaker](http://doc.akka.io/docs/akka/snapshot/common/circuitbreaker.html).
+     */
+    circuitBreaker?: Array<CircuitBreakerConfig>;
+
+    /**
      * Configuration for service discovery.
      */
     serviceDiscovery?: ServiceDiscoveryConfig;
@@ -67,6 +74,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     throttling: Joi.array().items(ThrottlingConfigValidatorSchema),
     authentication: AuthenticationValidatorSchema, 
     cache: Joi.array().items(CacheConfigValidatorSchema), 
+    circuitBreaker: Joi.array().items(CircuitBreakerConfigValidatorSchema), 
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 

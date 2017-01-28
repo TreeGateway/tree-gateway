@@ -5,6 +5,7 @@ import {Redis} from "ioredis";
 import {ApiConfig} from "../config/api";
 import {CacheConfig} from "../config/cache";
 import {ThrottlingConfig} from "../config/throttling";
+import {CircuitBreakerConfig} from "../config/circuit-breaker";
 import {Group} from "../config/group";
 import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
@@ -57,6 +58,8 @@ export interface ApiComponentService<T> {
 export interface GroupService extends ApiComponentService<Group> {}
 
 export interface ThrottlingService extends ApiComponentService<ThrottlingConfig> {}
+
+export interface CircuitBreakerService extends ApiComponentService<CircuitBreakerConfig> {}
 
 export interface CacheService extends ApiComponentService<CacheConfig> {}
 
