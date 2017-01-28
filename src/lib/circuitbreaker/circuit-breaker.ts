@@ -151,10 +151,10 @@ export class ApiCircuitBreaker {
             stats.close = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'close'));
             stats.open = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'open'));
             stats.rejected = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'rejected'));
-            stats.failure = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'failure'));
-            stats.halfOpen = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'halfOpen'));
-            stats.timeout = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'timeout'));
-            stats.success = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'success'));
+            // stats.failure = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'failure'));
+            // stats.halfOpen = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'halfOpen'));
+            // stats.timeout = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'timeout'));
+            // stats.success = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'success'));
             
             return stats;
         }

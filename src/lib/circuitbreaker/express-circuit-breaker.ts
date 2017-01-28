@@ -54,6 +54,7 @@ export class CircuitBreaker extends EventEmitter {
 
     forceClosed() {
         this.numFailures = 0;
+        this.halfOpenCallPending = false;
 
         if(this.state === State.CLOSED) {
             return;
@@ -76,7 +77,7 @@ export class CircuitBreaker extends EventEmitter {
     middleware(): express.RequestHandler {
         let self = this;
         return (req, res, next) => {
-            self.emit('request');
+            // self.emit('request');
             if(self.isOpen() || (self.isHalfOpen() && self.halfOpenCallPending)) {
                 return self.fastFail(res);
             } 
@@ -92,14 +93,14 @@ export class CircuitBreaker extends EventEmitter {
 
     private invokeApi(requ, res, next) {
         let self = this;
-        let startTime = Date.now();
         let timeoutID = setTimeout(()=>{
-            self.handleTimeout(res, startTime);
+            self.handleTimeout(res);
         }, self.options.timeout);
         let end = res.end;
         res.end = function(...args) {
-            self.halfOpenCallPending = false;
+            clearTimeout(timeoutID);
             if (res.statusCode >= 500) {
+                self.halfOpenCallPending = false;
                 self.handleFailure(new Error("Circuit breaker API call failure"));//TODO pegar mensagem e status do response
             }
             else {
@@ -119,18 +120,18 @@ export class CircuitBreaker extends EventEmitter {
         this.emit('rejected', err);
     }
 
-    private handleTimeout (res: express.Response, startTime: number) {
+    private handleTimeout (res: express.Response) {
         let err = new Error('CircuitBreaker timeout');
         this.handleFailure(err);
-        res.status(503);
+        res.status(504);
         res.end(err.message);
-        this.emit('timeout', (Date.now() - startTime));
+        // this.emit('timeout', (Date.now() - startTime));
     }
 
     private handleSuccess() {
         this.forceClosed();
 
-        this.emit('success');
+        // this.emit('success');
     }
 
     private handleFailure(err: Error) {
@@ -140,7 +141,7 @@ export class CircuitBreaker extends EventEmitter {
             this.forceOpen();
         }
 
-        this.emit('failure', err);
+        // this.emit('failure', err);
     }
 }   
 
