@@ -7,9 +7,9 @@
             "path": "http://httpbin.org"
         }
     },
-    "circuitbreaker": {
-        "timeout": "1 second",
-        "resetTimeout": "30 seconds",
+    "circuitBreaker": {
+        "timeout": 1,
+        "resetTimeout": 30000,
         "maxFailures": 1
     }
 }

@@ -329,7 +329,7 @@ describe("Gateway Tests", () => {
 
 	function installApi(apiConfig: ApiConfig): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery');
+			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery', 'circuitBreaker');
 
 			adminRequest.post("/apis", {
                 headers: { 'authorization': `JWT ${configToken}` },
@@ -379,14 +379,14 @@ describe("Gateway Tests", () => {
 		});
 	}
 
-	function installApiCircuitBreaker(apiId: string, circuitbreaker): Promise<void> {
+	function installApiCircuitBreaker(apiId: string, circuitBreaker): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{
-			if (!circuitbreaker) {
+			if (!circuitBreaker) {
 				return resolve();
 			}
 			adminRequest.post(`/apis/${apiId}/circuitbreaker`, {
                 headers: { 'authorization': `JWT ${configToken}` },
-				body: circuitbreaker, json: true
+				body: circuitBreaker, json: true
 			}, (error, response, body) => {
 				if(error) {
 					reject(error);
