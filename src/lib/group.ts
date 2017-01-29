@@ -6,26 +6,26 @@ import * as Utils from "./proxy/utils";
 
 let pathToRegexp = require('path-to-regexp');
 
-export function filter(groups: Array<Group>, names: Array<string>) {
+export function filter(groups: Array<Group>, groupIds: Array<string>) {
     let filtered = _.filter(groups, (g: Group)=>{
-        return names.indexOf(g.name) >= 0;
+        return groupIds.indexOf(g.id) >= 0;
     });
     return filtered;
 }
 
-export function buildGroupAllowFilter(groups: Array<Group>, names: Array<string>) {
+export function buildGroupAllowFilter(groups: Array<Group>, groupIds: Array<string>) {
     let func = new Array<string>();
     func.push(`function(req, res){`);
-    func.push(`return ${buildGroupAllowTest('req', groups, names)};`);
+    func.push(`return ${buildGroupAllowTest('req', groups, groupIds)};`);
     func.push(`}`);
     let f;
     eval(`f = ${func.join('')}`);
     return f;
 }
 
-export function buildGroupAllowTest(request: string, groups: Array<Group>, names: Array<string>) {
+export function buildGroupAllowTest(request: string, groups: Array<Group>, groupIds: Array<string>) {
     let func = new Array<string>();
-    let filtered = filter(groups, names);
+    let filtered = filter(groups, groupIds);
     filtered.forEach((group,index)=>{
         if (index > 0) {
             func.push(`||`);                

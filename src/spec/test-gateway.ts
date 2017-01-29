@@ -6,6 +6,7 @@ import * as _ from "lodash";
 import "jasmine";
 import {Gateway} from "../lib/gateway";
 import {ApiConfig} from "../lib/config/api";
+import {Group} from "../lib/config/group";
 import {UserService, loadUserService} from "../lib/service/users";
 
 let server;
@@ -52,8 +53,10 @@ const authenticate = () => {
 };	
 
 const getIdFromResponse = (response) => {
-    const parts = response.headers["location"].split("/");
-    return parts[parts.length-1];
+	const location = response.headers["location"];
+    expect(location).toBeDefined();
+    const parts = location ? location.split("/") : [];
+    return parts.length > 0 ? parts[parts.length-1] : null;
 };
 
 describe("Gateway Tests", () => {
@@ -86,13 +89,13 @@ describe("Gateway Tests", () => {
 			.then(done)
 			.catch(err => {
 				console.error(err);
-				fail();
+				fail(err);
 			});
 	});
 
 	afterAll(function(done){
 		gateway.redisClient.flushdb()
-            .then(() => gateway.stopAdmin())
+			.then(() => gateway.stopAdmin())
             .then(() => gateway.stop())
 			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'middleware')))
 			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'logs')))
@@ -349,6 +352,7 @@ describe("Gateway Tests", () => {
 				apiConfig.id = getIdFromResponse(response);
 
 				installApiGroups(apiConfig.id, apiConfig.group)
+					.then(() => fixApiGroupsIds(apiConfig))
 					.then(() => installApiProxy(apiConfig.id, apiConfig.proxy))
 					.then(() => installApiCache(apiConfig.id, apiConfig.cache))
 					.then(() => installApiThrottling(apiConfig.id, apiConfig.throttling))
@@ -358,6 +362,80 @@ describe("Gateway Tests", () => {
 					.catch(reject);
 			});
 		});
+	}
+
+	function transformGroups(groups: Array<Group>, names: Array<string>) : Array<string> {
+		const ids = names.map((name) => {
+			const group = groups.filter((group) => group.name === name);
+
+			return group.length > 0 ? group[0].id : null;
+		});
+
+		return ids.filter((id) => id !== null);
+	}
+
+	function fixApiGroupsIds(api: ApiConfig) {
+		if (api.proxy.target.allow) {
+			api.proxy.target.allow = transformGroups(api.group, api.proxy.target.allow);
+		}
+
+		if (api.proxy.target.deny) {
+			api.proxy.target.deny = transformGroups(api.group, api.proxy.target.deny);
+		}
+
+		if (api.proxy.filter) {
+			api.proxy.filter.forEach((filter) => {
+				if (filter.group) {
+					filter.group = transformGroups(api.group, filter.group);
+				}
+			})
+		}
+
+		if (api.proxy.interceptor) {
+			if (api.proxy.interceptor.request) {
+				api.proxy.interceptor.request.forEach((rqi) => {
+					if (rqi.group) {
+						rqi.group = transformGroups(api.group, rqi.group);
+					}
+				})
+			}
+
+			if (api.proxy.interceptor.response) {
+				api.proxy.interceptor.response.forEach((rpi) => {
+					if (rpi.group) {
+						rpi.group = transformGroups(api.group, rpi.group);
+					}
+				})
+			}
+		}
+
+		if (api.authentication && api.authentication.group) {
+			api.authentication.group = transformGroups(api.group, api.authentication.group);
+		}
+
+		if (api.circuitBreaker) {
+			api.circuitBreaker.forEach((cb) => {
+				if (cb.group) {
+					cb.group = transformGroups(api.group, cb.group);
+				}
+			});
+		}
+
+		if (api.cache) {
+			api.cache.forEach((cache) => {
+				if (cache.group) {
+					cache.group = transformGroups(api.group, cache.group);
+				}
+			});
+		}
+
+		if (api.throttling) {
+			api.throttling.forEach((throt) => {
+				if (throt.group) {
+					throt.group = transformGroups(api.group, throt.group);
+				}
+			});
+		}
 	}
 
 	function installApiGroups(apiId: string, groups): Promise<any> {
@@ -380,10 +458,14 @@ describe("Gateway Tests", () => {
 				body: authentication, json: true
 			}, (error, response, body) => {
 				if(error) {
-					reject(error);
+					return reject(error);
 				}
-				expect(response.statusCode).toEqual(201);
-				resolve();
+				
+				if (response.statusCode === 201) {
+					return resolve();
+				}
+
+				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
 			});
 		});
 	}
@@ -393,15 +475,29 @@ describe("Gateway Tests", () => {
 			if (!circuitBreaker) {
 				return resolve();
 			}
-			adminRequest.post(`/apis/${apiId}/circuitbreaker`, {
-                headers: { 'authorization': `JWT ${configToken}` },
-				body: circuitBreaker, json: true
-			}, (error, response, body) => {
-				if(error) {
-					reject(error);
-				}
-				expect(response.statusCode).toEqual(201);
-				resolve();
+
+			let returned=0, expected = circuitBreaker.length;
+
+			circuitBreaker.forEach((cb) => {
+				adminRequest.post(`/apis/${apiId}/circuitbreaker`, {
+	                headers: { 'authorization': `JWT ${configToken}` },
+					body: cb, json: true
+				}, (error, response, body) => {
+					if(error) {
+						return reject(error);
+					}
+					
+					if (response.statusCode === 201) {
+						returned++;
+						if (returned === expected) {
+							return resolve();
+						}
+
+						return;
+					}
+
+					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
+				});
 			});
 		});
 	}
@@ -419,13 +515,20 @@ describe("Gateway Tests", () => {
 					body: cache, json: true
 				}, (error, response, body) => {
 					if(error) {
-						reject(error);
+						return reject(error);
 					}
-					expect(response.statusCode).toEqual(201);
-					returned++;
-					if (returned === expected) {
-						resolve();
+
+
+					if (response.statusCode === 201) {
+						returned++;
+						if (returned === expected) {
+							return resolve();
+						}
+
+						return;
 					}
+
+					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
 				});
 			});
 		});
@@ -443,13 +546,18 @@ describe("Gateway Tests", () => {
 					body: throt, json: true
 				}, (error, response, body) => {
 					if(error) {
-						reject(error);
+						return reject(error);
 					}
-					expect(response.statusCode).toEqual(201);
-					returned++;
-					if (returned === expected) {
-						resolve();
+					if (response.statusCode === 201) {
+						returned++;
+						if (returned === expected) {
+							return resolve();
+						}
+
+						return;
 					}
+
+					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
 				});
 			});	
 		});
@@ -465,10 +573,14 @@ describe("Gateway Tests", () => {
 				body: apiProxy, json: true
 			}, (error, response, body) => {
 				if(error) {
-					reject(error);
+					return reject(error);
 				}
-				expect(response.statusCode).toEqual(201);
-				resolve();
+
+				if (response.statusCode === 201) {
+					return resolve();
+				}
+
+				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
 			});
 		});
 	}
@@ -482,11 +594,15 @@ describe("Gateway Tests", () => {
                 headers: { 'authorization': `JWT ${configToken}` },
 				body: group, json: true
 			}, (error, response, body) => {
-				if(error) {
-					reject(error);
+				if(error || response.statusCode !== 201) {
+					return reject(error);
 				}
-				expect(response.statusCode).toEqual(201);
-				resolve();
+				if (response.statusCode === 201) {
+					group.id = getIdFromResponse(response);
+					return resolve();
+				}
+
+				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
 			});
 		});
 	}
@@ -525,7 +641,7 @@ describe("Gateway Tests", () => {
 				if (response.statusCode == 204){
 					return resolve();
 				}
-				return reject(`Status code: ${response.statusCode}`);
+				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
 			});
 		});
 	}

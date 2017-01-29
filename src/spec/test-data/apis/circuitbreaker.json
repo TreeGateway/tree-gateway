@@ -7,10 +7,10 @@
             "path": "http://httpbin.org"
         }
     },
-    "circuitBreaker": {
+    "circuitBreaker": [{
         "timeout": 1,
         "resetTimeout": 30000,
         "maxFailures": 1,
         "onOpen": "myOpenHandler"
-    }
+    }]
 }
