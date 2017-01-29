@@ -37,13 +37,14 @@ export class ApiCircuitBreaker {
         let path: string = api.proxy.path;
         let breakerInfos: Array<BreakerInfo> = new Array<BreakerInfo>();
         let sortedBreakers = this.sortBreakers(api.circuitBreaker, api.proxy.path);
-
-        sortedBreakers.forEach((cbConfig: CircuitBreakerConfig) => {
+        let breakersSize = sortedBreakers.length;
+        sortedBreakers.forEach((cbConfig: CircuitBreakerConfig, index: number) => {
             let breakerInfo: BreakerInfo = {}; 
+            let cbStateID = (breakersSize > 1?`${api.proxy.path}:${index}`:api.proxy.path);
             let cbOptions: any = {
                 timeout: cbConfig.timeout || 30000,
                 maxFailures: (cbConfig.maxFailures || 10),
-                stateHandler: new RedisStateHandler(api.proxy.path, this.gateway, cbConfig.resetTimeout || 120000),
+                stateHandler: new RedisStateHandler(cbStateID, this.gateway, cbConfig.resetTimeout || 120000),
                 timeoutStatusCode: (cbConfig.timeoutStatusCode || 504),
                 timeoutMessage: (cbConfig.timeoutMessage || "Operation timeout"),
                 rejectStatusCode: (cbConfig.rejectStatusCode || 503),
