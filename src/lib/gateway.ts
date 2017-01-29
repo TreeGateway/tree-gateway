@@ -28,7 +28,6 @@ import {ConfigService} from "./service/api";
 import {RedisConfigService} from "./service/redis";
 import loadConfigFile from "./utils/config-loader";
 import {MiddlewareInstaller} from "./utils/middleware-installer";
-import {ConfigTopics} from "./config/events";
 import * as fs from "fs-extra-promise";
 import * as path from "path";
 import * as os from "os";

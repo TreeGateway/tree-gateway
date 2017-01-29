@@ -7,7 +7,6 @@ export enum State {OPEN, CLOSED, HALF_OPEN};
 
 export interface Options {
     timeout: number;
-    resetTimeout: number;
     maxFailures: number;
     stateHandler: StateHandler;    
 }
@@ -49,13 +48,7 @@ export class CircuitBreaker extends EventEmitter {
             return;
         }
 
-        let self = this;
-        // After reset timeout circuit should enter half open state
-        setTimeout(function () {
-            self.forceHalfOpen();
-        }, self.options.resetTimeout);
-
-        self.emit('open');
+        this.emit('open');
     }
 
     forceClosed() {
