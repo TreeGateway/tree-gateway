@@ -9,6 +9,11 @@ export interface Options {
     timeout: number;
     maxFailures: number;
     stateHandler: StateHandler;    
+    timeoutMessage: string;
+    timeoutStatusCode: number;
+    rejectMessage: string;
+    rejectStatusCode: number;
+    
 }
 
 export interface StateHandler {
@@ -109,16 +114,16 @@ export class CircuitBreaker extends EventEmitter {
     }
 
     private fastFail(res: express.Response) {
-        res.status(503);
-        let err = new Error('CircuitBreaker open');
+        res.status(this.options.rejectStatusCode);
+        let err = new Error(this.options.rejectMessage);
         res.end(err.message);
         this.emit('rejected', err);
     }
 
     private handleTimeout (res: express.Response) {
-        let err = new Error('CircuitBreaker timeout');
+        let err = new Error(this.options.timeoutMessage);
         this.handleFailure(err);
-        res.status(504);
+        res.status(this.options.timeoutStatusCode);
         res.end(err.message);
         // this.emit('timeout', (Date.now() - startTime));
     }

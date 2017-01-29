@@ -75,7 +75,27 @@ export interface CircuitBreakerConfig {
      * middleware/circuitbreaker/myRejectHandler.js
      * ```
      */
-    onRejected?: string;        
+    onRejected?: string;
+    /**
+     * Message to be sent when an api call occurs in a timeout.
+     * Defaults to: Operation timeout
+     */
+    timeoutMessage?: string;
+    /**
+     * Status code to be sent when an api call occurs in a timeout.
+     * Defaults to 504
+     */
+    timeoutStatusCode?: number;
+    /**
+     * Message to be sent when an api call is rejected because circuit is open
+     * Defaults to: Service unavailable
+     */
+    rejectMessage?: string;
+    /**
+     * Status code to be sent when an api call is rejected because circuit is open
+     * Defaults to 503
+     */
+    rejectStatusCode?: number;
 }
 
 export let CircuitBreakerConfigValidatorSchema = Joi.object().keys({
@@ -86,7 +106,11 @@ export let CircuitBreakerConfigValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
     onOpen: Joi.string(),
     onClose: Joi.string(),
-    onRejected: Joi.string()
+    onRejected: Joi.string(),
+    timeoutMessage: Joi.string(),
+    timeoutStatusCode: Joi.number(),
+    rejectMessage: Joi.string(),
+    rejectStatusCode: Joi.number()    
 });
 
 export function validateCircuitBreakerConfig(circuitBreaker: CircuitBreakerConfig) {
