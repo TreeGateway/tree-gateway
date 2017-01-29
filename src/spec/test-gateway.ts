@@ -202,6 +202,15 @@ describe("Gateway Tests", () => {
 				});
 			});
 		});
+		it("should be able to break the circuit to slow apis", (done) => {
+			gatewayRequest("/circuitbreaker/get", (error, response, body)=>{
+				expect(response.statusCode).toEqual(504);
+				gatewayRequest("/circuitbreaker/get", (error, response, body)=>{
+					expect(response.statusCode).toEqual(503);
+					done();				
+				});
+			});
+		});
 	});
 
 	describe("The Gateway Authenticator", () => {

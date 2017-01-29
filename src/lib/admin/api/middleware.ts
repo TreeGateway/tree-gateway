@@ -74,7 +74,7 @@ export class MiddlewareRest {
     @GET
     @Path('circuitbreaker')
     circuitBreakerOpen() : Promise<Array<string>>{
-        return this.service.list('circuitbreaker');
+        return this.service.list('circuitbreaker/handler');
     }
 
     @DELETE
@@ -128,7 +128,7 @@ export class MiddlewareRest {
     @DELETE
     @Path('circuitbreaker/:name')
     removeCircuitBreaker(@PathParam("name")name: string) : Promise<void>{
-        return this.service.remove('circuitbreaker', name);
+        return this.service.remove('circuitbreaker/handler', name);
     }
 
     @PUT
@@ -182,7 +182,7 @@ export class MiddlewareRest {
     @PUT
     @Path('circuitbreaker/:name')
     saveCircuitBreaker(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
-        return this.service.save('circuitbreaker', name, file.buffer);
+        return this.service.save('circuitbreaker/handler', name, file.buffer);
     }
 
     @GET
@@ -302,7 +302,7 @@ export class MiddlewareRest {
     @Path('circuitbreaker/:name')
     readCircuitBreakerMiddleware(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
         return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
-            this.service.read('circuitbreaker', name)
+            this.service.read('circuitbreaker/handler', name)
                 .then(value=>{
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
                 })
@@ -437,7 +437,7 @@ export class MiddlewareRest {
     addCircuitBreaker(@FileParam("file") file: Express.Multer.File, 
                     @FormParam("name") name: string){
         return new Promise<Return.NewResource>((resolve, reject) =>{
-            this.service.add('circuitbreaker', name, file.buffer)
+            this.service.add('circuitbreaker/handler', name, file.buffer)
                 .then(value=>{
                     resolve(new Return.NewResource(path.join('circuitbreaker',name)));
                 })
