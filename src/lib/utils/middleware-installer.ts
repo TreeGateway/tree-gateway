@@ -10,7 +10,7 @@ export class MiddlewareInstaller {
     private types = ["filter", "interceptor/request", "interceptor/response",
                         "authentication/strategies", "authentication/verify",
                         "throttling/keyGenerator", "throttling/handler", 
-                        "throttling/skip", "circuitbreaker"];
+                        "throttling/skip", "circuitbreaker/handler"];
 
     private service:MiddlewareService;
     private middlewarePath:string;
