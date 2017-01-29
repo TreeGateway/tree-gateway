@@ -4,8 +4,13 @@ import {StateHandler, State} from "./express-circuit-breaker";
 import {Gateway} from "../gateway";
 
 class CircuitBreakerTopics {
-    static BASE_TOPIC = 'circuitbreaker:events'
+    static BASE_TOPIC = '{circuitbreaker}:events'
     static CIRCUIT_CHANGED = `${CircuitBreakerTopics.BASE_TOPIC}:changed`;
+}
+
+class CircuitBreakerKeys {
+    static CIRCUIT_BREAKER_FAILURES = '{circuitbreaker}:failures'
+    static CIRCUIT_BREAKER_STATE = '{circuitbreaker}:state'
 }
 
 export class RedisStateHandler implements StateHandler {
@@ -24,6 +29,22 @@ export class RedisStateHandler implements StateHandler {
         // this.duration = humanInterval(config.granularity.duration)/1000;
         // this.ttl = humanInterval(config.granularity.ttl)/1000;
     }
+
+    initialState() {
+        let self = this;
+        this.gateway.redisClient.hget(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id)
+            .then(state => {
+                if (state === 'open') {
+                    self.openState();
+                }
+                else {
+                    self.closeState();
+                }
+            }).catch(err => {
+                self.forceClose();
+            });    
+    }
+
 
     isOpen(): boolean {
         return this.state === State.OPEN;
@@ -63,7 +84,7 @@ export class RedisStateHandler implements StateHandler {
     }
 
     incrementFailures(): Promise<number> {
-        return this.gateway.redisClient.hincrby(`circuitbreaker:failures`, this.id, 1);
+        return this.gateway.redisClient.hincrby(CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES, this.id, 1);
     }
 
     private openState(): boolean {
@@ -82,13 +103,11 @@ export class RedisStateHandler implements StateHandler {
     }
 
     private closeState() {
-        this.gateway.redisClient.hdel(`circuitbreaker:failures`, this.id);
-        this.halfOpenCallPending = false;
-
         if(this.state === State.CLOSED) {
             return false;
         }
 
+        this.halfOpenCallPending = false;
         this.state = State.CLOSED;
         return true;        
     }
@@ -97,14 +116,22 @@ export class RedisStateHandler implements StateHandler {
         if (this.gateway.logger.isDebugEnabled()) {
             this.gateway.logger.debug(`Notifying cluster that circuit for API ${this.id} is open`);
         }
-        return this.gateway.redisClient.publish(`${CircuitBreakerTopics.CIRCUIT_CHANGED}:${this.id}`, JSON.stringify({state: 'open'}))
+        return this.gateway.redisClient.multi()
+                .hset(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id, 'open')
+                .publish(`${CircuitBreakerTopics.CIRCUIT_CHANGED}:${this.id}`, JSON.stringify({state: 'open'}))
+                .exec()
     }
 
     private notifyCircuitClose(): Promise<number> {
         if (this.gateway.logger.isDebugEnabled()) {
             this.gateway.logger.debug(`Notifying cluster that circuit for API ${this.id} is closed`);
         }
-        return this.gateway.redisClient.publish(`${CircuitBreakerTopics.CIRCUIT_CHANGED}:${this.id}`, JSON.stringify({state: 'close'}))
+
+        return this.gateway.redisClient.multi()
+                .hset(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id, 'close')
+                .hdel(CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES, this.id)
+                .publish(`${CircuitBreakerTopics.CIRCUIT_CHANGED}:${this.id}`, JSON.stringify({state: 'close'}))
+                .exec();
     }
 
     private subscribeEvents(): Promise<void> {

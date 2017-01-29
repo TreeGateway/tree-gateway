@@ -25,6 +25,7 @@ export interface StateHandler {
     forceHalfOpen(): boolean;
     forceClose(): boolean;
     incrementFailures(): Promise<number>;
+    initialState(): void;
 }
 
 export class CircuitBreaker extends EventEmitter {
@@ -33,7 +34,7 @@ export class CircuitBreaker extends EventEmitter {
     constructor(options: Options) {
         super();
         this.options = options;
-        this.forceClosed();
+        this.options.stateHandler.initialState();
     }
     
     isOpen() {
