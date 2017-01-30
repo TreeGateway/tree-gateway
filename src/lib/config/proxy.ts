@@ -200,18 +200,18 @@ export interface Target {
 
 let TargetSchema = Joi.object().keys({
     path: Joi.string().required(),
-    allow: Joi.array().items(Joi.string()),
-    deny: Joi.array().items(Joi.string()),
+    allow: Joi.array().items(Joi.string().guid()),
+    deny: Joi.array().items(Joi.string().guid()),
 });
 
 let FilterSchema = Joi.object().keys({
     name: Joi.string().required(),
-    group: Joi.array().items(Joi.string())
+    group: Joi.array().items(Joi.string().guid())
 });
 
 let InterceptorSchema = Joi.object().keys({
     name: Joi.string().required(),
-    group: Joi.array().items(Joi.string())
+    group: Joi.array().items(Joi.string().guid())
 });
 
 let InterceptorsSchema = Joi.object().keys({

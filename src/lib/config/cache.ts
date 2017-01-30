@@ -60,7 +60,7 @@ export let CacheConfigValidatorSchema = Joi.object().keys({
     id: Joi.string().guid(),
     client: ClientCacheValidatorSchema,
     server: ServerCacheValidatorSchema,
-    group: Joi.array().items(Joi.string())
+    group: Joi.array().items(Joi.string().guid())
 });
 
 export function validateCacheConfig(cache: CacheConfig) {

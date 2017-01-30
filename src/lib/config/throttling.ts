@@ -118,7 +118,7 @@ export let ThrottlingConfigValidatorSchema = Joi.object().keys({
     keyGenerator: Joi.string().alphanum(),
     skip: Joi.string().alphanum(),
     handler: Joi.string().alphanum(),
-    group: Joi.array().items(Joi.string()),
+    group: Joi.array().items(Joi.string().guid()),
     disableStats: Joi.boolean()
 });
 

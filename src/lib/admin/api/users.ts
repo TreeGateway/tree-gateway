@@ -47,11 +47,10 @@ export class UsersRest {
     @Path(":userLogin")
     updateUser(user: UserData): Promise<void>{
         return new Promise<void>((resolve, reject) => {
-            validateUser(user).then((validUser: UserData) =>
-                UsersRest.getUserService().update(validUser)
-            )
-            .then(resolve)
-            .catch(reject);
+            validateUser(user)
+                .then((validUser: UserData) => UsersRest.getUserService().update(validUser))
+                .then(() => resolve())
+                .catch(reject);
         });
     }
 

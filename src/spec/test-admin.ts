@@ -45,8 +45,10 @@ const simpleUser = {
 };
 
 const getIdFromResponse = (response) => {
-    const parts = response.headers["location"].split("/");
-    return parts[parts.length-1];
+	const location = response.headers["location"];
+    expect(location).toBeDefined();
+    const parts = location ? location.split("/") : [];
+    return parts.length > 0 ? parts[parts.length-1] : null;
 };
 
 const createUsers = () => {
@@ -125,7 +127,7 @@ describe("Admin API", () => {
                 done();
             });
         });
-                it("should be able to sign users in", (done) => {
+        it("should be able to sign users in", (done) => {
             let form = {
 				'login': 'simple',
 				'password': '123test'
@@ -245,8 +247,7 @@ describe("Admin API", () => {
             },
             server: {
                 cacheTime: "1 min"
-            },
-            group: ["Group1", "Group2"]
+            }
         };
 
         beforeAll((done) => {

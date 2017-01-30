@@ -167,6 +167,7 @@ export abstract class RedisApiComponentService<T> extends RedisService implement
             this.getComponentKey(component)
                 .then((key) => {
                     location = key;
+                    component["id"] = key;
 
                     return this.redisClient.multi()
                                .hmset(this.getMapKey(apiId), key, JSON.stringify(component))
