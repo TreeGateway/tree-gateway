@@ -56,11 +56,10 @@ class UserAdmin {
                 roles: ["tree-gateway-config", "tree-gateway-admin"]
             };
 
-            validateUser(user).then((validUser: UserData) =>
-                self.userService.create(validUser)
-            )
-            .then(resolve)
-            .catch(reject);
+            validateUser(user)
+                .then((validUser: UserData) => self.userService.create(validUser))
+                .then(() => resolve())
+                .catch(reject);
         });
     }
 
