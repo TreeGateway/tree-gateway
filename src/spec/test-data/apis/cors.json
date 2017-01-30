@@ -1,0 +1,15 @@
+{
+    "name": "TestCorsAPI",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "cors/",
+        "target": {
+            "path": "http://httpbin.org"
+        }
+    },
+    "cors" : [{
+        "origin": {
+            "enableAll": true
+        }
+    }]
+}

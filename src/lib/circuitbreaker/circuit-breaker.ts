@@ -145,7 +145,7 @@ export class ApiCircuitBreaker {
             let index = breakers.indexOf(generalBreakers[0]);
             if (index < breakers.length -1) {
                 let gen = breakers.splice(index, 1);
-                breakers.push(gen)   
+                breakers.push(gen[0])   
             }
         }
         return breakers;

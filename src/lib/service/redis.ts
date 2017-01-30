@@ -4,12 +4,13 @@ import {Redis} from "ioredis";
 
 import {ApiService, ApiComponentService, GroupService, ThrottlingService,
     CacheService, ProxyService, AuthenticationService, CircuitBreakerService, 
-    ConfigService, NotFoundError, DuplicatedError} from "./api";
+    CorsService, ConfigService, NotFoundError, DuplicatedError} from "./api";
 
 import {ApiConfig} from "../config/api";
 import {CacheConfig} from "../config/cache";
 import {ThrottlingConfig} from "../config/throttling";
 import {CircuitBreakerConfig} from "../config/circuit-breaker";
+import {CorsConfig} from "../config/cors";
 import {Group} from "../config/group";
 import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
@@ -240,6 +241,12 @@ export class RedisCircuitBreakerService extends RedisApiComponentService<Circuit
     }
 }
 
+export class RedisCorsService extends RedisApiComponentService<CorsConfig> implements CorsService {
+    getMapName(): string {
+        return "cors";
+    }
+}
+
 export class RedisCacheService extends RedisApiComponentService<CacheConfig> implements CacheService {
     getMapName(): string {
         return "cache";
@@ -393,6 +400,7 @@ export class RedisConfigService extends RedisService implements ConfigService {
     private _groupService: GroupService;
     private _throttlingService: ThrottlingService;
     private _circuitBreakerService: CircuitBreakerService;
+    private _corsService: CorsService;
     private _cacheService: CacheService;
     private _authService: AuthenticationService;
     private gateway: Gateway;
@@ -404,6 +412,7 @@ export class RedisConfigService extends RedisService implements ConfigService {
         this._groupService = new RedisGroupService(gateway.redisClient);
         this._throttlingService = new RedisThrottlingService(gateway.redisClient);
         this._circuitBreakerService = new RedisCircuitBreakerService(gateway.redisClient);
+        this._corsService = new RedisCorsService(gateway.redisClient);
         this._cacheService = new RedisCacheService(gateway.redisClient);
         this._authService = new RedisAuthenticationService(gateway.redisClient);
         this.gateway = gateway;
@@ -513,21 +522,24 @@ export class RedisConfigService extends RedisService implements ConfigService {
                     if (groups && groups.length > 0) {
                         apiConfig.group = groups;
                     }
-
                     return this._throttlingService.list(apiConfig.id);
                 })
                 .then((throttling) => {
                     if (throttling && throttling.length > 0) {
                         apiConfig.throttling = throttling;
                     }
-
                     return this._circuitBreakerService.list(apiConfig.id);
                 })
                 .then((circuitBreaker) => {
                     if (circuitBreaker && circuitBreaker.length > 0) {
                         apiConfig.circuitBreaker = circuitBreaker;
                     }
-
+                    return this._corsService.list(apiConfig.id);
+                })
+                .then((cors) => {
+                    if (cors && cors.length > 0) {
+                        apiConfig.cors = cors;
+                    }
                     return this._cacheService.list(apiConfig.id);
                 })
                 .then((cache) => {

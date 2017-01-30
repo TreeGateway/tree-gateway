@@ -216,6 +216,16 @@ describe("Gateway Tests", () => {
 		});
 	});
 
+	describe("The Gateway Cors", () => {
+		it("should be able to accept cors requests", (done) => {
+			gatewayRequest("/cors/get", (error, response, body)=>{
+				expect(response.statusCode).toEqual(200);
+				done();
+			});
+		});
+	});
+
+
 	describe("The Gateway Authenticator", () => {
 		it("should be able deny request without authentication", (done) => {
 			gatewayRequest("/secure/get?arg=1", (error, response, body)=>{
@@ -341,7 +351,7 @@ describe("Gateway Tests", () => {
 
 	function installApi(apiConfig: ApiConfig): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery', 'circuitBreaker');
+			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery', 'circuitBreaker', 'cors');
 
 			adminRequest.post("/apis", {
                 headers: { 'authorization': `JWT ${configToken}` },
@@ -358,6 +368,7 @@ describe("Gateway Tests", () => {
 					.then(() => installApiThrottling(apiConfig.id, apiConfig.throttling))
 					.then(() => installApiAuthentication(apiConfig.id, apiConfig.authentication))
 					.then(() => installApiCircuitBreaker(apiConfig.id, apiConfig.circuitBreaker))
+					.then(() => installApiCors(apiConfig.id, apiConfig.cors))
 					.then(resolve)
 					.catch(reject);
 			});
@@ -480,6 +491,37 @@ describe("Gateway Tests", () => {
 
 			circuitBreaker.forEach((cb) => {
 				adminRequest.post(`/apis/${apiId}/circuitbreaker`, {
+	                headers: { 'authorization': `JWT ${configToken}` },
+					body: cb, json: true
+				}, (error, response, body) => {
+					if(error) {
+						return reject(error);
+					}
+					
+					if (response.statusCode === 201) {
+						returned++;
+						if (returned === expected) {
+							return resolve();
+						}
+
+						return;
+					}
+
+					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
+				});
+			});
+		});
+	}
+
+	function installApiCors(apiId: string, cors): Promise<void> {
+		return new Promise<void>((resolve, reject)=>{
+			if (!cors) {
+				return resolve();
+			}
+
+			let returned=0, expected = cors.length;
+			cors.forEach((cb) => {
+				adminRequest.post(`/apis/${apiId}/cors`, {
 	                headers: { 'authorization': `JWT ${configToken}` },
 					body: cb, json: true
 				}, (error, response, body) => {

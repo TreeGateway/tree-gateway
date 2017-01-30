@@ -32,7 +32,7 @@ export class CircuitBreakerRest extends RestController {
 
     @PUT
     @Path("/:circuitbreakerId")
-    updatecircuitbreaker(@PathParam("apiId") apiId: string,
+    updateCircuitBreaker(@PathParam("apiId") apiId: string,
                      @PathParam("circuitbreakerId") circuitbreakerId: string,
                      circuitbreaker: CircuitBreakerConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
@@ -48,7 +48,7 @@ export class CircuitBreakerRest extends RestController {
 
     @DELETE
     @Path("/:circuitbreakerId")
-    deletecircuitbreaker(@PathParam("apiId") apiId: string,
+    deleteCircuitBreaker(@PathParam("apiId") apiId: string,
                      @PathParam("circuitbreakerId") circuitbreakerId: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId, circuitbreakerId)
@@ -59,7 +59,7 @@ export class CircuitBreakerRest extends RestController {
 
     @GET
     @Path("/:circuitbreakerId")
-    getcircuitbreaker(@PathParam("apiId") apiId: string,
+    getCircuitBreaker(@PathParam("apiId") apiId: string,
                   @PathParam("circuitbreakerId") circuitbreakerId: string) : Promise<CircuitBreakerConfig> {
         return new Promise((resolve, reject) => {
             this.service.get(apiId, circuitbreakerId)

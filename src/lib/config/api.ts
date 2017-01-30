@@ -1,6 +1,7 @@
 "use strict";
 
 import {AuthenticationConfig, AuthenticationValidatorSchema} from "./authentication";
+import {CorsConfig, CorsConfigSchema} from "./cors";
 import {ThrottlingConfig, ThrottlingConfigValidatorSchema} from "./throttling";
 import {CacheConfig, CacheConfigValidatorSchema} from "./cache";
 import {Proxy, ProxyValidatorSchema} from "./proxy";
@@ -41,23 +42,23 @@ export interface ApiConfig {
      * Configuration for the rate limit engine.
      */
     throttling?: Array<ThrottlingConfig>;
-
     /**
      * Configuration for API authentication.
      */
     authentication?: AuthenticationConfig;
-
     /**
      * Configuration for API cache.
      */
     cache?: Array<CacheConfig>;
-
     /**
      * Configuration for api circuit breaker, following the pattern 
      * [Circuit Breaker](http://doc.akka.io/docs/akka/snapshot/common/circuitbreaker.html).
      */
     circuitBreaker?: Array<CircuitBreakerConfig>;
-
+    /**
+     * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
+     */
+    cors?: Array<CorsConfig>
     /**
      * Configuration for service discovery.
      */
@@ -75,6 +76,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     authentication: AuthenticationValidatorSchema, 
     cache: Joi.array().items(CacheConfigValidatorSchema), 
     circuitBreaker: Joi.array().items(CircuitBreakerConfigValidatorSchema), 
+    cors: Joi.array().items(CorsConfigSchema),
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 

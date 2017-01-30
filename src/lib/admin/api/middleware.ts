@@ -77,6 +77,12 @@ export class MiddlewareRest {
         return this.service.list('circuitbreaker/handler');
     }
 
+    @GET
+    @Path('cors')
+    corsOrigin() : Promise<Array<string>>{
+        return this.service.list('cors/origin');
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter(@PathParam("name")name: string) : Promise<void>{
@@ -129,6 +135,12 @@ export class MiddlewareRest {
     @Path('circuitbreaker/:name')
     removeCircuitBreaker(@PathParam("name")name: string) : Promise<void>{
         return this.service.remove('circuitbreaker/handler', name);
+    }
+
+    @DELETE
+    @Path('cors/:name')
+    removeCors(@PathParam("name")name: string) : Promise<void>{
+        return this.service.remove('cors/origin', name);
     }
 
     @PUT
@@ -185,6 +197,11 @@ export class MiddlewareRest {
         return this.service.save('circuitbreaker/handler', name, file.buffer);
     }
 
+    @PUT
+    @Path('cors/:name')
+    saveCors(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
+        return this.service.save('cors/origin', name, file.buffer);
+    }
     @GET
     @Path('filters/:name')
     readFilter(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
@@ -303,6 +320,20 @@ export class MiddlewareRest {
     readCircuitBreakerMiddleware(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
         return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
             this.service.read('circuitbreaker/handler', name)
+                .then(value=>{
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
+                })
+                .catch(err=>{
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
+
+    @GET
+    @Path('cors/:name')
+    readCorsMiddleware(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
+        return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
+            this.service.read('cors/origin', name)
                 .then(value=>{
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
                 })
@@ -447,4 +478,18 @@ export class MiddlewareRest {
         });
     }
     
+    @POST
+    @Path('cors')
+    addCors(@FileParam("file") file: Express.Multer.File, 
+                    @FormParam("name") name: string){
+        return new Promise<Return.NewResource>((resolve, reject) =>{
+            this.service.add('cors/origin', name, file.buffer)
+                .then(value=>{
+                    resolve(new Return.NewResource(path.join('cors',name)));
+                })
+                .catch(err=>{
+                    reject(new Errors.InternalServerError('Error saving handler.'))
+                });
+        });
+    }
 }

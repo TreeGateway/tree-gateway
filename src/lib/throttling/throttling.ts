@@ -53,12 +53,12 @@ export class ApiRateLimit {
             throttlingInfo.limiter = new RateLimit(rateConfig);
 
             if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug(`Configuring Throtlling controller for path [${api.proxy.target.path}].`);
+                this.gateway.logger.debug(`Configuring Throtlling controller for path [${api.proxy.path}].`);
             }
             if (throttling.group){
                 if (this.gateway.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, throttling.group);
-                    this.gateway.logger.debug(`Configuring Group filters for Throtlling on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.gateway.logger.debug(`Configuring Group filters for Throtlling on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 throttlingInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, throttling.group);
             }
@@ -138,7 +138,7 @@ export class ApiRateLimit {
             let index = throttlings.indexOf(generalThrottlings[0]);
             if (index < throttlings.length -1) {
                 let gen = throttlings.splice(index, 1);
-                throttlings.push(gen)   
+                throttlings.push(gen[0])   
             }
         }
         return throttlings;

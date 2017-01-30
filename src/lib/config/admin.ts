@@ -4,8 +4,11 @@ import * as Joi from "joi";
 import {UsersConfig, UsersConfigValidatorSchema} from "./users";
 import {AccessLoggerConfig, AccessLoggerConfigSchema} from "./logger";
 import {ProtocolConfig, ProtocolConfigSchema} from "./protocol";
+import {CorsConfig, CorsConfigSchema} from "./cors";
 
-
+/**
+ * Configure the Admin module for the gateway.
+ */
 export interface AdminConfig {
     /**
      * The gateway admin server protocol configurations
@@ -28,6 +31,11 @@ export interface AdminConfig {
      * If provided, the service will publish all api documentation under this path.
      */
     apiDocs?: string;
+    /**
+     * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
+     */
+    cors?: Array<CorsConfig>
+
 }
 
 export let AdminConfigValidatorSchema = Joi.object().keys({
@@ -35,7 +43,8 @@ export let AdminConfigValidatorSchema = Joi.object().keys({
     users: UsersConfigValidatorSchema.required(),
     accessLogger: AccessLoggerConfigSchema,
     disableStats: Joi.boolean(), 
-    apiDocs: Joi.string()
+    apiDocs: Joi.string(),
+    cors: Joi.array().items(CorsConfigSchema)    
 });
 
 export function validateAdminConfig(config: AdminConfig) {

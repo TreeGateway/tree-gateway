@@ -112,7 +112,7 @@ export class ApiCache {
             let index = caches.indexOf(generalCaches[0]);
             if (index < caches.length -1) {
                 let gen = caches.splice(index, 1);
-                caches.push(gen)   
+                caches.push(gen[0])   
             }
         }
         return caches;
