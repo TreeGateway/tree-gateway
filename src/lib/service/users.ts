@@ -37,7 +37,7 @@ class DefaultUserService  implements UserService {
         return new Promise((resolve, reject) => {
             this.redisClient.hgetall(DefaultUserService.USERS_PREFIX)
                 .then((apis) => {
-                    resolve(_.values(apis));
+                    resolve(_.map(_.values(apis), (value: string) => JSON.parse(value)));
                 })
                 .catch(reject);
         });

@@ -78,7 +78,7 @@ class UserAdmin {
             self.userService.list()
             .then(users=>{
                 if (users) {
-                    users.forEach((user, index) => console.log(`${index+1})\t${user.login} - ${user.name}`));
+                   users.forEach((user, index) => console.log(`${index+1})\t${user.login} - ${user.name}`));
                 }
                 resolve();
             })
