@@ -34,8 +34,7 @@ export interface AdminConfig {
     /**
      * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
      */
-    cors?: Array<CorsConfig>
-
+    cors?: CorsConfig
 }
 
 export let AdminConfigValidatorSchema = Joi.object().keys({
@@ -44,7 +43,7 @@ export let AdminConfigValidatorSchema = Joi.object().keys({
     accessLogger: AccessLoggerConfigSchema,
     disableStats: Joi.boolean(), 
     apiDocs: Joi.string(),
-    cors: Joi.array().items(CorsConfigSchema)    
+    cors: CorsConfigSchema
 });
 
 export function validateAdminConfig(config: AdminConfig) {

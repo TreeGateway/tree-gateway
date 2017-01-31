@@ -29,7 +29,14 @@
                 "jwtSecret": "secret"
             }
         },
-        "apiDocs": "api-docs"                
+        "apiDocs": "api-docs",
+        "cors" : {
+            "origin": {
+                "allow": [{
+                    "value": "*"
+                }]
+            }
+        }
     },
     "rootPath": ".",
     "logger": {

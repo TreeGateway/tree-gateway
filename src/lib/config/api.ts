@@ -1,7 +1,7 @@
 "use strict";
 
 import {AuthenticationConfig, AuthenticationValidatorSchema} from "./authentication";
-import {CorsConfig, CorsConfigSchema} from "./cors";
+import {ApiCorsConfig, ApiCorsConfigSchema} from "./cors";
 import {ThrottlingConfig, ThrottlingConfigValidatorSchema} from "./throttling";
 import {CacheConfig, CacheConfigValidatorSchema} from "./cache";
 import {Proxy, ProxyValidatorSchema} from "./proxy";
@@ -58,7 +58,7 @@ export interface ApiConfig {
     /**
      * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
      */
-    cors?: Array<CorsConfig>
+    cors?: Array<ApiCorsConfig>
     /**
      * Configuration for service discovery.
      */
@@ -76,7 +76,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     authentication: AuthenticationValidatorSchema, 
     cache: Joi.array().items(CacheConfigValidatorSchema), 
     circuitBreaker: Joi.array().items(CircuitBreakerConfigValidatorSchema), 
-    cors: Joi.array().items(CorsConfigSchema),
+    cors: Joi.array().items(ApiCorsConfigSchema),
     serviceDiscovery: ServiceDiscoveryConfigValidatorSchema
 });
 

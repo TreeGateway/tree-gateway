@@ -2,14 +2,11 @@
 
 import * as Joi from "joi";
 
+
 /**
  * Configure support for Cors requests.
  */
 export interface CorsConfig {
-    /**
-     * The cache ID.
-     */
-    id?: string;
     /**
      * Configures the Access-Control-Allow-Origin CORS header. 
      */
@@ -45,6 +42,16 @@ export interface CorsConfig {
      * Pass the CORS preflight response to the next handler.
      */
     preflightContinue?: boolean;
+}
+
+/**
+ * Configure support for Cors requests.
+ */
+export interface ApiCorsConfig extends CorsConfig{
+    /**
+     * The cache ID.
+     */
+    id?: string;
     /**
      * A list of groups that will use this cors cofiguration
      */
@@ -78,7 +85,7 @@ let CorsOriginSchema = Joi.object().keys({
     dynamic: Joi.string()
 }).min(1).max(1);
 
-export let CorsConfigSchema = Joi.object().keys({
+export let ApiCorsConfigSchema = Joi.object().keys({
     id: Joi.string().guid(),
     origin: CorsOriginSchema.required(),
     method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD')),
@@ -90,9 +97,19 @@ export let CorsConfigSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string())
 });
 
-export function validateCorsConfig(cors: CorsConfig) {
+export let CorsConfigSchema = Joi.object().keys({
+    origin: CorsOriginSchema.required(),
+    method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD')),
+    allowedHeaders: Joi.array().items(Joi.string()),
+    exposedHeaders: Joi.array().items(Joi.string()),
+    credentials: Joi.boolean(),
+    maxAge: Joi.string(),
+    preflightContinue: Joi.boolean()
+});
+
+export function validateApiCorsConfig(cors: ApiCorsConfig) {
     return new Promise((resolve, reject) => {
-        Joi.validate(cors, CorsConfigSchema, (err, value)=>{
+        Joi.validate(cors, ApiCorsConfigSchema, (err, value)=>{
             if (err) {
                 reject(err);
             } else {

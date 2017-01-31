@@ -10,7 +10,7 @@ import {ApiConfig} from "../config/api";
 import {CacheConfig} from "../config/cache";
 import {ThrottlingConfig} from "../config/throttling";
 import {CircuitBreakerConfig} from "../config/circuit-breaker";
-import {CorsConfig} from "../config/cors";
+import {ApiCorsConfig} from "../config/cors";
 import {Group} from "../config/group";
 import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
@@ -241,7 +241,7 @@ export class RedisCircuitBreakerService extends RedisApiComponentService<Circuit
     }
 }
 
-export class RedisCorsService extends RedisApiComponentService<CorsConfig> implements CorsService {
+export class RedisCorsService extends RedisApiComponentService<ApiCorsConfig> implements CorsService {
     getMapName(): string {
         return "cors";
     }

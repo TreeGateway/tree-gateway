@@ -3,7 +3,7 @@
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 
-import {CorsConfig, validateCorsConfig} from "../../config/cors";
+import {ApiCorsConfig, validateApiCorsConfig} from "../../config/cors";
 
 import {RedisCorsService} from "../../service/redis";
 
@@ -13,14 +13,14 @@ import {RestController} from "./admin-util";
 export class CorsRest extends RestController {
  
     @GET
-    list(@PathParam("apiId") apiId: string): Promise<Array<CorsConfig>>{
+    list(@PathParam("apiId") apiId: string): Promise<Array<ApiCorsConfig>>{
         return this.service.list(apiId);
     }
 
     @POST
-    addCors(@PathParam("apiId") apiId: string, cors: CorsConfig): Promise<Return.NewResource> {
+    addCors(@PathParam("apiId") apiId: string, cors: ApiCorsConfig): Promise<Return.NewResource> {
         return new Promise<Return.NewResource>((resolve, reject) => {
-            validateCorsConfig(cors)
+            validateApiCorsConfig(cors)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
@@ -34,9 +34,9 @@ export class CorsRest extends RestController {
     @Path("/:corsId")
     updateCors(@PathParam("apiId") apiId: string,
                      @PathParam("corsId") corsId: string,
-                     cors: CorsConfig): Promise<void> {
+                     cors: ApiCorsConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            validateCorsConfig(cors)
+            validateApiCorsConfig(cors)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
@@ -60,7 +60,7 @@ export class CorsRest extends RestController {
     @GET
     @Path("/:corsId")
     getCors(@PathParam("apiId") apiId: string,
-                  @PathParam("corsId") corsId: string) : Promise<CorsConfig> {
+                  @PathParam("corsId") corsId: string) : Promise<ApiCorsConfig> {
         return new Promise((resolve, reject) => {
             this.service.get(apiId, corsId)
                 .then(resolve)

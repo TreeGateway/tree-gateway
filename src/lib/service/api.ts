@@ -6,7 +6,7 @@ import {ApiConfig} from "../config/api";
 import {CacheConfig} from "../config/cache";
 import {ThrottlingConfig} from "../config/throttling";
 import {CircuitBreakerConfig} from "../config/circuit-breaker";
-import {CorsConfig} from "../config/cors";
+import {ApiCorsConfig} from "../config/cors";
 import {Group} from "../config/group";
 import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
@@ -62,7 +62,7 @@ export interface ThrottlingService extends ApiComponentService<ThrottlingConfig>
 
 export interface CircuitBreakerService extends ApiComponentService<CircuitBreakerConfig> {}
 
-export interface CorsService extends ApiComponentService<CorsConfig> {}
+export interface CorsService extends ApiComponentService<ApiCorsConfig> {}
 
 export interface CacheService extends ApiComponentService<CacheConfig> {}
 

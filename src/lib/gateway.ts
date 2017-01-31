@@ -440,13 +440,21 @@ export class Gateway {
                 AccessLogger.configureAccessLoger(this.config.admin.accessLogger, 
                             this, this.adminApp, './logs/admin');
             }
+            this.configureAdminCors();
             this.configureApiDocs();
 
             AdminServer.gateway = this;
 
             UsersRest.configureAuthMiddleware(this.adminApp);
             Server.buildServices(this.adminApp, ...adminApi);
+        }
+    }
 
+    private configureAdminCors() {
+        if (this.config.admin.cors){
+            let cors = require("cors");
+            let corsOptions = new ApiCors(this).configureCorsOptions(this.config.admin.cors);            
+            this.adminApp.use(cors(corsOptions));
         }
     }
 

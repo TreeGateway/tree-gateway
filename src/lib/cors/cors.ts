@@ -2,7 +2,7 @@
 
 import * as express from "express";
 import {ApiConfig} from "../config/api";
-import {CorsConfig} from "../config/cors";
+import {ApiCorsConfig} from "../config/cors";
 import * as _ from "lodash";
 import * as pathUtil from "path"; 
 import {Gateway} from "../gateway";
@@ -26,17 +26,12 @@ export class ApiCors {
 
     cors(apiRouter: express.Router, api: ApiConfig) {
         let path: string = api.proxy.path;
-        let configusrations: Array<CorsConfig> = this.sortMiddlewares(api.cors, path);
+        let configusrations: Array<ApiCorsConfig> = this.sortMiddlewares(api.cors, path);
         let corsInfos: Array<CorsInfo> = new Array<CorsInfo>();
 
-        configusrations.forEach((cors: CorsConfig) => {
+        configusrations.forEach((cors: ApiCorsConfig) => {
             let corsInfo: CorsInfo = {}; 
-            let corsOptions: corsMiddleware.CorsOptions = _.omit(cors, "id", "origin", "maxAge", "group")
-            
-            this.configureCorsOrigin(path, cors, corsOptions);
-            if (cors.maxAge) {
-                corsOptions.maxAge = humanInterval(cors.maxAge);
-            }
+            let corsOptions: corsMiddleware.CorsOptions = this.configureCorsOptions(cors);
             corsInfo.corsMiddleware = corsMiddleware(corsOptions);
 
             if (this.gateway.logger.isDebugEnabled()) {
@@ -55,7 +50,11 @@ export class ApiCors {
         this.setupMiddlewares(apiRouter, corsInfos);
     }
 
-    private configureCorsOrigin(path: string, cors: CorsConfig, corsOptions: corsMiddleware.CorsOptions) {
+    configureCorsOptions(cors: ApiCorsConfig): corsMiddleware.CorsOptions {
+        let corsOptions: corsMiddleware.CorsOptions = _.omit(cors, "id", "origin", "maxAge", "group")
+        if (cors.maxAge) {
+            corsOptions.maxAge = humanInterval(cors.maxAge);
+        }
         if (cors.origin.enableAll) {
             corsOptions.origin = true;
         }
@@ -75,10 +74,11 @@ export class ApiCors {
             let p = pathUtil.join(this.gateway.middlewarePath, 'cors', 'origin' , cors.origin.dynamic);                
             corsOptions.origin = require(p);
         }
+        return corsOptions;
     }
 
-    private setupMiddlewares(apiRouter: express.Router, throttlingInfos: Array<CorsInfo>) {
-        throttlingInfos.forEach((corsInfo: CorsInfo) =>{
+    private setupMiddlewares(apiRouter: express.Router, corsInfos: Array<CorsInfo>) {
+        corsInfos.forEach((corsInfo: CorsInfo) =>{
             let middleware = this.buildMiddleware(corsInfo);
             apiRouter.use(middleware);
         });
@@ -100,7 +100,7 @@ export class ApiCors {
         };
     }
 
-    private sortMiddlewares(corsConfigs: Array<CorsConfig>, path: string): Array<CorsConfig> {
+    private sortMiddlewares(corsConfigs: Array<ApiCorsConfig>, path: string): Array<ApiCorsConfig> {
         let generalThrottlings = _.filter(corsConfigs, (value)=>{
             if (value.group) {
                 return true;
