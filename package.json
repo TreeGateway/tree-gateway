@@ -37,7 +37,7 @@
     "path-to-regexp": "^1.6.0",
     "serve-favicon": "~2.3.0",
     "swagger-ui-express": "^1.0.2",
-    "typescript-rest": "^0.3.0",
+    "typescript-rest": "^0.3.3",
     "uuid": "^3.0.1",
     "winston": "^2.2.0"
   },

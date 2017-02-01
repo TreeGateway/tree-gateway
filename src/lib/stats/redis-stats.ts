@@ -45,7 +45,7 @@ export class RedisStats extends StatsHandler {
     }
 
     /**
-     * Get a time serie whit the last 'count' measurements recorded. 
+     * Get a time serie whith the last 'count' measurements recorded. 
      */
     getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
         let currentTime: number = this.getCurrentTime();
@@ -60,7 +60,7 @@ export class RedisStats extends StatsHandler {
     }
     
     /**
-     * Get a time serie whit starting from the 'time' moment. 
+     * Get a time serie starting from the 'time' moment. 
      */
     getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
         let currentTime: number = this.getCurrentTime();
