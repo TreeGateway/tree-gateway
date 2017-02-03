@@ -32,6 +32,7 @@ import {MiddlewareInstaller} from "./utils/middleware-installer";
 import * as fs from "fs-extra-promise";
 import * as path from "path";
 import * as os from "os";
+import * as _ from "lodash";
 
 class StatsController {
     requestStats: Stats;
@@ -112,8 +113,14 @@ export class Gateway {
         return this._apis.get(apiId);
     }
 
-    createStats(id: string) {
-        return this._statsRecorder.createStats(id, this._config.statsConfig);
+    createStats(id: string, statsConfig?: StatsConfig) {
+        if (statsConfig || this.statsConfig) {
+            let config = <StatsConfig>_.defaultsDeep((statsConfig||{}), (this.statsConfig||{}));
+            
+            return this._statsRecorder.createStats(id, this.statsConfig);
+        }
+
+        return null;
     }
 
     start(): Promise<void> {

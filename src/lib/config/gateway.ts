@@ -39,7 +39,7 @@ export interface GatewayConfig {
      */
     accessLogger?: AccessLoggerConfig;
     /**
-     * Configurations for gateway stats
+     * Defaut configurations for gateway stats
      */
     statsConfig?: StatsConfig;
     /**

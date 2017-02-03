@@ -13,12 +13,8 @@ import {RedisStateHandler} from "./redis-state-handler";
 
 class StatsController {
     open: Stats;
-    halfOpen: Stats;
     close: Stats;
     rejected: Stats;
-    success: Stats;
-    failure: Stats;
-    timeout: Stats;
 }
 
 interface BreakerInfo{
@@ -152,17 +148,15 @@ export class ApiCircuitBreaker {
     }
 
     private createCircuitBreakerStats(path: string, config: CircuitBreakerConfig) : StatsController {
-        if ((!config.disableStats) && (this.gateway.statsConfig)) {
+        if (!config.disableStats) {
             let stats: StatsController = new StatsController();
-            stats.close = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'close'));
-            stats.open = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'open'));
-            stats.rejected = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'rejected'));
-            // stats.failure = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'failure'));
-            // stats.halfOpen = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'halfOpen'));
-            // stats.timeout = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'timeout'));
-            // stats.success = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'success'));
+            stats.close = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'close'), config.statsConfig);
+            stats.open = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'open'), config.statsConfig);
+            stats.rejected = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'rejected'), config.statsConfig);
             
-            return stats;
+            if (stats.open) {
+                return stats;
+            }
         }
 
         return null;

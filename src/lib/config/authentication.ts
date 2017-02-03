@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
 
 export interface AuthenticationConfig {
     /**
@@ -17,6 +18,10 @@ export interface AuthenticationConfig {
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
+    /**
+     * Configurations for authentication stats.
+     */
+    statsConfig?: StatsConfig;    
 }
 
 export interface AuthenticationStrategyConfig {
@@ -133,7 +138,9 @@ export let AuthenticationStrategyValidatorSchema = Joi.object().keys({
 export let AuthenticationValidatorSchema = Joi.object().keys({
     strategy: AuthenticationStrategyValidatorSchema.required(),
     group: Joi.array().items(Joi.string()), 
-    disableStats: Joi.boolean()
+    disableStats: Joi.boolean(),
+    statsConfig: StatsConfigValidatorSchema
+    
 });
 
 export function validateAuthenticationConfig(authentication: AuthenticationConfig) {

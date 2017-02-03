@@ -134,12 +134,14 @@ export class ApiAuth {
     }
 
     private createAuthStats(path: string, authentication: AuthenticationConfig) : StatsController {
-        if ((!authentication.disableStats) && (this.gateway.statsConfig)) {
+        if (!authentication.disableStats) {
             let stats: StatsController = new StatsController();
-            stats.failStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'fail'));
-            stats.successStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'success'));
+            stats.failStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'fail'), authentication.statsConfig);
+            stats.successStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'success'), authentication.statsConfig);
             
-            return stats;
+            if (stats.failStats) {
+                return stats;
+            }
         }
 
         return null;

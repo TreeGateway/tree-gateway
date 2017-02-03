@@ -22,6 +22,8 @@ It is an work in proggress.
    - Client Cache (via cache control)
    - Server Cache
      - Redis 
+ - Circuit Breaker
+   - Redis cluster can handle circuit state     
  - Monitoring and Analytics
    - Accesses / status codes
    - Authentication attempts / fails
@@ -29,6 +31,7 @@ It is an work in proggress.
    - cache hits / misses / errors
    - CPU usage
    - Memory Usage
+   - Circuitbreaker state changes
  - Admin API
    - Hot reloading of changes
    - Multi process notifications
@@ -36,9 +39,6 @@ It is an work in proggress.
    - Huge clusters of gateways
    - Clustered Redis
    - Monitoring for cluster nodes
- - Circuit Breaker
-   - Redis cluster can handle circuit state
-   - Stats about circuit state
 
 ## In progress Features
  - Alarms (when stats collected by gateway reaches some thresholds)

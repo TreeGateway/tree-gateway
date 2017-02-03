@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
 
 export interface CircuitBreakerConfig {
     /**
@@ -32,6 +33,10 @@ export interface CircuitBreakerConfig {
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
+    /**
+     * Configurations for circuitbreaker stats.
+     */
+    statsConfig?: StatsConfig;
     /**
      * The name of the function to execute once the circuit is open. 
      * It receives the API path being called.
@@ -109,6 +114,7 @@ export let CircuitBreakerConfigValidatorSchema = Joi.object().keys({
     maxFailures: Joi.number(),
     group: Joi.array().items(Joi.string()),
     disableStats: Joi.boolean(),
+    statsConfig: StatsConfigValidatorSchema,
     onOpen: Joi.string(),
     onClose: Joi.string(),
     onRejected: Joi.string(),

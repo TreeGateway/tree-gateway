@@ -145,8 +145,8 @@ export class ApiRateLimit {
     }
 
     private createStats(path: string, throttling: ThrottlingConfig) : Stats {
-        if ((!throttling.disableStats) && (this.gateway.statsConfig)) {
-            return this.gateway.createStats(Stats.getStatsKey('throt', path, 'exceeded'));
+        if (!throttling.disableStats) {
+            return this.gateway.createStats(Stats.getStatsKey('throt', path, 'exceeded'), throttling.statsConfig);
         }
 
         return null;
