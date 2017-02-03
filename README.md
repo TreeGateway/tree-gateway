@@ -36,13 +36,15 @@ It is an work in proggress.
    - Huge clusters of gateways
    - Clustered Redis
    - Monitoring for cluster nodes
+ - Circuit Breaker
+   - Redis cluster can handle circuit state
+   - Stats about circuit state
 
 ## In progress Features
  - Alarms (when stats collected by gateway reaches some thresholds)
  - Service Discovery
  - Load Balancing
  - Authorization
- - Circuit Breaker
  - Dockering
  - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
 
