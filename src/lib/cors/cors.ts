@@ -62,13 +62,18 @@ export class ApiCors {
             corsOptions.origin = false;
         }
         else if (cors.origin.allow) {
-            corsOptions.origin = <string[]>cors.origin.allow.map(originConfig=>{
-                if (originConfig.value) {
-                    return originConfig.value;
-                }
-                else 
-                    return new RegExp(originConfig.regexp);
-            });
+            if (_.filter(cors.origin.allow), obj => obj.value === '*'){
+                corsOptions.origin = true;
+            }
+            else { 
+                corsOptions.origin = <string[]>cors.origin.allow.map(originConfig=>{
+                    if (originConfig.value) {
+                        return originConfig.value;
+                    }
+                    else 
+                        return new RegExp(originConfig.regexp);
+                });
+            }
         }
         else if (cors.origin.dynamic) {
             let p = pathUtil.join(this.gateway.middlewarePath, 'cors', 'origin' , cors.origin.dynamic);                
