@@ -62,7 +62,7 @@ export class ApiCors {
             corsOptions.origin = false;
         }
         else if (cors.origin.allow) {
-            if (_.filter(cors.origin.allow), obj => obj.value === '*'){
+            if (_.filter(cors.origin.allow, obj => obj.value === '*').length > 0){
                 corsOptions.origin = true;
             }
             else { 
