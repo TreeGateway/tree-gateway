@@ -4,15 +4,18 @@ import {Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, R
         Accept} from "typescript-rest";
 import "es6-promise";
 import * as path from "path";
-import {AdminServer} from "../admin-server";
-import {MiddlewareService, RedisMiddlewareService} from "../../service/middleware";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Database} from "../../database";
 
 @Path('healthcheck')
+@AutoWired
 export class HealthCheck {
+    @Inject private database: Database;
+
     @GET
     check(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            AdminServer.gateway.redisClient.ping().then(() => {
+            this.database.redisClient.ping().then(() => {
                 resolve("OK");
             })
             .catch(err => {

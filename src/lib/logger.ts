@@ -5,19 +5,21 @@ import {LoggerConfig, LogLevel} from "./config/logger";
 import * as _ from "lodash";
 import * as path from "path";
 import * as fs from "fs-extra-promise";
-import {Gateway} from "./gateway";
+import {AutoWired, Singleton, Inject} from "typescript-ioc";
+import {Configuration} from "./configuration";
 
+@Singleton
+@AutoWired
 export class Logger {
     level: LogLevel;
     winston: Winston.LoggerInstance;
-    config: LoggerConfig;
+    @Inject private config: Configuration;
 
-    constructor(config: LoggerConfig, gateway: Gateway) {
-        this.config = config;
-        this.winston = this.instantiateLogger(config, gateway);
+    constructor() {
+        this.winston = this.instantiateLogger(this.config.gateway.logger);
     }
 
-    private instantiateLogger(config: LoggerConfig, gateway: Gateway) {
+    private instantiateLogger(config: LoggerConfig) {
         this.level = (config? LogLevel[config.level] : LogLevel.info);
         const options: Winston.LoggerOptions = {
            level: LogLevel[this.level],
@@ -31,7 +33,7 @@ export class Logger {
             config.file = _.omit(config.file, 'outputDir');
             let outputDir: string = config.file.outputDir || './logs';
             if (_.startsWith(outputDir, '.')) {
-                outputDir = path.join(gateway.config.rootPath, outputDir);
+                outputDir = path.join(this.config.gateway.rootPath, outputDir);
             }
             const fileName = (process.env.processNumber?`gateway-${process.env.processNumber}.log`:`gateway.log`)
             config.file['filename'] = path.join(outputDir, fileName);

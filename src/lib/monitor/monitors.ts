@@ -5,51 +5,65 @@ import {CpuMonitor} from "./monitor-cpu";
 import {MemMonitor} from "./monitor-mem";
 import {Gateway} from "../gateway";
 import * as _ from "lodash";
+import {Logger} from "../logger";
+import {AutoWired, Singleton, Inject} from "typescript-ioc";
+import {Configuration} from "../configuration";
+import {Database} from "../database";
 
+@AutoWired
+@Singleton
 export class Monitors {
-    static MONITORS_PREFIX: string = "monitors"
-    static activeMonitors: Array<Monitor> = new Array<Monitor>();
-    private static interval: NodeJS.Timer;
+    private static MONITORS_PREFIX: string = "monitors";
 
-    static startMonitors(gateway: Gateway){
-        if (gateway.config.monitor) {
-            if (gateway.logger.isInfoEnabled()) {
-                gateway.logger.info(`Starting system monitors.`);
+    @Inject
+    private config: Configuration;
+    @Inject
+    private logger: Logger;
+    @Inject
+    private database: Database;
+
+    private activeMonitors: Array<Monitor> = new Array<Monitor>();
+    private interval: NodeJS.Timer;
+
+    startMonitors(){
+        if (this.config.gateway.monitor) {
+            if (this.logger.isInfoEnabled()) {
+                this.logger.info(`Starting system monitors.`);
             }
-            gateway.config.monitor.forEach(monitorConfig=>{
+            this.config.gateway.monitor.forEach(monitorConfig=>{
                 let monitor = null;
                 if (monitorConfig.name === 'cpu') {
-                    if (gateway.logger.isDebugEnabled()) {
-                        gateway.logger.debug(`Starting a CPU monitor.`);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Starting a CPU monitor.`);
                     }                    
-                    monitor = new CpuMonitor(gateway, monitorConfig);
+                    monitor = new CpuMonitor(monitorConfig);
                 }
                 else if (monitorConfig.name === 'mem') {
-                    if (gateway.logger.isDebugEnabled()) {
-                        gateway.logger.debug(`Starting a Memory monitor.`);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Starting a Memory monitor.`);
                     }                    
-                    monitor = new MemMonitor(gateway, monitorConfig);
+                    monitor = new MemMonitor(monitorConfig);
                 }
                 if (monitor) {
                     monitor.start();
-                    Monitors.activeMonitors.push(monitor);
+                    this.activeMonitors.push(monitor);
                 }
             });
-            Monitors.registerMonitor(gateway);
+            this.registerMonitor();
         }
     }
 
-    static stopMonitors(gateway: Gateway){
-        if (gateway.config.monitor) {
-            Monitors.activeMonitors.forEach(monitor => monitor.stop());
-            Monitors.activeMonitors = [];
-            Monitors.unregisterMonitor(gateway);
+    stopMonitors(){
+        if (this.config.gateway.monitor) {
+            this.activeMonitors.forEach(monitor => monitor.stop());
+            this.activeMonitors = [];
+            this.unregisterMonitor();
         }
     }
 
-    static getActiveMachines(gateway: Gateway): Promise<Array<string>> {
+    getActiveMachines(): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            gateway.redisClient.hgetall(Monitors.MONITORS_PREFIX)
+            this.database.redisClient.hgetall(Monitors.MONITORS_PREFIX)
                 .then((monitors) => {
                     let result: Array<string> = [];
                     let now = Date.now();
@@ -58,7 +72,7 @@ export class Monitors {
                             result.push(machine);
                         }
                         else {
-                            gateway.redisClient.hdel(`${Monitors.MONITORS_PREFIX}`, machine);
+                            this.database.redisClient.hdel(`${Monitors.MONITORS_PREFIX}`, machine);
                         }
                     });
                     resolve(result);
@@ -67,19 +81,21 @@ export class Monitors {
         });        
     }
 
-    private static registerMonitor(gateway: Gateway) {
+    private registerMonitor() {
+        let self = this;
         let period = 10000;
-        Monitors.interval = setInterval(()=>{
-            gateway.redisClient.hmset(`${Monitors.MONITORS_PREFIX}`, Monitor.getMachineId(), Date.now());
+        self.interval = setInterval(()=>{
+            this.database.redisClient.hmset(`${Monitors.MONITORS_PREFIX}`, Monitor.getMachineId(), Date.now());
         }, period);
     }
 
-    private static unregisterMonitor(gateway: Gateway) {
-        if (Monitors.interval) {
-            clearInterval(Monitors.interval);
-            Monitors.interval = null;
+    private unregisterMonitor() {
+        let self = this;
+        if (self.interval) {
+            clearInterval(self.interval);
+            self.interval = null;
         }
-        gateway.redisClient.hdel(`${Monitors.MONITORS_PREFIX}`, Monitor.getMachineId());
+        this.database.redisClient.hdel(`${Monitors.MONITORS_PREFIX}`, Monitor.getMachineId());
     }
     
 }

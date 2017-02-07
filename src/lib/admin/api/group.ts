@@ -1,17 +1,16 @@
 "use strict";
 
 import "es6-promise";
-
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "typescript-rest";
-
 import {Group, validateGroup} from "../../config/group";
-
-import {RedisGroupService} from "../../service/redis";
-
+import {GroupService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/groups')
+@AutoWired
 export class GroupRest extends RestController {
+    @Inject private service: GroupService;
 
     @GET
     list(@PathParam("apiId") apiId: string): Promise<Array<Group>>{
@@ -67,9 +66,5 @@ export class GroupRest extends RestController {
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisGroupService;
     }
 }

@@ -6,31 +6,37 @@ import {ServerCacheConfig} from "../config/cache";
 import * as humanInterval from "human-interval";
 import {RedisStore} from "./redis-store";
 import * as _ from "lodash";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Database} from "../database";
 
+@AutoWired
 export class ServerCache {
     static cacheStore: CacheStore<CacheEntry>;
-    private gateway: Gateway;
-    
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
+    @Inject
+    private logger: Logger;
+    @Inject
+    private database: Database;
+
+    constructor() {
         if (!ServerCache.cacheStore) {
             this.initializeCacheStore();
         }
     }
 
     private initializeCacheStore() {
-        if (this.gateway.logger.isDebugEnabled()) {
-            this.gateway.logger.debug("Initializing Redis cache store.");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Initializing Redis cache store.");
         }
         ServerCache.cacheStore = new RedisStore({
-            client: this.gateway.redisClient
+            client: this.database.redisClient
         });            
     }
 
     buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req: string, res: string, 
                          next: string, stats?: string){
-        if (this.gateway.logger.isDebugEnabled()) {
-            this.gateway.logger.debug('Configuring Server Cache for path [%s].', path);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug('Configuring Server Cache for path [%s].', path);
         }
         let result = new Array<string>();
         result.push(`ServerCache.cacheStore.get(${req}.originalUrl, function(err, entry){`);

@@ -2,18 +2,17 @@
 
 import * as config from "../config/proxy";
 import * as path from "path"; 
-import {ApiProxy} from "./proxy";
 import {ApiConfig} from "../config/api";
 import * as Groups from "../group";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Configuration} from "../configuration";
 
 let pathToRegexp = require('path-to-regexp');
 
+@AutoWired
 export class ProxyInterceptor {
-    private proxy: ApiProxy;
-
-    constructor(proxy: ApiProxy) {
-        this.proxy = proxy;
-    }
+    @Inject
+    private config: Configuration;
     
     requestInterceptor(api: ApiConfig) {
         if (this.hasRequestInterceptor(api.proxy)) {
@@ -34,7 +33,7 @@ export class ProxyInterceptor {
         func.push(`function(proxyReq, originalReq){`);
         let proxy: config.Proxy = api.proxy;
         proxy.interceptor.request.forEach((interceptor, index)=>{
-            let p = path.join(this.proxy.gateway.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
+            let p = path.join(this.config.gateway.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
             if (interceptor.group) {
                 func.push(`if (`);                
                 func.push(Groups.buildGroupAllowTest('originalReq', api.group, interceptor.group));
@@ -66,7 +65,7 @@ export class ProxyInterceptor {
             else {
                 func.push(`var f${index} = `);        
             }
-            let p = path.join(this.proxy.gateway.middlewarePath, 'interceptor', 'response' ,interceptor.name);                
+            let p = path.join(this.config.gateway.middlewarePath, 'interceptor', 'response' ,interceptor.name);                
             func.push(`require('${p}');`);
             func.push(`f${index}(rsp, data, req, res, (error, value)=>{ \
                 if (error) { \

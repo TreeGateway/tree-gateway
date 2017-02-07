@@ -2,15 +2,15 @@
 
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
-
 import {CircuitBreakerConfig, validateCircuitBreakerConfig} from "../../config/circuit-breaker";
-
-import {RedisCircuitBreakerService} from "../../service/redis";
-
+import {CircuitBreakerService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/circuitbreaker')
+@AutoWired
 export class CircuitBreakerRest extends RestController {
+    @Inject private service: CircuitBreakerService;
  
     @GET
     list(@PathParam("apiId") apiId: string): Promise<Array<CircuitBreakerConfig>>{
@@ -66,9 +66,5 @@ export class CircuitBreakerRest extends RestController {
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisCircuitBreakerService;
     }
 }

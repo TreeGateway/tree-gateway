@@ -1,27 +1,24 @@
 "use strict";
 
 import {UserAdminArgs} from "./user-admin-args";
-import {UserService, loadUserService} from "../service/users";
-import loadConfigFile from "../utils/config-loader";
+import {UserService} from "../service/users";
+import {Configuration} from "../configuration";
 import * as redis from "ioredis";
 import * as dbConfig from "../redis";
 import {UserData, validateUser} from "../config/users";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Database} from "../database";
 
 
 class UserAdmin {
-    private redisClient : redis.Redis;
-    private userService: UserService;
+    @Inject private database : Database;
+    @Inject private userService: UserService;
+    @Inject private config: Configuration;
 
     processCommand() {
-        loadConfigFile(UserAdminArgs.config)
-        .then((gatewayConfig) => {
-            this.redisClient = dbConfig.initializeRedis(gatewayConfig.database);
-            if (!gatewayConfig.admin) {
-                throw new Error("Admin is not configurated on gateway config file.")
-            }
-            this.userService = loadUserService(this.redisClient, gatewayConfig.admin.users);
-            return this.doCommand();
-        }).then(() => {
+        this.doCommand()
+        .then(() => {
             console.log(`Command ${UserAdminArgs.command} completed.`);
             this.closeDB();
         }).catch(err => {
@@ -86,9 +83,8 @@ class UserAdmin {
     }
 
     private closeDB() {
-        if (this.redisClient) {
-            this.redisClient.disconnect();
-            this.redisClient = null;
+        if (this.database.redisClient) {
+            this.database.disconnect();
         }
     }
 }

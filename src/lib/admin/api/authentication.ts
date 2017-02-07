@@ -3,15 +3,16 @@
 import "es6-promise";
 
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
-
 import {AuthenticationConfig, validateAuthenticationConfig} from "../../config/authentication";
-
-import {RedisAuthenticationService} from "../../service/redis";
-
+import {AuthenticationService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/authentication')
+@AutoWired
 export class AuthenticationRest extends RestController {
+    @Inject private service: AuthenticationService;
+
     @GET
     get(@PathParam("apiId") apiId: string): Promise<AuthenticationConfig> {
         return new Promise<AuthenticationConfig>((resolve, reject) => {
@@ -55,9 +56,5 @@ export class AuthenticationRest extends RestController {
                 .then(() => resolve())
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisAuthenticationService;
     }
 }

@@ -10,32 +10,34 @@ import * as auth from "passport";
 import * as _ from "lodash";
 import * as express from "express";
 import * as path from "path"; 
+import {AutoWired, Inject, Provides} from "typescript-ioc";
+import {Configuration} from "../configuration";
+import {Database} from "../database";
 
-export interface UserService {
-    list(): Promise<Array<UserData>>;
-    get(login: string): Promise<UserData>;
-    create(user: UserData): Promise<void>;
-    update(user: UserData): Promise<void>;
-    remove(login: string): Promise<void>;
-    changePassword(login: string, password: string): Promise<void>;
-    generateToken (login: string, password: string): Promise<string>;
-    getAuthMiddleware(): express.RequestHandler;
+export abstract class UserService {
+    abstract list(): Promise<Array<UserData>>;
+    abstract get(login: string): Promise<UserData>;
+    abstract create(user: UserData): Promise<void>;
+    abstract update(user: UserData): Promise<void>;
+    abstract remove(login: string): Promise<void>;
+    abstract changePassword(login: string, password: string): Promise<void>;
+    abstract generateToken (login: string, password: string): Promise<string>;
+    abstract getAuthMiddleware(): express.RequestHandler;
 }
 
-class DefaultUserService  implements UserService {
+@AutoWired
+@Provides(UserService)
+class DefaultUserService implements UserService {
     static USERS_PREFIX = "adminUsers";
-
-    protected redisClient:Redis;
-    protected jwtSecretOrKey: string;
-
-    constructor(redisClient: Redis, jwtSecretOrKey?: string) {
-        this.redisClient = redisClient;
-        this.jwtSecretOrKey = jwtSecretOrKey
-    }
+    
+    @Inject
+    private config: Configuration;
+    @Inject
+    private database: Database;
 
     list(): Promise<Array<UserData>> {
         return new Promise((resolve, reject) => {
-            this.redisClient.hgetall(DefaultUserService.USERS_PREFIX)
+            this.database.redisClient.hgetall(DefaultUserService.USERS_PREFIX)
                 .then((apis) => {
                     resolve(_.map(_.values(apis), (value: string) => JSON.parse(value)));
                 })
@@ -45,7 +47,7 @@ class DefaultUserService  implements UserService {
 
     get(login: string): Promise<UserData> {
         return new Promise((resolve, reject) => {
-            this.redisClient.hget(DefaultUserService.USERS_PREFIX, login)
+            this.database.redisClient.hget(DefaultUserService.USERS_PREFIX, login)
                 .then((user) => {
                     if (!user) {
                         return resolve(null);
@@ -59,7 +61,7 @@ class DefaultUserService  implements UserService {
 
     create(user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, user.login)
+            this.database.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, user.login)
                 .then((exists) => {
                     if (exists) {
                         throw new DuplicatedError(`User ${user.login} already exists`)
@@ -68,7 +70,7 @@ class DefaultUserService  implements UserService {
                     return bcrypt.hash(user.password,  10);
                 }).then((password) =>  {
                     user.password = password;
-                    return this.redisClient.hmset(`${DefaultUserService.USERS_PREFIX}`, user.login, JSON.stringify(user))
+                    return this.database.redisClient.hmset(`${DefaultUserService.USERS_PREFIX}`, user.login, JSON.stringify(user))
                 }).then(() => {
                     resolve();
                 })
@@ -79,7 +81,7 @@ class DefaultUserService  implements UserService {
     changePassword(login: string, password: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             let user: UserData;
-            this.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, login)
+            this.database.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, login)
                 .then((exists) => {
                     if (!exists) {
                         throw new NotFoundError('User not found.');
@@ -90,7 +92,7 @@ class DefaultUserService  implements UserService {
                     return bcrypt.hash(user.password,  10);
                 }).then((encryptedPassword: string) => {
                     user.password = encryptedPassword;
-                    return this.redisClient.hmset(`${DefaultUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
+                    return this.database.redisClient.hmset(`${DefaultUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
                 }).then(() => {
                     resolve();
                 })
@@ -101,7 +103,7 @@ class DefaultUserService  implements UserService {
    
     update(user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, user.login)
+            this.database.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, user.login)
                 .then((exists) => {
                     if (!exists) {
                         throw new NotFoundError('User not found.');
@@ -109,7 +111,7 @@ class DefaultUserService  implements UserService {
                     return this.get(user.login);
                 }).then((oldUser: UserData) => {
                     user.password = oldUser.password;
-                    return this.redisClient.hmset(`${DefaultUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
+                    return this.database.redisClient.hmset(`${DefaultUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
                 }).then(() => {
                     resolve();
                 })
@@ -119,7 +121,7 @@ class DefaultUserService  implements UserService {
 
     remove(login: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.redisClient.hdel(`${DefaultUserService.USERS_PREFIX}`, login)
+            this.database.redisClient.hdel(`${DefaultUserService.USERS_PREFIX}`, login)
                 .then((count) => {
                     if (count === 0) {
                         throw new NotFoundError('User not found.');
@@ -154,7 +156,9 @@ class DefaultUserService  implements UserService {
                             roles: user.roles
                         }
                         
-                        let token = jwt.sign(dataToken, this.jwtSecretOrKey, {expiresIn: 7200});
+                        let token = jwt.sign(dataToken, this.config.gateway.admin.users.defaultService.jwtSecret, {
+                            expiresIn: 7200 // TODO read an human interval configuration
+                        });
                         resolve(token);
                     }
                     catch (e) {
@@ -170,7 +174,7 @@ class DefaultUserService  implements UserService {
     getAuthMiddleware(): express.RequestHandler {
         const opts: any = {
             jwtFromRequest: ExtractJwt.fromAuthHeader(),
-            secretOrKey: this.jwtSecretOrKey
+            secretOrKey: this.config.gateway.admin.users.defaultService.jwtSecret
         }
         let strategy =  new Strategy(opts, function(jwt_payload, done) {
             return done(null,jwt_payload);
@@ -181,13 +185,13 @@ class DefaultUserService  implements UserService {
     }        
 }
 
-let ServiceClass;
-export function loadUserService(redisClient : Redis, config: UsersConfig): UserService {
-    if (config.userService) {
-        if (!ServiceClass) {
-            ServiceClass = require(config.userService);
-        }
-        return new ServiceClass();
-    }
-    return new DefaultUserService(redisClient, config.defaultService.jwtSecret);
-}
+// let ServiceClass;
+// export function loadUserService(redisClient : Redis, config: UsersConfig): UserService {
+//     if (config.userService) {
+//         if (!ServiceClass) {
+//             ServiceClass = require(config.userService);
+//         }
+//         return new ServiceClass();
+//     }
+//     return new DefaultUserService(redisClient, config.defaultService.jwtSecret);
+// }

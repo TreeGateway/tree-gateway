@@ -2,16 +2,16 @@
 
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
-
 import {ApiCorsConfig, validateApiCorsConfig} from "../../config/cors";
-
-import {RedisCorsService} from "../../service/redis";
-
+import {CorsService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/cors')
+@AutoWired
 export class CorsRest extends RestController {
- 
+     @Inject private service: CorsService;
+
     @GET
     list(@PathParam("apiId") apiId: string): Promise<Array<ApiCorsConfig>>{
         return this.service.list(apiId);
@@ -66,9 +66,5 @@ export class CorsRest extends RestController {
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisCorsService;
     }
 }

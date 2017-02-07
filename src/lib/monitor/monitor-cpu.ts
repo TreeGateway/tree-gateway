@@ -1,7 +1,6 @@
 "use strict";
 
 import {Monitor} from "./monitor";
-import {Gateway} from "../gateway";
 import {MonitorConfig} from "../config/gateway";
 import * as os from "os";
 
@@ -11,8 +10,8 @@ const FIFTEEN_MINUTES = 15*ONE_MINUTE;
 
 export class CpuMonitor extends Monitor {
     private startMeasure = this.cpuAverage();
-    constructor(gateway: Gateway, config: MonitorConfig) {
-        super(gateway, config);
+    constructor(config: MonitorConfig) {
+        super(config);
     }
 
     run(period: number): Promise<number> {

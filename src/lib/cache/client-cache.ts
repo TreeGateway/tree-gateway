@@ -4,19 +4,19 @@ import {Gateway} from "../gateway";
 import {ClientCacheConfig} from "../config/cache";
 import * as _ from "lodash";
 import * as humanInterval from "human-interval";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
 
+@AutoWired
 export class ClientCache {
-    private gateway: Gateway;
-
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
-    }
+    @Inject
+    private logger: Logger;
 
     buildCacheMiddleware(clientCache: ClientCacheConfig, path: string){
         let func = new Array<string>();
         let cacheControl: string = this.cacheHeaderString(clientCache);
-        if (this.gateway.logger.isDebugEnabled()) {
-            this.gateway.logger.debug(`Configuring Client Cache for path [${path}].`);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Configuring Client Cache for path [${path}].`);
         }
         func.push(`onHeaders(res, function(){`);
         func.push(`res.set('Cache-Control', '${cacheControl}');`);

@@ -1,17 +1,18 @@
 "use strict";
 
 import "es6-promise";
-
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
-
 import {CacheConfig, validateCacheConfig} from "../../config/cache";
-
-import {RedisCacheService} from "../../service/redis";
-
+import {CacheService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
+
 
 @Path('apis/:apiId/cache')
+@AutoWired
 export class CacheRest extends RestController {
+    @Inject private service: CacheService;
+
     @GET
     list(@PathParam("apiId") apiId: string): Promise<Array<CacheConfig>> {
         return this.service.list(apiId);
@@ -66,9 +67,5 @@ export class CacheRest extends RestController {
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisCacheService;
     }
 }

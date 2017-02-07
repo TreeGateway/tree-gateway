@@ -1,22 +1,24 @@
 "use strict";
 
 import {Stats} from "../stats/stats";
-import {StatsRecorder} from "../stats/stats-recorder";
-import {Gateway} from "../gateway";
 import {MonitorConfig} from "../config/gateway";
 import * as humanInterval from "human-interval";
 import * as os from "os";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {StatsRecorder} from "../stats/stats-recorder";
 
+@AutoWired
 export abstract class Monitor {
+    @Inject private logger: Logger;
+    @Inject private statsRecorder: StatsRecorder;
     private interval: NodeJS.Timer;
-    private gateway: Gateway;
     private stats: Stats;
     private config: MonitorConfig;
     private machineId: string;
     private period: number;
 
-    constructor(gateway: Gateway, config: MonitorConfig) {
-        this.gateway = gateway;
+    constructor(config: MonitorConfig) {
         this.config = config;
         this.stats = this.createStats(this.config.name);
         this.machineId = Monitor.getMachineId();
@@ -27,7 +29,7 @@ export abstract class Monitor {
         let self = this;
         this.interval = setInterval(()=>{
             this.run(this.period).then(value=>self.registerStats(value)).catch(err=>{
-                this.gateway.logger.error(`Error on monitor [${this.config.name}]: ${err}`);
+                this.logger.error(`Error on monitor [${this.config.name}]: ${err}`);
                 this.stop();
             });
         }, this.period);
@@ -35,8 +37,8 @@ export abstract class Monitor {
 
     stop() {
         if (this.interval) {
-            if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug(`Stopping monitor [${this.config.name}]`);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(`Stopping monitor [${this.config.name}]`);
             }
             clearInterval(this.interval);
             this.interval = null;
@@ -48,8 +50,7 @@ export abstract class Monitor {
     }
 
     private createStats(id: string) {
-        let statsRecorder = new StatsRecorder(this.gateway);
-        return statsRecorder.createStats(id, this.config.statsConfig);
+        return this.statsRecorder.createStats(id, this.config.statsConfig);
     }
 
     abstract run(period: number): Promise<number>;

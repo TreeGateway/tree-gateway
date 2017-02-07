@@ -4,29 +4,28 @@ import "es6-promise";
 import * as path from "path";
 import {Redis} from "ioredis";
 import {ConfigTopics} from "../config/events";
+import {AutoWired, Inject, Provides} from "typescript-ioc";
+import {Database} from "../database";
 
-// TODO: log errors
-
-export interface MiddlewareService {
-    list(middleware: string):Promise<Array<string>>;
-    add(middleware: string, name: string, content: Buffer) : Promise<string>;
-    remove(middleware: string, name: string) : Promise<void>;
-    save(middleware: string, name: string, content: Buffer): Promise<void>;
+export abstract class MiddlewareService {
+    abstract list(middleware: string):Promise<Array<string>>;
+    abstract add(middleware: string, name: string, content: Buffer) : Promise<string>;
+    abstract remove(middleware: string, name: string) : Promise<void>;
+    abstract save(middleware: string, name: string, content: Buffer): Promise<void>;
     // FIXME: read should return a Buffer
-    read(middleware: string, name: string): Promise<Buffer>;
+    abstract read(middleware: string, name: string): Promise<Buffer>;
 }
 
-export class RedisMiddlewareService implements MiddlewareService {
+@AutoWired
+@Provides(MiddlewareService)
+class RedisMiddlewareService implements MiddlewareService {
     private static MIDDLEWARE_PREFIX = "{config}:middleware";
-    private redisClient:Redis;
-
-    constructor(redisClient) {
-        this.redisClient = redisClient;
-    }
+    @Inject
+    private database: Database;
 
     list(middleware: string) : Promise<Array<string>>{
         return new Promise<Array<string>>((resolve, reject) =>{
-            this.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`)
+            this.database.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`)
                     .then(resolve)
                     .catch(reject);
         });
@@ -44,7 +43,7 @@ export class RedisMiddlewareService implements MiddlewareService {
 
     remove(middleware: string, name: string) : Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.redisClient.multi()
+            this.database.redisClient.multi()
                     .srem(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
                     .del(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`)
                     .publish(ConfigTopics.MIDDLEWARE_REMOVED, JSON.stringify({type: middleware, name: name}))
@@ -58,7 +57,7 @@ export class RedisMiddlewareService implements MiddlewareService {
 
     save(middleware: string, name: string, content: Buffer): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.redisClient.multi()
+            this.database.redisClient.multi()
                     .sadd(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
                     .set(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`, content)
                     .publish(ConfigTopics.MIDDLEWARE_UPDATED, JSON.stringify({type: middleware, name: name}))
@@ -71,6 +70,6 @@ export class RedisMiddlewareService implements MiddlewareService {
     }
 
     read(middleware: string, name: string): Promise<Buffer> {
-        return this.redisClient.get(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`);
+        return this.database.redisClient.get(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`);
     }
 }

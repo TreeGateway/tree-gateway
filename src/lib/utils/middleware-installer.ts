@@ -1,26 +1,22 @@
 "use strict";
 
-import {MiddlewareService, RedisMiddlewareService} from "../service/middleware";
+import {MiddlewareService} from "../service/middleware";
 import * as fs from "fs-extra-promise";
-//import * as _ from "lodash";
 import * as path from "path";
 import {Logger} from "../logger";
+import {AutoWired, Provides, Inject} from "typescript-ioc";
+import {Configuration} from "../configuration";
 
+@AutoWired
 export class MiddlewareInstaller {
     private types = ["filter", "interceptor/request", "interceptor/response",
                         "authentication/strategies", "authentication/verify",
                         "throttling/keyGenerator", "throttling/handler", 
                         "throttling/skip", "circuitbreaker/handler", "cors/origin"];
 
-    private service:MiddlewareService;
-    private middlewarePath:string;
-    private logger: Logger;
-
-    constructor(redisClient, middlewarePath:string, logger: Logger) {
-        this.service = new RedisMiddlewareService(redisClient);
-        this.middlewarePath = middlewarePath;
-        this.logger = logger;
-    }
+    @Inject private service:MiddlewareService;
+    @Inject private logger: Logger;
+    @Inject private config: Configuration;
 
     installAll(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
@@ -86,6 +82,6 @@ export class MiddlewareInstaller {
     }
 
     private getPath(type: string, name:string):string {
-        return path.join(this.middlewarePath, type, name + ".js");
+        return path.join(this.config.gateway.middlewarePath, type, name + ".js");
     }
 }

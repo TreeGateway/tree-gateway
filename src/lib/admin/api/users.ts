@@ -4,23 +4,26 @@ import {Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, R
         Accept, QueryParam, ContextRequest} from "typescript-rest";
 import "es6-promise";
 import {UserData, validateUser} from "../../config/users";
-import {AdminServer} from "../admin-server";
-import {UserService, loadUserService} from "../../service/users";
+import {UserService} from "../../service/users";
 import * as _ from "lodash";
 import * as express from "express";
+import {AutoWired, Container, Inject} from "typescript-ioc";
 
 @Path('users')
+@AutoWired
 export class UsersRest {
+    @Inject private service: UserService;
+
     @GET
     listUsers(): Promise<Array<UserData>>{
-        return UsersRest.getUserService().list();
+        return this.service.list();
     }
 
     @POST
     createUser(user: UserData): Promise<Return.NewResource>{
         return new Promise<Return.NewResource>((resolve, reject) => {
             validateUser(user).then((validUser: UserData) =>
-                UsersRest.getUserService().create(validUser)
+                this.service.create(validUser)
             )
             .then(() => {
                 resolve(new Return.NewResource(`/users/${user.login}`));
@@ -33,7 +36,7 @@ export class UsersRest {
     @Path(":userLogin")
     getUser(@PathParam("userLogin") login: string): Promise<UserData>{
         return new Promise<UserData>((resolve, reject) => {
-            UsersRest.getUserService().get(login)
+            this.service.get(login)
             .then(user => {
                 if (user) {
                     return resolve(<UserData>_.omit(user, "password"));
@@ -48,7 +51,7 @@ export class UsersRest {
     updateUser(user: UserData): Promise<void>{
         return new Promise<void>((resolve, reject) => {
             validateUser(user)
-                .then((validUser: UserData) => UsersRest.getUserService().update(validUser))
+                .then((validUser: UserData) => this.service.update(validUser))
                 .then(() => resolve())
                 .catch(reject);
         });
@@ -57,14 +60,14 @@ export class UsersRest {
     @DELETE
     @Path(":userLogin")
     removeUser(@PathParam('userLogin')login: string): Promise<void>{
-        return UsersRest.getUserService().remove(login);
+        return this.service.remove(login);
     }
 
     @POST
     @Path("/authentication")
     getAuthToken(@FormParam("login") login: string, @FormParam("password") password: string): Promise<string>{
         return new Promise<string>((resolve, reject)=>{
-            UsersRest.getUserService().generateToken(login, password)
+            this.service.generateToken(login, password)
             .then(resolve)
             .catch(err => {
                 reject(new Errors.UnauthorizedError(err));
@@ -83,15 +86,11 @@ export class UsersRest {
             throw new Errors.ForbidenError('Access denied');
         }
 
-        return UsersRest.getUserService().changePassword(login, password);
-    }
-
-    private static getUserService() {
-        return loadUserService(AdminServer.gateway.redisClient, AdminServer.gateway.config.admin.users);
+        return this.service.changePassword(login, password);
     }
 
     static configureAuthMiddleware(app: express.Router) {
-        let authenticator = UsersRest.getUserService().getAuthMiddleware();
+        let authenticator = Container.get(UserService).getAuthMiddleware();
         let manageUsers = (req, res, next) => {
             if (!req.user.roles || (req.user.roles.indexOf('tree-gateway-admin') < 0)) {
                 return next(new Errors.ForbidenError('Access denied'));

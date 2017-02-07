@@ -2,16 +2,16 @@
 
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
-
 import {ThrottlingConfig, validateThrottlingConfig} from "../../config/throttling";
-
-import {RedisThrottlingService} from "../../service/redis";
-
+import {ThrottlingService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/throttling')
+@AutoWired
 export class ThrottlingRest extends RestController {
- 
+    @Inject private service: ThrottlingService;
+
     @GET
     list(@PathParam("apiId") apiId: string): Promise<Array<ThrottlingConfig>>{
         return this.service.list(apiId);
@@ -66,9 +66,5 @@ export class ThrottlingRest extends RestController {
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisThrottlingService;
     }
 }

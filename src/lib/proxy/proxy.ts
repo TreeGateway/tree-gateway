@@ -5,8 +5,9 @@ import {ApiConfig} from "../config/api";
 import {Proxy} from "../config/proxy";
 import {ProxyFilter} from "./filter";
 import {ProxyInterceptor} from "./interceptor";
-import {Gateway} from "../gateway";
 import * as _ from "lodash";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
 
 let proxy = require("express-http-proxy");
 
@@ -14,16 +15,14 @@ let proxy = require("express-http-proxy");
  * The API Proxy system. It uses [[express-http-proxy]](https://github.com/villadora/express-http-proxy)
  * to proxy requests to a target API.
  */
+@AutoWired
 export class ApiProxy {
+    @Inject
     private filter: ProxyFilter;
+    @Inject
     private interceptor: ProxyInterceptor;
-    gateway: Gateway;
-
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
-        this.filter = new ProxyFilter(this);
-        this.interceptor = new ProxyInterceptor(this);
-    }
+    @Inject
+    private logger: Logger;
 
     /**
      * Configure a proxy for a given API
@@ -75,7 +74,7 @@ export class ApiProxy {
             result.memoizeHost  = proxy.memoizeHost; 
         }
         let filterChain: Array<Function> = this.filter.buildFilters(api);
-        let debug = this.gateway.logger.isDebugEnabled();
+        let debug = this.logger.isDebugEnabled();
         let self = this;
         if (filterChain && filterChain.length > 0) {            
             result.filter = function(req, res) {
@@ -85,7 +84,7 @@ export class ApiProxy {
                         filterResult = f(req, res);
                     } 
                     if (debug) {
-                        self.gateway.logger.debug(`Filter ${(filterResult?'accepted': 'rejected')} the path ${req.path}`);
+                        self.logger.debug(`Filter ${(filterResult?'accepted': 'rejected')} the path ${req.path}`);
                     }
                 });
                 return filterResult;

@@ -3,13 +3,14 @@
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "typescript-rest";
 import {ApiConfig, validateSimpleApiConfig} from "../../config/api";
-
-import {RedisApiService} from "../../service/redis";
-
+import {ApiService} from "../../service/api";
 import {RestController} from "./admin-util";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis')
+@AutoWired
 export class APIRest extends RestController {
+    @Inject private service: ApiService;
 
     @GET
     list(): Promise<Array<ApiConfig>>{
@@ -63,9 +64,5 @@ export class APIRest extends RestController {
                 .then(resolve)
                 .catch((err) => reject(this.handleError(err)));
         });
-    }
-
-    get serviceClass() {
-        return RedisApiService;
     }
 }

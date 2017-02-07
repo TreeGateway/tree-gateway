@@ -3,7 +3,7 @@
 import * as cluster from "cluster";
 import * as os from "os";
 import { Gateway } from "./gateway";
-import { Parameters } from "./command-line";
+import {Container} from "typescript-ioc";
 
 if (cluster.isMaster) {
     var n = os.cpus().length;
@@ -27,7 +27,7 @@ if (cluster.isMaster) {
     });
 } 
 else {
-    const gateway = new Gateway(Parameters.gatewayConfigFile);
+    const gateway = Container.get(Gateway);
 
     gateway.start()
         .then(() => {

@@ -6,10 +6,13 @@ import {Stats} from "../stats/stats";
 import * as express from "express";
 import * as _ from "lodash";
 import {CircuitBreaker} from "./express-circuit-breaker"
-import {Gateway} from "../gateway"
 import * as Groups from "../group";
 import * as pathUtil from "path";
 import {RedisStateHandler} from "./redis-state-handler";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Configuration} from "../configuration";
+import {StatsRecorder} from "../stats/stats-recorder";
 
 class StatsController {
     open: Stats;
@@ -22,12 +25,14 @@ interface BreakerInfo{
     groupValidator?: (req:express.Request, res:express.Response)=>boolean;
 }
 
+@AutoWired
 export class ApiCircuitBreaker {
-    private gateway: Gateway;
-
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
-    }
+    @Inject
+    private config: Configuration;
+    @Inject
+    private logger: Logger;
+    @Inject
+    private statsRecorder: StatsRecorder;
 
     circuitBreaker(apiRouter: express.Router, api: ApiConfig) {
         let path: string = api.proxy.path;
@@ -40,21 +45,21 @@ export class ApiCircuitBreaker {
             let cbOptions: any = {
                 timeout: cbConfig.timeout || 30000,
                 maxFailures: (cbConfig.maxFailures || 10),
-                stateHandler: new RedisStateHandler(cbStateID, this.gateway, cbConfig.resetTimeout || 120000),
+                stateHandler: new RedisStateHandler(cbStateID, cbConfig.resetTimeout || 120000),
                 timeoutStatusCode: (cbConfig.timeoutStatusCode || 504),
                 timeoutMessage: (cbConfig.timeoutMessage || "Operation timeout"),
                 rejectStatusCode: (cbConfig.rejectStatusCode || 503),
                 rejectMessage: (cbConfig.rejectMessage || "Service unavailable")
             };
-            if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug(`Configuring Circuit Breaker for path [${api.proxy.path}].`);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(`Configuring Circuit Breaker for path [${api.proxy.path}].`);
             }
             breakerInfo.circuitBreaker = new CircuitBreaker(cbOptions);
             this.configureCircuitBreakerEventListeners(breakerInfo, api.proxy.path, cbConfig);
             if (cbConfig.group){
-                if (this.gateway.logger.isDebugEnabled()) {
+                if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cbConfig.group);
-                    this.gateway.logger.debug(`Configuring Group filters for Circuit Breaker on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Circuit Breaker on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 breakerInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, cbConfig.group);
             }
@@ -78,21 +83,21 @@ export class ApiCircuitBreaker {
             });
         }
         if (config.onOpen) {
-            let p = pathUtil.join(this.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onOpen);                
+            let p = pathUtil.join(this.config.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onOpen);                
             let openHandler = require(p);
             breakerInfo.circuitBreaker.on('open', ()=>{
                 openHandler(path);
             });
         }
         if (config.onClose) {
-            let p = pathUtil.join(this.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onClose);                
+            let p = pathUtil.join(this.config.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onClose);                
             let closeHandler = require(p);
             breakerInfo.circuitBreaker.on('close', ()=>{
                 closeHandler(path);
             });
         }
         if (config.onRejected) {
-            let p = pathUtil.join(this.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onRejected);                
+            let p = pathUtil.join(this.config.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onRejected);                
             let rejectedHandler = require(p);
             breakerInfo.circuitBreaker.on('rejected', ()=>{
                 rejectedHandler(path);
@@ -133,7 +138,7 @@ export class ApiCircuitBreaker {
         });
         
         if (generalBreakers.length > 1) {
-            this.gateway.logger.error(`Invalid circuit breaker configuration for api [${path}]. Conflicting configurations for default group`);
+            this.logger.error(`Invalid circuit breaker configuration for api [${path}]. Conflicting configurations for default group`);
                 return [];
         }
 
@@ -150,9 +155,9 @@ export class ApiCircuitBreaker {
     private createCircuitBreakerStats(path: string, config: CircuitBreakerConfig) : StatsController {
         if (!config.disableStats) {
             let stats: StatsController = new StatsController();
-            stats.close = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'close'), config.statsConfig);
-            stats.open = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'open'), config.statsConfig);
-            stats.rejected = this.gateway.createStats(Stats.getStatsKey('circuitbreaker', path, 'rejected'), config.statsConfig);
+            stats.close = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', path, 'close'), config.statsConfig);
+            stats.open = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', path, 'open'), config.statsConfig);
+            stats.rejected = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', path, 'rejected'), config.statsConfig);
             
             if (stats.open) {
                 return stats;

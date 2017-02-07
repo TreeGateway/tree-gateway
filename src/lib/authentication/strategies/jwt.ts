@@ -5,8 +5,9 @@ import {Gateway} from "../../gateway";
 import {JWTAuthentication} from "../../config/authentication";
 import * as _ from "lodash";
 import * as pathUtil from "path"; 
+import {Configuration} from "../../configuration";
 
-module.exports = function (authConfig: JWTAuthentication, gateway: Gateway) {
+module.exports = function (authConfig: JWTAuthentication, config: Configuration) {
     let opts = _.omit(authConfig, "extractFrom", "verify");
     if (authConfig.extractFrom) {
         let extractors: Array<string> = _.keys(authConfig.extractFrom);
@@ -27,7 +28,7 @@ module.exports = function (authConfig: JWTAuthentication, gateway: Gateway) {
     let verifyFunction;
     if (authConfig.verify) {
         opts['passReqToCallback'] = true;
-        let p = pathUtil.join(gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);                
+        let p = pathUtil.join(config.gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);                
         verifyFunction = require(p);
     }
     else {

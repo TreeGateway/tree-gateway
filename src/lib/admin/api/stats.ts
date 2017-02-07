@@ -4,12 +4,19 @@ import {Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, R
         Accept, QueryParam} from "typescript-rest";
 import "es6-promise";
 import {ApiConfig, validateApiConfig} from "../../config/api";
-import {AdminServer} from "../admin-server";
 import {Stats} from "../../stats/stats";
 import {Monitors} from "../../monitor/monitors";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Gateway} from "../../gateway";
+import {StatsRecorder} from "../../stats/stats-recorder";
 
 @Path('stats')
+@AutoWired
 export class StatsService {
+    @Inject private monitors: Monitors;
+    @Inject private gateway: Gateway;
+    @Inject private statsRecorder: StatsRecorder;
+
     @GET
     @Path("auth/fail/:apiId")
     getAuthFail(@PathParam("apiId") apiId: string, 
@@ -99,7 +106,7 @@ export class StatsService {
     @GET
     @Path("monitors/machines")
     getMachines() : Promise<Array<string>>{
-        return Monitors.getActiveMachines(AdminServer.gateway);
+        return this.monitors.getActiveMachines();
     }
 
     @GET
@@ -123,13 +130,13 @@ export class StatsService {
                 count?: number,
                 ...extra: string[]) : Promise<Array<Array<number>>>{
         return new Promise<Array<Array<number>>>((resolve, reject) =>{
-            let apiConfig = AdminServer.gateway.getApiConfig(apiId);
+            let apiConfig = this.gateway.getApiConfig(apiId);
             
             if (!apiConfig) {
                 return reject(new Errors.NotFoundError("API not found"));
             }
             if (path) {
-                let stats = AdminServer.gateway.createStats(Stats.getStatsKey(prefix, apiConfig.proxy.path, key))
+                let stats = this.statsRecorder.createStats(Stats.getStatsKey(prefix, apiConfig.proxy.path, key))
                 stats.getLastOccurrences(count||24, path, ...extra)
                 .then(resolve)
                 .catch(reject);
@@ -145,7 +152,7 @@ export class StatsService {
                 machineId: string,
                 count?: number) : Promise<Array<Array<number>>>{
         return new Promise<Array<Array<number>>>((resolve, reject) =>{
-            let stats = AdminServer.gateway.createStats(name)
+            let stats = this.statsRecorder.createStats(name)
             stats.getLastOccurrences(count||24, machineId)
             .then(resolve)
             .catch(reject);

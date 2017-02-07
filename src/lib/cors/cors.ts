@@ -10,6 +10,9 @@ import * as Groups from "../group";
 import {Stats} from "../stats/stats";
 import * as corsMiddleware from "cors";
 import * as humanInterval from "human-interval";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Configuration} from "../configuration";
 
 interface CorsInfo{
     corsMiddleware?: express.RequestHandler;
@@ -17,12 +20,12 @@ interface CorsInfo{
     groupValidator?: (req:express.Request, res:express.Response)=>boolean;
 }
 
+@AutoWired
 export class ApiCors {
-    private gateway: Gateway;
-
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
-    }
+    @Inject
+    private config: Configuration;
+    @Inject
+    private logger: Logger;
 
     cors(apiRouter: express.Router, api: ApiConfig) {
         let path: string = api.proxy.path;
@@ -34,13 +37,13 @@ export class ApiCors {
             let corsOptions: corsMiddleware.CorsOptions = this.configureCorsOptions(cors);
             corsInfo.corsMiddleware = corsMiddleware(corsOptions);
 
-            if (this.gateway.logger.isDebugEnabled()) {
-                this.gateway.logger.debug(`Configuring Cors for path [${api.proxy.path}].`);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(`Configuring Cors for path [${api.proxy.path}].`);
             }
             if (cors.group){
-                if (this.gateway.logger.isDebugEnabled()) {
+                if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cors.group);
-                    this.gateway.logger.debug(`Configuring Group filters for Cors on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Cors on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 corsInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, cors.group);
             }
@@ -76,7 +79,7 @@ export class ApiCors {
             }
         }
         else if (cors.origin.dynamic) {
-            let p = pathUtil.join(this.gateway.middlewarePath, 'cors', 'origin' , cors.origin.dynamic);                
+            let p = pathUtil.join(this.config.gateway.middlewarePath, 'cors', 'origin' , cors.origin.dynamic);                
             corsOptions.origin = require(p);
         }
         return corsOptions;
@@ -114,7 +117,7 @@ export class ApiCors {
         });
         
         if (generalThrottlings.length > 1) {
-            this.gateway.logger.error(`Invalid throttling configuration for api [${path}]. Conflicting configurations for default group`);
+            this.logger.error(`Invalid throttling configuration for api [${path}]. Conflicting configurations for default group`);
                 return [];
         }
 

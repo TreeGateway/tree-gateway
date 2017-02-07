@@ -5,10 +5,12 @@ import {ApiConfig} from "../config/api";
 import {CacheConfig, ClientCacheConfig, ServerCacheConfig} from "../config/cache";
 import * as serverCache from "./server-cache";
 import {ClientCache} from "./client-cache";
-import {Gateway} from "../gateway";
 import * as Groups from "../group";
 import * as _ from "lodash";
 import {Stats} from "../stats/stats";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {StatsRecorder} from "../stats/stats-recorder";
 
 let onHeaders = require("on-headers");
 let ServerCache = serverCache.ServerCache;
@@ -19,12 +21,12 @@ class StatsController {
     cacheMiss: Stats;
 }
 
+@AutoWired
 export class ApiCache {
-    private gateway: Gateway;
-
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
-    }
+    @Inject
+    private logger: Logger;
+    @Inject
+    private statsRecorder: StatsRecorder;
 
     cache(apiRouter: express.Router, api: ApiConfig) {
         if (this.useCache(api)) {
@@ -39,9 +41,9 @@ export class ApiCache {
         cacheConfigs.forEach((cache: CacheConfig)=>{
             let validateGroupFunction: Function;
             if (cache.group){
-                if (this.gateway.logger.isDebugEnabled()) {
+                if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cache.group);
-                    this.gateway.logger.debug(`Configuring Group filters for Cache on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Cache on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
@@ -49,7 +51,7 @@ export class ApiCache {
                 let cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);        
                 apiRouter.use(cacheMiddleware);
             } catch (e) {
-                this.gateway.logger.error(e);
+                this.logger.error(e);
             }
         });
     }
@@ -66,11 +68,11 @@ export class ApiCache {
         }
 
         if (cache.client) {
-            let clientCache: ClientCache = new ClientCache(this.gateway);
+            let clientCache: ClientCache = new ClientCache();
             func.push(clientCache.buildCacheMiddleware(cache.client, path));
         }
         if (cache.server) {
-            let serverCache: serverCache.ServerCache = new ServerCache(this.gateway);
+            let serverCache: serverCache.ServerCache = new ServerCache();
 
             if (stats) {
                 func.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next', 'stats'));
@@ -104,7 +106,7 @@ export class ApiCache {
         });
         
         if (generalCaches.length > 1) {
-            this.gateway.logger.error(`Invalid cache configuration for api [${path}]. Conflicting configurations for default group`);
+            this.logger.error(`Invalid cache configuration for api [${path}]. Conflicting configurations for default group`);
                 return [];
         }
 
@@ -121,9 +123,9 @@ export class ApiCache {
     private createCacheStats(path: string, serverCache: ServerCacheConfig) : StatsController {
         if (!serverCache.disableStats) {
             let stats: StatsController = new StatsController();
-            stats.cacheError = this.gateway.createStats(Stats.getStatsKey('cache', path, 'error'), serverCache.statsConfig);
-            stats.cacheHit = this.gateway.createStats(Stats.getStatsKey('cache', path, 'hit'), serverCache.statsConfig);
-            stats.cacheMiss = this.gateway.createStats(Stats.getStatsKey('cache', path, 'miss'), serverCache.statsConfig);
+            stats.cacheError = this.statsRecorder.createStats(Stats.getStatsKey('cache', path, 'error'), serverCache.statsConfig);
+            stats.cacheHit = this.statsRecorder.createStats(Stats.getStatsKey('cache', path, 'hit'), serverCache.statsConfig);
+            stats.cacheMiss = this.statsRecorder.createStats(Stats.getStatsKey('cache', path, 'miss'), serverCache.statsConfig);
             
             if (stats.cacheMiss) {
                 return stats;

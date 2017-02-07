@@ -5,10 +5,13 @@ import {AuthenticationConfig} from "../config/authentication";
 import * as _ from "lodash";
 import * as pathUtil from "path"; 
 import * as auth from "passport"; 
-import {Gateway} from "../gateway";
 import {Stats} from "../stats/stats";
 import * as Groups from "../group";
 import * as express from "express";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Configuration} from "../configuration";
+import {StatsRecorder} from "../stats/stats-recorder";
 
 const providedStrategies = {
     'jwt': require('./strategies/jwt'),
@@ -21,12 +24,14 @@ class StatsController {
     successStats: Stats;
 }
 
+@AutoWired
 export class ApiAuth {
-    private gateway: Gateway;
-
-    constructor(gateway: Gateway) {
-        this.gateway = gateway;
-    }
+    @Inject
+    private config: Configuration;
+    @Inject
+    private logger: Logger;
+    @Inject
+    private statsRecorder: StatsRecorder;
 
     authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig) {
         let path: string = api.proxy.path;
@@ -37,15 +42,15 @@ export class ApiAuth {
                 let authStrategy: auth.Strategy;
                 if (_.has(providedStrategies, key)) {
                     let strategy = providedStrategies[key];
-                    authStrategy= strategy(authConfig, this.gateway);
+                    authStrategy= strategy(authConfig, this.config);
                 }
                 else {
-                    let p = pathUtil.join(this.gateway.middlewarePath, 'authentication', 'strategies' , key);                
+                    let p = pathUtil.join(this.config.gateway.middlewarePath, 'authentication', 'strategies' , key);                
                     let strategy = require(p);
                     authStrategy = strategy(authConfig);
                 }
                 if (!authStrategy) {
-                    this.gateway.logger.error('Error configuring authenticator. Invalid Strategy');
+                    this.logger.error('Error configuring authenticator. Invalid Strategy');
                 }
                 else{
                     auth.use(apiKey, authStrategy);
@@ -59,13 +64,13 @@ export class ApiAuth {
                     }
                     
                     
-                    if (this.gateway.logger.isDebugEnabled) {
-                        this.gateway.logger.debug(`Authentication Strategy [${key}] configured for path [${path}]`);
+                    if (this.logger.isDebugEnabled) {
+                        this.logger.debug(`Authentication Strategy [${key}] configured for path [${path}]`);
                     }
                 }
             }
             catch(e) {
-                this.gateway.logger.error(`Error configuring Authentication Strategy [${key}] for path [${path}]`, e);
+                this.logger.error(`Error configuring Authentication Strategy [${key}] for path [${path}]`, e);
             }
         });
     }
@@ -96,9 +101,9 @@ export class ApiAuth {
     private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig, 
                                         authenticator: express.RequestHandler) {
         let path: string = api.proxy.path;
-        if (this.gateway.logger.isDebugEnabled()) {
+        if (this.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, authentication.group);
-            this.gateway.logger.debug(`Configuring Group filters for Authentication on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring Group filters for Authentication on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         let stats = this.createAuthStats(path, authentication);
@@ -136,8 +141,8 @@ export class ApiAuth {
     private createAuthStats(path: string, authentication: AuthenticationConfig) : StatsController {
         if (!authentication.disableStats) {
             let stats: StatsController = new StatsController();
-            stats.failStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'fail'), authentication.statsConfig);
-            stats.successStats = this.gateway.createStats(Stats.getStatsKey('auth', path, 'success'), authentication.statsConfig);
+            stats.failStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', path, 'fail'), authentication.statsConfig);
+            stats.successStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', path, 'success'), authentication.statsConfig);
             
             if (stats.failStats) {
                 return stats;

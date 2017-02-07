@@ -4,17 +4,23 @@ import {StatsConfig, GranularityConfig} from "../config/stats";
 import {StatsHandler} from "./stats";
 import * as ioredis from "ioredis";
 import * as humanInterval from "human-interval";
-import {Gateway} from "../gateway";
+import {Logger} from "../logger";
+import {AutoWired, Inject} from "typescript-ioc";
+import {Database} from "../database";
 
+@AutoWired
 export class RedisStats extends StatsHandler {
-    gateway: Gateway;
     ttl: number;
     duration: number
     prefix: string;
 
-    constructor(id: string, config: StatsConfig, gateway: Gateway) {
+    @Inject
+    private logger: Logger;
+    @Inject
+    private database: Database;
+
+    constructor(id: string, config: StatsConfig) {
         super(id, config);
-        this.gateway = gateway;
         this.prefix = config.prefix;
         this.duration = humanInterval(config.granularity.duration)/1000;
         this.ttl = humanInterval(config.granularity.ttl)/1000;
@@ -33,12 +39,12 @@ export class RedisStats extends StatsHandler {
             }
             let hitTimestamp = this.getRoundedTime(this.duration);
 
-            this.gateway.redisClient.multi()
+            this.database.redisClient.multi()
                 .hincrby(tmpKey, hitTimestamp, increment)
                 .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
                 .exec((err, res)=>{
                     if (err) {
-                        this.gateway.logger.error(`Error on stats recording: ${err}`);
+                        this.logger.error(`Error on stats recording: ${err}`);
                     }
                 });
         },0);
@@ -82,7 +88,7 @@ export class RedisStats extends StatsHandler {
                     tmpKey += ':'+extra.join(':');
                 }
 
-                hgets.push(this.gateway.redisClient.hget(tmpKey, ts));
+                hgets.push(this.database.redisClient.hget(tmpKey, ts));
             }
 
             Promise.all(hgets)
@@ -92,8 +98,8 @@ export class RedisStats extends StatsHandler {
                             data.push([ts, results[i][1] ? parseInt(results[i][1], 10) : 0]);
                         }
 
-                        if (this.gateway.logger.isDebugEnabled()) {
-                            this.gateway.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
                         }
 
                         return resolve(data);

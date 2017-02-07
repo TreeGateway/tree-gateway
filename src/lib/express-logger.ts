@@ -11,7 +11,7 @@ import * as _ from "lodash";
 let expressWinston = require('express-winston');
 
 export class AccessLogger {
-    static configureAccessLoger(config: AccessLoggerConfig, gateway: Gateway, 
+    static configureAccessLoger(config: AccessLoggerConfig, rootPath: string, 
                                 server: express.Application, defaultDir: string) {
         config = _.defaults(config, {
             meta: false, 
@@ -27,7 +27,7 @@ export class AccessLogger {
             config.file = _.omit(config.file, 'outputDir');
             let outputDir: string = config.file.outputDir || defaultDir;
             if (_.startsWith(outputDir, '.')) {
-                outputDir = path.join(gateway.config.rootPath, outputDir);
+                outputDir = path.join(rootPath, outputDir);
             }
             const fileName = (process.env.processNumber?`access-${process.env.processNumber}.log`:`access.log`)
             config.file['filename'] = path.join(outputDir, fileName);

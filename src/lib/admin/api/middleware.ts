@@ -4,24 +4,13 @@ import {Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, R
         Accept} from "typescript-rest";
 import "es6-promise";
 import * as path from "path";
-import {AdminServer} from "../admin-server";
-import {MiddlewareService, RedisMiddlewareService} from "../../service/middleware";
+import {MiddlewareService} from "../../service/middleware";
+import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('middleware')
+@AutoWired
 export class MiddlewareRest {
-    private _service:MiddlewareService;
-
-    get service() {
-        if (!this._service) {
-            this.init();
-        }
-
-        return this._service;
-    }
-
-    private init() {
-        this._service = new RedisMiddlewareService(AdminServer.gateway.redisClient);
-    }
+    @Inject private service:MiddlewareService;
 
     @GET
     @Path('filters')
