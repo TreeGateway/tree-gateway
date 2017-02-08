@@ -3,17 +3,22 @@ import * as request from "request";
 import * as fs from "fs-extra-promise";
 import * as path from "path";
 import * as _ from "lodash";
-import "jasmine";
-import {Gateway} from "../lib/gateway";
 import {ApiConfig} from "../lib/config/api";
 import {Group} from "../lib/config/group";
-import {UserService, loadUserService} from "../lib/service/users";
+import "jasmine";
+import {Server} from "typescript-rest";
+import {Container} from "typescript-ioc";
+import {Configuration} from "../lib/configuration";
 
+Server.useIoC();
+
+let config = Container.get(Configuration);
 let server;
-let gateway: Gateway;
+let gateway;
+let database;
 let gatewayRequest;
 let adminRequest;
-let userService: UserService;
+let userService;
 let configToken; 
 
 const configUser = {
@@ -26,7 +31,8 @@ const configUser = {
 
 const createUser = () => {
     return new Promise<void>((resolve, reject)=>{
-        userService = loadUserService(gateway.redisClient, gateway.config.admin.users);
+        const UserService = require("../lib/service/users").UserService
+        userService = Container.get(UserService);
         userService.create(configUser)
         .then(resolve)
         .catch(reject);
@@ -61,18 +67,24 @@ const getIdFromResponse = (response) => {
 
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./tree-gateway.json");
+        config.load("./tree-gateway.json")
+            .then(()=>{
+                const Gateway = require("../lib/gateway").Gateway;
+                const Database = require("../lib/database").Database;
+                database = Container.get(Database);
+                gateway = Container.get(Gateway);
 
-		gateway.start()
+                return gateway.start();
+            })
 			.then(()=>{
 				return gateway.startAdmin();
 			})
 			.then(() => {
 				gateway.server.set('env', 'test');
-				gatewayRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.protocol.http.listenPort}`});
-				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.admin.protocol.http.listenPort}`});
+				gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 
-				return gateway.redisClient.flushdb();
+				return database.redisClient.flushdb();
 			})
 			.then(()=>{
                 return createUser();
@@ -94,13 +106,15 @@ describe("Gateway Tests", () => {
 	});
 
 	afterAll(function(done){
-		gateway.redisClient.flushdb()
+		database.redisClient.flushdb()
 			.then(() => gateway.stopAdmin())
             .then(() => gateway.stop())
 			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'middleware')))
 			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'root', 'logs')))
-			.then(done)
-			.catch(fail);
+			.then(() => {
+				database.disconnect();
+				done();
+			}).catch(fail);
 	});
 
 	describe("The Gateway Proxy", () => {

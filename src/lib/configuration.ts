@@ -6,7 +6,6 @@ import * as path from "path";
 
 import {GatewayConfig, validateGatewayConfig} from "./config/gateway";
 import {StatsConfig} from "./config/stats";
-import {Parameters} from "./command-line";
 import {AutoWired, Container, Singleton} from "typescript-ioc";
 // import {ConfigService} from "./service/api";
 // import {UserService} from "./service/users";
@@ -24,9 +23,9 @@ export class Configuration {
         return this.config;
     }
     
-    load(): Promise<void> {
+    load(gatewayConfigFile: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.loadGatewayConfig()
+            this.loadGatewayConfig(gatewayConfigFile)
                 .then(() => this.loadContainerConfigurations())
                 .then(resolve)
                 .catch(reject);
@@ -51,9 +50,9 @@ export class Configuration {
         });
     }
 
-    private loadGatewayConfig(): Promise<void> {
+    private loadGatewayConfig(gatewayConfigFile: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            let configFileName: string = Parameters.gatewayConfigFile
+            let configFileName: string = gatewayConfigFile
             try {
                 configFileName = _.trim(configFileName);
 

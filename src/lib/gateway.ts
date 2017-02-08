@@ -28,7 +28,6 @@ import * as path from "path";
 import * as os from "os";
 import * as _ from "lodash";
 import {AutoWired, Inject, Singleton} from "typescript-ioc";
-import {Database} from "./database";
 import {MiddlewareInstaller} from "./utils/middleware-installer";
 
 class StatsController {
@@ -47,7 +46,6 @@ export class Gateway {
     @Inject private apiCache: ApiCache;
     @Inject private apiAuth: ApiAuth;
     @Inject private logger: Logger;
-    @Inject private database: Database;
     @Inject private statsRecorder: StatsRecorder;
     @Inject private monitors: Monitors;
     @Inject private middlewareInstaller: MiddlewareInstaller;
@@ -161,7 +159,6 @@ export class Gateway {
             if (this.apiServer) {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {
-                    self.database.disconnect();
                     return resolve();
                 }
                 this.apiServer.forEach(server=>{
@@ -169,7 +166,6 @@ export class Gateway {
                         toClose--;
                         if (toClose === 0) {
                             self.logger.info('Gateway server stopped');
-                            self.database.disconnect();
                             resolve();
                         }
                     });
@@ -333,26 +329,23 @@ export class Gateway {
 
     private initialize(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-		    this.config.load()
-                .then(() => {
-                    this.app = express();
-                    this.monitors.startMonitors();
+            this.app = express();
+            this.monitors.startMonitors();
 
-                    this.configureServer()
-                        .then(() => this.configService
-                                      .on('apiRemoved', (apiId) => this.removeApi(apiId))
-                                      .on('apiCreated', (apiId) => this.updateApi(apiId))
-                                      .on('apiUpdated', (apiId) => this.updateApi(apiId))
-                                      .subscribeEvents())
-                        .then(() => {
-                            this.configureAdminServer();
-                            resolve();
-                        })
-                        .catch((err) => {
-                            console.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
-                            reject(err);
-                        });
-                }).catch(reject);
+            this.configureServer()
+                .then(() => this.configService
+                                .on('apiRemoved', (apiId) => this.removeApi(apiId))
+                                .on('apiCreated', (apiId) => this.updateApi(apiId))
+                                .on('apiUpdated', (apiId) => this.updateApi(apiId))
+                                .subscribeEvents())
+                .then(() => {
+                    this.configureAdminServer();
+                    resolve();
+                })
+                .catch((err) => {
+                    console.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
+                    reject(err);
+                });
         });
     }
 

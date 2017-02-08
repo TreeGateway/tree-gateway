@@ -92,7 +92,7 @@ export class UsersRest {
     static configureAuthMiddleware(app: express.Router) {
         let authenticator = Container.get(UserService).getAuthMiddleware();
         let manageUsers = (req, res, next) => {
-            if (!req.user.roles || (req.user.roles.indexOf('tree-gateway-admin') < 0)) {
+            if (!req.user || !req.user.roles || (req.user.roles.indexOf('tree-gateway-admin') < 0)) {
                 return next(new Errors.ForbidenError('Access denied'));
             }
             next();
@@ -100,9 +100,9 @@ export class UsersRest {
         let adminGateway = (req, res, next) => {
             if (req.path === '/users/authentication') {
                 return next();
-            }
+            } 
 
-            if (!req.user.roles || (req.user.roles.indexOf('tree-gateway-config') < 0)) {
+            if (!req.user || !req.user.roles || (req.user.roles.indexOf('tree-gateway-config') < 0)) {
                 return next(new Errors.ForbidenError('Access denied'));
             }
             next();

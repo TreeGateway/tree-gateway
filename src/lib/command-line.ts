@@ -2,7 +2,9 @@
 
 import * as path from "path";
 import {ArgumentParser} from "argparse";
+import {Server} from "typescript-rest";
 
+Server.useIoC();
 let parser = new ArgumentParser({
   version: '0.0.1',
   addHelp: true,

@@ -2,23 +2,27 @@ import * as express from "express";
 import * as request from "request";
 import * as fs from "fs-extra-promise";
 import * as path from "path";
-import "jasmine";
-import {Gateway} from "../lib/gateway";
-import * as dbConfig from "../lib/redis";
 import {ApiConfig} from "../lib/config/api";
 import {CacheConfig} from "../lib/config/cache";
 import {Group} from "../lib/config/group";
 import {ThrottlingConfig} from "../lib/config/throttling";
-import {UserService, loadUserService} from "../lib/service/users";
+import "jasmine";
+import {Server} from "typescript-rest";
+import {Container} from "typescript-ioc";
+import {Configuration} from "../lib/configuration";
 
+Server.useIoC();
+
+let config = Container.get(Configuration);
 let server;
-let gateway: Gateway;
-let userService: UserService;
-let adminAddress: string;
+let gateway;
+let database;
+let userService;
+let adminAddress;
 let adminRequest;
 let adminToken; 
 let configToken; 
-let simpleToken; 
+let simpleToken;
 
 const adminUser = {
     name: "Admin user",
@@ -53,7 +57,8 @@ const getIdFromResponse = (response) => {
 
 const createUsers = () => {
     return new Promise<void>((resolve, reject)=>{
-        userService = loadUserService(gateway.redisClient, gateway.config.admin.users);
+        const UserService = require("../lib/service/users").UserService
+        userService = Container.get(UserService);
         userService.create(adminUser)
         .then(() => userService.create(configUser))
         .then(() => userService.create(simpleUser))
@@ -64,17 +69,24 @@ const createUsers = () => {
 
 describe("Admin API", () => {
 	beforeAll(function(done){
-		gateway = new Gateway("./tree-gateway.json");
+        
+        config.load("./tree-gateway.json")
+            .then(()=>{
+                const Gateway = require("../lib/gateway").Gateway;
+                const Database = require("../lib/database").Database;
+                database = Container.get(Database);
+                gateway = Container.get(Gateway);
 
-		gateway.start()
+                return gateway.start();
+            })
 			.then(()=>{
 				return gateway.startAdmin();
 			})
 			.then(() => {
 				gateway.server.set('env', 'test');
-				adminRequest = request.defaults({baseUrl: `http://localhost:${gateway.config.admin.protocol.http.listenPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 
-				return gateway.redisClient.flushdb();
+				return database.redisClient.flushdb();
 			})
 			.then(()=>{
                 return createUsers();
@@ -84,7 +96,7 @@ describe("Admin API", () => {
 	});
 
 	afterAll(function(done){
-		gateway.redisClient.flushdb()
+		database.redisClient.flushdb()
             .then(() => gateway.stopAdmin())
             .then(() => gateway.stop())
 			.then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp')))

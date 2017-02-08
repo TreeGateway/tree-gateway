@@ -2,7 +2,6 @@
 
 import * as path from "path";
 import {ArgumentParser} from "argparse";
-import {UserService} from "../service/users";
 
 let parser = new ArgumentParser({
   version: '0.0.1',

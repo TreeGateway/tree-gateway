@@ -12,7 +12,7 @@ import {StatsRecorder} from "../../stats/stats-recorder";
 
 @Path('stats')
 @AutoWired
-export class StatsService {
+export class StatsRest {
     @Inject private monitors: Monitors;
     @Inject private gateway: Gateway;
     @Inject private statsRecorder: StatsRecorder;

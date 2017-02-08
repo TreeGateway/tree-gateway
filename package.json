@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/lib/app-cluster.js",
-    "compile": "node ./node_modules/gulp/bin/gulp.js build",
-    "test": "node ./node_modules/gulp/bin/gulp.js test"
+    "test": "node ./node_modules/gulp/bin/gulp.js test",
+    "compile": "node ./node_modules/gulp/bin/gulp.js build"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "serve-favicon": "~2.3.0",
     "swagger-ui-express": "^1.0.2",
     "typescript-ioc": "^0.2.6",
-    "typescript-rest": "^0.3.3",
+    "typescript-rest": "^0.3.4",
     "uuid": "^3.0.1",
     "winston": "^2.2.0"
   },
