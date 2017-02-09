@@ -4,12 +4,11 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 import {Proxy, validateProxyConfig} from "../../config/proxy";
 import {ProxyService} from "../../service/api";
-import {RestController} from "./admin-util";
 import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/proxy')
 @AutoWired
-export class ProxyRest extends RestController {
+export class ProxyRest {
     @Inject private service: ProxyService;
 
     @GET
@@ -17,7 +16,7 @@ export class ProxyRest extends RestController {
         return new Promise<Proxy>((resolve, reject) => {
             this.service.get(apiId)
                 .then(resolve)
-                .catch(err => reject(this.handleError(err)));
+                .catch(reject);
         })
     }
 
@@ -44,7 +43,7 @@ export class ProxyRest extends RestController {
                 })
                 .then(() => this.service.update(apiId, proxy))
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -53,7 +52,7 @@ export class ProxyRest extends RestController {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId)
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 }

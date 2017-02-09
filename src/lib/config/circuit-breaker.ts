@@ -2,6 +2,7 @@
 
 import * as Joi from "joi";
 import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
+import {ValidationError} from "../error/errors";
 
 export interface CircuitBreakerConfig {
     /**
@@ -128,7 +129,7 @@ export function validateCircuitBreakerConfig(circuitBreaker: CircuitBreakerConfi
     return new Promise((resolve, reject) => {
         Joi.validate(circuitBreaker, CircuitBreakerConfigValidatorSchema, (err, value)=>{
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

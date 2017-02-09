@@ -2,6 +2,7 @@
 
 import * as Joi from "joi";
 import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
+import {ValidationError} from "../error/errors";
 
 export interface CacheConfig {
     /**
@@ -73,7 +74,7 @@ export function validateCacheConfig(cache: CacheConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(cache, CacheConfigValidatorSchema, (err, value) => {
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

@@ -96,7 +96,7 @@ export class Gateway {
                     }
                     if (self.config.gateway.protocol.https) {
                         expected ++;
-                        let httpsServer = self.createHttpServer();
+                        let httpsServer = self.createHttpsServer();
                         self.apiServer.set('https', httpsServer.listen(self.config.gateway.protocol.https.listenPort, ()=>{
                             self.logger.info(`Gateway listenning HTTPS on port ${self.config.gateway.protocol.https.listenPort}`);
                             started ++;
@@ -136,7 +136,7 @@ export class Gateway {
                 }
                 if (self.config.gateway.admin.protocol.https) {
                     expected ++;
-                    let httpsServer = self.createHttpServer();
+                    let httpsServer = self.createHttpsServer();
                     self.adminServer.set('https', httpsServer.listen(self.config.gateway.admin.protocol.https.listenPort, ()=>{
                         self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.gateway.admin.protocol.https.listenPort}`);
                         started ++;
@@ -203,7 +203,7 @@ export class Gateway {
         });
     }
 
-    private createHttpServer() {
+    private createHttpsServer() {
         let privateKey  = fs.readFileSync(this.config.gateway.protocol.https.privateKey, 'utf8');
         let certificate = fs.readFileSync(this.config.gateway.protocol.https.certificate, 'utf8');
         let credentials = {key: privateKey, cert: certificate};
@@ -343,7 +343,7 @@ export class Gateway {
                     resolve();
                 })
                 .catch((err) => {
-                    console.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
+                    this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
                     reject(err);
                 });
         });

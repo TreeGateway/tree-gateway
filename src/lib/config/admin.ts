@@ -5,6 +5,7 @@ import {UsersConfig, UsersConfigValidatorSchema} from "./users";
 import {AccessLoggerConfig, AccessLoggerConfigSchema} from "./logger";
 import {ProtocolConfig, ProtocolConfigSchema} from "./protocol";
 import {CorsConfig, CorsConfigSchema} from "./cors";
+import {ValidationError} from "../error/errors";
 
 /**
  * Configure the Admin module for the gateway.
@@ -50,7 +51,7 @@ export function validateAdminConfig(config: AdminConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(config, AdminConfigValidatorSchema, (err, value)=>{
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

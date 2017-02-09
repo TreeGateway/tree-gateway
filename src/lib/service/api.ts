@@ -9,30 +9,6 @@ import {Group} from "../config/group";
 import {Proxy} from "../config/proxy";
 import {AuthenticationConfig} from "../config/authentication";
 
-export class UnauthorizedError extends Error {
-    constructor(message?: string) {
-        super(message);
-
-        this["__proto__"] = UnauthorizedError.prototype;
-    }
-}
-
-export class NotFoundError extends Error {
-    constructor(message?: string) {
-        super(message);
-
-        this["__proto__"] = NotFoundError.prototype;
-    }
-}
-
-export class DuplicatedError extends Error {
-    constructor(message?: string) {
-        super(message);
-
-        this["__proto__"] = DuplicatedError.prototype;
-    }
-}
-
 export abstract class ApiService {
     abstract list(): Promise<Array<ApiConfig>>;
     abstract create(api: ApiConfig): Promise<string>;

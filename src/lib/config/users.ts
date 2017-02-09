@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 export interface UserData {
     /**
@@ -61,7 +62,7 @@ export function validateUser(user: UserData) {
     return new Promise((resolve, reject) => {
         Joi.validate(user, UserValidatorSchema, (err, value)=>{
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

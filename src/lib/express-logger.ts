@@ -5,7 +5,6 @@ import * as Winston from "winston";
 import {AccessLoggerConfig} from "./config/logger";
 import * as path from "path";
 import * as fs from "fs-extra-promise";
-import {Gateway} from "./gateway";
 import * as _ from "lodash";
 
 let expressWinston = require('express-winston');

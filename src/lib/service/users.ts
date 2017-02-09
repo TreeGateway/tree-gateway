@@ -1,7 +1,6 @@
 "use strict";
 
 import {Redis} from "ioredis";
-import {DuplicatedError, NotFoundError, UnauthorizedError} from "./api";
 import {UserData, UsersConfig} from "../config/users";
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -13,6 +12,7 @@ import * as path from "path";
 import {AutoWired, Inject, Provides} from "typescript-ioc";
 import {Configuration} from "../configuration";
 import {Database} from "../database";
+import {NotFoundError, ValidationError} from "../error/errors";
 
 export abstract class UserService {
     abstract list(): Promise<Array<UserData>>;
@@ -64,9 +64,8 @@ class DefaultUserService implements UserService {
             this.database.redisClient.hexists(`${DefaultUserService.USERS_PREFIX}`, user.login)
                 .then((exists) => {
                     if (exists) {
-                        throw new DuplicatedError(`User ${user.login} already exists`)
+                        throw new ValidationError(`User ${user.login} already exists`)
                     }
-
                     return bcrypt.hash(user.password,  10);
                 }).then((password) =>  {
                     user.password = password;

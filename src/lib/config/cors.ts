@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 
 /**
@@ -111,7 +112,7 @@ export function validateApiCorsConfig(cors: ApiCorsConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(cors, ApiCorsConfigSchema, (err, value)=>{
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

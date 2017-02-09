@@ -5,12 +5,11 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 import {AuthenticationConfig, validateAuthenticationConfig} from "../../config/authentication";
 import {AuthenticationService} from "../../service/api";
-import {RestController} from "./admin-util";
 import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/authentication')
 @AutoWired
-export class AuthenticationRest extends RestController {
+export class AuthenticationRest {
     @Inject private service: AuthenticationService;
 
     @GET
@@ -18,7 +17,7 @@ export class AuthenticationRest extends RestController {
         return new Promise<AuthenticationConfig>((resolve, reject) => {
             this.service.get(apiId)
                 .then(resolve)
-                .catch(err => reject(this.handleError(err)));
+                .catch(reject);
         })
     }
 
@@ -45,7 +44,7 @@ export class AuthenticationRest extends RestController {
                 })
                 .then(() => this.service.update(apiId, auth))
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -54,7 +53,7 @@ export class AuthenticationRest extends RestController {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId)
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 }

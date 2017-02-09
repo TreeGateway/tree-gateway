@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 export interface ServiceDiscoveryConfig {
 }
@@ -12,7 +13,7 @@ export function validateServiceDiscoveryConfig(serviceDiscovery: ServiceDiscover
     return new Promise((resolve, reject) => {
         Joi.validate(serviceDiscovery, ServiceDiscoveryConfigValidatorSchema, (err, value)=>{
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

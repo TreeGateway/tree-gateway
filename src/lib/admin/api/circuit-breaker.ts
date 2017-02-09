@@ -4,12 +4,11 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 import {CircuitBreakerConfig, validateCircuitBreakerConfig} from "../../config/circuit-breaker";
 import {CircuitBreakerService} from "../../service/api";
-import {RestController} from "./admin-util";
 import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/circuitbreaker')
 @AutoWired
-export class CircuitBreakerRest extends RestController {
+export class CircuitBreakerRest {
     @Inject private service: CircuitBreakerService;
  
     @GET
@@ -42,7 +41,7 @@ export class CircuitBreakerRest extends RestController {
                 })
                 .then(() => this.service.update(apiId, circuitbreakerId, circuitbreaker))
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -53,7 +52,7 @@ export class CircuitBreakerRest extends RestController {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId, circuitbreakerId)
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -64,7 +63,7 @@ export class CircuitBreakerRest extends RestController {
         return new Promise((resolve, reject) => {
             this.service.get(apiId, circuitbreakerId)
                 .then(resolve)
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 }

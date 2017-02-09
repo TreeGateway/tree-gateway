@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 /**
  * Configuration for the API proxy engine.
@@ -237,7 +238,7 @@ export function validateProxyConfig(proxy: Proxy) {
     return new Promise((resolve, reject) => {
         Joi.validate(proxy, ProxyValidatorSchema, (err, value) => {
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

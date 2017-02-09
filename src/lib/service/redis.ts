@@ -4,8 +4,8 @@ import {Redis} from "ioredis";
 
 import {ApiService, ApiComponentService, GroupService, ThrottlingService,
     CacheService, ProxyService, AuthenticationService, CircuitBreakerService, 
-    CorsService, ConfigService, NotFoundError, DuplicatedError} from "./api";
-
+    CorsService, ConfigService} from "./api";
+import {NotFoundError, ValidationError} from "../error/errors";
 import {ApiConfig} from "../config/api";
 import {CacheConfig} from "../config/cache";
 import {ThrottlingConfig} from "../config/throttling";
@@ -67,7 +67,7 @@ export class RedisApiService extends RedisService implements ApiService {
             this.database.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists) => {
                     if (exists) {
-                        throw new DuplicatedError(`Api ${api.id} already exists`)
+                        throw new ValidationError(`Api ${api.id} already exists`)
                     }
 
                     return this.database.redisClient.multi()

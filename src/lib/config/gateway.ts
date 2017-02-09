@@ -5,6 +5,7 @@ import {StatsConfig, StatsConfigValidatorSchema} from "./stats";
 import {AdminConfig, AdminConfigValidatorSchema} from "./admin";
 import {ProtocolConfig, ProtocolConfigSchema} from "./protocol";
 import {LoggerConfig, AccessLoggerConfig, LoggerConfigSchema, AccessLoggerConfigSchema} from "./logger";
+import {ValidationError} from "../error/errors";
 
 /**
  * The API config descriptor.
@@ -170,7 +171,7 @@ export function validateGatewayConfig(gatewayConfig: GatewayConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(gatewayConfig, GatewayConfigValidatorSchema, (err, value) => {
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

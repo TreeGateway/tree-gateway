@@ -9,6 +9,7 @@ import {Group, GroupValidatorSchema} from "./group";
 import {CircuitBreakerConfig, CircuitBreakerConfigValidatorSchema} from "./circuit-breaker";
 import {ServiceDiscoveryConfig, ServiceDiscoveryConfigValidatorSchema} from "./serviceDiscovery";
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 /**
  * The API config descriptor.
@@ -91,7 +92,7 @@ export function validateApiConfig(apiConfig: ApiConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(apiConfig, ApiConfigValidatorSchema, (err, value) => {
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }
@@ -103,7 +104,7 @@ export function validateSimpleApiConfig(apiConfig: ApiConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(apiConfig, SimpleApiConfigValidatorSchema, (err, value) => {
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

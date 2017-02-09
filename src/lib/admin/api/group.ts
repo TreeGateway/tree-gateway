@@ -4,12 +4,11 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "typescript-rest";
 import {Group, validateGroup} from "../../config/group";
 import {GroupService} from "../../service/api";
-import {RestController} from "./admin-util";
 import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/groups')
 @AutoWired
-export class GroupRest extends RestController {
+export class GroupRest {
     @Inject private service: GroupService;
 
     @GET
@@ -42,7 +41,7 @@ export class GroupRest extends RestController {
                 })
                 .then(() => this.service.update(apiId, groupId, group))
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -53,7 +52,7 @@ export class GroupRest extends RestController {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId, groupId)
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -64,7 +63,7 @@ export class GroupRest extends RestController {
         return new Promise((resolve, reject) => {
             this.service.get(apiId, groupId)
                 .then(resolve)
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 }

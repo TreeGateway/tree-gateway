@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 export interface StatsConfig {
     /**
@@ -42,7 +43,7 @@ export function validateStatsConfig(stats: StatsConfig) {
     return new Promise((resolve, reject) => {
         Joi.validate(stats, StatsConfigValidatorSchema, (err, value)=>{
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }

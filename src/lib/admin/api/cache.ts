@@ -4,13 +4,12 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 import {CacheConfig, validateCacheConfig} from "../../config/cache";
 import {CacheService} from "../../service/api";
-import {RestController} from "./admin-util";
 import {AutoWired, Inject} from "typescript-ioc";
 
 
 @Path('apis/:apiId/cache')
 @AutoWired
-export class CacheRest extends RestController {
+export class CacheRest {
     @Inject private service: CacheService;
 
     @GET
@@ -27,7 +26,7 @@ export class CacheRest extends RestController {
                 })
                 .then(() => this.service.create(apiId, cache))
                 .then(cacheId => resolve(new Return.NewResource(`apis/${apiId}/cache/${cacheId}`)))
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -43,7 +42,7 @@ export class CacheRest extends RestController {
                 })
                 .then(() => this.service.update(apiId, cacheId, cache))
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -54,7 +53,7 @@ export class CacheRest extends RestController {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId, cacheId)
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -65,7 +64,7 @@ export class CacheRest extends RestController {
         return new Promise((resolve, reject) => {
             this.service.get(apiId, cacheId)
                 .then(resolve)
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 }

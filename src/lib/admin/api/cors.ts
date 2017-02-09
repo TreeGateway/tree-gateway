@@ -4,12 +4,11 @@ import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return} from "typescript-rest";
 import {ApiCorsConfig, validateApiCorsConfig} from "../../config/cors";
 import {CorsService} from "../../service/api";
-import {RestController} from "./admin-util";
 import {AutoWired, Inject} from "typescript-ioc";
 
 @Path('apis/:apiId/cors')
 @AutoWired
-export class CorsRest extends RestController {
+export class CorsRest {
      @Inject private service: CorsService;
 
     @GET
@@ -42,7 +41,7 @@ export class CorsRest extends RestController {
                 })
                 .then(() => this.service.update(apiId, corsId, cors))
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -53,7 +52,7 @@ export class CorsRest extends RestController {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(apiId, corsId)
                 .then(() => resolve())
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 
@@ -64,7 +63,7 @@ export class CorsRest extends RestController {
         return new Promise((resolve, reject) => {
             this.service.get(apiId, corsId)
                 .then(resolve)
-                .catch((err) => reject(this.handleError(err)));
+                .catch(reject);
         });
     }
 }

@@ -40,7 +40,7 @@ export class Configuration {
             const RedisConfigService = require("./service/redis").RedisConfigService;
 
             Container.bind(ConfigService).to(RedisConfigService);
-            if (self.config.admin.users.userService) {
+            if (self.config.admin && self.config.admin.users &&  self.config.admin.users.userService) {
                 let UserServiceClass = require(self.config.admin.users.userService);
                 Container.bind(UserService).provider({
                     get: () => new UserServiceClass()

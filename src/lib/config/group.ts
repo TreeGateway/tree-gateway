@@ -1,6 +1,7 @@
 "use strict";
 
 import * as Joi from "joi";
+import {ValidationError} from "../error/errors";
 
 /**
  * Configurations for groups of endpoints.
@@ -47,7 +48,7 @@ export function validateGroup(group: Group) {
     return new Promise((resolve, reject) => {
         Joi.validate(group, GroupValidatorSchema, (err, value) => {
             if (err) {
-                reject(err);
+                reject(new ValidationError(err));
             } else {
                 resolve(value);
             }
