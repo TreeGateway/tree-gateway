@@ -1,8 +1,6 @@
 "use strict";
 
 import {UserService} from "../service/users";
-import * as redis from "ioredis";
-import * as dbConfig from "../redis";
 import {UserData, validateUser} from "../config/users";
 import {AutoWired, Container, Inject} from "typescript-ioc";
 import {Database} from "../database";
