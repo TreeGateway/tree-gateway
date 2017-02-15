@@ -2,9 +2,8 @@
 
 import * as path from "path";
 import {ArgumentParser} from "argparse";
-import {Server} from "typescript-rest";
+import {Configuration} from "./configuration";
 
-Server.useIoC();
 let parser = new ArgumentParser({
   version: '0.0.1',
   addHelp: true,
@@ -14,16 +13,11 @@ let parser = new ArgumentParser({
 parser.addArgument(
   [ '-c', '--config' ],
   {
-    help: 'The Tree-Gateway config file (tree-gateway.json).',
-    defaultValue: path.join(process.cwd(), 'tree-gateway.json')
+    help: 'The Tree-Gateway config file (tree-gateway.json).'
   }
 );
 
 let parameters = parser.parseArgs();
 
-export class Parameters {
-    static gatewayConfigFile: string;
-}
-
-Parameters.gatewayConfigFile = parameters.config;
+Configuration.gatewayConfigFile = parameters.config;
 

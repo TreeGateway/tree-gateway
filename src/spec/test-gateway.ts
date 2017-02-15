@@ -6,19 +6,20 @@ import * as _ from "lodash";
 import {ApiConfig} from "../lib/config/api";
 import {Group} from "../lib/config/group";
 import "jasmine";
-import {Server} from "typescript-rest";
 import {Container} from "typescript-ioc";
 import {Configuration} from "../lib/configuration";
+import {Gateway} from "../lib/gateway";
+import {Database} from "../lib/database";
+import {UserService} from "../lib/service/users";
 
-Server.useIoC();
 
 let config = Container.get(Configuration);
 let server;
-let gateway;
-let database;
+let database = Container.get(Database);
+let gateway = Container.get(Gateway);
+let userService = Container.get(UserService);
 let gatewayRequest;
 let adminRequest;
-let userService;
 let configToken; 
 
 const configUser = {
@@ -31,8 +32,6 @@ const configUser = {
 
 const createUser = () => {
     return new Promise<void>((resolve, reject)=>{
-        const UserService = require("../lib/service/users").UserService
-        userService = Container.get(UserService);
         userService.create(configUser)
         .then(resolve)
         .catch(reject);
@@ -67,15 +66,7 @@ const getIdFromResponse = (response) => {
 
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
-        config.load("./tree-gateway.json")
-            .then(()=>{
-                const Gateway = require("../lib/gateway").Gateway;
-                const Database = require("../lib/database").Database;
-                database = Container.get(Database);
-                gateway = Container.get(Gateway);
-
-                return gateway.start();
-            })
+			gateway.start()
 			.then(()=>{
 				return gateway.startAdmin();
 			})

@@ -1,35 +1,31 @@
 "use strict";
 
-import {Parameters} from "./command-line";
+import "./command-line";
 import {Container} from "typescript-ioc";
 import {Configuration} from "./configuration";
 import {Logger} from "./logger";
 import {Gateway} from "./gateway";
 import {Database} from "./database";
 
-const config: Configuration = Container.get(Configuration);
-config.load(Parameters.gatewayConfigFile)
-    .then(()=>{
-        const logger: Logger = Container.get(Logger);
-        const gateway: Gateway = Container.get(Gateway);
-        const database: Database = Container.get(Database);
-        gateway.start()
-            .then(() => {
-                return gateway.startAdmin();
-            })
-            .catch((err) => {
-                logger.error(`Error starting gateway: ${err.message}`);
-                process.exit(-1);
-            });
+const logger: Logger = Container.get(Logger);
+const gateway: Gateway = Container.get(Gateway);
+const database: Database = Container.get(Database);
+gateway.start()
+    .then(() => {
+        return gateway.startAdmin();
+    })
+    .catch((err) => {
+        logger.error(`Error starting gateway: ${err.message}`);
+        process.exit(-1);
+    });
 
-        function graceful() {
-            gateway.stopAdmin()
-            .then(() => gateway.stop())
-            .then(() => database.disconnect())
-            .then(() => process.exit(0));
-        }
+function graceful() {
+    gateway.stopAdmin()
+    .then(() => gateway.stop())
+    .then(() => database.disconnect())
+    .then(() => process.exit(0));
+}
 
-        // Stop graceful
-        process.on('SIGTERM', graceful);
-        process.on('SIGINT' , graceful);
-    }).catch(console.error);
+// Stop graceful
+process.on('SIGTERM', graceful);
+process.on('SIGINT' , graceful);

@@ -168,13 +168,10 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
 });
 
 export function validateGatewayConfig(gatewayConfig: GatewayConfig) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(gatewayConfig, GatewayConfigValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        })
-    });
+    const result = Joi.validate(gatewayConfig, GatewayConfigValidatorSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
 }

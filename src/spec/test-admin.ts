@@ -7,17 +7,17 @@ import {CacheConfig} from "../lib/config/cache";
 import {Group} from "../lib/config/group";
 import {ThrottlingConfig} from "../lib/config/throttling";
 import "jasmine";
-import {Server} from "typescript-rest";
 import {Container} from "typescript-ioc";
 import {Configuration} from "../lib/configuration";
-
-Server.useIoC();
+import {Gateway} from "../lib/gateway";
+import {Database} from "../lib/database";
+import {UserService} from "../lib/service/users";
 
 let config = Container.get(Configuration);
 let server;
-let gateway;
-let database;
-let userService;
+let database = Container.get(Database);
+let gateway = Container.get(Gateway);
+let userService = Container.get(UserService);
 let adminAddress;
 let adminRequest;
 let adminToken; 
@@ -57,8 +57,6 @@ const getIdFromResponse = (response) => {
 
 const createUsers = () => {
     return new Promise<void>((resolve, reject)=>{
-        const UserService = require("../lib/service/users").UserService
-        userService = Container.get(UserService);
         userService.create(adminUser)
         .then(() => userService.create(configUser))
         .then(() => userService.create(simpleUser))
@@ -69,16 +67,7 @@ const createUsers = () => {
 
 describe("Admin API", () => {
 	beforeAll(function(done){
-        
-        config.load("./tree-gateway.json")
-            .then(()=>{
-                const Gateway = require("../lib/gateway").Gateway;
-                const Database = require("../lib/database").Database;
-                database = Container.get(Database);
-                gateway = Container.get(Gateway);
-
-                return gateway.start();
-            })
+            gateway.start()
 			.then(()=>{
 				return gateway.startAdmin();
 			})

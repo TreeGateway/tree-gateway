@@ -36,13 +36,13 @@ export class ValidationError extends Errors.ForbidenError {
 
         let result = [];
         if (requiredFields.length > 0) {
-            result.push("Missing Required Fields: %s", requiredFields.join(', '));
+            result.push(`Missing Required Fields: ${requiredFields.join(', ')}`);
         }
         if (unexpectedFields.length > 0) {
-            result.push("Unexpected Fields: %s", unexpectedFields.join(', '));
+            result.push(`Unexpected Fields: ${unexpectedFields.join(', ')}`);
         }
         if (invalidFields.length > 0) {
-            result.push("Invalid value for Fields: %s", invalidFields.join(', '));
+            result.push(`Invalid value for Fields: ${invalidFields.join(', ')}`);
         }
         return result.join('\n');
     }    

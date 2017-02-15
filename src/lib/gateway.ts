@@ -343,7 +343,7 @@ export class Gateway {
                     resolve();
                 })
                 .catch((err) => {
-                    this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(this.config)}`);
+                    this.logger.error(`Error configuring gateway server: ${err.message}\n${JSON.stringify(this.config.gateway)}`);
                     reject(err);
                 });
         });
