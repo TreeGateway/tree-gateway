@@ -38,7 +38,7 @@
     "serve-favicon": "~2.3.0",
     "swagger-ui-express": "^1.0.2",
     "typescript-ioc": "^0.2.6",
-    "typescript-rest": "file:///Users/thiago/git/typescript-rest",
+    "typescript-rest": "^0.3.5",
     "uuid": "^3.0.1",
     "winston": "^2.2.0"
   },
