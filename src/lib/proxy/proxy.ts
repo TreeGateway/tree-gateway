@@ -73,6 +73,9 @@ export class ApiProxy {
         if (!_.isUndefined(proxy.memoizeHost)) {
             result.memoizeHost  = proxy.memoizeHost; 
         }
+        if (proxy.disableParseReqBody) {
+            result.parseReqBody  = false; 
+        }
         let filterChain: Array<Function> = this.filter.buildFilters(api);
         let debug = this.logger.isDebugEnabled();
         let self = this;

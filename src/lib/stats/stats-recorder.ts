@@ -1,12 +1,11 @@
 "use strict";
 
 import {Gateway} from "../gateway";
-import {Stats} from "./stats";
+import {Stats, StatsHandler} from "./stats";
 import {StatsConfig} from "../config/stats";
-import {RedisStats} from "./redis-stats";
 import * as _ from "lodash";
 import {Logger} from "../logger";
-import {AutoWired, Singleton, Inject} from "typescript-ioc";
+import {AutoWired, Singleton, Container ,Inject} from "typescript-ioc";
 import {Configuration} from "../configuration";
 
 @AutoWired
@@ -37,7 +36,9 @@ export class StatsRecorder {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug(`Creating a stats recorder for ${id} on Redis database`);
             }
-            stats = new Stats(new RedisStats(id, config));
+            const statsHandler: StatsHandler = Container.get(StatsHandler);
+            statsHandler.initialize(id, config);
+            stats = new Stats(statsHandler);
         } catch (e) {
             this.logger.error(e);
         }

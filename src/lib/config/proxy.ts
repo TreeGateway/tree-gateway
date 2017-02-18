@@ -135,6 +135,11 @@ export interface Proxy {
      * When false, host argument will be parsed on each request.
      */
     memoizeHost?: boolean;
+    /**
+     * Allows you to control parsing the request body. Disabling body parsing is useful for large uploads where 
+     * it would be inefficient to hold the data in memory.
+     */
+    disableParseReqBody?: boolean; 
 }
 
 /**
@@ -231,7 +236,8 @@ export let ProxyValidatorSchema = Joi.object().keys({
     timeout: Joi.number(),
     disableStats: Joi.boolean(), 
     limit: Joi.string(),
-    memoizeHost: Joi.boolean()
+    memoizeHost: Joi.boolean(), 
+    disableParseReqBody: Joi.boolean()
 });
 
 export function validateProxyConfig(proxy: Proxy) {

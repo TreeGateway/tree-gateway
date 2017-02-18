@@ -31,8 +31,11 @@ export class Configuration {
         const ConfigService = require("./service/api").ConfigService;
         const UserService = require("./service/users").UserService;
         const RedisConfigService = require("./service/redis").RedisConfigService;
+        const StatsHandler = require("./stats/stats").StatsHandler;
+        const RedisStats = require("./stats/redis-stats").RedisStats;
 
         Container.bind(ConfigService).to(RedisConfigService);
+        Container.bind(StatsHandler).to(RedisStats);
         if (this.config.admin && this.config.admin.users &&  this.config.admin.users.userService) {
             let UserServiceClass = require(this.config.admin.users.userService);
             Container.bind(UserService).provider({

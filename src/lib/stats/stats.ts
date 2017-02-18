@@ -34,14 +34,7 @@ export class Stats {
 }
 
 export abstract class StatsHandler {
-    id: string;
-    private config: StatsConfig;
-
-    constructor(id: string, config: StatsConfig) {
-        this.id = id;
-        this.config = config;
-    }
-
+    abstract initialize(id: string, config: StatsConfig);
     abstract registerOccurrence(value: string, increment: number, ...extra: string[]);
     abstract getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> ;
     abstract getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>>;

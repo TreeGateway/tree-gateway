@@ -10,17 +10,18 @@ import {Database} from "../database";
 
 @AutoWired
 export class RedisStats extends StatsHandler {
+    id: string;
     ttl: number;
     duration: number
     prefix: string;
 
-    @Inject
-    private logger: Logger;
-    @Inject
-    private database: Database;
+    @Inject private logger: Logger;
+    @Inject private database: Database;
+    private config: StatsConfig;
 
-    constructor(id: string, config: StatsConfig) {
-        super(id, config);
+    initialize(id: string, config: StatsConfig) {
+        this.id = id;
+        this.config = config;
         this.prefix = config.prefix;
         this.duration = humanInterval(config.granularity.duration)/1000;
         this.ttl = humanInterval(config.granularity.ttl)/1000;
