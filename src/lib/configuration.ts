@@ -5,7 +5,6 @@ import * as _ from "lodash";
 import * as path from "path";
 
 import {GatewayConfig, validateGatewayConfig} from "./config/gateway";
-import {StatsConfig} from "./config/stats";
 import {AutoWired, Container, Singleton} from "typescript-ioc";
 
 @Singleton
@@ -21,9 +20,6 @@ export class Configuration {
     }
 
     get gateway() : GatewayConfig {
-        if (!this.config) {
-            throw new Error(`Configuration not loaded. Call Configuration.load() first.`)
-        }
         return this.config;
     }
     

@@ -4,7 +4,6 @@ import "./command-line";
 import * as cluster from "cluster";
 import * as os from "os";
 import {Container} from "typescript-ioc";
-import {Configuration} from "./configuration";
 import {Logger} from "./logger";
 import {Gateway} from "./gateway";
 import {Database} from "./database";

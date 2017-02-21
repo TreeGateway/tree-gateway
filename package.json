@@ -21,7 +21,7 @@
     "express": "^4.14.0",
     "express-http-proxy": "^0.10.0",
     "express-rate-limit": "^2.6.0",
-    "express-winston": "^2.0.0",
+    "express-winston": "^2.2.0",
     "fs-extra-promise": "^0.4.1",
     "human-interval": "^0.1.6",
     "ioredis": "^2.4.0",
@@ -40,7 +40,7 @@
     "typescript-ioc": "^0.2.6",
     "typescript-rest": "^0.3.5",
     "uuid": "^3.0.1",
-    "winston": "^2.2.0"
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "@types/argparse": "^1.0.30",
@@ -81,6 +81,6 @@
     "request": "^2.72.0",
     "run-sequence": "^1.1.5",
     "typedoc": "^0.5.5",
-    "typescript": "^2.1.5"
+    "typescript": "^2.2.0"
   }
 }
