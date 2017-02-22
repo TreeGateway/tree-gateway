@@ -6,10 +6,6 @@ import {ValidationError} from "../error/errors";
 
 export interface CircuitBreakerConfig {
     /**
-     * The circuit breaker ID.
-     */
-    id? : string;
-    /**
      * Exceptions or calls exceeding the configured timeout increment a failure counter.
      * Expressed in miliseconds
      * 
@@ -109,7 +105,6 @@ export interface CircuitBreakerConfig {
 }
 
 export let CircuitBreakerConfigValidatorSchema = Joi.object().keys({
-    id: Joi.string().guid(),
     timeout: Joi.number(),
     resetTimeout: Joi.number(),
     maxFailures: Joi.number(),

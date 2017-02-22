@@ -6,10 +6,6 @@ import {ValidationError} from "../error/errors";
 
 export interface CacheConfig {
     /**
-     * The cache ID.
-     */
-    id?: string;
-    /**
      * Configuration for a client side cache (in browser).
      */
     client?: ClientCacheConfig;
@@ -64,10 +60,9 @@ let ServerCacheValidatorSchema = Joi.object().keys({
 });
 
 export let CacheConfigValidatorSchema = Joi.object().keys({
-    id: Joi.string().guid(),
     client: ClientCacheValidatorSchema,
     server: ServerCacheValidatorSchema,
-    group: Joi.array().items(Joi.string().guid())
+    group: Joi.array().items(Joi.string())
 });
 
 export function validateCacheConfig(cache: CacheConfig) {

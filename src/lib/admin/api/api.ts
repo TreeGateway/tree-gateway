@@ -2,7 +2,7 @@
 
 import "es6-promise";
 import {Path, GET, POST, DELETE, PUT, PathParam, Errors, Return, Accept} from "typescript-rest";
-import {ApiConfig, validateSimpleApiConfig} from "../../config/api";
+import {ApiConfig, validateApiConfig} from "../../config/api";
 import {ApiService} from "../../service/api";
 import {AutoWired, Inject} from "typescript-ioc";
 
@@ -19,7 +19,7 @@ export class APIRest {
     @POST
     addApi(api: ApiConfig): Promise<Return.NewResource> {
         return new Promise<Return.NewResource>((resolve, reject) => {
-            validateSimpleApiConfig(api)
+            validateApiConfig(api)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
@@ -35,7 +35,7 @@ export class APIRest {
         return new Promise<void>((resolve, reject) => {
             api.id = id;
 
-            validateSimpleApiConfig(api)
+            validateApiConfig(api)
                 .catch(err => {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })

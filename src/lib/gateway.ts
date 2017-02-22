@@ -29,6 +29,7 @@ import * as os from "os";
 import * as _ from "lodash";
 import {AutoWired, Inject, Singleton} from "typescript-ioc";
 import {MiddlewareInstaller} from "./utils/middleware-installer";
+import {ConfigEvents} from "./config/events";
 
 class StatsController {
     requestStats: Stats;
@@ -328,22 +329,23 @@ export class Gateway {
     }
 
     private initialize(): Promise<void> {
+       const self = this;
         return new Promise<void>((resolve, reject) => {
-            this.app = express();
-            this.monitors.startMonitors();
+            self.app = express();
+            self.monitors.startMonitors();
 
-            this.configureServer()
-                .then(() => this.configService
-                                .on('apiRemoved', (apiId) => this.removeApi(apiId))
-                                .on('apiCreated', (apiId) => this.updateApi(apiId))
-                                .on('apiUpdated', (apiId) => this.updateApi(apiId))
+            self.configureServer()
+                .then(() => self.configService
+                                .on(ConfigEvents.API_REMOVED, (apiId) => self.removeApi(apiId))
+                                .on(ConfigEvents.API_ADDED, (apiId) => self.updateApi(apiId))
+                                .on(ConfigEvents.API_UPDATED, (apiId) => self.updateApi(apiId))
                                 .subscribeEvents())
                 .then(() => {
-                    this.configureAdminServer();
+                    self.configureAdminServer();
                     resolve();
                 })
                 .catch((err) => {
-                    this.logger.error(`Error configuring gateway server: ${err.message}\n${JSON.stringify(this.config.gateway)}`);
+                    self.logger.error(`Error configuring gateway server: ${err.message}\n${JSON.stringify(this.config.gateway)}`);
                     reject(err);
                 });
         });

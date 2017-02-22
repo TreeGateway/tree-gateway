@@ -18,38 +18,6 @@ export abstract class ApiService {
     //abstract getByKey(key: string): Promise<ApiConfig>;
 }
 
-export abstract class ApiComponentService<T> {
-    abstract list(apiId: string): Promise<Array<T>>;
-    abstract create(apiId: string, component: T): Promise<string>;
-    abstract update(apiId: string, componentId: string, component: T): Promise<void>;
-    abstract remove(apiId: string, componentId: string): Promise<void>;
-    abstract get(apiId: string, componentId: string): Promise<T>;
-}
-
-export abstract class GroupService extends ApiComponentService<Group> {}
-
-export abstract class ThrottlingService extends ApiComponentService<ThrottlingConfig> {}
-
-export abstract class CircuitBreakerService extends ApiComponentService<CircuitBreakerConfig> {}
-
-export abstract class CorsService extends ApiComponentService<ApiCorsConfig> {}
-
-export abstract class CacheService extends ApiComponentService<CacheConfig> {}
-
-export abstract class ProxyService {
-    abstract get(apiId: string);
-    abstract create(apiId: string, proxy: Proxy): Promise<void>;
-    abstract update(apiId: string, proxy: Proxy): Promise<void>;
-    abstract remove(apiId: string): Promise<void>;
-}
-
-export abstract class AuthenticationService {
-    abstract get(apiId: string);
-    abstract create(apiId: string, auth: AuthenticationConfig): Promise<void>;
-    abstract update(apiId: string, auth: AuthenticationConfig): Promise<void>;
-    abstract remove(apiId: string): Promise<void>;
-}
-
 export abstract class ConfigService {
     abstract getAllApiConfig(): Promise<Array<ApiConfig>>;
     abstract getApiConfig(apiId: string): Promise<ApiConfig>;

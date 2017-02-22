@@ -6,10 +6,6 @@ import {ValidationError} from "../error/errors";
 
 export interface ThrottlingConfig {
     /**
-     * Throttling ID.
-     */
-    id?: string;
-    /**
      * milliseconds - how long to keep records of requests in memory. 
      * Defaults to 60000 (1 minute).  
      */
@@ -114,7 +110,6 @@ export interface ThrottlingConfig {
 }
 
 export let ThrottlingConfigValidatorSchema = Joi.object().keys({
-    id: Joi.string().guid(),
     windowMs: Joi.number(),
     delayAfter: Joi.number(),
     delayMs: Joi.number(),
@@ -125,7 +120,7 @@ export let ThrottlingConfigValidatorSchema = Joi.object().keys({
     keyGenerator: Joi.string().alphanum(),
     skip: Joi.string().alphanum(),
     handler: Joi.string().alphanum(),
-    group: Joi.array().items(Joi.string().guid()),
+    group: Joi.array().items(Joi.string()),
     disableStats: Joi.boolean(),
     statsConfig: StatsConfigValidatorSchema
 });

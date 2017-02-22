@@ -12,3 +12,9 @@ export class ConfigTopics {
     static MIDDLEWARE_REMOVED = `${ConfigTopics.BASE_TOPIC}:middleware-removed`;
     static MIDDLEWARE_UPDATED = `${ConfigTopics.BASE_TOPIC}:middleware-updated`;
 }
+
+export class ConfigEvents {
+    static API_ADDED = `apiAdded`;
+    static API_REMOVED = `apiRemoved`;
+    static API_UPDATED = `apiUpdated`;
+}

@@ -3,7 +3,6 @@ import * as request from "request";
 import * as fs from "fs-extra-promise";
 import * as path from "path";
 import * as _ from "lodash";
-import {ApiConfig} from "../lib/config/api";
 import {Group} from "../lib/config/group";
 import "jasmine";
 import {Container} from "typescript-ioc";
@@ -11,6 +10,8 @@ import {Configuration} from "../lib/configuration";
 import {Gateway} from "../lib/gateway";
 import {Database} from "../lib/database";
 import {UserService} from "../lib/service/users";
+import {ApiConfig, validateApiConfig} from "../lib/config/api";
+
 
 
 let config = Container.get(Configuration);
@@ -356,303 +357,26 @@ describe("Gateway Tests", () => {
 
 	function installApi(apiConfig: ApiConfig): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			let api = _.omit(apiConfig, 'proxy', 'group', 'throttling', 'authentication', 'cache', 'serviceDiscovery', 'circuitBreaker', 'cors');
-
-			adminRequest.post("/apis", {
-                headers: { 'authorization': `JWT ${configToken}` },
-				body: api, json: true
-			}, (error, response, body) => {
-				expect(error).toBeNull();
-				expect(response.statusCode).toEqual(201);
-				apiConfig.id = getIdFromResponse(response);
-
-				installApiGroups(apiConfig.id, apiConfig.group)
-					.then(() => fixApiGroupsIds(apiConfig))
-					.then(() => installApiProxy(apiConfig.id, apiConfig.proxy))
-					.then(() => installApiCache(apiConfig.id, apiConfig.cache))
-					.then(() => installApiThrottling(apiConfig.id, apiConfig.throttling))
-					.then(() => installApiAuthentication(apiConfig.id, apiConfig.authentication))
-					.then(() => installApiCircuitBreaker(apiConfig.id, apiConfig.circuitBreaker))
-					.then(() => installApiCors(apiConfig.id, apiConfig.cors))
-					.then(resolve)
-					.catch(reject);
-			});
-		});
-	}
-
-	function transformGroups(groups: Array<Group>, names: Array<string>) : Array<string> {
-		const ids = names.map((name) => {
-			const group = groups.filter((group) => group.name === name);
-
-			return group.length > 0 ? group[0].id : null;
-		});
-
-		return ids.filter((id) => id !== null);
-	}
-
-	function fixApiGroupsIds(api: ApiConfig) {
-		if (api.proxy.target.allow) {
-			api.proxy.target.allow = transformGroups(api.group, api.proxy.target.allow);
-		}
-
-		if (api.proxy.target.deny) {
-			api.proxy.target.deny = transformGroups(api.group, api.proxy.target.deny);
-		}
-
-		if (api.proxy.filter) {
-			api.proxy.filter.forEach((filter) => {
-				if (filter.group) {
-					filter.group = transformGroups(api.group, filter.group);
-				}
+			validateApiConfig(apiConfig).
+			then(api => {
+				adminRequest.post("/apis", {
+					headers: { 'authorization': `JWT ${configToken}` },
+					body: apiConfig, json: true
+				}, (error, response, body) => {
+					expect(error).toBeNull();
+					expect(response.statusCode).toEqual(201);
+					apiConfig.id = getIdFromResponse(response);
+					return resolve();
+				});
 			})
-		}
-
-		if (api.proxy.interceptor) {
-			if (api.proxy.interceptor.request) {
-				api.proxy.interceptor.request.forEach((rqi) => {
-					if (rqi.group) {
-						rqi.group = transformGroups(api.group, rqi.group);
-					}
-				})
-			}
-
-			if (api.proxy.interceptor.response) {
-				api.proxy.interceptor.response.forEach((rpi) => {
-					if (rpi.group) {
-						rpi.group = transformGroups(api.group, rpi.group);
-					}
-				})
-			}
-		}
-
-		if (api.authentication && api.authentication.group) {
-			api.authentication.group = transformGroups(api.group, api.authentication.group);
-		}
-
-		if (api.circuitBreaker) {
-			api.circuitBreaker.forEach((cb) => {
-				if (cb.group) {
-					cb.group = transformGroups(api.group, cb.group);
-				}
-			});
-		}
-
-		if (api.cache) {
-			api.cache.forEach((cache) => {
-				if (cache.group) {
-					cache.group = transformGroups(api.group, cache.group);
-				}
-			});
-		}
-
-		if (api.throttling) {
-			api.throttling.forEach((throt) => {
-				if (throt.group) {
-					throt.group = transformGroups(api.group, throt.group);
-				}
-			});
-		}
-	}
-
-	function installApiGroups(apiId: string, groups): Promise<any> {
-		if (groups && groups.length > 0) {
-			const promises = groups.map((group) => installApiGroup(apiId, group));
-
-			return Promise.all(promises);
-		} else {
-			return Promise.resolve();
-		}
-	}
-
-	function installApiAuthentication(apiId: string, authentication): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!authentication) {
-				return resolve();
-			}
-			adminRequest.post(`/apis/${apiId}/authentication`, {
-                headers: { 'authorization': `JWT ${configToken}` },
-				body: authentication, json: true
-			}, (error, response, body) => {
-				if(error) {
-					return reject(error);
-				}
-				
-				if (response.statusCode === 201) {
-					return resolve();
-				}
-
-				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-			});
+			.catch(err => {
+				console.log(`Invalild api config: ${JSON.stringify(apiConfig)}`);
+				console.log(err);
+				reject(err);
+			});			
 		});
 	}
 
-	function installApiCircuitBreaker(apiId: string, circuitBreaker): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!circuitBreaker) {
-				return resolve();
-			}
-
-			let returned=0, expected = circuitBreaker.length;
-
-			circuitBreaker.forEach((cb) => {
-				adminRequest.post(`/apis/${apiId}/circuitbreaker`, {
-	                headers: { 'authorization': `JWT ${configToken}` },
-					body: cb, json: true
-				}, (error, response, body) => {
-					if(error) {
-						return reject(error);
-					}
-					
-					if (response.statusCode === 201) {
-						returned++;
-						if (returned === expected) {
-							return resolve();
-						}
-
-						return;
-					}
-
-					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-				});
-			});
-		});
-	}
-
-	function installApiCors(apiId: string, cors): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!cors) {
-				return resolve();
-			}
-
-			let returned=0, expected = cors.length;
-			cors.forEach((cb) => {
-				adminRequest.post(`/apis/${apiId}/cors`, {
-	                headers: { 'authorization': `JWT ${configToken}` },
-					body: cb, json: true
-				}, (error, response, body) => {
-					if(error) {
-						return reject(error);
-					}
-					
-					if (response.statusCode === 201) {
-						returned++;
-						if (returned === expected) {
-							return resolve();
-						}
-
-						return;
-					}
-
-					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-				});
-			});
-		});
-	}
-
-	function installApiCache(apiId: string, apiCache): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!apiCache) {
-				return resolve();
-			}
-			let returned=0, expected = apiCache.length;
-
-			apiCache.forEach(cache=>{
-				adminRequest.post(`/apis/${apiId}/cache`, {
-	                headers: { 'authorization': `JWT ${configToken}` },
-					body: cache, json: true
-				}, (error, response, body) => {
-					if(error) {
-						return reject(error);
-					}
-
-
-					if (response.statusCode === 201) {
-						returned++;
-						if (returned === expected) {
-							return resolve();
-						}
-
-						return;
-					}
-
-					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-				});
-			});
-		});
-	}
-
-	function installApiThrottling(apiId: string, throttling): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!throttling) {
-				return resolve();
-			}
-			let returned=0, expected = throttling.length;
-			throttling.forEach(throt=>{
-				adminRequest.post(`/apis/${apiId}/throttling`, {
-	                headers: { 'authorization': `JWT ${configToken}` },
-					body: throt, json: true
-				}, (error, response, body) => {
-					if(error) {
-						return reject(error);
-					}
-					if (response.statusCode === 201) {
-						returned++;
-						if (returned === expected) {
-							return resolve();
-						}
-
-						return;
-					}
-
-					return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-				});
-			});	
-		});
-	}
-
-	function installApiProxy(apiId: string, apiProxy): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!apiProxy) {
-				return resolve();
-			}
-			adminRequest.post(`/apis/${apiId}/proxy`, {
-                headers: { 'authorization': `JWT ${configToken}` },
-				body: apiProxy, json: true
-			}, (error, response, body) => {
-				if(error) {
-					return reject(error);
-				}
-
-				if (response.statusCode === 201) {
-					return resolve();
-				}
-
-				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-			});
-		});
-	}
-
-	function installApiGroup(apiId: string, group): Promise<void> {
-		return new Promise<void>((resolve, reject)=>{
-			if (!group) {
-				return resolve();
-			}
-			adminRequest.post(`/apis/${apiId}/groups`, {
-                headers: { 'authorization': `JWT ${configToken}` },
-				body: group, json: true
-			}, (error, response, body) => {
-				if(error || response.statusCode !== 201) {
-					return reject(error);
-				}
-				if (response.statusCode === 201) {
-					group.id = getIdFromResponse(response);
-					return resolve();
-				}
-
-				return reject(`Status code: ${response.statusCode} - Body: ${JSON.stringify(response.body)}`);
-			});
-		});
-	}
 
 	function installMiddleware(fileName: string, servicePath: string, dir: string): Promise<void> {
 		return new Promise<void>((resolve, reject)=>{

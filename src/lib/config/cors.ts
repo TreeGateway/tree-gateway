@@ -50,10 +50,6 @@ export interface CorsConfig {
  */
 export interface ApiCorsConfig extends CorsConfig{
     /**
-     * The cache ID.
-     */
-    id?: string;
-    /**
      * A list of groups that will use this cors cofiguration
      */
     group?: Array<string>;
@@ -87,7 +83,6 @@ let CorsOriginSchema = Joi.object().keys({
 }).min(1).max(1);
 
 export let ApiCorsConfigSchema = Joi.object().keys({
-    id: Joi.string().guid(),
     origin: CorsOriginSchema.required(),
     method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD')),
     allowedHeaders: Joi.array().items(Joi.string()),
