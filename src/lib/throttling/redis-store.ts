@@ -6,7 +6,7 @@ interface Options {
     path: string;
     client: redis.Redis;
     id?: string;
-    expiry?: number;
+    expire?: number;
     prefix?: string;
 }
 
@@ -15,7 +15,7 @@ export class RedisStore {
   
   constructor(options: Options) {
     this.options = _.defaults(options, {
-        expiry: 60, // default expiry is one minute
+        expire: 60, // default expire is one minute
         prefix: "rl"
     });
   }
@@ -32,10 +32,10 @@ export class RedisStore {
           return cb(err);
         }
 
-        // if this is new or has no expiry
+        // if this is new or has no expire
         if (replies[0][1] === 1 || replies[1][1] === -1) {
           // then expire it after the timeout
-          opt.client.expire(rdskey, opt.expiry);
+          opt.client.expire(rdskey, opt.expire);
         }
 
         cb(null, replies[0][1]);

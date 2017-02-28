@@ -42,7 +42,7 @@ export class ApiRateLimit {
             );
             rateConfig.store = new RedisStore({
                 path: path,
-                expiry: (throttling.windowMs / 1000) +1,
+                expire: (throttling.windowMs / 1000) +1,
                 client: this.database.redisClient
             });
             

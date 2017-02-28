@@ -15,7 +15,7 @@ export class RedisStore implements CacheStore<CacheEntry>{
 
     constructor(options: Options) {
         this.options = _.defaults(options, {
-            maxAge: 60, // default expiry is one minute
+            maxAge: 60, // default expire is one minute
             prefix: "ca:"
         });
     }
