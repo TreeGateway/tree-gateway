@@ -26,17 +26,6 @@ export class MiddlewareInstaller {
         });
     }
 
-    installAllOfType(type: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.service.list(type)
-                .then((names) => {
-                    return Promise.all(names.map(name => this.install(type, name)));
-                })
-                .then(() => resolve())
-                .catch(reject);
-        });
-    }
-
     install(type: string, name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.uninstall(type, name)
@@ -65,9 +54,25 @@ export class MiddlewareInstaller {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug(`Uninstalling middleware ${type}/${name}`);
             }
+            const p = this.getPath(type, name);
+            if (fs.existsSync(p)) {
+                fs.removeAsync(p)
+                    .then(resolve)
+                    .catch(reject);
+            }
+            else {
+                resolve();
+            }
+        });
+    }
 
-            fs.removeAsync(this.getPath(type, name))
-                .then(resolve)
+    private installAllOfType(type: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.service.list(type)
+                .then((names) => {
+                    return Promise.all(names.map(name => this.install(type, name)));
+                })
+                .then(() => resolve())
                 .catch(reject);
         });
     }
