@@ -1,0 +1,10 @@
+sudo: required
+language: node_js
+node_js:
+- '5'
+services:
+  - docker
+before_install:
+- docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
+- npm install -g gulp
+script: gulp release

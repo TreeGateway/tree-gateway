@@ -1,0 +1,33 @@
+{
+    "name": "TestAuthdByGroupAPI",
+    "version": "1.0.0",
+    "group": [
+        {
+            "name": "Group1",
+            "description": "Endpoints Group One",
+            "member": [
+                {
+                    "path": ["get/", "/user-agent"],
+                    "method": ["GET"],
+                    "protocol": ["http"]
+                }
+            ] 
+        }
+    ],
+    "proxy": {
+        "path": "secureBasic-by-group/",
+        "target": {
+            "path": "http://httpbin.org"
+        },
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "authentication": {
+        "strategy": {
+            "basic": {
+                "verify": "verifyBasicUser"
+            }
+        },
+        "group": ["Group1"]        
+    }
+}

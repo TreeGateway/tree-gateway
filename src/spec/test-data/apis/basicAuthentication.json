@@ -1,0 +1,19 @@
+{
+    "name": "TestBasicAuthenticatedAPI",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "secureBasic/",
+        "target": {
+            "path": "http://httpbin.org"
+        },
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "authentication": {
+        "strategy": {
+            "basic": {
+                "verify": "verifyBasicUser"
+            }
+        }
+    }
+}

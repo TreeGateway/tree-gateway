@@ -1,28 +1,30 @@
 "use strict";
 
-import * as express from "express";
-import * as logger from "morgan";
+import "./command-line";
+import {Container} from "typescript-ioc";
+import {Logger} from "./logger";
 import {Gateway} from "./gateway";
-import * as fs from "fs-extra";
-import * as winston from "winston";
+import {Database} from "./database";
 
-winston.add(winston.transports.File, { filename: __dirname + '/logs/gateway.log' });
-let gateway: Gateway = new Gateway();
-let app = gateway.server;
+const logger: Logger = Container.get(Logger);
+const gateway: Gateway = Container.get(Gateway);
+const database: Database = Container.get(Database);
+gateway.start()
+    .then(() => {
+        return gateway.startAdmin();
+    })
+    .catch((err) => {
+        logger.error(`Error starting gateway: ${err.message}`);
+        process.exit(-1);
+    });
 
-if (app.get('env') == 'production') {
-  const accessLogStream = fs.createWriteStream(__dirname + '/logs/access_errors.log',{flags: 'a'});
-  app.use(logger('common', {
-    skip: function(req: express.Request, res: express.Response) { 
-        return res.statusCode < 400 
-    }, 
-    stream: accessLogStream }));
-} 
-else {
-  app.use(logger('dev'));
+function graceful() {
+    gateway.stopAdmin()
+    .then(() => gateway.stop())
+    .then(() => database.disconnect())
+    .then(() => process.exit(0));
 }
 
-gateway.configure(__dirname +'/apis');
-app.listen(3010);
-module.exports = app;
-
+// Stop graceful
+process.on('SIGTERM', graceful);
+process.on('SIGINT' , graceful);

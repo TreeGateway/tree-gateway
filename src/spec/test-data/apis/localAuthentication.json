@@ -1,0 +1,21 @@
+{
+    "name": "TestLocalAuthenticatedAPI",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "secureLocal/",
+        "target": {
+            "path": "http://httpbin.org"
+        },
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "authentication": {
+        "strategy": {
+            "local": {
+                "usernameField": "userid",
+                "passwordField": "passwd",
+                "verify": "verifyBasicUser"
+            }
+        }
+    }
+}

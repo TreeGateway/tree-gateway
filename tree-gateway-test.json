@@ -1,0 +1,33 @@
+{
+    "protocol": {
+        "http": {
+            "listenPort": 8010
+        },
+        "https": {
+            "listenPort": 8012,
+            "privateKey": "./server.key",
+            "certificate": "./server.crt"                        
+        }
+    },
+    "admin": {
+        "protocol": {
+            "http": {
+                "listenPort": 8011
+            },
+            "https": {
+                "listenPort": 8013,
+                "privateKey": "./server.key",
+                "certificate": "./server.crt"                        
+            }          
+        }
+    },
+    "rootPath": "./src/spec/test-data/root",
+    "logger": {
+        "level": "error"
+    },
+    "database": {
+        "options": {
+            "db": 1
+        }
+    }
+}

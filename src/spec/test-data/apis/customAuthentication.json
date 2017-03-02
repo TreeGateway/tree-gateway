@@ -1,0 +1,19 @@
+{
+    "name": "TestCustomAuthenticationAPI",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "secureCustom/",
+        "target": {
+            "path": "http://httpbin.org"
+        },
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "authentication": {
+        "strategy": {
+            "myJwtStrategy": {
+                "secret": "secret"
+            }
+        }
+    }
+}

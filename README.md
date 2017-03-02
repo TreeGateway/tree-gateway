@@ -46,13 +46,12 @@ It is a work in progress.
  - Load Balancing
  - Authorization
  - Dockering
-
+ 
 ## Future work
   - Debug / Trace
   - Mocks
   - API composition
   - Virtual Paths
   - Protocol Transformations
-
 
 We are accepting Pull Requests!

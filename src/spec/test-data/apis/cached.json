@@ -1,0 +1,41 @@
+{
+    "name": "TestCachedAPI",
+    "version": "1.0.0",
+    "group": [
+        {
+            "name": "Group1",
+            "description": "Endpoints Group One",
+            "member": [
+                {
+                    "path": ["get/"], 
+                    "method": ["GET"]
+                } 
+            ] 
+        }
+    ],
+    "proxy": {
+        "path": "testCache/",
+        "target": {
+            "path": "http://httpbin.org"
+        },
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "cache": [
+        {
+            "client": {
+                "cacheTime": "1 minute",
+                "cacheControl": "public",
+                "mustRevalidate": false,
+                "noTransform": false,
+                "proxyRevalidate": false
+            },
+            "server": {
+                "cacheTime": "10 minutes",
+                "binary": true,
+                "preserveHeaders" :["access-control-allow-credentials"]
+            },
+            "group": ["Group1"]
+        }
+    ]
+}

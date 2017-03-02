@@ -1,0 +1,26 @@
+{
+    "name": "TestAuthenticatedAPI",
+    "version": "1.0.0",
+    "proxy": {
+        "path": "secure/",
+        "target": {
+            "path": "http://httpbin.org"
+        },
+        "preserveHostHdr": true,
+        "timeout": 5000
+    },
+    "authentication": {
+        "strategy": {
+            "jwt": {
+                "extractFrom": {
+                    "authHeader": "Bearer",
+                    "queryParam": "jwt"
+                },
+                "secretOrKey": "secret",
+                "algorithms": ["HS256", "HS384"],
+                "ignoreExpiration": true,
+                "verify": "verifyJwtUser"
+            }
+        } 
+    }
+}

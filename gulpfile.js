@@ -11,6 +11,7 @@ var typedoc = require("gulp-typedoc");
 var istanbul = require('gulp-istanbul');
 var remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul');
 var coverageEnforcer = require("gulp-istanbul-enforcer");
+var processEnv = require('gulp-process-env')
 
 var tsProject = ts.createProject('tsconfig.json', { 
 	declaration: false,
@@ -18,7 +19,12 @@ var tsProject = ts.createProject('tsconfig.json', {
 	noResolve: false
 }, ts.reporter.fullReporter(true));
 
-gulp.task('build', function() {
+gulp.task('copy-files', function() {
+ 	return gulp.src('src/lib/**/*.json')
+		.pipe(gulp.dest('bin/lib'));
+});
+
+gulp.task('build', ['copy-files'], function() {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
@@ -34,7 +40,7 @@ gulp.task('docs-clean', function() {
 	return del(['doc/']);
 });
 
-gulp.task('test-build', function(done) {
+gulp.task('test-build', function() {
  	return gulp.src('src/spec/test-*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
@@ -43,20 +49,20 @@ gulp.task('test-build', function(done) {
 		.pipe(gulp.dest('bin/test/spec'));
 });
 
-gulp.task('test-copy-apis', function() {
-    gulp.src('src/spec/apis/*')
-    .pipe(gulp.dest('bin/test/spec/apis'));
-});
-
-
-gulp.task('test-coverage', function(done) {
+gulp.task('test-coverage', ['copy-files-test'], function() {
  	return gulp.src('src/lib/**/*.ts')
 		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(tsProject())
-		// .pipe(istanbul())
+		.pipe(istanbul())
 		.pipe(sourcemaps.write('./')) 
 		.pipe(gulp.dest('bin/test/lib'));
 });
+
+gulp.task('copy-files-test', function() {
+ 	return gulp.src('src/lib/**/*.json')
+		.pipe(gulp.dest('bin/test/lib'));
+});
+
 
 gulp.task('remap-istanbul-reports', function () {
     return gulp.src('bin/test/coverage/coverage-final.json')
@@ -68,8 +74,10 @@ gulp.task('remap-istanbul-reports', function () {
         }));
 });
 
-gulp.task('test-run', function() {
-	return gulp.src('bin/test/spec/*.spec.js')
+gulp.task('test-run', ['copy-files'],  function() {
+	var env = processEnv({NODE_ENV: 'test'});
+	return gulp.src(['bin/test/spec/test-admin.spec.js', 'bin/test/spec/test-gateway.spec.js'])
+		.pipe(env)
 		.pipe(jasmine({
 	        timeout: 10000,
 	        includeStackTrace: false,
@@ -81,6 +89,7 @@ gulp.task('test-run', function() {
 				activity: false
 			})
 	    }))
+		.pipe(env.restore())
 		.pipe(istanbul.writeReports({
 			dir: "bin/test/coverage"
 		}))
@@ -88,11 +97,11 @@ gulp.task('test-run', function() {
 });
 
 gulp.task('test', function(done) {
-    runSequence('test-build', 'test-copy-apis','test-coverage', 'test-run', function() {
-				//'remap-istanbul-reports', function() {
-        console.log('test completed.');
-        done();
-    });
+	runSequence('test-build', 'test-coverage', 'test-run',
+			 'remap-istanbul-reports', function() {
+		console.log('test completed.');
+		done();
+	});
 });
 
 gulp.task("docs", ['docs-clean'], function() {
@@ -102,7 +111,7 @@ gulp.task("docs", ['docs-clean'], function() {
             module: "commonjs",
             target: "es6",
             out: "./doc/",
-            name: "MS-AUTHENTICATION",
+            name: "Tree-Gateway",
 			includeDeclarations: true,
 			experimentalDecorators: true,
 			emitDecoratorMetadata: true,
@@ -110,7 +119,6 @@ gulp.task("docs", ['docs-clean'], function() {
 
 			// TypeDoc options (see typedoc docs) 
 			version: true,
-			verbose: false,
 			// json: "output/to/file.json"
  
 			// theme: "/path/to/my/theme",
@@ -120,22 +128,10 @@ gulp.task("docs", ['docs-clean'], function() {
 });
 
 gulp.task('release', function(done) {
-    runSequence('clean', 'build', 'install-cluster', 'test', 'docs', function() {
+    runSequence('clean', 'build', 'test', 'docs', function() {
         console.log('release created.');
         done();
     });
-});
-
-gulp.task('deploy', function(done) {
-    runSequence('clean', 'build', 'install-cluster', function() {
-        console.log('service deployed.');
-        done();
-    });
-});
-
-gulp.task('install-cluster', function() {
-    gulp.src('./src/www')
-    .pipe(gulp.dest('./bin'));
 });
 
 gulp.task('watch', ['build'], function() {

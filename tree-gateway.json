@@ -1,0 +1,99 @@
+{
+    "underProxy": false,
+    "protocol": {
+        "http": {
+            "listenPort": 8000
+        }
+    },
+    "admin": {
+        "protocol": {
+            "http": {
+                "listenPort": 8001
+            }
+        },
+        "accessLogger": {
+            "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+            "console": {
+                "timestamp": true,
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "json": false,
+                "prettyPrint": true,
+                "outputDir": "./logs"
+            }
+        },
+        "users": {
+            "defaultService": {
+                "jwtSecret": "secret"
+            }
+        },
+        "apiDocs": "api-docs",
+        "cors" : {
+            "origin": {
+                "allow": [{
+                    "value": "*"
+                }]
+            }
+        }
+    },
+    "rootPath": ".",
+    "logger": {
+        "level": "debug",
+        "console": {
+            "colorize": true
+        },
+        "file": {
+            "timestamp": true,
+            "outputDir": "./logs",
+            "json": false, 
+            "prettyPrint": true 
+        }
+    },
+    "accessLogger": {
+        "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+        "console": {
+            "timestamp": true,
+            "colorize": true
+        },
+        "file": {
+            "timestamp": true,
+            "json": false,
+            "prettyPrint": true,
+            "outputDir": "./logs"
+        }
+    },
+    "statsConfig": {
+        "granularity": {
+            "duration": "1 hour",
+            "ttl": "2 days"
+        }
+    }, 
+    "database": {
+        "standalone": {
+            "host": "localhost",
+            "port": 6379
+        }
+    }, 
+    "monitor": [
+        {
+            "name": "cpu",
+            "statsConfig": {
+                "granularity": {
+                    "duration": "1 minute",
+                    "ttl": "2 days"
+                }
+            }            
+        }, 
+        {
+            "name": "mem",
+            "statsConfig": {
+                "granularity": {
+                    "duration": "1 minute",
+                    "ttl": "2 days"
+                }
+            }            
+        }
+    ]
+}
