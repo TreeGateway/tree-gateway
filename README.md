@@ -1,7 +1,7 @@
 # tree-gateway
 A full featured and free API Gateway in node JS
 
-It is an work in proggress. 
+It is a work in progress. 
 
 ## Implemented Features
  - API Proxy
@@ -46,8 +46,7 @@ It is an work in proggress.
  - Load Balancing
  - Authorization
  - Dockering
- - [[Visual Dashboard]](https://github.com/samuelcardoso/tree-gateway-dashboard);
-
+ 
 ## Future work
   - Debug / Trace
   - Mocks
@@ -55,5 +54,4 @@ It is an work in proggress.
   - Virtual Paths
   - Protocol Transformations
 
-
-We accept Pull Requests!
+We are accepting Pull Requests!
