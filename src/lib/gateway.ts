@@ -58,7 +58,7 @@ export class Gateway {
     private adminServer: Map<string,http.Server>;
     private apiRoutes: Map<string, express.Router> = new Map<string, express.Router>();
     private _apis: Map<string, ApiConfig>;
-    
+
     get server(): express.Application {
         return this.app;
     }
@@ -363,7 +363,7 @@ export class Gateway {
                             this.config.gateway.rootPath, this.app, './logs');
             }
 
-            this.middlewareInstaller.installAll()
+            this.middlewareInstaller.installAll('gateway started')
                 .then(() => this.loadApis())
                 .then(resolve)
                 .catch(reject);

@@ -174,10 +174,10 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                 break;
             case ConfigTopics.MIDDLEWARE_ADDED:
             case ConfigTopics.MIDDLEWARE_UPDATED:
-                this.middlewareInstaller.install(message.type, message.name);
+                this.middlewareInstaller.install(message.type, message.name, message.idMsg);
                 break;
             case ConfigTopics.MIDDLEWARE_REMOVED:
-                this.middlewareInstaller.uninstall(message.type, message.name);
+                this.middlewareInstaller.uninstall(message.type, message.name, message.idMsg);
                 break;
             default:
                 this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
