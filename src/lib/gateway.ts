@@ -363,7 +363,7 @@ export class Gateway {
                             this.config.gateway.rootPath, this.app, './logs');
             }
 
-            this.middlewareInstaller.installAll('gateway started')
+            this.configService.installAllMiddlewares()
                 .then(() => this.loadApis())
                 .then(resolve)
                 .catch(reject);

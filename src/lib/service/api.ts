@@ -19,6 +19,7 @@ export abstract class ApiService {
 }
 
 export abstract class ConfigService {
+    abstract installAllMiddlewares(): Promise<void>;
     abstract getAllApiConfig(): Promise<Array<ApiConfig>>;
     abstract getApiConfig(apiId: string): Promise<ApiConfig>;
     abstract subscribeEvents(): Promise<void>;

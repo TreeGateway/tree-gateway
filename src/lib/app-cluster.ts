@@ -28,38 +28,6 @@ if (cluster.isMaster) {
         const newWorker = cluster.fork(env);
         newWorker.process['env'] = env;
     });
-
-    let messages: Map<string, number> = new Map<string, number>();
-    let lastWorker: number = 0;
-
-    cluster.on('message', function(worker, message, handle) {
-        if (arguments.length === 2) {
-            handle = message;
-            message = worker;
-            worker = undefined;
-        }
-        if (!messages.has(message.idMsg)) {
-            let selectedWorker = (++lastWorker) % n;
-
-            messages.set(message.idMsg, selectedWorker);
-            setTimeout(() => {
-                messages.clear();
-            }, 2000);
-            for (const id in cluster.workers) {
-                let w = cluster.workers[id];
-                if (w.process['env'].processNumber == selectedWorker) {
-                    switch(message.message) {
-                        case 'middleware.installAll': 
-                            return w.send({workerId: selectedWorker, message: 'middleware.installAll'});
-                        case 'middleware.install': 
-                            return w.send({workerId: selectedWorker, type: message.type, name: message.name, message: 'middleware.install'});
-                        case 'middleware.uninstall': 
-                            return w.send({workerId: selectedWorker, type: message.type, name: message.name, message: 'middleware.uninstall'});
-                    }
-                }
-            }
-        }
-    });    
 } 
 else {
     const logger: Logger = Container.get(Logger);

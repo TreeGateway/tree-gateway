@@ -2,7 +2,6 @@
 
 import "es6-promise";
 import * as path from "path";
-import * as uuid from "uuid";
 import {Redis} from "ioredis";
 import {ConfigTopics} from "../config/events";
 import {AutoWired, Inject, Provides} from "typescript-ioc";
@@ -47,7 +46,7 @@ class RedisMiddlewareService implements MiddlewareService {
             this.database.redisClient.multi()
                     .srem(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
                     .del(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`)
-                    .publish(ConfigTopics.MIDDLEWARE_REMOVED, JSON.stringify({type: middleware, name: name, idMsg: uuid()}))
+                    .publish(ConfigTopics.MIDDLEWARE_REMOVED, JSON.stringify({type: middleware, name: name}))
                     .exec()
                     .then(() => {
                         resolve();
@@ -61,7 +60,7 @@ class RedisMiddlewareService implements MiddlewareService {
             this.database.redisClient.multi()
                     .sadd(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
                     .set(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`, content)
-                    .publish(ConfigTopics.MIDDLEWARE_UPDATED, JSON.stringify({type: middleware, name: name, idMsg: uuid()}))
+                    .publish(ConfigTopics.MIDDLEWARE_UPDATED, JSON.stringify({type: middleware, name: name}))
                     .exec()
                     .then(() => {
                         resolve();

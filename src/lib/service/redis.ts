@@ -2,19 +2,22 @@
 
 import {Redis} from "ioredis";
 
+import * as uuid from "uuid";
+import * as os from "os";
 import {ApiService, ConfigService} from "./api";
 import {NotFoundError, ValidationError} from "../error/errors";
 import {ApiConfig} from "../config/api";
 import {ConfigTopics, ConfigEvents} from "../config/events";
-import * as uuid from "uuid";
 import {Logger} from "../logger";
 import {AutoWired, Provides, Singleton, Inject} from "typescript-ioc";
 import {Database} from "../database";
 import {MiddlewareInstaller} from "../utils/middleware-installer";
 import {EventEmitter} from "events";
+import {getMachineId} from "../utils/machine";
 
 class Constants {
     static APIS_PREFIX = "{config}:apis";
+    static MIDDLEWARE_INSTALLATION = "{middleware_installation}";
 }
 
 @AutoWired
@@ -114,7 +117,6 @@ export class RedisApiService extends RedisService implements ApiService {
     }
 }
 
-
 @AutoWired
 @Singleton
 @Provides(ConfigService)
@@ -157,30 +159,125 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
         });
     }
 
+    installAllMiddlewares(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const machineId = getMachineId();
+            const host = os.hostname();
+            const idMsg = 'allMiddlewares';
+            this.database.redisClient.multi()
+                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
+                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
+                .exec()
+                .then(replies => {
+                    if (replies[0][1] === 1 && replies[1][1] === 1) {
+                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
+                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
+                        this.middlewareInstaller.installAll()
+                            .then(()=> this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 
+                                                                     `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`))
+                            .then(resolve)
+                            .catch(reject);
+                    }
+                    else {
+                        this.runAfterMiddlewareInstallations(idMsg, resolve);
+                    }
+                }) 
+        });
+    }
+
+    private installMiddleware(type: string, name: string, idMsg: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const machineId = getMachineId();
+            const host = os.hostname();
+            this.database.redisClient.multi()
+                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
+                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
+                .exec()
+                .then(replies => {
+                    if (replies[0][1] && replies[1][1]) {
+                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
+                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
+                        this.middlewareInstaller.install(type, name)
+                            .then(()=> this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 
+                                                                     `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`))
+                            .then(resolve)
+                            .catch(reject);
+                    }
+                    else {
+                        this.runAfterMiddlewareInstallations(idMsg, resolve);
+                    }
+                }) 
+        });
+    }
+
+    private uninstallMiddleware(type: string, name: string, idMsg: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const machineId = getMachineId();
+            const host = os.hostname();
+            this.database.redisClient.multi()
+                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
+                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
+                .exec()
+                .then(replies => {
+                    console.log(replies);
+                    if (replies[0][1] && replies[1][1]) {
+                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
+                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
+                        this.middlewareInstaller.uninstall(type, name)
+                            .then(()=> this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 
+                                                                     `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`))
+                            .then(resolve)
+                            .catch(reject);
+                    }
+                    else {
+                        this.runAfterMiddlewareInstallations(idMsg, resolve);
+                    }
+                }) 
+        });
+    }
+
+    private runAfterMiddlewareInstallations(idMsg: string, callback: () => void): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const host = os.hostname();
+            let interval;
+            interval = setInterval(()=>{
+                this.database.redisClient.exists(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 
+                                                 `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`)
+                    .then(exists => {
+                        if (exists < 2) {
+                            clearInterval(interval);
+                            return callback();
+                        }
+                    })
+            }, 100);
+        });
+    }
+
     private onConfigUpdated(eventTopic: string, message: any) {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Config updated ${eventTopic}. Message: ${JSON.stringify(message)}`);
         }
 
-        switch(eventTopic) {
-            case ConfigTopics.API_REMOVED:
-                this.emit(ConfigEvents.API_REMOVED, message.id);
-                break;
-            case ConfigTopics.API_ADDED:
-                this.emit(ConfigEvents.API_ADDED, message.id);
-                break;
-            case ConfigTopics.API_UPDATED:
-                this.emit(ConfigEvents.API_UPDATED, message.id);
-                break;
-            case ConfigTopics.MIDDLEWARE_ADDED:
-            case ConfigTopics.MIDDLEWARE_UPDATED:
-                this.middlewareInstaller.install(message.type, message.name, message.idMsg);
-                break;
-            case ConfigTopics.MIDDLEWARE_REMOVED:
-                this.middlewareInstaller.uninstall(message.type, message.name, message.idMsg);
-                break;
-            default:
-                this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
-        }
+            switch(eventTopic) {
+                case ConfigTopics.API_REMOVED:
+                    this.emit(ConfigEvents.API_REMOVED, message.id);
+                    break;
+                case ConfigTopics.API_ADDED:
+                    this.emit(ConfigEvents.API_ADDED, message.id);
+                    break;
+                case ConfigTopics.API_UPDATED:
+                    this.emit(ConfigEvents.API_UPDATED, message.id);
+                    break;
+                case ConfigTopics.MIDDLEWARE_ADDED:
+                case ConfigTopics.MIDDLEWARE_UPDATED:
+                    this.installMiddleware(message.type, message.name, message.idMsg);
+                    break;
+                case ConfigTopics.MIDDLEWARE_REMOVED:
+                    this.uninstallMiddleware(message.type, message.name, message.idMsg);
+                    break;
+                default:
+                    this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
+            }
     }
 }
+
