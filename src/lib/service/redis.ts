@@ -204,7 +204,10 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                             .catch(reject);
                     }
                     else {
-                        this.runAfterMiddlewareInstallations(idMsg, resolve);
+                        this.runAfterMiddlewareInstallations(idMsg, ()=>{
+                            this.middlewareInstaller.removeModuleCache(type, name);
+                            resolve();
+                        });
                     }
                 }) 
         });
@@ -230,7 +233,10 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                             .catch(reject);
                     }
                     else {
-                        this.runAfterMiddlewareInstallations(idMsg, resolve);
+                        this.runAfterMiddlewareInstallations(idMsg, ()=>{
+                            this.middlewareInstaller.removeModuleCache(type, name);
+                            resolve();
+                        });
                     }
                 }) 
         });

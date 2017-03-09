@@ -6,6 +6,7 @@ import * as path from "path";
 import {Logger} from "../logger";
 import {AutoWired, Singleton, Provides, Inject} from "typescript-ioc";
 import {Configuration} from "../configuration";
+import * as decache from "decache";
 
 @AutoWired
 @Singleton
@@ -57,6 +58,7 @@ export class MiddlewareInstaller {
             }
             const p = this.getPath(type, name);
             if (fs.existsSync(p)) {
+                this.removeModuleCache(type, name);
                 fs.removeAsync(p)
                     .then(resolve)
                     .catch(reject);
@@ -66,6 +68,10 @@ export class MiddlewareInstaller {
             }
         });
     }    
+
+    removeModuleCache(type: string, name: string) {
+        decache(this.getModuleName(type, name));
+    }
 
     private installAllOfType(type: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
@@ -88,6 +94,10 @@ export class MiddlewareInstaller {
     }
 
     private getPath(type: string, name:string):string {
-        return path.join(this.config.gateway.middlewarePath, type, name + ".js");
+        return this.getModuleName(type, name) + ".js";
+    }
+
+    private getModuleName(type: string, name:string):string {
+        return path.join(this.config.gateway.middlewarePath, type, name);
     }
 }
