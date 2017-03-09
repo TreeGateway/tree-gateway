@@ -17,6 +17,7 @@ import {getMachineId} from "../utils/machine";
 
 class Constants {
     static APIS_PREFIX = "{config}:apis";
+    static ADMIN_API = 'ADMIN_API';
     static MIDDLEWARE_INSTALLATION = "{middleware_installation}";
 }
 
@@ -67,7 +68,7 @@ export class RedisApiService extends RedisService implements ApiService {
 
                     return this.database.redisClient.multi()
                                .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                               .publish(ConfigTopics.API_ADDED, JSON.stringify({id: api.id}))
+                               .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({id: Constants.ADMIN_API}))
                                .exec()
                 })
                 .then(() => {
@@ -87,7 +88,7 @@ export class RedisApiService extends RedisService implements ApiService {
 
                     return this.database.redisClient.multi()
                                .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                               .publish(ConfigTopics.API_UPDATED, JSON.stringify({id: api.id}))
+                               .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({id: api.id}))
                                .exec();
                 })
                 .then(() => {
@@ -102,7 +103,7 @@ export class RedisApiService extends RedisService implements ApiService {
             // TODO: remove children
             this.database.redisClient.multi()
                 .hdel(`${Constants.APIS_PREFIX}`, id)
-                .publish(ConfigTopics.API_REMOVED, JSON.stringify({id}))
+                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({id: Constants.ADMIN_API}))
                 .exec()
                 .then((count) => {
                     // FIXME: multi() does not return count.
@@ -185,63 +186,6 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
         });
     }
 
-    private installMiddleware(type: string, name: string, idMsg: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const machineId = getMachineId();
-            const host = os.hostname();
-            this.database.redisClient.multi()
-                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
-                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
-                .exec()
-                .then(replies => {
-                    if (replies[0][1] && replies[1][1]) {
-                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
-                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
-                        this.middlewareInstaller.install(type, name)
-                            .then(()=> this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 
-                                                                     `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`))
-                            .then(resolve)
-                            .catch(reject);
-                    }
-                    else {
-                        this.runAfterMiddlewareInstallations(idMsg, ()=>{
-                            this.middlewareInstaller.removeModuleCache(type, name);
-                            resolve();
-                        });
-                    }
-                }) 
-        });
-    }
-
-    private uninstallMiddleware(type: string, name: string, idMsg: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const machineId = getMachineId();
-            const host = os.hostname();
-            this.database.redisClient.multi()
-                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
-                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
-                .exec()
-                .then(replies => {
-                    console.log(replies);
-                    if (replies[0][1] && replies[1][1]) {
-                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
-                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
-                        this.middlewareInstaller.uninstall(type, name)
-                            .then(()=> this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 
-                                                                     `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`))
-                            .then(resolve)
-                            .catch(reject);
-                    }
-                    else {
-                        this.runAfterMiddlewareInstallations(idMsg, ()=>{
-                            this.middlewareInstaller.removeModuleCache(type, name);
-                            resolve();
-                        });
-                    }
-                }) 
-        });
-    }
-
     private runAfterMiddlewareInstallations(idMsg: string, callback: () => void): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const host = os.hostname();
@@ -263,27 +207,13 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Config updated ${eventTopic}. Message: ${JSON.stringify(message)}`);
         }
-
-            switch(eventTopic) {
-                case ConfigTopics.API_REMOVED:
-                    this.emit(ConfigEvents.API_REMOVED, message.id);
-                    break;
-                case ConfigTopics.API_ADDED:
-                    this.emit(ConfigEvents.API_ADDED, message.id);
-                    break;
-                case ConfigTopics.API_UPDATED:
-                    this.emit(ConfigEvents.API_UPDATED, message.id);
-                    break;
-                case ConfigTopics.MIDDLEWARE_ADDED:
-                case ConfigTopics.MIDDLEWARE_UPDATED:
-                    this.installMiddleware(message.type, message.name, message.idMsg);
-                    break;
-                case ConfigTopics.MIDDLEWARE_REMOVED:
-                    this.uninstallMiddleware(message.type, message.name, message.idMsg);
-                    break;
-                default:
-                    this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
-            }
+        switch(eventTopic) {
+            case ConfigTopics.CONFIG_UPDATED:
+                this.emit(ConfigEvents.CONFIG_UPDATED, message.packageId);
+                break;
+            default:
+                this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
+        }
     }
 }
 

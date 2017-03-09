@@ -312,20 +312,24 @@ export class Gateway {
         }
     }
 
-    removeApi(apiId: string) {
-        this.apiRoutes.delete(apiId);
-    }
-
-    updateApi(apiId: string) {
-        this.configService.getApiConfig(apiId)
-            .then((apiConfig) => {
-                if (apiConfig) {
-                    this.loadApi(apiConfig);
-                }
+    updateConfig(packageId: string) {
+        this.configService.installAllMiddlewares()
+            .then(() => this.loadApis())
+            .then(() => {
+                this.removeOldAPIs();
+                this.logger.info(`Configuration package ${packageId} applied successfuly.`);
             })
-            .catch((err) => {
-                this.logger.error(`Config event lost ${apiId}: ${err.message}`);
+            .catch(err => {
+                this.logger.error(`Error applying configuration package ${packageId}. Error: ${JSON.stringify(err)}`);
             });
+    }
+    
+    removeOldAPIs() {
+        this.apiRoutes.forEach((value, apiId) => {
+            if (!this._apis.has(apiId)) {
+                this.apiRoutes.delete(apiId);
+            }
+        });
     }
 
     private initialize(): Promise<void> {
@@ -336,9 +340,7 @@ export class Gateway {
 
             self.configureServer()
                 .then(() => self.configService
-                                .on(ConfigEvents.API_REMOVED, (apiId) => self.removeApi(apiId))
-                                .on(ConfigEvents.API_ADDED, (apiId) => self.updateApi(apiId))
-                                .on(ConfigEvents.API_UPDATED, (apiId) => self.updateApi(apiId))
+                                .on(ConfigEvents.CONFIG_UPDATED, (packageId) => self.updateConfig(packageId))
                                 .subscribeEvents())
                 .then(() => {
                     self.configureAdminServer();

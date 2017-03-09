@@ -20,6 +20,8 @@ export abstract class MiddlewareService {
 @Provides(MiddlewareService)
 class RedisMiddlewareService implements MiddlewareService {
     private static MIDDLEWARE_PREFIX = "{config}:middleware";
+    private static ADMIN_API = "ADMIN_API";
+
     @Inject
     private database: Database;
 
@@ -46,7 +48,7 @@ class RedisMiddlewareService implements MiddlewareService {
             this.database.redisClient.multi()
                     .srem(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
                     .del(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`)
-                    .publish(ConfigTopics.MIDDLEWARE_REMOVED, JSON.stringify({type: middleware, name: name}))
+                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({id: RedisMiddlewareService.ADMIN_API}))
                     .exec()
                     .then(() => {
                         resolve();
@@ -60,7 +62,7 @@ class RedisMiddlewareService implements MiddlewareService {
             this.database.redisClient.multi()
                     .sadd(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
                     .set(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`, content)
-                    .publish(ConfigTopics.MIDDLEWARE_UPDATED, JSON.stringify({type: middleware, name: name}))
+                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({id: RedisMiddlewareService.ADMIN_API}))
                     .exec()
                     .then(() => {
                         resolve();
