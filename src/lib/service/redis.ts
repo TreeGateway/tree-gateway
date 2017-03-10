@@ -137,15 +137,25 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
 
     subscribeEvents(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
-
+            let topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
             this.database.redisEvents.psubscribe(topicPattern)
                 .then(() => {
                     return this.database.redisEvents.on('pmessage', (pattern, channel, message) => {
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug(`Message Received on topic ${channel}. Message: ${JSON.stringify(message)}`);
+                        }
                         try {
-                            this.onConfigUpdated(channel, JSON.parse(message));
+                            let parsedMesg =  JSON.parse(message);
+                            switch (channel) {
+                                case ConfigTopics.CONFIG_UPDATED: 
+                                    this.emit(ConfigEvents.CONFIG_UPDATED, parsedMesg.packageId);
+                                break;
+                                case ConfigTopics.CIRCUIT_CHANGED: 
+                                    this.emit(ConfigEvents.CIRCUIT_CHANGED, parsedMesg.id, parsedMesg.state);
+                                break;
+                            }
                         } catch (err) {
-                            this.logger.error(`Error processing config event: ${err.message}`);
+                            this.logger.error(`Error processing received message. Message: ${message}. Err: ${err.message}`);
                         }
                     });
                 })
@@ -201,19 +211,6 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                     })
             }, 100);
         });
-    }
-
-    private onConfigUpdated(eventTopic: string, message: any) {
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Config updated ${eventTopic}. Message: ${JSON.stringify(message)}`);
-        }
-        switch(eventTopic) {
-            case ConfigTopics.CONFIG_UPDATED:
-                this.emit(ConfigEvents.CONFIG_UPDATED, message.packageId);
-                break;
-            default:
-                this.logger.error(`Unknown event type ${eventTopic}: ${message}`);
-        }
     }
 }
 

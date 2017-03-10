@@ -27,12 +27,11 @@ interface BreakerInfo{
 
 @AutoWired
 export class ApiCircuitBreaker {
-    @Inject
-    private config: Configuration;
-    @Inject
-    private logger: Logger;
-    @Inject
-    private statsRecorder: StatsRecorder;
+    @Inject private config: Configuration;
+    @Inject private logger: Logger;
+    @Inject private statsRecorder: StatsRecorder;
+
+    private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
     circuitBreaker(apiRouter: express.Router, api: ApiConfig) {
         let path: string = api.proxy.path;
@@ -49,7 +48,8 @@ export class ApiCircuitBreaker {
                 timeoutStatusCode: (cbConfig.timeoutStatusCode || 504),
                 timeoutMessage: (cbConfig.timeoutMessage || "Operation timeout"),
                 rejectStatusCode: (cbConfig.rejectStatusCode || 503),
-                rejectMessage: (cbConfig.rejectMessage || "Service unavailable")
+                rejectMessage: (cbConfig.rejectMessage || "Service unavailable"),
+                id: cbStateID
             };
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug(`Configuring Circuit Breaker for path [${api.proxy.path}].`);
@@ -69,6 +69,21 @@ export class ApiCircuitBreaker {
         this.setupMiddlewares(apiRouter, breakerInfos);
     }
     
+    onStateChanged(id: string, state: string) {
+        let breaker: CircuitBreaker = this.activeBreakers.get(id);
+        if (breaker) {
+            breaker.onStateChanged(state);
+        }
+    }
+
+    removeBreaker(id: string) {
+        this.activeBreakers.delete(id);
+    }
+
+    removeAllBreakers() {
+        this.activeBreakers.clear();
+    }
+
     private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: CircuitBreakerConfig) {
         let stats  = this.createCircuitBreakerStats(path, config);
         if (stats) {
@@ -105,8 +120,9 @@ export class ApiCircuitBreaker {
         }        
     }
 
-    private setupMiddlewares(apiRouter: express.Router, throttlingInfos: Array<BreakerInfo>) {
-        throttlingInfos.forEach((breakerInfo: BreakerInfo) =>{
+    private setupMiddlewares(apiRouter: express.Router, breakerInfos: Array<BreakerInfo>) {
+        breakerInfos.forEach((breakerInfo: BreakerInfo) => {
+            this.activeBreakers.set(breakerInfo.circuitBreaker.id, breakerInfo.circuitBreaker);
             apiRouter.use(this.buildMiddleware(breakerInfo));
         });
     }

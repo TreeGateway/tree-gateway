@@ -312,7 +312,12 @@ export class Gateway {
         }
     }
 
-    updateConfig(packageId: string) {
+    private circuitChanged(id: string, state: string) {
+        this.apiCircuitBreaker.onStateChanged(id, state);
+    }
+    
+    private updateConfig(packageId: string) {
+        this.apiCircuitBreaker.removeAllBreakers();
         this.configService.installAllMiddlewares()
             .then(() => this.loadApis())
             .then(() => {
@@ -324,7 +329,7 @@ export class Gateway {
             });
     }
     
-    removeOldAPIs() {
+    private removeOldAPIs() {
         this.apiRoutes.forEach((value, apiId) => {
             if (!this._apis.has(apiId)) {
                 this.apiRoutes.delete(apiId);
@@ -341,6 +346,7 @@ export class Gateway {
             self.configureServer()
                 .then(() => self.configService
                                 .on(ConfigEvents.CONFIG_UPDATED, (packageId) => self.updateConfig(packageId))
+                                .on(ConfigEvents.CIRCUIT_CHANGED, (id, state) => self.circuitChanged(id, state))
                                 .subscribeEvents())
                 .then(() => {
                     self.configureAdminServer();

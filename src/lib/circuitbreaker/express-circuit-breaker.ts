@@ -13,7 +13,7 @@ export interface Options {
     timeoutStatusCode: number;
     rejectMessage: string;
     rejectStatusCode: number;
-    
+    id: string;
 }
 
 export interface StateHandler {
@@ -26,6 +26,7 @@ export interface StateHandler {
     forceClose(): boolean;
     incrementFailures(): Promise<number>;
     initialState(): void;
+    onStateChanged(state: string);
 }
 
 export class CircuitBreaker extends EventEmitter {
@@ -86,6 +87,14 @@ export class CircuitBreaker extends EventEmitter {
                 return self.invokeApi(req, res, next);                
             }
         };
+    }
+
+    onStateChanged(state: string) {
+        this.options.stateHandler.onStateChanged(state);
+    }
+
+    get id(): string {
+        return this.options.id;
     }
 
     private invokeApi(requ, res, next) {

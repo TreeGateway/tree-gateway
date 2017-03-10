@@ -4,13 +4,9 @@ import {StateHandler, State} from "./express-circuit-breaker";
 import {Logger} from "../logger";
 import {AutoWired, Inject} from "typescript-ioc";
 import {Database} from "../database";
+import {ConfigTopics} from "../config/events";
 
-class CircuitBreakerTopics {
-    static BASE_TOPIC = '{circuitbreaker}:events'
-    static CIRCUIT_CHANGED = `${CircuitBreakerTopics.BASE_TOPIC}:changed`;
-}
-
-class CircuitBreakerKeys {
+export class CircuitBreakerKeys {
     static CIRCUIT_BREAKER_FAILURES = '{circuitbreaker}:failures'
     static CIRCUIT_BREAKER_STATE = '{circuitbreaker}:state'
 }
@@ -30,7 +26,6 @@ export class RedisStateHandler implements StateHandler {
     constructor(id: string, resetTimeout: number) {
         this.id = id;
         this.resetTimeout = resetTimeout;
-        this.subscribeEvents();
         // this.prefix = config.prefix;
         // this.duration = humanInterval(config.granularity.duration)/1000;
         // this.ttl = humanInterval(config.granularity.ttl)/1000;
@@ -93,6 +88,23 @@ export class RedisStateHandler implements StateHandler {
         return this.database.redisClient.hincrby(CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES, this.id, 1);
     }
 
+    onStateChanged(state: string) {
+        switch (state) {
+            case 'open':
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(`Notification received: Circuit for API ${this.id} is open`);
+                }
+                this.openState();
+            break;
+            case 'close':
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(`Notification received: Circuit for API ${this.id} is closed`);
+                }
+                this.closeState();
+            break;
+        }
+    } 
+
     private openState(): boolean {
         if(this.state === State.OPEN) {
             return false;
@@ -124,7 +136,7 @@ export class RedisStateHandler implements StateHandler {
         }
         return this.database.redisClient.multi()
                 .hset(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id, 'open')
-                .publish(`${CircuitBreakerTopics.CIRCUIT_CHANGED}:${this.id}`, JSON.stringify({state: 'open'}))
+                .publish(ConfigTopics.CIRCUIT_CHANGED, JSON.stringify({state: 'open', id: this.id}))
                 .exec()
     }
 
@@ -136,49 +148,7 @@ export class RedisStateHandler implements StateHandler {
         return this.database.redisClient.multi()
                 .hset(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id, 'close')
                 .hdel(CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES, this.id)
-                .publish(`${CircuitBreakerTopics.CIRCUIT_CHANGED}:${this.id}`, JSON.stringify({state: 'close'}))
+                .publish(ConfigTopics.CIRCUIT_CHANGED, JSON.stringify({state: 'close', id: this.id}))
                 .exec();
     }
-
-    private subscribeEvents(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const topicPattern = `${CircuitBreakerTopics.BASE_TOPIC}:${this.id}`;
-
-            this.database.redisEvents.subscribe(topicPattern)
-                .then(() => {
-                    return this.database.redisEvents.on('message', (pattern, channel, message) => {
-                        try {
-                            this.onStateChanged(channel, JSON.parse(message));
-                        } catch (err) {
-                            this.logger.error(`Error processing config event: ${err.message}`);
-                        }
-                    });
-                })
-                .then(() => {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Listening to events on topic ${topicPattern}`);
-                    }
-
-                    resolve();
-                })
-                .catch(reject);
-        });
-    }    
-
-    private onStateChanged(channel: string, message) {
-        switch (message.state) {
-            case 'open':
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug(`Notification received: Circuit for API ${this.id} is open`);
-                }
-                this.openState();
-            break;
-            case 'close':
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug(`Notification received: Circuit for API ${this.id} is closed`);
-                }
-                this.closeState();
-            break;
-        }
-    } 
 }
