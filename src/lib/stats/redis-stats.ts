@@ -67,6 +67,21 @@ export class RedisStats extends StatsHandler {
     }
     
     /**
+     * Get a time serie whith the last 'count' measurements recorded, and remove the data retrieved from redis
+     */
+    collectLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
+        let currentTime: number = this.getCurrentTime();
+        if (count > this.ttl / this.duration) {
+            return new Promise<Array<Array<number>>>((resolve, reject)=>{
+                setTimeout(()=>{
+                    reject(new Error(`Count: ${count} exceeds the maximum stored slots for configured granularity.`));
+                }, 0);
+            });
+        }
+        return this.getOccurrencesForTime(currentTime - count*this.duration, currentTime, key, extra, true);
+    }
+
+    /**
      * Get a time serie starting from the 'time' moment. 
      */
     getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
@@ -74,12 +89,14 @@ export class RedisStats extends StatsHandler {
         return this.getOccurrencesForTime(time, currentTime, key, extra);
     }
     
-    private getOccurrencesForTime(time: number, currentTime: number, key: string, extra: string[]): Promise<Array<Array<number>>> {
+    private getOccurrencesForTime(time: number, currentTime: number, 
+                                  key: string, extra: string[], removeOldData?: boolean): Promise<Array<Array<number>>> {
         return new Promise<Array<Array<number>>>((resolve, reject)=>{
             let from: number = this.getRoundedTime(this.duration, time);
             let to: number = this.getRoundedTime(this.duration, currentTime);
 
             let hgets = new Array();
+            let hdels = new Array();
 
             for(let ts=from; ts<=to; ts+=this.duration) {
                 let keyTimestamp = this.getRoundedTime(this.ttl, ts);
@@ -90,6 +107,9 @@ export class RedisStats extends StatsHandler {
                 }
 
                 hgets.push(this.database.redisClient.hget(tmpKey, ts));
+                if (removeOldData && ts < to) {
+                    hdels.push(this.database.redisClient.hget(tmpKey, ts));
+                }
             }
 
             Promise.all(hgets)
@@ -102,8 +122,13 @@ export class RedisStats extends StatsHandler {
                         if (this.logger.isDebugEnabled()) {
                             this.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
                         }
-
-                        return resolve(data);
+                        if (removeOldData) {
+                            Promise.all(hdels)
+                                .then(() => resolve(data))
+                                .catch(reject);
+                        } else {
+                            return resolve(data);
+                        }
                    })
                    .catch(reject);
         });
