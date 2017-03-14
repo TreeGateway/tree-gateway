@@ -11,10 +11,8 @@ import {Configuration} from "../configuration";
 @AutoWired
 @Singleton
 export class StatsRecorder {
-    @Inject
-    private logger: Logger;
-    @Inject
-    private config: Configuration;
+    @Inject private logger: Logger;
+    @Inject private config: Configuration;
 
     createStats(id: string, statsConfig?: StatsConfig) {
         if (statsConfig || this.config.gateway.statsConfig) {

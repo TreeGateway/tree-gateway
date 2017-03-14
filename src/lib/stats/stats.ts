@@ -20,10 +20,6 @@ export class Stats {
         return this.statsHandler.getLastOccurrences(count, key, ...extra);
     }
 
-    collectLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
-        return this.statsHandler.collectLastOccurrences(count, key, ...extra);
-    }
-
     static getStatsKey(prefix: string, path: string, key: string, ...opt: Array<string>) {
         let result: Array<string> = [];
         result.push(prefix);
@@ -42,5 +38,4 @@ export abstract class StatsHandler {
     abstract registerOccurrence(value: string, increment: number, ...extra: string[]);
     abstract getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> ;
     abstract getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>>;
-    abstract collectLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>>;  
 }
