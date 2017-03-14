@@ -9,6 +9,10 @@ import {Logger} from "../logger";
 import {AutoWired, Inject} from "typescript-ioc";
 import {Database} from "../database";
 
+class Constants {
+    static STATS_SYNC = "STATS_SYNC";
+}
+
 @AutoWired
 export class RedisStats extends StatsHandler {
     id: string;
@@ -18,11 +22,9 @@ export class RedisStats extends StatsHandler {
 
     @Inject private logger: Logger;
     @Inject private database: Database;
-    private config: StatsConfig;
 
     initialize(id: string, config: StatsConfig) {
         this.id = id;
-        this.config = config;
         this.prefix = config.prefix;
         this.duration = humanInterval(config.granularity.duration)/1000;
         this.ttl = humanInterval(config.granularity.ttl)/1000;
@@ -54,6 +56,7 @@ export class RedisStats extends StatsHandler {
             this.database.redisClient.multi()
                 .hincrby(tmpKey, hitTimestamp, increment)
                 .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
+                .hsetnx(Constants.STATS_SYNC, JSON.stringify({key:tmpKey, duration: this.duration, ttl: this.ttl}))
                 .exec((err, res)=>{
                     if (err) {
                         this.logger.error(`Error on stats recording: ${err}`);
