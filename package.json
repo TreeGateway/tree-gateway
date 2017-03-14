@@ -1,7 +1,6 @@
 {
   "name": "tree-gateway",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "start": "node ./bin/lib/app-cluster.js",
     "test": "node ./node_modules/gulp/bin/gulp.js test",

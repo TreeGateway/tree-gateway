@@ -20,7 +20,7 @@ export class StatsRecorder {
         if (statsConfig || this.config.gateway.statsConfig) {
             let config = <StatsConfig>_.defaultsDeep((statsConfig||{}), (this.config.gateway.statsConfig||{}));
             
-            return this.newStats(id, this.config.gateway.statsConfig);
+            return this.newStats(id, config);
         }
 
         return null;
