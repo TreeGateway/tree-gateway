@@ -368,7 +368,7 @@ export class Gateway {
             }
             if (this.config.gateway.accessLogger) {
                 AccessLogger.configureAccessLoger(this.config.gateway.accessLogger, 
-                            this.config.gateway.rootPath, this.app, './logs');
+                            this.config.rootPath, this.app, './logs');
             }
 
             this.configService.installAllMiddlewares()
@@ -388,7 +388,7 @@ export class Gateway {
                     this.configureStatsMiddleware(this.adminApp, 'admin');
                 }
                 AccessLogger.configureAccessLoger(this.config.gateway.admin.accessLogger, 
-                            this.config.gateway.rootPath, this.adminApp, './logs/admin');
+                            this.config.rootPath, this.adminApp, './logs/admin');
             }
             this.configureAdminCors();
             this.configureApiDocs();

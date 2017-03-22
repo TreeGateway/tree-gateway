@@ -4,13 +4,13 @@ import * as fs from "fs-extra-promise";
 import * as _ from "lodash";
 import * as path from "path";
 
-import {GatewayConfig, validateGatewayConfig} from "./config/gateway";
+import {RedisConfig, ServerConfig, GatewayConfig, validateGatewayConfig, validateServerConfig} from "./config/gateway";
 import {AutoWired, Container, Singleton} from "typescript-ioc";
 
 @Singleton
 @AutoWired
 export class Configuration {
-    private config: GatewayConfig;
+    private config: ServerConfig;
     static gatewayConfigFile: string;
 
     constructor()
@@ -19,10 +19,22 @@ export class Configuration {
         this.loadContainerConfigurations()
     }
 
-    get gateway() : GatewayConfig {
-        return this.config;
+    get gateway(): GatewayConfig {
+        return this.config.gateway;
+    }
+
+    get rootPath(): string {
+        return this.config.rootPath;
     }
     
+    get middlewarePath(): string {
+        return this.config.middlewarePath;
+    }
+
+    get database(): RedisConfig {
+        return this.config.database;
+    }
+
     private loadContainerConfigurations() {
         const ConfigService = require("./service/api").ConfigService;
         const UserService = require("./service/users").UserService;
@@ -32,61 +44,64 @@ export class Configuration {
 
         Container.bind(ConfigService).to(RedisConfigService);
         Container.bind(StatsHandler).to(RedisStats);
-        if (this.config.admin && this.config.admin.users &&  this.config.admin.users.userService) {
-            let UserServiceClass = require(this.config.admin.users.userService);
+        if (this.gateway.admin && this.gateway.admin.users &&  this.gateway.admin.users.userService) {
+            let UserServiceClass = require(this.gateway.admin.users.userService);
             Container.bind(UserService).provider({
                 get: () => new UserServiceClass()
             });
         }
     }
 
-    private loadGatewayConfig(gatewayConfigFile: string) {
-        let configFileName: string = gatewayConfigFile
+    private loadGatewayConfig(serverConfigFile: string) {
+        let configFileName: string = serverConfigFile
         configFileName = _.trim(configFileName);
 
         if (_.startsWith(configFileName, ".")) {
             configFileName = path.join(process.cwd(), configFileName);
         }
 
-        let config:GatewayConfig = fs.readJsonSync(configFileName)
+        let config:ServerConfig = fs.readJsonSync(configFileName)
         if (process.env.NODE_ENV) {
             let envConfigFileName = configFileName.replace(`.json`, `-${process.env.NODE_ENV}.json`);
             if (fs.existsSync(envConfigFileName)) {
                 let envConfig = fs.readJsonSync(envConfigFileName);
-                config = <GatewayConfig>_.defaultsDeep(envConfig, config);
+                config = <ServerConfig>_.defaultsDeep(envConfig, config);
             }                
         }
 
-        let gatewayConfig:GatewayConfig = validateGatewayConfig(config);
-        gatewayConfig = _.defaults(gatewayConfig, {
+        let serverConfig:ServerConfig = validateServerConfig(config);
+        serverConfig = _.defaults(serverConfig, {
             rootPath : path.dirname(configFileName),
         });
 
-        if (_.startsWith(gatewayConfig.rootPath, ".")) {
-            gatewayConfig.rootPath = path.join(path.dirname(configFileName), gatewayConfig.rootPath);
+        if (_.startsWith(serverConfig.rootPath, ".")) {
+            serverConfig.rootPath = path.join(path.dirname(configFileName), serverConfig.rootPath);
         }
 
-        gatewayConfig = _.defaults(gatewayConfig, {
-            middlewarePath : path.join(gatewayConfig.rootPath, "middleware")
+        serverConfig = _.defaults(serverConfig, {
+            middlewarePath : path.join(serverConfig.rootPath, "middleware")
         });
 
-        if (gatewayConfig.admin && gatewayConfig.admin.users.userService && _.startsWith(gatewayConfig.admin.users.userService, ".")) {
-            gatewayConfig.admin.users.userService = path.join(gatewayConfig.rootPath, gatewayConfig.admin.users.userService);                
+        if (_.startsWith(serverConfig.middlewarePath, ".")) {
+            serverConfig.middlewarePath = path.join(serverConfig.rootPath, serverConfig.middlewarePath);                
         }
 
-        if (_.startsWith(gatewayConfig.middlewarePath, ".")) {
-            gatewayConfig.middlewarePath = path.join(gatewayConfig.rootPath, gatewayConfig.middlewarePath);                
-        }
+        let gatewayConfig = serverConfig.gateway;
+        if (gatewayConfig) {
+            if (gatewayConfig.admin && gatewayConfig.admin.users.userService && _.startsWith(gatewayConfig.admin.users.userService, ".")) {
+                gatewayConfig.admin.users.userService = path.join(serverConfig.rootPath, gatewayConfig.admin.users.userService);                
+            }
 
-        if (gatewayConfig.protocol.https) {
-            if (_.startsWith(gatewayConfig.protocol.https.privateKey, ".")) {
-                gatewayConfig.protocol.https.privateKey = path.join(gatewayConfig.rootPath, gatewayConfig.protocol.https.privateKey);                
-            }
-            if (_.startsWith(gatewayConfig.protocol.https.certificate, ".")) {
-                gatewayConfig.protocol.https.certificate = path.join(gatewayConfig.rootPath, gatewayConfig.protocol.https.certificate);                
+            if (gatewayConfig.protocol.https) {
+                if (_.startsWith(gatewayConfig.protocol.https.privateKey, ".")) {
+                    gatewayConfig.protocol.https.privateKey = path.join(serverConfig.rootPath, gatewayConfig.protocol.https.privateKey);                
+                }
+                if (_.startsWith(gatewayConfig.protocol.https.certificate, ".")) {
+                    gatewayConfig.protocol.https.certificate = path.join(serverConfig.rootPath, gatewayConfig.protocol.https.certificate);                
+                }
             }
         }
-        this.config = gatewayConfig;
+        this.config = serverConfig;
     }
 }
 

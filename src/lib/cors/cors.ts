@@ -79,7 +79,7 @@ export class ApiCors {
             }
         }
         else if (cors.origin.dynamic) {
-            let p = pathUtil.join(this.config.gateway.middlewarePath, 'cors', 'origin' , cors.origin.dynamic);                
+            let p = pathUtil.join(this.config.middlewarePath, 'cors', 'origin' , cors.origin.dynamic);                
             corsOptions.origin = require(p);
         }
         return corsOptions;

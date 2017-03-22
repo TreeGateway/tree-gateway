@@ -98,6 +98,6 @@ export class MiddlewareInstaller {
     }
 
     private getModuleName(type: string, name:string):string {
-        return path.join(this.config.gateway.middlewarePath, type, name);
+        return path.join(this.config.middlewarePath, type, name);
     }
 }

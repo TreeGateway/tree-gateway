@@ -31,7 +31,6 @@
                 "group": ["Group1"]
             }
         ],
-        "preserveHostHdr": true,
         "timeout": 5000
     }
 }

@@ -50,7 +50,7 @@ export class ProxyFilter {
                 func.push(Groups.buildGroupAllowTest('req', api.group, filter.group));
                 func.push(`) ? accepted :`);                
             }
-            let p = path.join(this.config.gateway.middlewarePath, 'filter' ,filter.name);                
+            let p = path.join(this.config.middlewarePath, 'filter' ,filter.name);                
             func.push(`require('${p}')(req, res)`);
             func.push(`)`);                
         });

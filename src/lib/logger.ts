@@ -33,7 +33,7 @@ export class Logger {
             config.file = _.omit(config.file, 'outputDir');
             let outputDir: string = config.file.outputDir || './logs';
             if (_.startsWith(outputDir, '.')) {
-                outputDir = path.join(this.config.gateway.rootPath, outputDir);
+                outputDir = path.join(this.config.rootPath, outputDir);
             }
             const fileName = (process.env.processNumber?`gateway-${process.env.processNumber}.log`:`gateway.log`)
             config.file['filename'] = path.join(outputDir, fileName);

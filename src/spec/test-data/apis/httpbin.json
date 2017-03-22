@@ -38,7 +38,6 @@
         },
         "filter": [
         ],
-        "preserveHostHdr": true,
         "timeout": 5000
     }
 }

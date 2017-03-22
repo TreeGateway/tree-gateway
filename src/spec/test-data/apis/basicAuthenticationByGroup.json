@@ -19,7 +19,6 @@
         "target": {
             "path": "http://httpbin.org"
         },
-        "preserveHostHdr": true,
         "timeout": 5000
     },
     "authentication": {

@@ -45,7 +45,7 @@ export class ApiAuth {
                     authStrategy= strategy(authConfig, this.config);
                 }
                 else {
-                    let p = pathUtil.join(this.config.gateway.middlewarePath, 'authentication', 'strategies' , key);                
+                    let p = pathUtil.join(this.config.middlewarePath, 'authentication', 'strategies' , key);                
                     let strategy = require(p);
                     authStrategy = strategy(authConfig);
                 }

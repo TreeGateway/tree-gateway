@@ -47,11 +47,11 @@ export class ApiRateLimit {
             });
             
             if (throttling.keyGenerator) {
-                let p = pathUtil.join(this.config.gateway.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
+                let p = pathUtil.join(this.config.middlewarePath, 'throttling', 'keyGenerator' , throttling.keyGenerator);                
                 rateConfig.keyGenerator = require(p);
             }
             if (throttling.skip) {
-                let p = pathUtil.join(this.config.gateway.middlewarePath, 'throttling', 'skip' , throttling.skip);                
+                let p = pathUtil.join(this.config.middlewarePath, 'throttling', 'skip' , throttling.skip);                
                 rateConfig.skip = require(p);
             }
             this.configureThrottlingHandlerFunction(path, throttling, rateConfig);
@@ -77,7 +77,7 @@ export class ApiRateLimit {
         let stats = this.createStats(path, throttling);
         if (stats) {
             if (throttling.handler) {
-                let p = pathUtil.join(this.config.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
+                let p = pathUtil.join(this.config.middlewarePath, 'throttling', 'handler' , throttling.handler);                
                 let customHandler = require(p);
                 rateConfig.handler = function (req, res, next) {
                     stats.registerOccurrence(req.path, 1);
@@ -99,7 +99,7 @@ export class ApiRateLimit {
             }
         }
         else if (throttling.handler) {
-            let p = pathUtil.join(this.config.gateway.middlewarePath, 'throttling', 'handler' , throttling.handler);                
+            let p = pathUtil.join(this.config.middlewarePath, 'throttling', 'handler' , throttling.handler);                
             rateConfig.handler = require(p);
         }
     }

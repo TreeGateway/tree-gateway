@@ -14,8 +14,8 @@ export class Database {
     private _redisEvents: Redis.Redis;
 
     constructor() {
-        this._redisClient = this.initializeRedis(this.config.gateway.database);
-        this._redisEvents = this.initializeRedis(this.config.gateway.database);        
+        this._redisClient = this.initializeRedis(this.config.database);
+        this._redisEvents = this.initializeRedis(this.config.database);        
     }
 
     get redisClient(): Redis.Redis {

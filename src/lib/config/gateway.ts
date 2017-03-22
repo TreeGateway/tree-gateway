@@ -7,6 +7,29 @@ import {ProtocolConfig, ProtocolConfigSchema} from "./protocol";
 import {LoggerConfig, AccessLoggerConfig, LoggerConfigSchema, AccessLoggerConfigSchema} from "./logger";
 import {ValidationError} from "../error/errors";
 
+
+/**
+ * The API config descriptor.
+ */
+export interface ServerConfig {
+    /**
+     * Configurations for gateway database (REDIS).
+     */
+    database: RedisConfig;
+    /**
+     * Folder where the gateway will search for its middleware functions.
+     */
+    middlewarePath?: string;
+    /**
+     * The root folder where the gateway will work.
+     */
+    rootPath?: string;
+    /**
+     * The root folder where the gateway will work.
+     */
+    gateway?: GatewayConfig;
+}
+
 /**
  * The API config descriptor.
  */
@@ -15,18 +38,6 @@ export interface GatewayConfig {
      * The gateway protocol configuration
      */
     protocol: ProtocolConfig;
-    /**
-     * Configurations for gateway database (REDIS).
-     */
-    database: RedisConfig;
-    /**
-     * The root folder where the gateway will work.
-     */
-    rootPath?: string;
-    /**
-     * Folder where the gateway will search for its middleware functions.
-     */
-    middlewarePath?: string;
     /**
      * If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
      */
@@ -156,9 +167,6 @@ let MonitorConfigSchema = Joi.object().keys({
 
 export let GatewayConfigValidatorSchema = Joi.object().keys({
     protocol: ProtocolConfigSchema.required(),
-    database: RedisConfigSchema.required(),
-    rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),
-    middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),
     underProxy: Joi.boolean(),
     logger: LoggerConfigSchema,
     accessLogger: AccessLoggerConfigSchema,
@@ -167,8 +175,24 @@ export let GatewayConfigValidatorSchema = Joi.object().keys({
     admin: AdminConfigValidatorSchema
 });
 
+export let ServerConfigValidatorSchema = Joi.object().keys({
+    database: RedisConfigSchema.required(),
+    rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),
+    middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),
+    gateway: GatewayConfigValidatorSchema
+});
+
 export function validateGatewayConfig(gatewayConfig: GatewayConfig) {
     const result = Joi.validate(gatewayConfig, GatewayConfigValidatorSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
+}
+
+export function validateServerConfig(config: ServerConfig) {
+    const result = Joi.validate(config, ServerConfigValidatorSchema);
     if (result.error) {
         throw new ValidationError(result.error);
     } else {

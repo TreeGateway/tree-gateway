@@ -98,21 +98,21 @@ export class ApiCircuitBreaker {
             });
         }
         if (config.onOpen) {
-            let p = pathUtil.join(this.config.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onOpen);                
+            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', 'handler' , config.onOpen);                
             let openHandler = require(p);
             breakerInfo.circuitBreaker.on('open', ()=>{
                 openHandler(path);
             });
         }
         if (config.onClose) {
-            let p = pathUtil.join(this.config.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onClose);                
+            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', 'handler' , config.onClose);                
             let closeHandler = require(p);
             breakerInfo.circuitBreaker.on('close', ()=>{
                 closeHandler(path);
             });
         }
         if (config.onRejected) {
-            let p = pathUtil.join(this.config.gateway.middlewarePath, 'circuitbreaker', 'handler' , config.onRejected);                
+            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', 'handler' , config.onRejected);                
             let rejectedHandler = require(p);
             breakerInfo.circuitBreaker.on('rejected', ()=>{
                 rejectedHandler(path);

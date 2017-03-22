@@ -28,7 +28,7 @@ module.exports = function (authConfig: JWTAuthentication, config: Configuration)
     let verifyFunction;
     if (authConfig.verify) {
         opts['passReqToCallback'] = true;
-        let p = pathUtil.join(config.gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);                
+        let p = pathUtil.join(config.middlewarePath, 'authentication', 'verify', authConfig.verify);                
         verifyFunction = require(p);
     }
     else {

@@ -33,7 +33,7 @@ export class ProxyInterceptor {
         func.push(`function(proxyReq, originalReq){`);
         let proxy: config.Proxy = api.proxy;
         proxy.interceptor.request.forEach((interceptor, index)=>{
-            let p = path.join(this.config.gateway.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
+            let p = path.join(this.config.middlewarePath, 'interceptor', 'request' ,interceptor.name);                
             if (interceptor.group) {
                 func.push(`if (`);                
                 func.push(Groups.buildGroupAllowTest('originalReq', api.group, interceptor.group));
@@ -65,7 +65,7 @@ export class ProxyInterceptor {
             else {
                 func.push(`var f${index} = `);        
             }
-            let p = path.join(this.config.gateway.middlewarePath, 'interceptor', 'response' ,interceptor.name);                
+            let p = path.join(this.config.middlewarePath, 'interceptor', 'response' ,interceptor.name);                
             func.push(`require('${p}');`);
             func.push(`f${index}(rsp, data, req, res, (error, value)=>{ \
                 if (error) { \

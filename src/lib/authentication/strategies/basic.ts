@@ -8,7 +8,7 @@ import {Configuration} from "../../configuration";
 
 
 module.exports = function (authConfig: BasicAuthentication, config: Configuration) {
-    let p = pathUtil.join(config.gateway.middlewarePath, 'authentication', 'verify', authConfig.verify);                
+    let p = pathUtil.join(config.middlewarePath, 'authentication', 'verify', authConfig.verify);                
     let verifyFunction = require(p);
     return new BasicStrategy(verifyFunction);
 };
