@@ -27,11 +27,6 @@ export interface UserData {
 }
 
 export interface UsersConfig {
-    userService?: string;
-    defaultService?: DefaultUsersConfig; 
-}
-
-export interface DefaultUsersConfig {
     jwtSecret: string;
 }
 
@@ -45,18 +40,8 @@ export let UserValidatorSchema = Joi.object().keys({
 
 
 export let UsersConfigValidatorSchema = Joi.object().keys({
-    /**
-     * A custom service that implement the UserService interface.
-     */
-    userService: Joi.string(),
-    /**
-     * Configurations for the default user service. This service will use redis to store user information
-     * and JWT tokens to validate user authentication
-     */
-    defaultService: Joi.object().keys({
-        jwtSecret: Joi.string().required()
-    })
-}).min(1).max(1);
+    jwtSecret: Joi.string().required()
+});
 
 export function validateUser(user: UserData) {
     return new Promise((resolve, reject) => {

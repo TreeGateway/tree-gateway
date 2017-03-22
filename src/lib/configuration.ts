@@ -37,19 +37,12 @@ export class Configuration {
 
     private loadContainerConfigurations() {
         const ConfigService = require("./service/api").ConfigService;
-        const UserService = require("./service/users").UserService;
         const RedisConfigService = require("./service/redis").RedisConfigService;
         const StatsHandler = require("./stats/stats").StatsHandler;
         const RedisStats = require("./stats/redis-stats").RedisStats;
 
         Container.bind(ConfigService).to(RedisConfigService);
         Container.bind(StatsHandler).to(RedisStats);
-        if (this.gateway.admin && this.gateway.admin.users &&  this.gateway.admin.users.userService) {
-            let UserServiceClass = require(this.gateway.admin.users.userService);
-            Container.bind(UserService).provider({
-                get: () => new UserServiceClass()
-            });
-        }
     }
 
     private loadGatewayConfig(serverConfigFile: string) {
@@ -88,10 +81,6 @@ export class Configuration {
 
         let gatewayConfig = serverConfig.gateway;
         if (gatewayConfig) {
-            if (gatewayConfig.admin && gatewayConfig.admin.users.userService && _.startsWith(gatewayConfig.admin.users.userService, ".")) {
-                gatewayConfig.admin.users.userService = path.join(serverConfig.rootPath, gatewayConfig.admin.users.userService);                
-            }
-
             if (gatewayConfig.protocol.https) {
                 if (_.startsWith(gatewayConfig.protocol.https.privateKey, ".")) {
                     gatewayConfig.protocol.https.privateKey = path.join(serverConfig.rootPath, gatewayConfig.protocol.https.privateKey);                

@@ -32,10 +32,8 @@
                     "outputDir": "./logs"
                 }
             },
-            "users": {
-                "defaultService": {
-                    "jwtSecret": "secret"
-                }
+            "userService": {
+                "jwtSecret": "secret"
             },
             "apiDocs": "api-docs",
             "cors" : {

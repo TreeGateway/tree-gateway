@@ -19,7 +19,7 @@ export interface AdminConfig {
     /**
      * Configurations for gateway users service
      */
-    users: UsersConfig;
+    userService: UsersConfig;
     /**
      * Configurations for gateway access logger.
      */

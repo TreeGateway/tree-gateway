@@ -155,7 +155,7 @@ class DefaultUserService implements UserService {
                             roles: user.roles
                         }
                         
-                        let token = jwt.sign(dataToken, this.config.gateway.admin.users.defaultService.jwtSecret, {
+                        let token = jwt.sign(dataToken, this.config.gateway.admin.userService.jwtSecret, {
                             expiresIn: 7200 // TODO read an human interval configuration
                         });
                         resolve(token);
@@ -173,7 +173,7 @@ class DefaultUserService implements UserService {
     getAuthMiddleware(): express.RequestHandler {
         const opts: any = {
             jwtFromRequest: ExtractJwt.fromAuthHeader(),
-            secretOrKey: this.config.gateway.admin.users.defaultService.jwtSecret
+            secretOrKey: this.config.gateway.admin.userService.jwtSecret
         }
         let strategy =  new Strategy(opts, function(jwt_payload, done) {
             return done(null,jwt_payload);
@@ -183,14 +183,3 @@ class DefaultUserService implements UserService {
         return auth.authenticate("_tree_gateway_admin_", { session: false, failWithError: true });
     }        
 }
-
-// let ServiceClass;
-// export function loadUserService(redisClient : Redis, config: UsersConfig): UserService {
-//     if (config.userService) {
-//         if (!ServiceClass) {
-//             ServiceClass = require(config.userService);
-//         }
-//         return new ServiceClass();
-//     }
-//     return new DefaultUserService(redisClient, config.defaultService.jwtSecret);
-// }
