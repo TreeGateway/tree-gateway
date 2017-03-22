@@ -40,7 +40,7 @@ export interface AdminConfig {
 
 export let AdminConfigValidatorSchema = Joi.object().keys({
     protocol: ProtocolConfigSchema.required(),
-    users: UsersConfigValidatorSchema.required(),
+    userService: UsersConfigValidatorSchema.required(),
     accessLogger: AccessLoggerConfigSchema,
     disableStats: Joi.boolean(), 
     apiDocs: Joi.string(),

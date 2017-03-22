@@ -5,10 +5,10 @@ import {Container} from "typescript-ioc";
 import {Configuration} from "../configuration";
 import {UserAdmin} from "./user-admin-tool";
 
-let config = Container.get(Configuration);
-config.load(UserAdminArgs.config)
-    .then(()=>{ 
-        new UserAdmin(UserAdminArgs).processCommand();
-    })
-    .catch(console.error)
+let config: Configuration = Container.get(Configuration);
+try {
+    new UserAdmin(UserAdminArgs).processCommand();
+} catch(e) {
+    console.error(e);
+}
 
