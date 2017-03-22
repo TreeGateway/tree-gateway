@@ -1,12 +1,8 @@
 "use strict";
 
-import "./command-line";
 import * as cluster from "cluster";
 import * as os from "os";
-import {Container} from "typescript-ioc";
-import {Logger} from "./logger";
-import {Gateway} from "./gateway";
-import {Database} from "./database";
+import {start} from "./start";
 
 if (cluster.isMaster) {
     let n = os.cpus().length;
@@ -30,28 +26,11 @@ if (cluster.isMaster) {
     });
 } 
 else {
-    const logger: Logger = Container.get(Logger);
-    const gateway: Gateway = Container.get(Gateway);
-    const database: Database = Container.get(Database);
-    gateway.start()
-        .then(() => {
-            return gateway.startAdmin();
-        })
+    start()
         .catch((err) => {
-            logger.error(`Error starting gateway: ${err.message}`);
+            console.error(`Error starting gateway: ${err.message}`);
             process.exit(-1);
         });
-
-    const graceful = () => {
-        gateway.stopAdmin()
-        .then(() => gateway.stop())
-        .then(() => database.disconnect())
-        .then(() => process.exit(0));
-    };
-
-    // Stop graceful
-    process.on('SIGTERM', graceful);
-    process.on('SIGINT' , graceful);
 }
 
 process.on('uncaughtException', function (err) {

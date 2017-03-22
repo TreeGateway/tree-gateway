@@ -13,11 +13,10 @@ import {Gateway} from "../lib/gateway";
 import {Database} from "../lib/database";
 import {UserService} from "../lib/service/users";
 
-let config = Container.get(Configuration);
 let server;
-let database = Container.get(Database);
-let gateway = Container.get(Gateway);
-let userService = Container.get(UserService);
+let config;
+let database;
+let gateway;
 let adminAddress;
 let adminRequest;
 let adminToken; 
@@ -57,6 +56,7 @@ const getIdFromResponse = (response) => {
 
 const createUsers = () => {
     return new Promise<void>((resolve, reject)=>{
+        let userService = Container.get(UserService);
         userService.create(adminUser)
         .then(() => userService.create(configUser))
         .then(() => userService.create(simpleUser))
@@ -67,21 +67,26 @@ const createUsers = () => {
 
 describe("Admin API", () => {
 	beforeAll(function(done){
+        config = Container.get(Configuration);
+        config.on("load", () => {
+            database = Container.get(Database);            
+            gateway = Container.get(Gateway);
             gateway.start()
-			.then(()=>{
-				return gateway.startAdmin();
-			})
-			.then(() => {
-				gateway.server.set('env', 'test');
-				adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
+                .then(()=>{
+                    return gateway.startAdmin();
+                })
+                .then(() => {
+                    gateway.server.set('env', 'test');
+                    adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 
-				return database.redisClient.flushdb();
-			})
-			.then(()=>{
-                return createUsers();
-            })
-			.then(done)
-			.catch(fail);
+                    return database.redisClient.flushdb();
+                })
+                .then(()=>{
+                    return createUsers();
+                })
+                .then(done)
+                .catch(fail);
+        });
 	});
 
 	afterAll(function(done){

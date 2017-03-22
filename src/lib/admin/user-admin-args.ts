@@ -2,6 +2,7 @@
 
 import * as path from "path";
 import {ArgumentParser} from "argparse";
+import {Configuration} from "../configuration";
 
 let parser = new ArgumentParser({
   version: '0.0.1',
@@ -95,3 +96,4 @@ passwordCommand.addArgument(
 );
 
 export let UserAdminArgs = parser.parseArgs();
+Configuration.gatewayConfigFile = UserAdminArgs.config;

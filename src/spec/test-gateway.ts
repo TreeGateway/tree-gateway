@@ -12,13 +12,10 @@ import {Database} from "../lib/database";
 import {UserService} from "../lib/service/users";
 import {ApiConfig, validateApiConfig} from "../lib/config/api";
 
-
-
-let config = Container.get(Configuration);
 let server;
-let database = Container.get(Database);
-let gateway = Container.get(Gateway);
-let userService = Container.get(UserService);
+let config;
+let database;
+let gateway;
 let gatewayRequest;
 let adminRequest;
 let configToken; 
@@ -33,6 +30,7 @@ const configUser = {
 
 const createUser = () => {
     return new Promise<void>((resolve, reject)=>{
+		let userService = Container.get(UserService);
         userService.create(configUser)
         .then(resolve)
         .catch(reject);
@@ -67,6 +65,10 @@ const getIdFromResponse = (response) => {
 
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
+        config = Container.get(Configuration);
+        config.on("load", () => {
+            database = Container.get(Database);            
+            gateway = Container.get(Gateway);
 			gateway.start()
 			.then(()=>{
 				return gateway.startAdmin();
@@ -95,6 +97,7 @@ describe("Gateway Tests", () => {
 				console.error(err);
 				fail(err);
 			});
+        });
 	});
 
 	afterAll(function(done){

@@ -3,23 +3,31 @@
 import * as fs from "fs-extra-promise";
 import * as _ from "lodash";
 import * as path from "path";
-
+import {EventEmitter} from "events";
 import {RedisConfig, ServerConfig, GatewayConfig, validateGatewayConfig, validateServerConfig} from "./config/gateway";
 import {AutoWired, Container, Singleton} from "typescript-ioc";
 
 @Singleton
 @AutoWired
-export class Configuration {
-    private config: ServerConfig;
+export class Configuration extends EventEmitter {
     static gatewayConfigFile: string;
+    
+    private config: ServerConfig;
+    private _loaded: boolean;
 
     constructor()
     {
+        super();
         this.loadGatewayConfig(Configuration.gatewayConfigFile || path.join(process.cwd(), 'tree-gateway.json'))
-        this.loadContainerConfigurations()
+            .then(() => {
+                this.loadContainerConfigurations();
+                this._loaded = true;
+                this.emit("load", this);
+            });
     }
 
     get gateway(): GatewayConfig {
+        this.ensureLoaded();
         return this.config.gateway;
     }
 
@@ -35,6 +43,16 @@ export class Configuration {
         return this.config.database;
     }
 
+    get loaded(): boolean {
+        return this._loaded;
+    }
+
+    private ensureLoaded() {
+        if (!this._loaded) {
+            throw new Error('Configuration not loaded. Only access configurations after the Configuratio "load" event is fired.')
+        }
+    }
+
     private loadContainerConfigurations() {
         const ConfigService = require("./service/api").ConfigService;
         const RedisConfigService = require("./service/redis").RedisConfigService;
@@ -45,7 +63,7 @@ export class Configuration {
         Container.bind(StatsHandler).to(RedisStats);
     }
 
-    private loadGatewayConfig(serverConfigFile: string) {
+    private loadGatewayConfig(serverConfigFile: string): Promise<void> {
         let configFileName: string = serverConfigFile
         configFileName = _.trim(configFileName);
 
@@ -79,18 +97,22 @@ export class Configuration {
             serverConfig.middlewarePath = path.join(serverConfig.rootPath, serverConfig.middlewarePath);                
         }
 
-        let gatewayConfig = serverConfig.gateway;
-        if (gatewayConfig) {
-            if (gatewayConfig.protocol.https) {
-                if (_.startsWith(gatewayConfig.protocol.https.privateKey, ".")) {
-                    gatewayConfig.protocol.https.privateKey = path.join(serverConfig.rootPath, gatewayConfig.protocol.https.privateKey);                
-                }
-                if (_.startsWith(gatewayConfig.protocol.https.certificate, ".")) {
-                    gatewayConfig.protocol.https.certificate = path.join(serverConfig.rootPath, gatewayConfig.protocol.https.certificate);                
+        this.config = serverConfig;
+        return new Promise<void>((resolve, reject) => {
+            if (serverConfig.gateway) {
+                if (serverConfig.gateway.protocol.https) {
+                    if (_.startsWith(serverConfig.gateway.protocol.https.privateKey, ".")) {
+                        serverConfig.gateway.protocol.https.privateKey = 
+                                path.join(serverConfig.rootPath, serverConfig.gateway.protocol.https.privateKey);                
+                    }
+                    if (_.startsWith(serverConfig.gateway.protocol.https.certificate, ".")) {
+                        serverConfig.gateway.protocol.https.certificate = 
+                                path.join(serverConfig.rootPath, serverConfig.gateway.protocol.https.certificate);                
+                    }
                 }
             }
-        }
-        this.config = serverConfig;
+            setTimeout(resolve, 1);
+        });
     }
 }
 

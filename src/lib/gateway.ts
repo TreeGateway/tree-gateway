@@ -58,6 +58,7 @@ export class Gateway {
     private adminServer: Map<string,http.Server>;
     private apiRoutes: Map<string, express.Router> = new Map<string, express.Router>();
     private _apis: Map<string, ApiConfig>;
+    private _running: boolean = false;
 
     get server(): express.Application {
         return this.app;
@@ -69,6 +70,10 @@ export class Gateway {
             result.push(element);
         });
         return result;
+    }
+
+    get running(): boolean {
+        return this._running;
     }
 
     getApiConfig(apiId: string): ApiConfig {
@@ -91,6 +96,7 @@ export class Gateway {
                             self.logger.info(`Gateway listenning HTTP on port ${self.config.gateway.protocol.http.listenPort}`);
                             started ++;
                             if (started == expected) {
+                                this._running = true;
                                 resolve();
                             }
                         }));
@@ -102,6 +108,7 @@ export class Gateway {
                             self.logger.info(`Gateway listenning HTTPS on port ${self.config.gateway.protocol.https.listenPort}`);
                             started ++;
                             if (started == expected) {
+                                this._running = true;
                                 resolve();
                             }
                         }));
@@ -160,6 +167,7 @@ export class Gateway {
             if (this.apiServer) {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {
+                    self._running = false;
                     return resolve();
                 }
                 this.apiServer.forEach(server=>{
@@ -167,6 +175,7 @@ export class Gateway {
                         toClose--;
                         if (toClose === 0) {
                             self.logger.info('Gateway server stopped');
+                            self._running = false;
                             resolve();
                         }
                     });
@@ -174,6 +183,7 @@ export class Gateway {
                 this.apiServer = null;
             }
             else {
+                self._running = false;
                 resolve();
             }
         });
