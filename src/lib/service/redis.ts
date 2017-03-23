@@ -148,14 +148,14 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                             let parsedMesg =  JSON.parse(message);
                             switch (channel) {
                                 case ConfigTopics.CONFIG_UPDATED: 
-                                    this.emit(ConfigEvents.CONFIG_UPDATED, parsedMesg.packageId);
+                                    this.emit(ConfigEvents.CONFIG_UPDATED, parsedMesg.packageId, parsedMesg.needsReload);
                                 break;
                                 case ConfigTopics.CIRCUIT_CHANGED: 
                                     this.emit(ConfigEvents.CIRCUIT_CHANGED, parsedMesg.id, parsedMesg.state);
                                 break;
                             }
                         } catch (err) {
-                            this.logger.error(`Error processing received message. Message: ${message}. Err: ${err.message}`);
+                            this.logger.error(`Error processing received message. Message: ${message}. Err: ${JSON.stringify(err)}`);
                         }
                     });
                 })

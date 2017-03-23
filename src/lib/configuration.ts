@@ -26,6 +26,17 @@ export class Configuration extends EventEmitter {
             });
     }
 
+    reload(): Promise<void> {
+        this.config = null;
+        return new Promise<void>((resolve, reject) => {
+            this.loadGatewayConfig(Configuration.gatewayConfigFile || path.join(process.cwd(), 'tree-gateway.json'))
+                .then(() => {
+                    this.emit("gateway-update", this.gateway);
+                    resolve();
+                }).catch(reject);
+        }); 
+    }
+
     get gateway(): GatewayConfig {
         this.ensureLoaded();
         return this.config.gateway;
@@ -125,11 +136,12 @@ export class Configuration extends EventEmitter {
                 const database = Container.get(Database);
                 
                 database.redisClient.get('{config}:gateway')
-                    .then((config: GatewayConfig) => {
-                    if (config) {
-                        self.config.gateway = <GatewayConfig>_.defaultsDeep(config, self.config.gateway);
-                    }
-                    resolve();                    
+                    .then((config: string) => {
+                        if (config) {
+                            const configGateway: GatewayConfig = JSON.parse(config);                            
+                            self.config.gateway = <GatewayConfig>_.defaultsDeep(configGateway, self.config.gateway);
+                        }
+                        resolve();                    
                     }).catch(reject);
             }, 1);
         });

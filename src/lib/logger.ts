@@ -17,6 +17,12 @@ export class Logger {
 
     constructor() {
         this.winston = this.instantiateLogger(this.config.gateway.logger);
+        this.config.on('gateway-update', (gateway) => {
+            if (this.winston && this.isDebugEnabled()) {
+                this.debug('The system logger is restarting...');
+            }
+            this.winston = this.instantiateLogger(gateway.logger);            
+        })
     }
 
     private instantiateLogger(config: LoggerConfig) {

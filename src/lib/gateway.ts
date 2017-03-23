@@ -214,6 +214,18 @@ export class Gateway {
         });
     }
 
+    restart(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.logger.info(`Gateway is restarting...`);
+            this.stopAdmin()
+                .then(() => this.stop())
+                .then(() => this.start())
+                .then(() => this.startAdmin())
+                .then(resolve)
+                .catch(reject);                
+        });
+    }
+
     private createHttpsServer() {
         let privateKey  = fs.readFileSync(this.config.gateway.protocol.https.privateKey, 'utf8');
         let certificate = fs.readFileSync(this.config.gateway.protocol.https.certificate, 'utf8');
@@ -326,17 +338,23 @@ export class Gateway {
         this.apiCircuitBreaker.onStateChanged(id, state);
     }
     
-    private updateConfig(packageId: string) {
-        this.apiCircuitBreaker.removeAllBreakers();
-        this.configService.installAllMiddlewares()
-            .then(() => this.loadApis())
-            .then(() => {
-                this.removeOldAPIs();
-                this.logger.info(`Configuration package ${packageId} applied successfuly.`);
-            })
-            .catch(err => {
-                this.logger.error(`Error applying configuration package ${packageId}. Error: ${JSON.stringify(err)}`);
-            });
+    private updateConfig(packageId: string, needsReload: boolean) {
+        if (needsReload) {
+            this.config.reload()
+                .then(() => this.restart())
+                .catch((error) => this.logger.error(`Error updating gateway config. Error: ${JSON.stringify(error)}`));
+        } else {
+            this.apiCircuitBreaker.removeAllBreakers();
+            this.configService.installAllMiddlewares()
+                .then(() => this.loadApis())
+                .then(() => {
+                    this.removeOldAPIs();
+                    this.logger.info(`Configuration package ${packageId} applied successfuly.`);
+                })
+                .catch(err => {
+                    this.logger.error(`Error applying configuration package ${packageId}. Error: ${JSON.stringify(err)}`);
+                });
+        }
     }
     
     private removeOldAPIs() {
@@ -355,7 +373,7 @@ export class Gateway {
 
             self.configureServer()
                 .then(() => self.configService
-                                .on(ConfigEvents.CONFIG_UPDATED, (packageId) => self.updateConfig(packageId))
+                                .on(ConfigEvents.CONFIG_UPDATED, (packageId, needsReload) => self.updateConfig(packageId, needsReload))
                                 .on(ConfigEvents.CIRCUIT_CHANGED, (id, state) => self.circuitChanged(id, state))
                                 .subscribeEvents())
                 .then(() => {
