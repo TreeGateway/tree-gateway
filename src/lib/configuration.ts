@@ -99,19 +99,39 @@ export class Configuration extends EventEmitter {
 
         this.config = serverConfig;
         return new Promise<void>((resolve, reject) => {
-            if (serverConfig.gateway) {
-                if (serverConfig.gateway.protocol.https) {
-                    if (_.startsWith(serverConfig.gateway.protocol.https.privateKey, ".")) {
-                        serverConfig.gateway.protocol.https.privateKey = 
-                                path.join(serverConfig.rootPath, serverConfig.gateway.protocol.https.privateKey);                
+            if (this.config.gateway) {
+                if (this.config.gateway.protocol.https) {
+                    if (_.startsWith(this.config.gateway.protocol.https.privateKey, ".")) {
+                        this.config.gateway.protocol.https.privateKey = 
+                                path.join(this.config.rootPath, this.config.gateway.protocol.https.privateKey);                
                     }
-                    if (_.startsWith(serverConfig.gateway.protocol.https.certificate, ".")) {
-                        serverConfig.gateway.protocol.https.certificate = 
-                                path.join(serverConfig.rootPath, serverConfig.gateway.protocol.https.certificate);                
+                    if (_.startsWith(this.config.gateway.protocol.https.certificate, ".")) {
+                        this.config.gateway.protocol.https.certificate = 
+                                path.join(this.config.rootPath, this.config.gateway.protocol.https.certificate);                
                     }
                 }
             }
-            setTimeout(resolve, 1);
+            this.loadDatabaseConfig()
+                .then(resolve)
+                .catch(reject);
+        });
+    }
+
+    private loadDatabaseConfig(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            let self = this;
+            setTimeout(() => {
+                const Database = require("./database").Database;
+                const database = Container.get(Database);
+                
+                database.redisClient.get('{config}:gateway')
+                    .then((config: GatewayConfig) => {
+                    if (config) {
+                        self.config.gateway = <GatewayConfig>_.defaultsDeep(config, self.config.gateway);
+                    }
+                    resolve();                    
+                    }).catch(reject);
+            }, 1);
         });
     }
 }
