@@ -176,6 +176,57 @@
                 }
             }
         },
+        "/gateway": {
+            "get": {
+                "description": "Get the gateway configuration.",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Gateway"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove the gateway configuration.",
+                "responses": {
+                    "204": {
+                        "description": "Successful operation."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "description": "Update the gateway configuration.",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "User data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Gateway"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Cannot update configuration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
         "/healthcheck": {
             "get": {
                 "description": "Verify if the cluster node is up and running OK.",
@@ -2286,6 +2337,16 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "Gateway": {
+            "type": "object",
+            "description": "Gateway configuration",
+            "properties": {
+                "underProxy": {
+                    "type": "boolean",
+                    "description": "If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)"
                 }
             }
         },
