@@ -1920,6 +1920,105 @@
                 }
             }
         },
+        "/stats/circuitbreaker/open/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about circuitbreaker open events for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/circuitbreaker/close/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about circuitbreaker close events for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats/circuitbreaker/rejected/{apiId}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "apiId",
+                    "description": "API identifier",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "count",
+                    "description": "The number of measures to be returned",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics about circuitbreaker rejected events for the given API",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StatsResult"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -1967,9 +2066,6 @@
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
-                    },
-                    "404": {
-                        "description": "API not found"
                     }
                 }
             }
@@ -2009,6 +2105,47 @@
                 }
             }
         },
+        "/users/authentication/changepassword": {
+            "post": {
+                "description": "Change the user password",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "login",
+                        "description": "User login",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "password",
+                        "description": "User password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The autentication token. Should be sent in all requests to Admin API, as a header. Authorization: JWT <token>",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userLogin}": {
             "get": {
                 "security": [
@@ -2034,7 +2171,10 @@
                         }
                     },
                     "404": {
-                        "description": "User not found"
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             },
@@ -2074,7 +2214,10 @@
                         }
                     },
                     "404": {
-                        "description": "User not found"
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             },
@@ -2098,14 +2241,11 @@
                     "204": {
                         "description": "Successful operation"
                     },
-                    "403": {
-                        "description": "Cannot delete user",
+                    "404": {
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
-                    },
-                    "404": {
-                        "description": "User not found"
                     }
                 }
             }
