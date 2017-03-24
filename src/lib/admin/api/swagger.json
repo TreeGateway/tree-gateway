@@ -178,6 +178,11 @@
         },
         "/gateway": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the gateway configuration.",
                 "responses": {
                     "200": {
@@ -189,19 +194,24 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Remove the gateway configuration.",
                 "responses": {
                     "204": {
                         "description": "Successful operation."
                     }
-                },
+                }
+            },
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
-                ]
-            },
-            "put": {
+                ],
                 "description": "Update the gateway configuration.",
                 "parameters": [
                     {
@@ -242,6 +252,11 @@
         },
         "/middleware/filters": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "List all filters.",
                 "responses": {
                     "200": {
@@ -256,6 +271,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new filter",
                 "parameters": [
                     {
@@ -288,6 +308,11 @@
         },
         "/middleware/filters/{filterName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a filter code",
                 "parameters": [
                     {
@@ -314,6 +339,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing filter",
                 "parameters": [
                     {
@@ -350,6 +380,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a filter",
                 "parameters": [
                     {
@@ -375,6 +410,11 @@
         },
         "/middleware/interceptors/request": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all request interceptors for the given type",
                 "responses": {
                     "200": {
@@ -389,6 +429,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new interceptor",
                 "parameters": [
                     {
@@ -421,6 +466,11 @@
         },
         "/middleware/interceptors/request/{interceptorName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the interceptor code",
                 "parameters": [
                     {
@@ -447,6 +497,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing interceptor",
                 "parameters": [
                     {
@@ -483,6 +538,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete an interceptor",
                 "parameters": [
                     {
@@ -508,6 +568,11 @@
         },
         "/middleware/interceptors/response": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all request interceptors for the given type",
                 "responses": {
                     "200": {
@@ -522,6 +587,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new interceptor",
                 "parameters": [
                     {
@@ -554,6 +624,11 @@
         },
         "/middleware/interceptors/response/{interceptorName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the interceptor code",
                 "parameters": [
                     {
@@ -580,6 +655,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing interceptor",
                 "parameters": [
                     {
@@ -616,6 +696,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete an interceptor",
                 "parameters": [
                     {
@@ -641,6 +726,11 @@
         },
         "/middleware/authentication/strategies": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all authentication strategies",
                 "responses": {
                     "200": {
@@ -655,6 +745,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new strategy",
                 "parameters": [
                     {
@@ -687,6 +782,11 @@
         },
         "/middleware/authentication/strategies/{strategyName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the strategy code",
                 "parameters": [
                     {
@@ -713,6 +813,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing strategy",
                 "parameters": [
                     {
@@ -749,6 +854,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a strategy",
                 "parameters": [
                     {
@@ -774,6 +884,11 @@
         },
         "/middleware/authentication/verifiers": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all verifiers",
                 "responses": {
                     "200": {
@@ -788,6 +903,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new verifiers",
                 "parameters": [
                     {
@@ -820,6 +940,11 @@
         },
         "/middleware/authentication/verifiers/{verifierName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the verifier code",
                 "parameters": [
                     {
@@ -846,6 +971,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing verifier",
                 "parameters": [
                     {
@@ -882,6 +1012,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a verifier",
                 "parameters": [
                     {
@@ -907,6 +1042,11 @@
         },
         "/middleware/throttling/keyGenerators": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all key generators",
                 "responses": {
                     "200": {
@@ -921,6 +1061,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new key generator",
                 "parameters": [
                     {
@@ -953,6 +1098,11 @@
         },
         "/middleware/throttling/keyGenerators/{generatorName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the key generator code",
                 "parameters": [
                     {
@@ -979,6 +1129,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing key generator",
                 "parameters": [
                     {
@@ -1015,6 +1170,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a key generator",
                 "parameters": [
                     {
@@ -1040,6 +1200,11 @@
         },
         "/middleware/throttling/handlers": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all handlers",
                 "responses": {
                     "200": {
@@ -1054,6 +1219,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new handler",
                 "parameters": [
                     {
@@ -1086,6 +1256,11 @@
         },
         "/middleware/throttling/handlers/{handlerName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the handler code",
                 "parameters": [
                     {
@@ -1112,6 +1287,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing handler",
                 "parameters": [
                     {
@@ -1148,6 +1328,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a handler",
                 "parameters": [
                     {
@@ -1173,6 +1358,11 @@
         },
         "/middleware/throttling/skip": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all skip handlers",
                 "responses": {
                     "200": {
@@ -1187,6 +1377,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new skip handler",
                 "parameters": [
                     {
@@ -1219,6 +1414,11 @@
         },
         "/middleware/throttling/skip/{handlerName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the skip handler code",
                 "parameters": [
                     {
@@ -1245,6 +1445,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing skip handler",
                 "parameters": [
                     {
@@ -1281,6 +1486,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a skip handler",
                 "parameters": [
                     {
@@ -1306,6 +1516,11 @@
         },
         "/middleware/circuitbreaker": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all circuitbreaker handlers",
                 "responses": {
                     "200": {
@@ -1320,6 +1535,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new circuitbreaker handler",
                 "parameters": [
                     {
@@ -1352,6 +1572,11 @@
         },
         "/middleware/circuitbreaker/{handlerName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the circuitbreaker handler code",
                 "parameters": [
                     {
@@ -1378,6 +1603,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing circuitbreaker handler",
                 "parameters": [
                     {
@@ -1414,6 +1644,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a circuitbreaker handler",
                 "parameters": [
                     {
@@ -1439,6 +1674,11 @@
         },
         "/middleware/cors": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all cors handlers",
                 "responses": {
                     "200": {
@@ -1453,6 +1693,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new cors handler",
                 "parameters": [
                     {
@@ -1485,6 +1730,11 @@
         },
         "/middleware/cors/{handlerName}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get the cors handler code",
                 "parameters": [
                     {
@@ -1511,6 +1761,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update an existing cors handler",
                 "parameters": [
                     {
@@ -1547,6 +1802,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a cors handler",
                 "parameters": [
                     {
@@ -1834,6 +2094,11 @@
                 }
             ],
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get statistics about cache errors for the given API",
                 "responses": {
                     "200": {
