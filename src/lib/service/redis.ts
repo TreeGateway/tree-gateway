@@ -126,6 +126,7 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
     @Inject private apiService: ApiService;
     @Inject private middlewareInstaller: MiddlewareInstaller;
     @Inject private database: Database;
+    private subscribed: boolean = false;
 
     getApiConfig(apiId: string): Promise<ApiConfig> {
         return this.apiService.get(apiId);
@@ -137,6 +138,10 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
 
     subscribeEvents(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            if (this.subscribed) {
+                return resolve();
+            }
+
             let topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
             this.database.redisEvents.psubscribe(topicPattern)
                 .then(() => {
@@ -163,7 +168,7 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug(`Listening to events on topic ${topicPattern}`);
                     }
-
+                    this.subscribed = true;
                     resolve();
                 })
                 .catch(reject);

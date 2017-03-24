@@ -24,4 +24,5 @@ export abstract class ConfigService {
     abstract getApiConfig(apiId: string): Promise<ApiConfig>;
     abstract subscribeEvents(): Promise<void>;
     abstract on(event: string | symbol, listener: Function): this;
+    abstract removeAllListeners(event?: string | symbol): this;
 }

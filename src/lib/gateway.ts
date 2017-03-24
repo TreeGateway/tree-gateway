@@ -372,7 +372,7 @@ export class Gateway {
             self.monitors.startMonitors();
 
             self.configureServer()
-                .then(() => self.configService
+                .then(() => self.configService.removeAllListeners()
                                 .on(ConfigEvents.CONFIG_UPDATED, (packageId, needsReload) => self.updateConfig(packageId, needsReload))
                                 .on(ConfigEvents.CIRCUIT_CHANGED, (id, state) => self.circuitChanged(id, state))
                                 .subscribeEvents())
