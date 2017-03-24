@@ -1253,6 +1253,272 @@
                 }
             }
         },
+        "/middleware/circuitbreaker": {
+            "get": {
+                "description": "Get all circuitbreaker handlers",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new circuitbreaker handler",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Handler file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "403": {
+                        "description": "Invalid circuitbreaker handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/circuitbreaker/{handlerName}": {
+            "get": {
+                "description": "Get the circuitbreaker handler code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Handler not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing circuitbreaker handler",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Handler file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Invalid handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Handler not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a circuitbreaker handler",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Handler not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/cors": {
+            "get": {
+                "description": "Get all cors handlers",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new cors handler",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Handler file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "403": {
+                        "description": "Invalid cors handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/middleware/cors/{handlerName}": {
+            "get": {
+                "description": "Get the cors handler code",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Handler not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing cors handler",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "file",
+                        "description": "Handler file",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "403": {
+                        "description": "Invalid handler",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Handler not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a cors handler",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "handlerName",
+                        "description": "Handler name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Handler not found",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
         "/stats/access/request/{apiId}": {
             "parameters": [
                 {
