@@ -16,7 +16,7 @@
     "proxy": {
         "path": "testCache/",
         "target": {
-            "path": "http://httpbin.org"
+            "host": "http://httpbin.org"
         },
         "timeout": 5000
     },

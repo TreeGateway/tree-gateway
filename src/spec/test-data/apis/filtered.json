@@ -19,7 +19,7 @@
     "proxy": {
         "path": "filtered/",
         "target": {
-            "path": "http://httpbin.org"
+            "host": "http://httpbin.org"
         },
         "filter": [
             {

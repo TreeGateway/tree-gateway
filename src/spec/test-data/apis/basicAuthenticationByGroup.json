@@ -17,7 +17,7 @@
     "proxy": {
         "path": "secureBasic-by-group/",
         "target": {
-            "path": "http://httpbin.org"
+            "host": "http://httpbin.org"
         },
         "timeout": 5000
     },

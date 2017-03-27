@@ -32,7 +32,7 @@
     "proxy": {
         "path": "test/",
         "target": {
-            "path": "http://httpbin.org",
+            "host": "http://httpbin.org",
             "allow": ["Group1"],
             "deny": ["Group2"]
         },

@@ -103,7 +103,7 @@ export class ApiAuth {
         let path: string = api.proxy.path;
         if (this.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, authentication.group);
-            this.logger.debug(`Configuring Group filters for Authentication on path [${api.proxy.target.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring Group filters for Authentication on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         let stats = this.createAuthStats(path, authentication);

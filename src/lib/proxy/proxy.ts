@@ -28,7 +28,7 @@ export class ApiProxy {
      * Configure a proxy for a given API
      */
     proxy(apiRouter: express.Router, api: ApiConfig) {
-        apiRouter.use(proxy(api.proxy.target.path, this.configureProxy(api)));
+        apiRouter.use(proxy(api.proxy.target.host, this.configureProxy(api)));
     }
 
     configureProxyHeader(apiRouter: express.Router, api: ApiConfig) {

@@ -193,7 +193,10 @@ export interface Interceptor {
 }
 
 export interface Target {
-    path: string;
+    /**
+     * The proxy target host.
+     */
+    host: string;
     /**
      * A list of allowed groups
      */
@@ -205,7 +208,7 @@ export interface Target {
 }
 
 let TargetSchema = Joi.object().keys({
-    path: Joi.string().required(),
+    host: Joi.string().required(),
     allow: Joi.array().items(Joi.string()),
     deny: Joi.array().items(Joi.string()),
 });
