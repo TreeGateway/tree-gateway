@@ -351,10 +351,7 @@ describe("Gateway Tests", () => {
 			.then(()=>{
 				return installApis();
 			})
-			.then(() => {
-				setTimeout(resolve, 500);
-				// wait gateway starts and load config
-			})
+			.then(resolve)
 			.catch(reject);
 		});
 	}
