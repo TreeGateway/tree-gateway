@@ -33,7 +33,7 @@ export class MiddlewareRest {
     @GET
     @Path('authentication/strategies')
     authStrategies() : Promise<Array<string>>{
-        return this.service.list('authentication/strategies');
+        return this.service.list('authentication/strategy');
     }
 
     @GET
@@ -63,7 +63,7 @@ export class MiddlewareRest {
     @GET
     @Path('circuitbreaker')
     circuitBreakerOpen() : Promise<Array<string>>{
-        return this.service.list('circuitbreaker/handler');
+        return this.service.list('circuitbreaker');
     }
 
     @GET
@@ -93,7 +93,7 @@ export class MiddlewareRest {
     @DELETE
     @Path('authentication/strategies/:name')
     removeAuthStrategies(@PathParam("name")name: string) : Promise<void>{
-        return this.service.remove('authentication/strategies', name);
+        return this.service.remove('authentication/strategy', name);
     }
 
     @DELETE
@@ -123,7 +123,7 @@ export class MiddlewareRest {
     @DELETE
     @Path('circuitbreaker/:name')
     removeCircuitBreaker(@PathParam("name")name: string) : Promise<void>{
-        return this.service.remove('circuitbreaker/handler', name);
+        return this.service.remove('circuitbreaker', name);
     }
 
     @DELETE
@@ -153,7 +153,7 @@ export class MiddlewareRest {
     @PUT
     @Path('authentication/strategies/:name')
     saveAuthStrategies(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
-        return this.service.save('authentication/strategies', name, file.buffer);
+        return this.service.save('authentication/strategy', name, file.buffer);
     }
 
     @PUT
@@ -183,7 +183,7 @@ export class MiddlewareRest {
     @PUT
     @Path('circuitbreaker/:name')
     saveCircuitBreaker(@PathParam("name")name: string, @FileParam("file") file: Express.Multer.File) : Promise<void>{
-        return this.service.save('circuitbreaker/handler', name, file.buffer);
+        return this.service.save('circuitbreaker', name, file.buffer);
     }
 
     @PUT
@@ -238,7 +238,7 @@ export class MiddlewareRest {
     @Path('authentication/strategies/:name')
     readAuthStrategies(@PathParam("name")name: string): Promise<Return.DownloadBinaryData>{
         return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
-            this.service.read('authentication/strategies', name)
+            this.service.read('authentication/strategy', name)
                 .then(value=>{
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
                 })
@@ -308,7 +308,7 @@ export class MiddlewareRest {
     @Path('circuitbreaker/:name')
     readCircuitBreakerMiddleware(@PathParam("name")name: string) : Promise<Return.DownloadBinaryData>{
         return new Promise<Return.DownloadBinaryData>((resolve, reject)=>{
-            this.service.read('circuitbreaker/handler', name)
+            this.service.read('circuitbreaker', name)
                 .then(value=>{
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name+'.js'));
                 })
@@ -382,9 +382,9 @@ export class MiddlewareRest {
     addAuthStrategy(@FileParam("file") file: Express.Multer.File, 
                     @FormParam("name") name: string){
         return new Promise<Return.NewResource>((resolve, reject) =>{
-            this.service.add('authentication/strategies', name, file.buffer)
+            this.service.add('authentication/strategy', name, file.buffer)
                 .then(value=>{
-                    resolve(new Return.NewResource(path.join('authentication/strategies',name)));
+                    resolve(new Return.NewResource(path.join('authentication/strategy',name)));
                 })
                 .catch(err=>{
                     reject(new Errors.InternalServerError('Error saving strategy.'))
@@ -457,7 +457,7 @@ export class MiddlewareRest {
     addCircuitBreaker(@FileParam("file") file: Express.Multer.File, 
                     @FormParam("name") name: string){
         return new Promise<Return.NewResource>((resolve, reject) =>{
-            this.service.add('circuitbreaker/handler', name, file.buffer)
+            this.service.add('circuitbreaker', name, file.buffer)
                 .then(value=>{
                     resolve(new Return.NewResource(path.join('circuitbreaker',name)));
                 })

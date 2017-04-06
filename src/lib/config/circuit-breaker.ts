@@ -46,7 +46,7 @@ export interface CircuitBreakerConfig {
      * ```
      * This function must be saved on a js file:
      * ``` 
-     * middleware/circuitbreaker/handler/myOpenHandler.js
+     * middleware/circuitbreaker/myOpenHandler.js
      * ```
      */
     onOpen?: string;        
@@ -62,7 +62,7 @@ export interface CircuitBreakerConfig {
      * ```
      * This function must be saved on a js file:
      * ``` 
-     * middleware/circuitbreaker/handler/myCloseHandler.js
+     * middleware/circuitbreaker/myCloseHandler.js
      * ```
      */
     onClose?: string;        
@@ -78,7 +78,7 @@ export interface CircuitBreakerConfig {
      * ```
      * This function must be saved on a js file:
      * ``` 
-     * middleware/circuitbreaker/handler/myRejectHandler.js
+     * middleware/circuitbreaker/myRejectHandler.js
      * ```
      */
     onRejected?: string;

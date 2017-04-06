@@ -440,7 +440,7 @@ describe("Gateway Tests", () => {
 
 	function installMiddlewares():Promise<void>{
          return new Promise<void>((resolve, reject)=>{
-			 installMiddleware('myJwtStrategy', '/authentication/strategies/', '/authentication/strategies')
+			 installMiddleware('myJwtStrategy', '/authentication/strategies/', '/authentication/strategy')
 			 .then(()=>{
 				 return installMiddleware('verifyBasicUser', '/authentication/verify/', '/authentication/verify')
 			 })
