@@ -1,9 +1,9 @@
 "use strict";
 
-import {UserService} from "../service/users";
-import {UserData, validateUser} from "../config/users";
+import {UserService} from "../../service/users";
+import {UserData, validateUser} from "../../config/users";
 import {AutoWired, Container, Inject} from "typescript-ioc";
-import {Database} from "../database";
+import {Database} from "../../database";
 
 @AutoWired
 export class UserAdmin {

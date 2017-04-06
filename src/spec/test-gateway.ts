@@ -63,41 +63,28 @@ const getIdFromResponse = (response) => {
     return parts.length > 0 ? parts[parts.length-1] : null;
 };
 
+
+
 describe("Gateway Tests", () => {
 	beforeAll(function(done){
         config = Container.get(Configuration);
-        config.on("load", () => {
-            database = Container.get(Database);            
-            gateway = Container.get(Gateway);
-			gateway.start()
-			.then(()=>{
-				return gateway.startAdmin();
-			})
-			.then(() => {
-				gateway.server.set('env', 'test');
-				gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
-				adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
-
-				return database.redisClient.flushdb();
-			})
-			.then(()=>{
-                return createUser();
-            })
-			.then(()=>{
-				return authenticate();
-			})
-			.then(()=>{
-				return installMiddlewares();
-			})
-			.then(()=>{
-				return installApis();
-			})
-			.then(done)
-			.catch(err => {
-				console.error(err);
-				fail(err);
+		if (config.loaded) {
+			startGateway()
+				.then(done)
+				.catch(err => {
+					console.error(err);
+					fail(err);
+				});	
+		} else {
+			config.on("load", () => {
+				startGateway()
+					.then(done)
+					.catch(err => {
+						console.error(err);
+						fail(err);
+					});	
 			});
-        });
+		}
 	});
 
 	afterAll(function(done){
@@ -337,6 +324,40 @@ describe("Gateway Tests", () => {
 		});
 	});
 
+	function startGateway() {
+		return new Promise<void>((resolve, reject) => {
+			database = Container.get(Database);            
+			gateway = Container.get(Gateway);
+			gateway.start()
+			.then(()=>{
+				return gateway.startAdmin();
+			})
+			.then(() => {
+				gateway.server.set('env', 'test');
+				gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
+				adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
+
+				return database.redisClient.flushdb();
+			})
+			.then(()=>{
+				return createUser();
+			})
+			.then(()=>{
+				return authenticate();
+			})
+			.then(()=>{
+				return installMiddlewares();
+			})
+			.then(()=>{
+				return installApis();
+			})
+			.then(() => {
+				setTimeout(resolve, 500);
+				// wait gateway starts and load config
+			})
+			.catch(reject);
+		});
+	}
 	function installApis():Promise<void>{
          return new Promise<void>((resolve, reject)=>{
 		    let pathApi = './src/spec/test-data/apis/';

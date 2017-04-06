@@ -8,9 +8,9 @@ import {ValidationError} from "../error/errors";
  */
 export interface Group {
     /**
-     * The Group name. Used to identify the Group on admin console. 
+     * The Group identifier. Used to identify the Group on admin console. 
      */
-    name: string;
+    id: string;
     /**
      * An optional description for API. 
      */
@@ -34,7 +34,7 @@ let MemberValidatorSchema = Joi.object().keys({
 }).min(1);
 
 export let GroupValidatorSchema = Joi.object().keys({
-    name: Joi.string().alphanum().min(3).max(30).required(),
+    id: Joi.string().alphanum().min(3).max(30).required(),
     description: Joi.string(),
     member: Joi.array().items(MemberValidatorSchema).required(),
 });

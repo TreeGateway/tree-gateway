@@ -8,7 +8,7 @@ let pathToRegexp = require('path-to-regexp');
 
 export function filter(groups: Array<Group>, groupIds: Array<string>) {
     let filtered = _.filter(groups, (g: Group)=>{
-        return groupIds.indexOf(g.name) >= 0;
+        return groupIds.indexOf(g.id) >= 0;
     });
     return filtered;
 }

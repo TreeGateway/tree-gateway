@@ -25,7 +25,7 @@ export interface ServerConfig {
      */
     rootPath?: string;
     /**
-     * The root folder where the gateway will work.
+     * The gateway configuration.
      */
     gateway?: GatewayConfig;
 }

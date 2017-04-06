@@ -28,6 +28,10 @@ export interface ApiConfig {
      */
     version: string;
     /**
+     * An optional description for API. 
+     */
+    description?: string;
+    /**
      * Configuration for the API proxy engine.
      */
     proxy: Proxy;
@@ -35,10 +39,6 @@ export interface ApiConfig {
      * Configure groups of endpoints
      */
     group?: Array<Group>;
-    /**
-     * An optional description for API. 
-     */
-    description?: string;
     /**
      * Configuration for the rate limit engine.
      */

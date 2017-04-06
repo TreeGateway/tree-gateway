@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "group": [
         {
-            "name": "Group1",
+            "id": "Group1",
             "description": "Endpoints Group One",
             "member": [
                 {

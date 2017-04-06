@@ -2,7 +2,7 @@
 
 import * as path from "path";
 import {ArgumentParser} from "argparse";
-import {Configuration} from "../configuration";
+import {Configuration} from "../../configuration";
 
 let parser = new ArgumentParser({
   version: '0.0.1',
