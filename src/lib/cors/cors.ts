@@ -28,7 +28,7 @@ export class ApiCors {
     private logger: Logger;
 
     cors(apiRouter: express.Router, api: ApiConfig) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         let configusrations: Array<ApiCorsConfig> = this.sortMiddlewares(api.cors, path);
         let corsInfos: Array<CorsInfo> = new Array<CorsInfo>();
 
@@ -38,12 +38,12 @@ export class ApiCors {
             corsInfo.corsMiddleware = corsMiddleware(corsOptions);
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Configuring Cors for path [${api.proxy.path}].`);
+                this.logger.debug(`Configuring Cors for path [${api.path}].`);
             }
             if (cors.group){
                 if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cors.group);
-                    this.logger.debug(`Configuring Group filters for Cors on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Cors on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 corsInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, cors.group);
             }

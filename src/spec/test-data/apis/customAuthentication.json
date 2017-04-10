@@ -1,8 +1,8 @@
 {
     "name": "TestCustomAuthenticationAPI",
     "version": "1.0.0",
+    "path": "secureCustom/",
     "proxy": {
-        "path": "secureCustom/",
         "target": {
             "host": "http://httpbin.org"
         },

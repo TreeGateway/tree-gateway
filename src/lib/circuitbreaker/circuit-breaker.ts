@@ -34,13 +34,13 @@ export class ApiCircuitBreaker {
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
     circuitBreaker(apiRouter: express.Router, api: ApiConfig) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         let breakerInfos: Array<BreakerInfo> = new Array<BreakerInfo>();
-        let sortedBreakers = this.sortBreakers(api.circuitBreaker, api.proxy.path);
+        let sortedBreakers = this.sortBreakers(api.circuitBreaker, api.path);
         let breakersSize = sortedBreakers.length;
         sortedBreakers.forEach((cbConfig: CircuitBreakerConfig, index: number) => {
             let breakerInfo: BreakerInfo = {}; 
-            let cbStateID = (breakersSize > 1?`${api.proxy.path}:${index}`:api.proxy.path);
+            let cbStateID = (breakersSize > 1?`${api.path}:${index}`:api.path);
             let cbOptions: any = {
                 timeout: cbConfig.timeout || 30000,
                 maxFailures: (cbConfig.maxFailures || 10),
@@ -52,14 +52,14 @@ export class ApiCircuitBreaker {
                 id: cbStateID
             };
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Configuring Circuit Breaker for path [${api.proxy.path}].`);
+                this.logger.debug(`Configuring Circuit Breaker for path [${api.path}].`);
             }
             breakerInfo.circuitBreaker = new CircuitBreaker(cbOptions);
-            this.configureCircuitBreakerEventListeners(breakerInfo, api.proxy.path, cbConfig);
+            this.configureCircuitBreakerEventListeners(breakerInfo, api.path, cbConfig);
             if (cbConfig.group){
                 if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cbConfig.group);
-                    this.logger.debug(`Configuring Group filters for Circuit Breaker on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Circuit Breaker on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 breakerInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, cbConfig.group);
             }
@@ -98,21 +98,21 @@ export class ApiCircuitBreaker {
             });
         }
         if (config.onOpen) {
-            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', 'handler' , config.onOpen);                
+            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onOpen);                
             let openHandler = require(p);
             breakerInfo.circuitBreaker.on('open', ()=>{
                 openHandler(path);
             });
         }
         if (config.onClose) {
-            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', 'handler' , config.onClose);                
+            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onClose);                
             let closeHandler = require(p);
             breakerInfo.circuitBreaker.on('close', ()=>{
                 closeHandler(path);
             });
         }
         if (config.onRejected) {
-            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', 'handler' , config.onRejected);                
+            let p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onRejected);                
             let rejectedHandler = require(p);
             breakerInfo.circuitBreaker.on('rejected', ()=>{
                 rejectedHandler(path);

@@ -1,6 +1,7 @@
 {
     "name": "TestCachedAPI",
     "version": "1.0.0",
+    "path": "testCache/",
     "group": [
         {
             "id": "Group1",
@@ -14,7 +15,6 @@
         }
     ],
     "proxy": {
-        "path": "testCache/",
         "target": {
             "host": "http://httpbin.org"
         },

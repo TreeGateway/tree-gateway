@@ -34,7 +34,7 @@ export class ApiAuth {
     private statsRecorder: StatsRecorder;
 
     authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         let authentication: AuthenticationConfig =  api.authentication
         _.keys(authentication.strategy).forEach(key=>{
             try {
@@ -45,7 +45,7 @@ export class ApiAuth {
                     authStrategy= strategy(authConfig, this.config);
                 }
                 else {
-                    let p = pathUtil.join(this.config.middlewarePath, 'authentication', 'strategies' , key);                
+                    let p = pathUtil.join(this.config.middlewarePath, 'authentication', 'strategy' , key);                
                     let strategy = require(p);
                     authStrategy = strategy(authConfig);
                 }
@@ -77,7 +77,7 @@ export class ApiAuth {
     
     private createAuthenticator(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig, 
                                 authenticator: express.RequestHandler) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         let stats = this.createAuthStats(path, authentication);
         if (stats) {
             apiRouter.use((req, res, next)=>{
@@ -100,10 +100,10 @@ export class ApiAuth {
 
     private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig, 
                                         authenticator: express.RequestHandler) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         if (this.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, authentication.group);
-            this.logger.debug(`Configuring Group filters for Authentication on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring Group filters for Authentication on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         let f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         let stats = this.createAuthStats(path, authentication);

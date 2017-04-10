@@ -1,6 +1,7 @@
 {
     "name": "TestAuthdByGroupAPI",
     "version": "1.0.0",
+    "path": "secureBasic-by-group/",
     "group": [
         {
             "id": "Group1",
@@ -15,7 +16,6 @@
         }
     ],
     "proxy": {
-        "path": "secureBasic-by-group/",
         "target": {
             "host": "http://httpbin.org"
         },

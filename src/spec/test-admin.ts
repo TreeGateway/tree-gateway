@@ -154,7 +154,8 @@ describe("Admin API", () => {
         const apiMock = <ApiConfig> {
             name: 'apiMock',
             description: 'API mock',
-            version: '1.0'
+            version: '1.0',
+            path: 'newApi'
         };
 
         it("should be able to create a new API", (done) => {

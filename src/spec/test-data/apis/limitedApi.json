@@ -1,8 +1,8 @@
 {
     "name": "TestLimitAPI",
     "version": "1.0.0",
+    "path": "limited",
     "proxy": {
-        "path": "limited",
         "target": {
             "host": "http://httpbin.org"
         },

@@ -1,6 +1,7 @@
 {
     "name": "TestAPI",
     "version": "1.0.0",
+    "path": "test/",
     "group": [
         {
             "id": "Group1",
@@ -30,7 +31,6 @@
         }
     ],
     "proxy": {
-        "path": "test/",
         "target": {
             "host": "http://httpbin.org",
             "allow": ["Group1"],

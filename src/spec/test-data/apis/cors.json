@@ -1,8 +1,8 @@
 {
     "name": "TestCorsAPI",
     "version": "1.0.0",
+    "path": "cors/",
     "proxy": {
-        "path": "cors/",
         "target": {
             "host": "http://httpbin.org"
         }

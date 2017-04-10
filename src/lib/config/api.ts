@@ -32,6 +32,11 @@ export interface ApiConfig {
      */
     description?: string;
     /**
+     * The path where the gateway will listen for requests that should be proxied
+     * for the current API.
+     */
+    path: string;
+    /**
      * Configuration for the API proxy engine.
      */
     proxy: Proxy;
@@ -70,6 +75,7 @@ export let ApiConfigValidatorSchema = Joi.object().keys({
     id: Joi.string().guid(),
     name: Joi.string().alphanum().min(3).max(30).required(),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required(),
+    path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
     description: Joi.string(),
     proxy: ProxyValidatorSchema,
     group: Joi.array().items(GroupValidatorSchema),

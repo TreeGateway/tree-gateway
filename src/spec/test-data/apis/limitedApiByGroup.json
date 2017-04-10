@@ -1,6 +1,7 @@
 {
     "name": "TestLimitByGroupAPI",
     "version": "1.0.0",
+    "path": "limited-by-group",
     "group": [
         {
             "id": "Group1",
@@ -14,7 +15,6 @@
         }
     ],
     "proxy": {
-        "path": "limited-by-group",
         "target": {
             "host": "http://httpbin.org"
         },

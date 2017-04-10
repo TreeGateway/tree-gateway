@@ -28,7 +28,7 @@ export class ApiRateLimit {
     @Inject private statsRecorder: StatsRecorder;
 
     throttling(apiRouter: express.Router, api: ApiConfig) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         let throttlings: Array<ThrottlingConfig> = this.sortLimiters(api.throttling, path);
         let RateLimit = require('express-rate-limit');
         let throttlingInfos: Array<ThrottlingInfo> = new Array<ThrottlingInfo>();
@@ -58,12 +58,12 @@ export class ApiRateLimit {
             throttlingInfo.limiter = new RateLimit(rateConfig);
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Configuring Throtlling controller for path [${api.proxy.path}].`);
+                this.logger.debug(`Configuring Throtlling controller for path [${api.path}].`);
             }
             if (throttling.group){
                 if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, throttling.group);
-                    this.logger.debug(`Configuring Group filters for Throtlling on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Throtlling on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 throttlingInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, throttling.group);
             }

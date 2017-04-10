@@ -1,6 +1,7 @@
 {
     "name": "TestFilteredAPI",
     "version": "1.0.0",
+    "path": "filtered/",
     "group": [
         {
             "id": "Group1",
@@ -17,7 +18,6 @@
         }
     ],
     "proxy": {
-        "path": "filtered/",
         "target": {
             "host": "http://httpbin.org"
         },

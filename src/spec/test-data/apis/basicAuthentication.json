@@ -1,8 +1,8 @@
 {
     "name": "TestBasicAuthenticatedAPI",
     "version": "1.0.0",
+    "path": "secureBasic/",
     "proxy": {
-        "path": "secureBasic/",
         "target": {
             "host": "http://httpbin.org"
         },

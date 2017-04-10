@@ -1,8 +1,8 @@
 {
     "name": "TestLocalAuthenticatedAPI",
     "version": "1.0.0",
+    "path": "secureLocal/",
     "proxy": {
-        "path": "secureLocal/",
         "target": {
             "host": "http://httpbin.org"
         },

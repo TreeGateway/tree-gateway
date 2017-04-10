@@ -272,15 +272,15 @@ export class Gateway {
 
     private loadValidateApi(api: ApiConfig) {
         if (this.logger.isInfoEnabled()) {
-            this.logger.info(`Configuring API [${api.id}] on path: ${api.proxy.path}`);
+            this.logger.info(`Configuring API [${api.id}] on path: ${api.path}`);
         }
 
         this._apis.set(api.id, api);
-        api.proxy.path = Utils.normalizePath(api.proxy.path);
+        api.path = Utils.normalizePath(api.path);
         
         const apiRouter = express.Router();
         if (!api.proxy.disableStats) {
-            this.configureStatsMiddleware(apiRouter, api.proxy.path);
+            this.configureStatsMiddleware(apiRouter, api.path);
         }
         
         if (api.throttling) {
@@ -323,7 +323,7 @@ export class Gateway {
         const initializeRouter = !this.apiRoutes.has(api.id);
         this.apiRoutes.set(api.id, apiRouter);
         if (initializeRouter) {
-            this.server.use(api.proxy.path, (req, res, next)=>{
+            this.server.use(api.path, (req, res, next)=>{
                 if (this.apiRoutes.has(api.id)) {
                     this.apiRoutes.get(api.id)(req, res, next);
                 }

@@ -8,11 +8,6 @@ import {ValidationError} from "../error/errors";
  */
 export interface Proxy {
     /**
-     * The path where the gateway will listen for requests that should be proxied
-     * for the current API.
-     */
-    path: string;
-    /**
      * The target address of the proxied API. You can force the protocol to be 
      * used on the URL, as:
      * ```
@@ -229,7 +224,6 @@ let InterceptorsSchema = Joi.object().keys({
 });
 
 export let ProxyValidatorSchema = Joi.object().keys({
-    path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
     target: TargetSchema.required(),
     https: Joi.boolean(),
     supressViaHeader: Joi.boolean(),

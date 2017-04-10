@@ -35,7 +35,7 @@ export class ApiCache {
     }
 
     private configureCache(apiRouter: express.Router, api: ApiConfig) {
-        let path: string = api.proxy.path;
+        let path: string = api.path;
         let cacheConfigs: Array<CacheConfig> = this.sortCaches(api.cache, path);
 
         cacheConfigs.forEach((cache: CacheConfig)=>{
@@ -43,7 +43,7 @@ export class ApiCache {
             if (cache.group){
                 if (this.logger.isDebugEnabled()) {
                     let groups = Groups.filter(api.group, cache.group);
-                    this.logger.debug(`Configuring Group filters for Cache on path [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Cache on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }

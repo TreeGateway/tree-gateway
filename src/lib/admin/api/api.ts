@@ -24,7 +24,7 @@ export class APIRest {
                     throw new Errors.ForbidenError(JSON.stringify(err));
                 })
                 .then(() => this.service.create(api))
-                .then(() => resolve(new Return.NewResource(`apis/${api.id}`)))
+                .then((apiId) => resolve(new Return.NewResource(`apis/${apiId}`)))
                 .catch(reject);
         });
     }

@@ -1,8 +1,8 @@
 {
     "name": "TestCircuitBreakerAPI",
     "version": "1.0.0",
+    "path": "circuitbreaker/",
     "proxy": {
-        "path": "circuitbreaker/",
         "target": {
             "host": "http://httpbin.org"
         }

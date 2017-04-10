@@ -33,7 +33,7 @@ export class ProxyFilter {
 
     private buildCustomFilter(api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Configuring custom filters for Proxy target [${api.proxy.path}]. Filters [${JSON.stringify(api.proxy.filter)}]`);
+            this.logger.debug(`Configuring custom filters for Proxy target [${api.path}]. Filters [${JSON.stringify(api.proxy.filter)}]`);
         }
         let func = new Array<string>();
         func.push(`function(req, res){`);
@@ -65,7 +65,7 @@ export class ProxyFilter {
     private buildAllowFilter(api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, api.proxy.target.allow);
-            this.logger.debug(`Configuring allow filter for Proxy target [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring allow filter for Proxy target [${api.path}]. Groups [${JSON.stringify(groups)}]`);
         }
 
         return Groups.buildGroupAllowFilter(api.group, api.proxy.target.allow);
@@ -74,7 +74,7 @@ export class ProxyFilter {
     private buildDenyFilter(api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
             let groups = Groups.filter(api.group, api.proxy.target.deny);
-            this.logger.debug(`Configuring deny filter for Proxy target [${api.proxy.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring deny filter for Proxy target [${api.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         return Groups.buildGroupDenyFilter(api.group, api.proxy.target.deny);
     }
