@@ -1,5 +1,8 @@
 sudo: required
 language: node_js
+env:
+- REDIS_PORT_6379_TCP_ADDR=localhost
+- REDIS_PORT_6379_TCP_PORT=6379
 node_js:
 - '5'
 services:

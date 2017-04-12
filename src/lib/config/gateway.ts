@@ -102,7 +102,7 @@ export interface RedisNodeConfig {
     /**
      * Node port.
      */
-    port?: number,
+    port?: string|number,
     /**
      * Node password.
      */
@@ -140,8 +140,8 @@ export interface RedisOptionsConfig {
 }
 
 let RedisNodeSchema = Joi.object().keys({
-    host: Joi.string().hostname(),
-    port: Joi.number().positive(),
+    host: Joi.string().required(),
+    port: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     password: Joi.string()
 });
 
