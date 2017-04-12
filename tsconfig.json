@@ -7,7 +7,9 @@
         "outDir": "./bin",
         "removeComments": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true 
+        "emitDecoratorMetadata": true, 
+        "sourceMap": true,
+        "mapRoot": "bin/lib"
     },
     "exclude": [
         "node_modules"

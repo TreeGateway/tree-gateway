@@ -62,7 +62,7 @@ export class Configuration extends EventEmitter {
 
     private ensureLoaded() {
         if (!this._loaded) {
-            throw new Error('Configuration not loaded. Only access configurations after the Configuratio "load" event is fired.')
+            throw new Error('Configuration not loaded. Only access configurations after the Configuration "load" event is fired.')
         }
     }
 
@@ -79,7 +79,7 @@ export class Configuration extends EventEmitter {
     private loadGatewayConfig(serverConfigFile: string): Promise<void> {
         let configFileName: string = serverConfigFile
         configFileName = _.trim(configFileName);
-
+ 
         if (_.startsWith(configFileName, ".")) {
             configFileName = path.join(process.cwd(), configFileName);
         }
