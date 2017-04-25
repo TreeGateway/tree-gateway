@@ -75,7 +75,11 @@ gulp.task('remap-istanbul-reports', function () {
 });
 
 gulp.task('test-run', ['copy-files'],  function() {
-	var env = processEnv({NODE_ENV: 'test'});
+	var env = processEnv({
+		NODE_ENV: 'test',
+		REDIS_PORT_6379_TCP_ADDR: 'localhost',
+		REDIS_PORT_6379_TCP_PORT: '6379'
+	});
 	return gulp.src(['bin/test/spec/test-admin.spec.js', 'bin/test/spec/test-gateway.spec.js'])
 		.pipe(env)
 		.pipe(jasmine({

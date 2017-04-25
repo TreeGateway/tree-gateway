@@ -1,4 +1,4 @@
-FROM node:6.9.2
+FROM node:6.9.5
 
 ENV NODE_ENV production
 # Create app directory
