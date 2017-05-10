@@ -10,6 +10,6 @@ dist
 node_modules
 .npm
 doc
-middleware
+/middleware
 /.vscode
 coverage
