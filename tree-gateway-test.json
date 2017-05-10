@@ -1,5 +1,5 @@
 {
-    "rootPath": "./src/spec/test-data/root",
+    "rootPath": "./test/data/root",
     "database": {
         "options": {
             "db": 1
@@ -29,7 +29,7 @@
             }
         },
         "logger": {
-            "level": "error"
+            "level": "debug"
         }
     }
 }

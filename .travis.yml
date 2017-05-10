@@ -3,10 +3,9 @@ language: node_js
 env:
   - REDIS_PORT_6379_TCP_ADDR=localhost REDIS_PORT_6379_TCP_PORT=6379
 node_js:
-  - '5'
+  - '6'
 services:
   - docker
 before_install:
   - docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
-  - npm install -g gulp
-script: gulp release
+script: nyc npm test && nyc report --reporter=text-lcov | coveralls

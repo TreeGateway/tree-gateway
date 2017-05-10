@@ -5,7 +5,8 @@ npm-debug.log*
 pids
 *.pid
 *.seed
-bin
+dist
+.nyc_output
 node_modules
 .npm
 doc

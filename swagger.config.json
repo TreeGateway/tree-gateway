@@ -1,0 +1,19 @@
+{
+    "swagger": {
+        "yaml": true,
+        "outputDirectory": "./dist/admin/api",
+        "entryFile": "./src/admin/api/admin-api.ts",
+        "name": "Tree Gateway Admin API",
+        "description": "The administrative API for Tree Gateway",
+        "license": "MIT",
+        "basePath": "/",
+        "securityDefinitions": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        },
+        "produces": ["application/json"]
+    }
+}
