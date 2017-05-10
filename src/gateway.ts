@@ -426,18 +426,11 @@ export class Gateway {
 
     private configureApiDocs() {
         if (this.config.gateway.admin.apiDocs) {
-            const swaggerUi = require('swagger-ui-express');
-            const swaggerDocument = require('./admin/api/swagger.json');
-
-            if (this.config.gateway.admin.protocol.https) {
-                swaggerDocument.host = `${os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}`;
-                swaggerDocument.schemes = ['https'];
-            } else if (this.config.gateway.admin.protocol.http) {
-                swaggerDocument.host = `${os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`;
-                swaggerDocument.schemes = ['http'];
-            }
-
-            this.adminApp.use(path.join('/', this.config.gateway.admin.apiDocs), swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+            const schemes = (this.config.gateway.admin.protocol.https ? ['https'] : ['http']);
+            const host = (this.config.gateway.admin.protocol.https ?
+                `${os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
+                `${os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
+            Server.swagger(this.adminApp, './admin/api/swagger.json', this.config.gateway.admin.apiDocs, host, schemes);
         }
     }
 
