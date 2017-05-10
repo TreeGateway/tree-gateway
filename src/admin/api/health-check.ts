@@ -1,11 +1,12 @@
 'use strict';
 
 import { Path, GET, Errors } from 'typescript-rest';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
+import { Tags } from 'typescript-rest-swagger';
 
 @Path('healthcheck')
-@AutoWired
+@Tags('Miscellaneous')
 export class HealthCheck {
     @Inject private database: Database;
 

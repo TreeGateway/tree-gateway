@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as express from 'express';
 import { Group } from './config/group';
 import * as Utils from './proxy/utils';
-import {createFunction} from './utils/functions';
+import { createFunction } from './utils/functions';
 
 const pathToRegexp = require('path-to-regexp');
 
@@ -17,7 +17,7 @@ export function filter(groups: Array<Group>, groupIds: Array<string>) {
 
 export function buildGroupAllowFilter(groups: Array<Group>, groupIds: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupAllowTest('req', groups, groupIds)};`;
-    return <(req: express.Request, res: express.Response) => boolean> createFunction({pathToRegexp: pathToRegexp}, 'req', 'res', body);
+    return <(req: express.Request, res: express.Response) => boolean>createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body);
 }
 
 export function buildGroupAllowTest(request: string, groups: Array<Group>, groupIds: Array<string>) {
@@ -83,7 +83,7 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
 
 export function buildGroupDenyFilter(groups: Array<Group>, names: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupDenyTest('req', groups, names)}`;
-    return <(req: express.Request, res: express.Response) => boolean> createFunction({pathToRegexp: pathToRegexp}, 'req', 'res', body);
+    return <(req: express.Request, res: express.Response) => boolean>createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body);
 }
 
 export function buildGroupDenyTest(request: string, groups: Array<Group>, names: Array<string>) {

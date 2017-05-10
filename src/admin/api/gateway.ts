@@ -3,10 +3,11 @@
 import { Path, GET, DELETE, PUT } from 'typescript-rest';
 import { GatewayConfig, validateGatewayConfig } from '../../config/gateway';
 import { GatewayService } from '../../service/gateway';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
+import { Tags } from 'typescript-rest-swagger';
 
 @Path('gateway')
-@AutoWired
+@Tags('Gateway Configuration')
 export class GatewayRest {
     @Inject private service: GatewayService;
 

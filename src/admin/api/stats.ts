@@ -3,12 +3,13 @@
 import { Path, GET, PathParam, Errors, QueryParam } from 'typescript-rest';
 import { Stats } from '../../stats/stats';
 import { Monitors } from '../../monitor/monitors';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
 import { Gateway } from '../../gateway';
 import { StatsRecorder } from '../../stats/stats-recorder';
+import { Tags } from 'typescript-rest-swagger';
 
 @Path('stats')
-@AutoWired
+@Tags('Stats Monitoring')
 export class StatsRest {
     @Inject private monitors: Monitors;
     @Inject private gateway: Gateway;

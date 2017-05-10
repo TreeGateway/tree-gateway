@@ -11,7 +11,7 @@ import { Stats } from '../stats/stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
-import {createFunction} from '../utils/functions';
+import { createFunction } from '../utils/functions';
 
 const onHeaders = require('on-headers');
 const ServerCache = serverCache.ServerCache;

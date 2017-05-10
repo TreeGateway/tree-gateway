@@ -7,7 +7,7 @@ import * as Groups from '../group';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { Configuration } from '../configuration';
-import {createFunction} from '../utils/functions';
+import { createFunction } from '../utils/functions';
 
 const pathToRegexp = require('path-to-regexp');
 
@@ -57,7 +57,7 @@ export class ProxyFilter {
         body.push(`);`);
         body.push(`return accepted;`);
 
-        return createFunction({pathToRegexp: pathToRegexp}, 'req', 'res', body.join(''));
+        return createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body.join(''));
     }
 
     private buildAllowFilter(api: ApiConfig) {

@@ -6,7 +6,7 @@ import { ApiConfig } from '../config/api';
 import * as Groups from '../group';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { Configuration } from '../configuration';
-import {createFunction} from '../utils/functions';
+import { createFunction } from '../utils/functions';
 
 const pathToRegexp = require('path-to-regexp');
 
@@ -43,7 +43,7 @@ export class ProxyInterceptor {
         });
         body.push(`return proxyReq;`);
 
-        return createFunction({pathToRegexp: pathToRegexp}, 'proxyReq', 'originalReq', body.join(''));
+        return createFunction({ pathToRegexp: pathToRegexp }, 'proxyReq', 'originalReq', body.join(''));
     }
 
     private buildResponseInterceptor(api: ApiConfig) {
@@ -78,7 +78,7 @@ export class ProxyInterceptor {
             body.push(`});`);
         });
 
-        return createFunction({pathToRegexp: pathToRegexp}, 'rsp', 'data', 'req', 'res', 'callback', body.join(''));
+        return createFunction({ pathToRegexp: pathToRegexp }, 'rsp', 'data', 'req', 'res', 'callback', body.join(''));
     }
 
     private hasRequestInterceptor(proxy: config.Proxy) {

@@ -6,10 +6,11 @@ import { UserData, validateUser } from '../../config/users';
 import { UserService } from '../../service/users';
 import * as _ from 'lodash';
 import * as express from 'express';
-import { AutoWired, Container, Inject } from 'typescript-ioc';
+import { Container, Inject } from 'typescript-ioc';
+import { Tags } from 'typescript-rest-swagger';
 
 @Path('users')
-@AutoWired
+@Tags('Users Management')
 export class UsersRest {
     @Inject private service: UserService;
 

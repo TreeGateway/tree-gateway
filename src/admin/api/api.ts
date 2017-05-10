@@ -3,10 +3,11 @@
 import { Path, GET, POST, DELETE, PUT, PathParam, Errors, Return } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from '../../config/api';
 import { ApiService } from '../../service/api';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
+import { Tags } from 'typescript-rest-swagger';
 
 @Path('apis')
-@AutoWired
+@Tags('APIs administration')
 export class APIRest {
     @Inject private service: ApiService;
 

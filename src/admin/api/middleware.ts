@@ -3,10 +3,11 @@
 import { Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, Return } from 'typescript-rest';
 import * as path from 'path';
 import { MiddlewareService } from '../../service/middleware';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
+import { Tags } from 'typescript-rest-swagger';
 
 @Path('middleware')
-@AutoWired
+@Tags('Middleware Configurations')
 export class MiddlewareRest {
     @Inject private service: MiddlewareService;
 
