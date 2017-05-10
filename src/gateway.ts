@@ -22,7 +22,6 @@ import { Monitors } from './monitor/monitors';
 import { ConfigService } from './service/api';
 import { Configuration } from './configuration';
 import * as fs from 'fs-extra-promise';
-import * as path from 'path';
 import * as os from 'os';
 import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
