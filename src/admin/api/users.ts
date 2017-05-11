@@ -1,25 +1,26 @@
 'use strict';
 
 import { Path, GET, POST, DELETE, PUT, PathParam, FormParam, Errors, Return, ContextRequest } from 'typescript-rest';
-import 'es6-promise';
 import { UserData, validateUser } from '../../config/users';
 import { UserService } from '../../service/users';
 import * as _ from 'lodash';
 import * as express from 'express';
 import { Container, Inject } from 'typescript-ioc';
-import { Tags } from 'typescript-rest-swagger';
+import * as swagger from 'typescript-rest-swagger';
 
 @Path('users')
-@Tags('Users Management')
+@swagger.Tags('Users Management')
 export class UsersRest {
     @Inject private service: UserService;
 
     @GET
+    @swagger.Security('Bearer')
     listUsers(): Promise<Array<UserData>> {
         return this.service.list();
     }
 
     @POST
+    @swagger.Security('Bearer')
     createUser(user: UserData): Promise<Return.NewResource<void>> {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
             validateUser(user).then((validUser: UserData) =>
@@ -34,6 +35,7 @@ export class UsersRest {
 
     @GET
     @Path(':userLogin')
+    @swagger.Security('Bearer')
     getUser( @PathParam('userLogin') login: string): Promise<UserData> {
         return new Promise<UserData>((resolve, reject) => {
             this.service.get(login)
@@ -48,6 +50,7 @@ export class UsersRest {
 
     @PUT
     @Path(':userLogin')
+    @swagger.Security('Bearer')
     updateUser(user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             validateUser(user)
@@ -59,6 +62,7 @@ export class UsersRest {
 
     @DELETE
     @Path(':userLogin')
+    @swagger.Security('Bearer')
     removeUser( @PathParam('userLogin') login: string): Promise<void> {
         return this.service.remove(login);
     }
@@ -77,6 +81,7 @@ export class UsersRest {
 
     @POST
     @Path('/authentication/changepassword')
+    @swagger.Security('Bearer')
     changePasswordToken( @ContextRequest req: express.Request,
         @FormParam('login') login: string,
         @FormParam('password') password: string): Promise<void> {

@@ -1,6 +1,6 @@
 {
     "swagger": {
-        "yaml": true,
+        "yaml": false,
         "outputDirectory": "./dist/admin/api",
         "entryFile": "./src/admin/api/admin-api.ts",
         "name": "Tree Gateway Admin API",

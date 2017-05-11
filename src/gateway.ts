@@ -25,6 +25,7 @@ import * as fs from 'fs-extra-promise';
 import * as os from 'os';
 import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
+import * as path from 'path';
 
 class StatsController {
     requestStats: Stats;
@@ -429,7 +430,11 @@ export class Gateway {
             const host = (this.config.gateway.admin.protocol.https ?
                 `${os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
                 `${os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
-            Server.swagger(this.adminApp, './admin/api/swagger.json', this.config.gateway.admin.apiDocs, host, schemes);
+            const swaggerFile = process.env.NODE_ENV === 'test' ?
+                            './dist/admin/api/swagger.json' :
+                            path.join(__dirname, './admin/api/swagger.json');
+
+            Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs, host, schemes);
         }
     }
 

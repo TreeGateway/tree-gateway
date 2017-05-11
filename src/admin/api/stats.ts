@@ -6,10 +6,11 @@ import { Monitors } from '../../monitor/monitors';
 import { Inject } from 'typescript-ioc';
 import { Gateway } from '../../gateway';
 import { StatsRecorder } from '../../stats/stats-recorder';
-import { Tags } from 'typescript-rest-swagger';
+import * as swagger from 'typescript-rest-swagger';
 
 @Path('stats')
-@Tags('Stats Monitoring')
+@swagger.Tags('Stats Monitoring')
+@swagger.Security('Bearer')
 export class StatsRest {
     @Inject private monitors: Monitors;
     @Inject private gateway: Gateway;

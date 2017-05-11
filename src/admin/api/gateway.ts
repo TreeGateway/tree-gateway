@@ -4,10 +4,11 @@ import { Path, GET, DELETE, PUT } from 'typescript-rest';
 import { GatewayConfig, validateGatewayConfig } from '../../config/gateway';
 import { GatewayService } from '../../service/gateway';
 import { Inject } from 'typescript-ioc';
-import { Tags } from 'typescript-rest-swagger';
+import * as swagger from 'typescript-rest-swagger';
 
 @Path('gateway')
-@Tags('Gateway Configuration')
+@swagger.Tags('Gateway Configuration')
+@swagger.Security('Bearer')
 export class GatewayRest {
     @Inject private service: GatewayService;
 

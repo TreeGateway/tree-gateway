@@ -4,10 +4,11 @@ import { Path, GET, POST, DELETE, PUT, PathParam, Errors, Return } from 'typescr
 import { ApiConfig, validateApiConfig } from '../../config/api';
 import { ApiService } from '../../service/api';
 import { Inject } from 'typescript-ioc';
-import { Tags } from 'typescript-rest-swagger';
+import * as swagger from 'typescript-rest-swagger';
 
 @Path('apis')
-@Tags('APIs administration')
+@swagger.Tags('APIs administration')
+@swagger.Security('Bearer')
 export class APIRest {
     @Inject private service: ApiService;
 

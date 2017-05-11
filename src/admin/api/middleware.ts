@@ -4,10 +4,11 @@ import { Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, 
 import * as path from 'path';
 import { MiddlewareService } from '../../service/middleware';
 import { Inject } from 'typescript-ioc';
-import { Tags } from 'typescript-rest-swagger';
+import * as swagger from 'typescript-rest-swagger';
 
 @Path('middleware')
-@Tags('Middleware Configurations')
+@swagger.Tags('Middleware Configurations')
+@swagger.Security('Bearer')
 export class MiddlewareRest {
     @Inject private service: MiddlewareService;
 

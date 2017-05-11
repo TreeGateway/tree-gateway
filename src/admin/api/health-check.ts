@@ -3,10 +3,10 @@
 import { Path, GET, Errors } from 'typescript-rest';
 import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
-import { Tags } from 'typescript-rest-swagger';
+import * as swagger from 'typescript-rest-swagger';
 
 @Path('healthcheck')
-@Tags('Miscellaneous')
+@swagger.Tags('Miscellaneous')
 export class HealthCheck {
     @Inject private database: Database;
 
