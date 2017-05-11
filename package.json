@@ -101,7 +101,6 @@
     "@types/passport-http": "^0.3.1",
     "@types/passport-jwt": "^2.0.19",
     "@types/passport-local": "^1.0.29",
-    "@types/path-to-regexp": "^1.0.29",
     "@types/request": "0.0.31",
     "@types/serve-static": "^1.7.31",
     "@types/uuid": "^2.0.29",
