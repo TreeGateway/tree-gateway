@@ -426,11 +426,13 @@ export class Gateway {
 
     private configureApiDocs() {
         if (this.config.gateway.admin.apiDocs) {
+            const isTest = process.env.NODE_ENV === 'test';
+
             const schemes = (this.config.gateway.admin.protocol.https ? ['https'] : ['http']);
             const host = (this.config.gateway.admin.protocol.https ?
-                `${os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
-                `${os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
-            const swaggerFile = process.env.NODE_ENV === 'test' ?
+                `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
+                `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
+            const swaggerFile = isTest ?
                             './dist/admin/api/swagger.json' :
                             path.join(__dirname, './admin/api/swagger.json');
 

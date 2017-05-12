@@ -1,20 +1,23 @@
 'use strict';
 
-import { Path, GET, POST, DELETE, PUT, PathParam, Errors, Return } from 'typescript-rest';
+import { Path, GET, POST, DELETE, PUT, PathParam, QueryParam, Errors, Return } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from '../../config/api';
 import { ApiService } from '../../service/api';
 import { Inject } from 'typescript-ioc';
 import * as swagger from 'typescript-rest-swagger';
 
 @Path('apis')
-@swagger.Tags('APIs administration')
+@swagger.Tags('APIs')
 @swagger.Security('Bearer')
 export class APIRest {
     @Inject private service: ApiService;
 
     @GET
-    list(): Promise<Array<ApiConfig>> {
-        return this.service.list();
+    list(@QueryParam('name')name?: string,
+         @QueryParam('version')version?: string,
+         @QueryParam('description')description?: string,
+         @QueryParam('path')path?: string): Promise<Array<ApiConfig>> {
+        return this.service.list(name, version, description, path);
     }
 
     @POST

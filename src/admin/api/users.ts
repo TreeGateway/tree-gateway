@@ -9,7 +9,7 @@ import { Container, Inject } from 'typescript-ioc';
 import * as swagger from 'typescript-rest-swagger';
 
 @Path('users')
-@swagger.Tags('Users Management')
+@swagger.Tags('Users')
 export class UsersRest {
     @Inject private service: UserService;
 

@@ -10,6 +10,8 @@ dist
 node_modules
 .npm
 doc
+test/data/root/middleware
+test/data/root/logs
 /middleware
 /.vscode
 coverage

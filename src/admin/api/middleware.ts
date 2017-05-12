@@ -7,7 +7,7 @@ import { Inject } from 'typescript-ioc';
 import * as swagger from 'typescript-rest-swagger';
 
 @Path('middleware')
-@swagger.Tags('Middleware Configurations')
+@swagger.Tags('Middleware')
 @swagger.Security('Bearer')
 export class MiddlewareRest {
     @Inject private service: MiddlewareService;

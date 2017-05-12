@@ -7,7 +7,7 @@ import { Inject } from 'typescript-ioc';
 import * as swagger from 'typescript-rest-swagger';
 
 @Path('gateway')
-@swagger.Tags('Gateway Configuration')
+@swagger.Tags('Gateway')
 @swagger.Security('Bearer')
 export class GatewayRest {
     @Inject private service: GatewayService;

@@ -75,6 +75,7 @@
     "passport-local": "^1.0.0",
     "path-to-regexp": "^1.6.0",
     "serve-favicon": "~2.3.0",
+    "swagger-client": "^3.0.9",
     "typescript-ioc": "^0.4.0",
     "typescript-rest": "^1.0.1",
     "typescript-rest-swagger": "^0.0.4",
@@ -126,7 +127,8 @@
   },
   "bin": {
     "treeGateway": "dist/app-cluster.js",
-    "userAdmin": "dist/admin/user/user-admin.js"
+    "userAdmin": "dist/admin/user/user-admin.js",
+    "treeGatewayConfig": "dist/admin/config/cli.js"
   },
   "bugs": {
     "url": "https://github.com/Leanty/tree-gateway/issues"

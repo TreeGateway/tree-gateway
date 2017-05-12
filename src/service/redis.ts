@@ -29,11 +29,27 @@ export class RedisService {
 @Singleton
 @Provides(ApiService)
 export class RedisApiService extends RedisService implements ApiService {
-    list(): Promise<Array<ApiConfig>> {
+    list(name?: string, version?: string, description?: string, path?: string): Promise<Array<ApiConfig>> {
         return new Promise((resolve, reject) => {
             this.database.redisClient.hgetall(Constants.APIS_PREFIX)
                 .then((apis: any) => {
                     apis = Object.keys(apis).map((key: any) => JSON.parse(apis[key]));
+                    apis = apis.filter((api: ApiConfig) => {
+                        if (name && !api.name.includes(name)) {
+                            return false;
+                        }
+                        if (version && api.version && !api.version.includes(version)) {
+                            return false;
+                        }
+                        if (description && api.description && !api.description.includes(description)) {
+                            return false;
+                        }
+                        if (path && api.path && !api.path.includes(path)) {
+                            return false;
+                        }
+                        return true;
+                    });
+
                     resolve(apis);
                 })
                 .catch(reject);

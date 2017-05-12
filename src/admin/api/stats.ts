@@ -9,7 +9,7 @@ import { StatsRecorder } from '../../stats/stats-recorder';
 import * as swagger from 'typescript-rest-swagger';
 
 @Path('stats')
-@swagger.Tags('Stats Monitoring')
+@swagger.Tags('Stats')
 @swagger.Security('Bearer')
 export class StatsRest {
     @Inject private monitors: Monitors;

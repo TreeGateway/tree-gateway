@@ -20,7 +20,7 @@ export class UserAdmin {
             .then(() => {
                 console.info(`Command ${this.args.command} completed.`);
                 this.closeDB();
-            }).catch(err => {
+            }).catch((err: any) => {
                 console.error(`${err}`);
                 process.exit(1);
             });
