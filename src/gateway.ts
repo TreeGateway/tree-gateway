@@ -98,7 +98,7 @@ export class Gateway {
                     }
                     if (self.config.gateway.protocol.https) {
                         expected++;
-                        const httpsServer = self.createHttpsServer();
+                        const httpsServer = self.createHttpsServer(self.app);
                         self.apiServer.set('https', httpsServer.listen(self.config.gateway.protocol.https.listenPort, () => {
                             self.logger.info(`Gateway listenning HTTPS on port ${self.config.gateway.protocol.https.listenPort}`);
                             started++;
@@ -139,7 +139,7 @@ export class Gateway {
                 }
                 if (self.config.gateway.admin.protocol.https) {
                     expected++;
-                    const httpsServer = self.createHttpsServer();
+                    const httpsServer = self.createHttpsServer(self.adminApp);
                     self.adminServer.set('https', httpsServer.listen(self.config.gateway.admin.protocol.https.listenPort, () => {
                         self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.gateway.admin.protocol.https.listenPort}`);
                         started++;
@@ -218,12 +218,12 @@ export class Gateway {
         });
     }
 
-    private createHttpsServer() {
+    private createHttpsServer(app: express.Application) {
         const privateKey = fs.readFileSync(this.config.gateway.protocol.https.privateKey, 'utf8');
         const certificate = fs.readFileSync(this.config.gateway.protocol.https.certificate, 'utf8');
         const credentials = { key: privateKey, cert: certificate };
         const https = require('https');
-        return https.createServer(credentials, this.app);
+        return https.createServer(credentials, app);
     }
 
     private loadApis(): Promise<void> {

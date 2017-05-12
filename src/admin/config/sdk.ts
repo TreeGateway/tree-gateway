@@ -1,6 +1,7 @@
 'use strict';
 
 import { ApiConfig } from '../../config/api';
+import { GatewayConfig } from '../../config/gateway';
 
 const swagger = require('swagger-client');
 
@@ -12,11 +13,19 @@ export interface Apis {
     getApi( id: string): Promise<ApiConfig>;
 }
 
+export interface Gateway {
+    updateConfig(config: GatewayConfig): Promise<void>;
+    deleteConfig(): Promise<void>;
+    getConfig(): Promise<GatewayConfig>;
+}
+
 export class SDK {
-    private apisClient: ApisClient;
+    private apisClient: Apis;
+    private gatewayClient: Gateway;
 
     private constructor(swaggerClient: any) {
         this.apisClient = new ApisClient(swaggerClient);
+        this.gatewayClient = new GatewayClient(swaggerClient);
     }
 
     static initialize(swaggerUrl: string, login: string, password: string): Promise<SDK> {
@@ -37,7 +46,9 @@ export class SDK {
     static authenticate(swaggerUrl: string, login: string, password: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             swagger(swaggerUrl)
-                .then((swaggerClient: any) => swaggerClient.apis.Users.UsersRestGetAuthToken({login, password}))
+                .then((swaggerClient: any) => {
+                    return swaggerClient.apis.Users.UsersRestGetAuthToken({login, password});
+                })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.text);
@@ -50,6 +61,10 @@ export class SDK {
 
     get apis(): Apis {
         return this.apisClient;
+    }
+
+    get gateway(): Gateway {
+        return this.gatewayClient;
     }
 }
 
@@ -116,6 +131,53 @@ class ApisClient implements Apis {
     getApi( id: string): Promise<ApiConfig> {
         return new Promise<ApiConfig>((resolve, reject) => {
             this.swaggerClient.apis.APIs.APIRestGetApi({id})
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+}
+
+class GatewayClient implements Gateway {
+    private swaggerClient: any;
+
+    constructor(swaggerClient: any) {
+        this.swaggerClient = swaggerClient;
+    }
+
+    updateConfig( config: GatewayConfig ): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.swaggerClient.apis.Gateway.GatewayRestUpdateConfig({config})
+                .then((response: any) => {
+                    if (response.status === 204) {
+                        return resolve();
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
+    deleteConfig(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.swaggerClient.apis.Gateway.GatewayRestDeleteConfig({})
+                .then((response: any) => {
+                    if (response.status === 204) {
+                        return resolve();
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
+    getConfig(): Promise<GatewayConfig> {
+        return new Promise<GatewayConfig>((resolve, reject) => {
+            this.swaggerClient.apis.Gateway.GatewayRestGetConfig({})
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);

@@ -35,7 +35,8 @@ const apisCommand = commands.addParser('apis', {
 
 apisCommand.addArgument(
     ['-l', '--list'], {
-        help: 'Inform the search params for API listing. Ex: name:test|version:0.0.1'
+        help: 'Inform the search params for API listing. Ex: --list name:test version:0.0.1',
+        nargs: '*'
     }
 );
 
@@ -53,13 +54,42 @@ apisCommand.addArgument(
 
 apisCommand.addArgument(
     ['-r', '--remove'], {
-        help: 'Inform the path to the api config file (JSON format) to be removed',
+        help: 'Inform the api id to be removed',
     }
 );
 
 apisCommand.addArgument(
     ['-g', '--get'], {
+        help: 'Inform the api id to be retrieved',
+    }
+);
+
+const gatewayCommand = commands.addParser('gateway', {
+    addHelp: true,
+    help: 'Gateway configurations'
+});
+
+gatewayCommand.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the path to the gateway config file (JSON format) to be updated',
+    }
+);
+
+gatewayCommand.addArgument(
+    ['-r', '--remove'], {
+        constant: true,
+        defaultValue: false,
+        help: 'Remove the gateway configuration',
+        nargs: '?'
+    }
+);
+
+gatewayCommand.addArgument(
+    ['-g', '--get'], {
+        constant: true,
+        defaultValue: false,
         help: 'Inform the path to the api config file (JSON format) to be retrieved',
+        nargs: '?'
     }
 );
 
