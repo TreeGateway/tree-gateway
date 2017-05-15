@@ -16,6 +16,11 @@ This is a full featured and free API Gateway in node JS
     - [Database](#database)
     - [Environments](#environments)
     - [Gateway](#gateway)
+  - [Usage](#usage)
+    - [Create an Admin User](#create-an-admin-user)
+    - [Admin Rest API](#admin-rest-api)
+    - [CLI Interface](#cli-interface)
+    - [Node SDK](#node-sdk)
 
 ## Why do I need an API Gateway?
 
@@ -199,6 +204,236 @@ The above setup will connect to database on host "localhost" and port "6379" for
 
 ### Gateway
 
-// TODO
+This sections configures some important properties to be applied to the gateway server. You can configure the following properties:
+
+  - protocol - The gateway protocol configuration.
+  - underProxy(optional) - If we are behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc).
+  - logger(optional) - Configurations for gateway logger.
+  - accessLogger(optional) - Configurations for gateway access logger.
+  - statsConfig(optional) - Defaut configurations for gateway stats collector.
+  - monitor(optional) - A list of monitors to be started with the gateway
+  - admin(optional) - If provided, configure the admin API for the gateway
+
+Example configuration:
+
+```json
+{
+    "rootPath": ".",
+    "database": {
+        "standalone": {
+            "host": "{REDIS_PORT_6379_TCP_ADDR}",
+            "port": "{REDIS_PORT_6379_TCP_PORT}"
+        }
+    },
+    "gateway": {
+        "underProxy": false,
+        "protocol": {
+            "http": {
+                "listenPort": 8000
+            }
+        },
+        "admin": {
+            "protocol": {
+                "http": {
+                    "listenPort": 8001
+                }
+            },
+            "accessLogger": {
+                "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+                "console": {
+                    "timestamp": true,
+                    "colorize": true
+                },
+                "file": {
+                    "timestamp": true,
+                    "json": false,
+                    "prettyPrint": true,
+                    "outputDir": "./logs"
+                }
+            },
+            "userService": {
+                "jwtSecret": "secret"
+            },
+            "apiDocs": "api-docs",
+            "cors" : {
+                "origin": {
+                    "allow": [{
+                        "value": "*"
+                    }]
+                }
+            }
+        },
+        "logger": {
+            "level": "debug",
+            "console": {
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "outputDir": "./logs",
+                "json": false, 
+                "prettyPrint": true 
+            }
+        },
+        "accessLogger": {
+            "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+            "console": {
+                "timestamp": true,
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "json": false,
+                "prettyPrint": true,
+                "outputDir": "./logs"
+            }
+        },
+        "statsConfig": {
+            "granularity": {
+                "duration": "1 hour",
+                "ttl": "2 days"
+            }
+        }, 
+        "monitor": [
+            {
+                "name": "cpu",
+                "statsConfig": {
+                    "granularity": {
+                        "duration": "1 minute",
+                        "ttl": "2 days"
+                    }
+                }            
+            }, 
+            {
+                "name": "mem",
+                "statsConfig": {
+                    "granularity": {
+                        "duration": "1 minute",
+                        "ttl": "2 days"
+                    }
+                }            
+            }
+        ]
+    } 
+}
+```
+
+To see all gateway configuration options, consult the configuration interfaces [here](https://github.com/Leanty/tree-gateway/tree/master/src/config).
+
+All configurations for the gateway provided here in the tree-gateway.json file can be overriden by configurations stored into the database. So it acts like a default configuration for the gateway.
+
+You can configure the gateway using the database through the Admin Rest API, through the SDK or through the CLI program.
+
+# Usage
+
+To start using tree-gateway, run:
+
+```sh
+$ treeGateway
+```
+
+It will start the server in a cluster mode, using one process for each available CPU on the current machine.
+
+## Create an Admin User
+
+Before you create any API configuration or install any middleware into the gateway, you need to create one first user to you into the gateway.
+
+It can be done via a command line tool called 'userAdmin':
+
+Just run something like this in your terminal:
+
+```sh
+$ userAdmin add -u <userName> -p <password> -n <User Name> -e <User email>
+```
+
+The gateway will use the redis database to propagate the user configuration to other nodes of the cluster, so you just need to create this first user once.
+
+## Admin Rest API
+
+If you configured an admin service on your tree-gateway.json file (like shown in the previous section), you can now access the Admin API documentation:
+
+```
+http://localhost:8001/api-docs
+```
+
+You can also access the API swagger file through: 
+```
+http://localhost:8001/api-docs/json
+or
+http://localhost:8001/api-docs/yaml
+```
+
+You can use the swagger-ui interface (opened by http://localhost:8001/api-docs) to test the gateway Admin API.
+
+Note that you need to provide an access token to all methods on the Admin API. To obtain this token, you must authenticate with the user you created in the previous step, by calling the endpoint:
+
+```
+http://localhost:8001/users/authentication
+```
+
+Note that you can authenticate through the swagger-ui interface.
+
+
+## CLI Interface
+
+Another way to configure the gateway, install middleware and route APIs is through the ```treeGatewayConfi``` command line tool.
+
+Ex: Configuring gateway object via cli:
+
+```sh
+$ treeGatewayConfig gateway -u <userName> -p <password> -s http://localhost:8001/api-docs/json --update ./myGateway.config.json
+```
+
+To see all supported command, execute:
+
+```sh
+$ treeGatewayConfig -h
+```
+
+Nte that for all commands available, you always need to provide:
+  - -u (or --username): your admin username
+  - -p (or --password): your admin user's password
+  - -s (or --swagger): The address of the swagger file on the target tree-gateway instance you want to configure.
+
+Note that once you configure one instance of the tree-gateway cluster, it propagates all changes for the other nodes on the same cluster (through redis pub / sub).
+
+
+## Node SDK
+
+You can use the node js sdk to configure the gateway:
+
+```typescript
+const fs = require('fs-extra')
+const SDK = require('tree-gateway/admin/config/sdk')
+const swaggerUrl = "http://localhost:8001/api-docs/json";
+
+SDK.initialize(swaggerUrl, 'username', 'password'))
+  .then(sdk => {
+        const pathApi = './test/data/apis/';
+        
+        // read all apis config files from a test folder and install it 
+        fs.readdirAsync(pathApi)
+            .then((files) => { 
+                const promises = files.map(file => fs.readJsonAsync(pathApi+file));
+                return Promise.all(promises);
+            })
+            .then((apis: any[]) => {
+                const promises = apis.map(apiConfig => sdk.apis.addApi(apiConfig));
+                return Promise.all(promises);
+            })
+            .then((apis) => {
+                console.log('All APIs found on folder '+pathApi+' installed.');
+            })
+            .catch(reject);
+  })
+  .catch(error => {
+      console.error('Error initializing Tree Gateway SDK': error.message);
+  });
+```
+
+The Node SDK also include typescript definitions (*.d.ts files) for Typescript users.
+
+# Contribute
 
 We are accepting Pull Requests!
+If you want to contribute, feel free to clone the repository and send us a PR. 
