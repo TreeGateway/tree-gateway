@@ -12,6 +12,10 @@ This is a full featured and free API Gateway in node JS
   - [Why do I need an API Gateway?](#why-do-i-need-an-api-gateway)
   - [Why Tree Gateway?](#why-tree-gateway)
   - [Installation](#installation)
+  - [Configuration](#configuration)
+    - [Database](#database)
+    - [Environments](#environments)
+    - [Gateway](#gateway)
 
 ## Why do I need an API Gateway?
 
@@ -70,5 +74,131 @@ And you can link the tree-gateway container to the redis, running the gateway co
 ```sh
 $ docker run --name tree-gateway -p 8000:8000 --link redis:redis -d tree-gateway
 ```
+
+## Configuration
+
+By default, Tree gateway reads a file called tree-gateway.json when it is started. That file contains: 
+
+  - database: Configurations for gateway database (REDIS).;
+  - middlewarePath (optional): Folder where the gateway will store the installed middleware functions.
+  - rootPath(optional): The work directory for the gateway. The base folder for logs records and other things;
+  - gateway: A JSON object contaning the gateway configurations. These configurations are read from redis database, but the JSON object configured here is used as default for any option that is not stored into the database.
+
+  You can also specify the config file to be used when starting the gateway:
+
+  ```sh
+  $ treeGateway -c ./myConfigFile.json
+  ```
+
+### Database
+
+The only required property is the database. You need to inform the gateway how to access redis. You can configure a standalone redis or a cluster of redis here. Some examples:
+
+```json
+{
+    "rootPath": ".",
+    "database": {
+        "standalone": {
+            "host": "localhost",
+            "port": 6379
+        }
+    }
+}
+```
+
+Or a cluster:
+
+```json
+{
+    "database": {
+        "cluster": [
+          {
+            "host": "localhost",
+            "port": 6379
+          }
+        ]
+    }
+}
+```
+
+In a cluster configuration, you can inform any number of start nodes. The gateway will find these start nodes to discover the rest of the cluster nodes.
+
+
+You can also use redis sentinels:
+
+```json
+{
+    "database": {
+        "sentinel": {
+            "name": "redis1",
+            "nodes": [
+              {
+                "host": "localhost",
+                "port": 6379
+              }
+            ]
+        }
+    }
+}
+```
+
+For more about redis clusters, read [cluster-tutorial](https://redis.io/topics/cluster-tutorial)
+
+You can also inform aditional options for redis connection or use environment variables to configure the databse, like:
+
+```json
+{
+    "rootPath": ".",
+    "database": {
+        "standalone": {
+            "host": "{REDIS_PORT_6379_TCP_ADDR}",
+            "port": "{REDIS_PORT_6379_TCP_PORT}"
+        }, 
+        "options": {
+            "db": 1
+        }
+    }
+}
+```
+
+### Environments
+
+If you want to use different configurations for your environments, you can create additional configuration files with the sufix naming an environment, like:
+
+ - tree-gateway.json (the default configurations to be applied to all environments).
+ - tree-gateway-test.json (overrides the default configuration with anything declared here if NODE_ENV = 'test').
+
+The name of the environment config file, must match the name of the mais configuration file including the sufix.
+
+For example, tree-gateway.json
+
+```json
+{
+    "rootPath": ".",
+    "database": {
+        "standalone": {
+            "host": "localhost",
+            "port": 6379
+        }
+    }
+}
+```
+
+And a tree-gateway-test.json:
+```json
+{
+    "database": {
+        "options": {
+            "db": 1
+        }
+    }
+}
+```
+
+The above setup will connect to database on host "localhost" and port "6379" for any environment, but will connect to database "1" if the NODE_ENV=test variable is set.
+
+### Gateway
+
+// TODO
 
 We are accepting Pull Requests!
