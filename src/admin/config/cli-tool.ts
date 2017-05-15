@@ -28,9 +28,70 @@ export class Cli {
                 return this.processApis();
             case 'gateway':
                 return this.processGateway();
+            case 'middleware':
+                return this.processMiddleware();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
+    }
+
+    private processMiddleware(): Promise<void> {
+        switch (this.args.middlewareCommand) {
+            case 'filter':
+                return this.processMiddlewareFilter();
+            default:
+                return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
+        }
+    }
+
+    private processMiddlewareFilter(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.filters(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeFilter(this.args.remove)
+                            .then(() => {
+                                console.info(`Filter removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateFilter(name, fileName)
+                            .then(() => {
+                                console.info(`Filter updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addFilter(name, fileName)
+                            .then(() => {
+                                console.info(`Filter added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getFilter(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
     }
 
     private processApis(): Promise<void> {

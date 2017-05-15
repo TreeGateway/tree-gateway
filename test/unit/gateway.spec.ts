@@ -11,7 +11,7 @@ import {Configuration} from '../../src/configuration';
 import {Gateway} from '../../src/gateway';
 import {Database} from '../../src/database';
 import {UserService} from '../../src/service/users';
-import {ApiConfig, validateApiConfig} from '../../src/config/api';
+import {SDK} from '../../src/admin/config/sdk';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -21,49 +21,23 @@ let config: Configuration;
 let database: Database;
 let gateway: Gateway;
 let gatewayRequest: any;
-let adminRequest: any;
-let configToken: string;
+let sdk: SDK = null;
 
 const configUser = {
     email: 'test@mail.com',
     login: 'config',
     name: 'Config user',
     password: '123test',
-    roles: ['tree-gateway-config']
+    roles: ['tree-gateway-admin', 'tree-gateway-config']
 };
 
 const createUser = () => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<{login: string, password: string}>((resolve, reject) => {
         const userService = Container.get(UserService);
         userService.create(configUser)
-        .then(resolve)
+        .then(() => resolve(configUser))
         .catch(reject);
     });
-};
-
-const authenticate = () => {
-    return new Promise<void>((resolve, reject) => {
-        const form = {
-            'login': 'config',
-            'password': '123test'
-        };
-        adminRequest.post('/users/authentication',{
-            form: form
-        }, (error: any, response: any, body: any) => {
-            if (error) {
-                return reject(error);
-            }
-            configToken = body;
-            resolve();
-        });
-    });
-};
-
-const getIdFromResponse = (response: any) => {
-    const location = response.headers['location'];
-    expect(location).to.exist;
-    const parts = location ? location.split('/') : [];
-    return parts.length > 0 ? parts[parts.length-1] : null;
 };
 
 describe('Gateway Tests', () => {
@@ -73,11 +47,11 @@ describe('Gateway Tests', () => {
             return startGateway();
         } else {
             return new Promise<void>((resolve, reject) => {
-                config.on('load', () => {
-                    startGateway()
-                        .then(resolve)
-                        .catch(reject);
-                });
+                    config.on('load', () => {
+                        startGateway()
+                            .then(resolve)
+                            .catch(reject);
+                    });
             });
         }
     });
@@ -315,31 +289,24 @@ describe('Gateway Tests', () => {
 
     function startGateway() {
         return new Promise<void>((resolve, reject) => {
+            const swaggerUrl = `http://localhost:${config.gateway.admin.protocol.http.listenPort}/${config.gateway.admin.apiDocs}/json`;
             database = Container.get(Database);
             gateway = Container.get(Gateway);
             gateway.start()
-            .then(() => {
-                return gateway.startAdmin();
-            })
+            .then(() => gateway.startAdmin())
             .then(() => {
                 gateway.server.set('env', 'test');
                 gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
-                adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 
                 return database.redisClient.flushdb();
             })
-            .then(() => {
-                return createUser();
-            })
-            .then(() => {
-                return authenticate();
-            })
-            .then(() => {
+            .then(() => createUser())
+            .then((user) => SDK.initialize(swaggerUrl, 'config', '123test'))
+            .then((s) => {
+                sdk = s;
                 return installMiddlewares();
             })
-            .then(() => {
-                return installApis();
-            })
+            .then(() => installApis())
             .then(resolve)
             .catch(reject);
         });
@@ -355,8 +322,7 @@ describe('Gateway Tests', () => {
                     return Promise.all(promises);
                 })
                 .then((apis: any[]) => {
-                    const promises = apis.map(apiConfig => installApi(apiConfig));
-
+                    const promises = apis.map(apiConfig => sdk.apis.addApi(apiConfig));
                     return Promise.all(promises);
                 })
                 .then(() => {
@@ -366,81 +332,19 @@ describe('Gateway Tests', () => {
         });
     }
 
-    function installApi(apiConfig: ApiConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            validateApiConfig(apiConfig).
-            then(api => {
-                adminRequest.post('/apis', {
-                    body: apiConfig,
-                    headers: { 'authorization': `JWT ${configToken}` },
-                    json: true
-                }, (error: any, response: any, body: any) => {
-                    expect(error).to.not.exist;
-                    expect(response.statusCode).to.equal(201);
-                    apiConfig.id = getIdFromResponse(response);
-                    return resolve();
-                });
-            })
-            .catch(err => {
-                console.log(`Invalild api config: ${JSON.stringify(apiConfig)}`);
-                console.log(err);
-                reject(err);
-            });
-        });
-    }
-
-    function installMiddleware(fileName: string, servicePath: string, dir: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const pathMiddleware = './test/data/middleware/';
-            const filePath = path.join(pathMiddleware, dir, fileName+'.js');
-
-            const req = adminRequest.post('/middleware'+servicePath, {
-                headers: { 'authorization': `JWT ${configToken}` }
-            }, (error: any, response: any, body: any) => {
-                if (error) {
-                    return reject(error);
-                }
-                if (response.statusCode === 201) {
-                    return resolve();
-                }
-                return reject(`Status code: ${response.statusCode}`);
-            });
-            const form: FormData = req.form();
-            form.append('name', fileName);
-            form.append('file', <any>fs.createReadStream(filePath), fileName+'.js');
-        });
-    }
-
     function installMiddlewares(): Promise<void> {
          return new Promise<void>((resolve, reject) => {
-             installMiddleware('myJwtStrategy', '/authentication/strategies/', '/authentication/strategy')
-             .then(() => {
-                 return installMiddleware('verifyBasicUser', '/authentication/verify/', '/authentication/verify');
-             })
-             .then(() => {
-                 return installMiddleware('verifyJwtUser', '/authentication/verify/', '/authentication/verify');
-             })
-             .then(() => {
-                 return installMiddleware('myCustomFilter', '/filters', '/filter');
-             })
-             .then(() => {
-                 return installMiddleware('mySecondFilter', '/filters', '/filter');
-             })
-             .then(() => {
-                 return installMiddleware('myRequestInterceptor', '/interceptors/request', '/interceptor/request');
-             })
-             .then(() => {
-                 return installMiddleware('mySecondRequestInterceptor', '/interceptors/request', '/interceptor/request');
-             })
-             .then(() => {
-                 return installMiddleware('myResponseInterceptor', '/interceptors/response', '/interceptor/response');
-             })
-             .then(() => {
-                 return installMiddleware('SecondInterceptor', '/interceptors/response', '/interceptor/response');
-             })
-             .then(() => {
-                 return installMiddleware('myOpenHandler', '/circuitbreaker', '/circuitbreaker');
-             })
+             const base = path.join(process.cwd(), './test/data/middleware/');
+             sdk.middleware.addAuthStrategy('myJwtStrategy', path.join(base, '/authentication/strategy', 'myJwtStrategy.js'))
+             .then(() => sdk.middleware.addAuthVerify('verifyBasicUser', path.join(base, '/authentication/verify', 'verifyBasicUser.js')))
+             .then(() => sdk.middleware.addAuthVerify('verifyJwtUser', path.join(base, '/authentication/verify', 'verifyJwtUser.js')))
+             .then(() => sdk.middleware.addFilter('myCustomFilter', path.join(base, '/filter', 'myCustomFilter.js')))
+             .then(() => sdk.middleware.addFilter('mySecondFilter', path.join(base, '/filter', 'mySecondFilter.js')))
+             .then(() => sdk.middleware.addRequestInterceptor('myRequestInterceptor', path.join(base, '/interceptor/request', 'myRequestInterceptor.js')))
+             .then(() => sdk.middleware.addRequestInterceptor('mySecondRequestInterceptor', path.join(base, '/interceptor/request', 'mySecondRequestInterceptor.js')))
+             .then(() => sdk.middleware.addResponseInterceptor('myResponseInterceptor', path.join(base, '/interceptor/response', 'myResponseInterceptor.js')))
+             .then(() => sdk.middleware.addResponseInterceptor('SecondInterceptor', path.join(base, '/interceptor/response', 'SecondInterceptor.js')))
+             .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
              .then(() => {
                  setTimeout(resolve, 1500);
              })

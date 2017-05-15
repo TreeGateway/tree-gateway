@@ -5,7 +5,7 @@ import { AutoWired, Inject, Provides } from 'typescript-ioc';
 import { Database } from '../database';
 
 export abstract class MiddlewareService {
-    abstract list(middleware: string): Promise<Array<string>>;
+    abstract list(middleware: string, filter?: string): Promise<Array<string>>;
     abstract add(middleware: string, name: string, content: Buffer): Promise<string>;
     abstract remove(middleware: string, name: string): Promise<void>;
     abstract save(middleware: string, name: string, content: Buffer): Promise<void>;
@@ -22,10 +22,19 @@ class RedisMiddlewareService implements MiddlewareService {
     @Inject
     private database: Database;
 
-    list(middleware: string): Promise<Array<string>> {
+    list(middleware: string, filter?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
             this.database.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`)
-                .then(resolve)
+                .then((result: string[]) => {
+                    result = result.filter((middlwareName: string) => {
+                        if (filter && !middlwareName.includes(filter)) {
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    resolve(result);
+                })
                 .catch(reject);
         });
     }

@@ -1,43 +1,36 @@
 'use strict';
 
-import { ApiConfig } from '../../config/api';
-import { GatewayConfig } from '../../config/gateway';
+import { Apis, ApisClient } from './sdk-apis';
+import { Gateway, GatewayClient } from './sdk-gateway';
+import { Middleware, MiddlewareClient } from './sdk-middleware';
 
 const swagger = require('swagger-client');
-
-export interface Apis {
-    list(filters: any): Promise<Array<ApiConfig>>;
-    addApi(api: ApiConfig): Promise<string>;
-    updateApi( id: string, api: ApiConfig): Promise<void>;
-    deleteApi( id: string): Promise<void>;
-    getApi( id: string): Promise<ApiConfig>;
-}
-
-export interface Gateway {
-    updateConfig(config: GatewayConfig): Promise<void>;
-    deleteConfig(): Promise<void>;
-    getConfig(): Promise<GatewayConfig>;
-}
 
 export class SDK {
     private apisClient: Apis;
     private gatewayClient: Gateway;
+    private middlewareClient: Middleware;
 
-    private constructor(swaggerClient: any) {
+    private constructor(swaggerClient: any, authToken: string) {
         this.apisClient = new ApisClient(swaggerClient);
         this.gatewayClient = new GatewayClient(swaggerClient);
+        this.middlewareClient = new MiddlewareClient(swaggerClient, authToken);
     }
 
     static initialize(swaggerUrl: string, login: string, password: string): Promise<SDK> {
         return new Promise<SDK>((resolve, reject) => {
+            let authToken: string = null;
             SDK.authenticate(swaggerUrl, login, password)
-                .then(token => swagger(swaggerUrl, {
-                    authorizations: {
-                        Bearer: `JWT ${token}`
-                    }
-                }))
+                .then(token => {
+                    authToken = token;
+                    return swagger(swaggerUrl, {
+                        authorizations: {
+                            Bearer: `JWT ${token}`
+                        }
+                    });
+                })
                 .then((swaggerClient: any) => {
-                    resolve(new SDK(swaggerClient));
+                    resolve(new SDK(swaggerClient, authToken));
                 })
                 .catch(reject);
         });
@@ -66,125 +59,8 @@ export class SDK {
     get gateway(): Gateway {
         return this.gatewayClient;
     }
-}
 
-class ApisClient implements Apis {
-    private swaggerClient: any;
-
-    constructor(swaggerClient: any) {
-        this.swaggerClient = swaggerClient;
-    }
-
-    list(filters: any): Promise<Array<ApiConfig>> {
-        return new Promise<Array<ApiConfig>>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestList(filters)
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-
-    addApi(api: ApiConfig): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestAddApi({api})
-                .then((response: any) => {
-                    if (response.status === 201) {
-                        return resolve(response.headers['Location'].substring(5));
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-
-    updateApi( id: string, api: ApiConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            api.id = id;
-            this.swaggerClient.apis.APIs.APIRestUpdateApi({id, api})
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-
-    deleteApi( id: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestDeleteApi({id})
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-
-    getApi( id: string): Promise<ApiConfig> {
-        return new Promise<ApiConfig>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestGetApi({id})
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-}
-
-class GatewayClient implements Gateway {
-    private swaggerClient: any;
-
-    constructor(swaggerClient: any) {
-        this.swaggerClient = swaggerClient;
-    }
-
-    updateConfig( config: GatewayConfig ): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Gateway.GatewayRestUpdateConfig({config})
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-
-    deleteConfig(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Gateway.GatewayRestDeleteConfig({})
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
-    }
-
-    getConfig(): Promise<GatewayConfig> {
-        return new Promise<GatewayConfig>((resolve, reject) => {
-            this.swaggerClient.apis.Gateway.GatewayRestGetConfig({})
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    get middleware(): Middleware {
+        return this.middlewareClient;
     }
 }

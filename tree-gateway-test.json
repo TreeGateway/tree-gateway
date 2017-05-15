@@ -20,12 +20,7 @@
             "protocol": {
                 "http": {
                     "listenPort": 8011
-                },
-                "https": {
-                    "listenPort": 8013,
-                    "privateKey": "./server.key",
-                    "certificate": "./server.crt"                        
-                }          
+                }
             }
         },
         "logger": {

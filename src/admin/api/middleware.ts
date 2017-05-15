@@ -1,6 +1,6 @@
 'use strict';
 
-import { Path, GET, POST, DELETE, PUT, PathParam, FileParam, FormParam, Errors, Return } from 'typescript-rest';
+import { Path, GET, POST, DELETE, PUT, PathParam, QueryParam, FileParam, FormParam, Errors, Return } from 'typescript-rest';
 import * as path from 'path';
 import { MiddlewareService } from '../../service/middleware';
 import { Inject } from 'typescript-ioc';
@@ -14,62 +14,62 @@ export class MiddlewareRest {
 
     @GET
     @Path('filters')
-    filters(): Promise<Array<string>> {
-        return this.service.list('filter');
+    filters(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('filter', name);
     }
 
     @GET
     @Path('interceptors/request')
-    requestInterceptors(): Promise<Array<string>> {
-        return this.service.list('interceptor/request');
+    requestInterceptors(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('interceptor/request', name);
     }
 
     @GET
     @Path('interceptors/response')
-    responseInterceptors(): Promise<Array<string>> {
-        return this.service.list('interceptor/response');
+    responseInterceptors(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('interceptor/response', name);
     }
 
     @GET
     @Path('authentication/strategies')
-    authStrategies(): Promise<Array<string>> {
-        return this.service.list('authentication/strategy');
+    authStrategies(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('authentication/strategy', name);
     }
 
     @GET
     @Path('authentication/verify')
-    authVerify(): Promise<Array<string>> {
-        return this.service.list('authentication/verify');
+    authVerify(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('authentication/verify', name);
     }
 
     @GET
     @Path('throttling/keyGenerators')
-    throttlingKeyGenerator(): Promise<Array<string>> {
-        return this.service.list('throttling/keyGenerator');
+    throttlingKeyGenerator(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('throttling/keyGenerator', name);
     }
 
     @GET
     @Path('throttling/handlers')
-    throttlingHandler(): Promise<Array<string>> {
-        return this.service.list('throttling/handler');
+    throttlingHandler(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('throttling/handler', name);
     }
 
     @GET
     @Path('throttling/skip')
-    throttlingSkip(): Promise<Array<string>> {
-        return this.service.list('throttling/skip');
+    throttlingSkip(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('throttling/skip', name);
     }
 
     @GET
     @Path('circuitbreaker')
-    circuitBreakerOpen(): Promise<Array<string>> {
-        return this.service.list('circuitbreaker');
+    circuitBreakerOpen(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('circuitbreaker', name);
     }
 
     @GET
     @Path('cors')
-    corsOrigin(): Promise<Array<string>> {
-        return this.service.list('cors/origin');
+    corsOrigin(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('cors/origin', name);
     }
 
     @DELETE
@@ -80,19 +80,19 @@ export class MiddlewareRest {
 
     @DELETE
     @Path('interceptors/request/:name')
-    removeRequestInterceptors( @PathParam('name') name: string): Promise<void> {
+    removeRequestInterceptor( @PathParam('name') name: string): Promise<void> {
         return this.service.remove('interceptor/request', name);
     }
 
     @DELETE
     @Path('interceptors/response/:name')
-    removeResponseInterceptors( @PathParam('name') name: string): Promise<void> {
+    removeResponseInterceptor( @PathParam('name') name: string): Promise<void> {
         return this.service.remove('interceptor/response', name);
     }
 
     @DELETE
     @Path('authentication/strategies/:name')
-    removeAuthStrategies( @PathParam('name') name: string): Promise<void> {
+    removeAuthStrategy( @PathParam('name') name: string): Promise<void> {
         return this.service.remove('authentication/strategy', name);
     }
 
@@ -134,66 +134,67 @@ export class MiddlewareRest {
 
     @PUT
     @Path('filters/:name')
-    saveFilter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateFilter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('filter', name, file.buffer);
     }
 
     @PUT
     @Path('interceptors/request/:name')
-    saveRequestInterceptors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateRequestInterceptor( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('interceptor/request', name, file.buffer);
     }
 
     @PUT
     @Path('interceptors/response/:name')
-    saveResponseInterceptors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateResponseInterceptor( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('interceptor/response', name, file.buffer);
     }
 
     @PUT
     @Path('authentication/strategies/:name')
-    saveAuthStrategies( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateAuthStrategy( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('authentication/strategy', name, file.buffer);
     }
 
     @PUT
     @Path('authentication/verify/:name')
-    saveAuthVerify( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateAuthVerify( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('authentication/verify', name, file.buffer);
     }
 
     @PUT
     @Path('throttling/keyGenerators/:name')
-    saveThrottlingKeyGenerator( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateThrottlingKeyGenerator( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('throttling/keyGenerator', name, file.buffer);
     }
 
     @PUT
     @Path('throttling/handlers/:name')
-    saveThrottlingHandler( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateThrottlingHandler( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('throttling/handler', name, file.buffer);
     }
 
     @PUT
     @Path('throttling/skip/:name')
-    saveThrottlingSkip( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateThrottlingSkip( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('throttling/skip', name, file.buffer);
     }
 
     @PUT
     @Path('circuitbreaker/:name')
-    saveCircuitBreaker( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateCircuitBreaker( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('circuitbreaker', name, file.buffer);
     }
 
     @PUT
     @Path('cors/:name')
-    saveCors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+    updateCors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('cors/origin', name, file.buffer);
     }
+
     @GET
     @Path('filters/:name')
-    readFilter( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getFilter( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             // FIXME: 'read' should return a Buffer
             this.service.read('filter', name)
@@ -208,7 +209,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('interceptors/request/:name')
-    readRequestInterceptors( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getRequestInterceptor( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('interceptor/request', name)
                 .then(value => {
@@ -222,7 +223,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('interceptors/response/:name')
-    readResponseInterceptors( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getResponseInterceptor( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('interceptor/response', name)
                 .then(value => {
@@ -236,7 +237,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('authentication/strategies/:name')
-    readAuthStrategies( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getAuthStrategy( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('authentication/strategy', name)
                 .then(value => {
@@ -250,7 +251,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('authentication/verify/:name')
-    readAuthVerify( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getAuthVerify( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('authentication/verify', name)
                 .then(value => {
@@ -264,7 +265,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('throttling/keyGenerators/:name')
-    readThrottlingKeyGenerator( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getThrottlingKeyGenerator( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('throttling/keyGenerator', name)
                 .then(value => {
@@ -278,7 +279,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('throttling/handlers/:name')
-    readThrottlingHandler( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getThrottlingHandler( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('throttling/handler', name)
                 .then(value => {
@@ -292,7 +293,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('throttling/skip/:name')
-    readThrottlingSkip( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getThrottlingSkip( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('throttling/skip', name)
                 .then(value => {
@@ -306,7 +307,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('circuitbreaker/:name')
-    readCircuitBreakerMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getCircuitBreakerMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('circuitbreaker', name)
                 .then(value => {
@@ -320,7 +321,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('cors/:name')
-    readCorsMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+    getCorsMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('cors/origin', name)
                 .then(value => {
@@ -349,7 +350,7 @@ export class MiddlewareRest {
 
     @POST
     @Path('interceptors/request')
-    addRequestInterceptors( @FileParam('file') file: Express.Multer.File,
+    addRequestInterceptor( @FileParam('file') file: Express.Multer.File,
         @FormParam('name') name: string) {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
             this.service.add('interceptor/request', name, file.buffer)
@@ -364,7 +365,7 @@ export class MiddlewareRest {
 
     @POST
     @Path('interceptors/response')
-    addResponseInterceptors( @FileParam('file') file: Express.Multer.File,
+    addResponseInterceptor( @FileParam('file') file: Express.Multer.File,
         @FormParam('name') name: string) {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
             this.service.add('interceptor/response', name, file.buffer)

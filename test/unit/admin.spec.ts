@@ -104,7 +104,8 @@ describe('Admin API', () => {
         return database.redisClient.flushdb()
             .then(() => gateway.stopAdmin())
             .then(() => gateway.stop())
-            .then(() => fs.removeAsync(path.join(process.cwd(), 'src', 'spec', 'test-data', 'temp')));
+            .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'middleware')))
+            .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'logs')));
     });
 
     describe('/users', () => {

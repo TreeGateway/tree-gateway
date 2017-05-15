@@ -93,4 +93,51 @@ gatewayCommand.addArgument(
     }
 );
 
+const middlewareCommand = commands.addParser('middleware', {
+    addHelp: true,
+    help: 'Middleware configurations'
+});
+
+const middlewareCommands = middlewareCommand.addSubparsers({
+    dest: 'middlewareCommand',
+    title: 'Middleware Commands (For help, <command> -h/--help)'
+});
+
+const filterCommand = middlewareCommands.addParser('filter', {
+    addHelp: true,
+    help: 'Filter configurations'
+});
+
+filterCommand.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Filter listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+filterCommand.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the filter name to be removed',
+    }
+);
+
+filterCommand.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the filter file (JS format) to be updated. Ex: -u filter1 ./filters/filter1.js',
+        nargs: 2
+    }
+);
+
+filterCommand.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the filter file (JS format) to be added. Ex: -a filter1 ./filters/filter1.js',
+    }
+);
+
+filterCommand.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the filter to be retrieved',
+    }
+);
+
 export let configArgs = parser.parseArgs();
