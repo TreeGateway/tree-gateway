@@ -126,7 +126,7 @@ export class Cli {
                             })
                             .catch(reject);
                     } else if (this.args.remove) {
-                        sdk.apis.deleteApi(this.args.remove)
+                        sdk.apis.removeApi(this.args.remove)
                             .then(() => {
                                 console.info(`API removed`);
                             })
@@ -154,7 +154,7 @@ export class Cli {
                             })
                             .catch(reject);
                     } else if (this.args.remove) {
-                        sdk.gateway.deleteConfig()
+                        sdk.gateway.removeConfig()
                             .then(() => {
                                 console.info(`Gateway config removed`);
                             })

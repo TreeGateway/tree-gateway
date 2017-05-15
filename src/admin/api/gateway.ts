@@ -23,7 +23,7 @@ export class GatewayRest {
     }
 
     @DELETE
-    deleteConfig(): Promise<void> {
+    removeConfig(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.service.remove()
                 .then(resolve)

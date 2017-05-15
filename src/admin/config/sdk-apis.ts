@@ -6,7 +6,7 @@ export interface Apis {
     list(filters: any): Promise<Array<ApiConfig>>;
     addApi(api: ApiConfig): Promise<string>;
     updateApi( id: string, api: ApiConfig): Promise<void>;
-    deleteApi( id: string): Promise<void>;
+    removeApi( id: string): Promise<void>;
     getApi( id: string): Promise<ApiConfig>;
 }
 
@@ -57,9 +57,9 @@ export class ApisClient implements Apis {
         });
     }
 
-    deleteApi( id: string): Promise<void> {
+    removeApi( id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestDeleteApi({id})
+            this.swaggerClient.apis.APIs.APIRestRemoveApi({id})
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();

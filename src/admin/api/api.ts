@@ -51,7 +51,7 @@ export class APIRest {
 
     @DELETE
     @Path('/:id')
-    deleteApi( @PathParam('id') id: string): Promise<void> {
+    removeApi( @PathParam('id') id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.service.remove(id)
                 .then(() => resolve())

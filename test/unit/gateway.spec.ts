@@ -22,6 +22,7 @@ let database: Database;
 let gateway: Gateway;
 let gatewayRequest: any;
 let sdk: SDK = null;
+let loadedApis: string[];
 
 const configUser = {
     email: 'test@mail.com',
@@ -57,7 +58,9 @@ describe('Gateway Tests', () => {
     });
 
     after(function(){
-        return database.redisClient.flushdb()
+        return uninstallApis()
+            .then(() => uninstallMiddlewares())
+            .then(database.redisClient.flushdb())
             .then(() => gateway.stopAdmin())
             .then(() => gateway.stop())
             .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'middleware')))
@@ -325,9 +328,19 @@ describe('Gateway Tests', () => {
                     const promises = apis.map(apiConfig => sdk.apis.addApi(apiConfig));
                     return Promise.all(promises);
                 })
-                .then(() => {
+                .then((apis) => {
+                    loadedApis = apis;
                     setTimeout(resolve, 1000);
                 })
+                .catch(reject);
+        });
+    }
+
+    function uninstallApis(): Promise<void> {
+         return new Promise<void>((resolve, reject) => {
+                const promises = loadedApis.map(api => sdk.apis.removeApi(api));
+                Promise.all(promises)
+                .then(() => resolve())
                 .catch(reject);
         });
     }
@@ -345,6 +358,25 @@ describe('Gateway Tests', () => {
              .then(() => sdk.middleware.addResponseInterceptor('myResponseInterceptor', path.join(base, '/interceptor/response', 'myResponseInterceptor.js')))
              .then(() => sdk.middleware.addResponseInterceptor('SecondInterceptor', path.join(base, '/interceptor/response', 'SecondInterceptor.js')))
              .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
+             .then(() => {
+                 setTimeout(resolve, 1500);
+             })
+             .catch(reject);
+        });
+    }
+
+    function uninstallMiddlewares(): Promise<void> {
+         return new Promise<void>((resolve, reject) => {
+             sdk.middleware.removeAuthStrategy('myJwtStrategy')
+             .then(() => sdk.middleware.removeAuthVerify('verifyBasicUser'))
+             .then(() => sdk.middleware.removeAuthVerify('verifyJwtUser'))
+             .then(() => sdk.middleware.removeFilter('myCustomFilter'))
+             .then(() => sdk.middleware.removeFilter('mySecondFilter'))
+             .then(() => sdk.middleware.removeRequestInterceptor('myRequestInterceptor'))
+             .then(() => sdk.middleware.removeRequestInterceptor('mySecondRequestInterceptor'))
+             .then(() => sdk.middleware.removeResponseInterceptor('myResponseInterceptor'))
+             .then(() => sdk.middleware.removeResponseInterceptor('SecondInterceptor'))
+             .then(() => sdk.middleware.removeCircuitBreaker('myOpenHandler'))
              .then(() => {
                  setTimeout(resolve, 1500);
              })

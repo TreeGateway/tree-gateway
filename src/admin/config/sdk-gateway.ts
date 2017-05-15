@@ -4,7 +4,7 @@ import { GatewayConfig } from '../../config/gateway';
 
 export interface Gateway {
     updateConfig(config: GatewayConfig): Promise<void>;
-    deleteConfig(): Promise<void>;
+    removeConfig(): Promise<void>;
     getConfig(): Promise<GatewayConfig>;
 }
 
@@ -28,9 +28,9 @@ export class GatewayClient implements Gateway {
         });
     }
 
-    deleteConfig(): Promise<void> {
+    removeConfig(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Gateway.GatewayRestDeleteConfig({})
+            this.swaggerClient.apis.Gateway.GatewayRestRemoveConfig({})
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
