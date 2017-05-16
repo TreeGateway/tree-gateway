@@ -24,7 +24,8 @@ This is a full featured and free API Gateway in node JS
 
 ## Why do I need an API Gateway?
 
-// TODO
+An API gateway provides a single, unified API entry point across one or more internal APIs. It is an important element in any microservice architecture.
+
 
 ## Why Tree Gateway?
 
@@ -147,7 +148,7 @@ You can also use redis sentinels:
 }
 ```
 
-For more about redis clusters, read [cluster-tutorial](https://redis.io/topics/cluster-tutorial)
+For more about redis clusters, read [cluster](https://redis.io/topics/cluster-tutorial) and [sentinel](https://redis.io/topics/sentinel)
 
 You can also inform aditional options for redis connection or use environment variables to configure the databse, like:
 

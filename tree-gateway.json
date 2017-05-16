@@ -45,7 +45,7 @@
             }
         },
         "logger": {
-            "level": "debug",
+            "level": "info",
             "console": {
                 "colorize": true
             },
