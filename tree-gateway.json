@@ -35,7 +35,10 @@
             "userService": {
                 "jwtSecret": "secret"
             },
-            "apiDocs": "api-docs",
+            "apiDocs": {
+                "path": "api-docs",
+                "host": "localhost:8000"
+            },
             "cors" : {
                 "origin": {
                     "allow": [{

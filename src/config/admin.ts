@@ -29,18 +29,32 @@ export interface AdminConfig {
      */
     disableStats?: boolean;
     /**
-     * If provided, the service will publish all api documentation under this path.
+     * If provided, the service will publish all api documentation under thie informed path.
      */
-    apiDocs?: string;
+    apiDocs?: ApiDocs;
     /**
      * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
      */
     cors?: CorsConfig;
 }
 
+export interface ApiDocs {
+    /**
+     * The path where deploy the docs.
+     */
+    path: string;
+    /**
+     * The hostname where swagger will point the operations
+     */
+    host?: string;
+}
+
 export const adminConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
-    apiDocs: Joi.string(),
+    apiDocs: Joi.object().keys({
+        host: Joi.string(),
+        path: Joi.string().required()
+    }),
     cors: corsConfigSchema,
     disableStats: Joi.boolean(),
     protocol: protocolConfigSchema.required(),

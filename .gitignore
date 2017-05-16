@@ -15,3 +15,4 @@ test/data/root/logs
 /middleware
 /.vscode
 coverage
+logs

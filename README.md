@@ -255,7 +255,10 @@ Example configuration:
             "userService": {
                 "jwtSecret": "secret"
             },
-            "apiDocs": "api-docs",
+            "apiDocs": {
+                "path": "api-docs",
+                "host": "localhost"
+            },
             "cors" : {
                 "origin": {
                     "allow": [{

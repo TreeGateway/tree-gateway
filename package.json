@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
   "keywords": [
@@ -23,8 +23,6 @@
     "clean": "rimraf dist",
     "lint": "tslint --exclude=./node_modules/** ./src/**/*.ts ./test/**/*.ts",
     "format": "tsfmt -r",
-    "prepublish": "npm run build && npm run doc",
-    "deploy": "npm version patch && npm publish",
     "postversion": "git push origin master",
     "pretest": "cross-env NODE_ENV=test npm build && npm run lint",
     "swagger": "swaggerGen -c ./swagger.config.json",

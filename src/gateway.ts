@@ -429,14 +429,19 @@ export class Gateway {
             const isTest = process.env.NODE_ENV === 'test';
 
             const schemes = (this.config.gateway.admin.protocol.https ? ['https'] : ['http']);
-            const host = (this.config.gateway.admin.protocol.https ?
-                `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
-                `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
+            let host;
+            if (this.config.gateway.admin.apiDocs.host) {
+                host = `${this.config.gateway.admin.apiDocs.host}:${(this.config.gateway.admin.protocol.https?this.config.gateway.admin.protocol.https.listenPort:this.config.gateway.admin.protocol.http.listenPort)}`;
+            } else {
+                host = (this.config.gateway.admin.protocol.https ?
+                    `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
+                    `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
+            }
             const swaggerFile = isTest ?
                             './dist/admin/api/swagger.json' :
                             path.join(__dirname, './admin/api/swagger.json');
 
-            Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs, host, schemes);
+            Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs.path, host, schemes);
         }
     }
 
