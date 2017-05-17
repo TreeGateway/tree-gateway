@@ -37,7 +37,7 @@
             },
             "apiDocs": {
                 "path": "api-docs",
-                "host": "localhost:8000"
+                "host": "localhost"
             },
             "cors" : {
                 "origin": {

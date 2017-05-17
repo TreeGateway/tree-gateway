@@ -292,7 +292,7 @@ describe('Gateway Tests', () => {
 
     function startGateway() {
         return new Promise<void>((resolve, reject) => {
-            const swaggerUrl = `http://localhost:${config.gateway.admin.protocol.http.listenPort}/${config.gateway.admin.apiDocs}/json`;
+            const swaggerUrl = `http://localhost:${config.gateway.admin.protocol.http.listenPort}/${config.gateway.admin.apiDocs.path}/json`;
             database = Container.get(Database);
             gateway = Container.get(Gateway);
             gateway.start()
