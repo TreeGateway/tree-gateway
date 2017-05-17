@@ -8,4 +8,4 @@ services:
   - docker
 before_install:
   - docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
-script: nyc npm test && nyc report --reporter=text-lcov | coveralls
+script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
