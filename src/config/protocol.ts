@@ -9,14 +9,14 @@ export interface ProtocolConfig {
 
 export interface HttpConfig {
     /**
-     * The gateway port
+     * The listen port
      */
     listenPort: number;
 }
 
 export interface HttpsConfig {
     /**
-     * The gateway port
+     * The listn port
      */
     listenPort: number;
     /**

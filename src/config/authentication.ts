@@ -2,7 +2,6 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
-import { ValidationError } from '../error/errors';
 
 export interface AuthenticationConfig {
     /**
@@ -143,15 +142,3 @@ export let authenticationValidatorSchema = Joi.object().keys({
     strategy: authenticationStrategyValidatorSchema.required()
 
 });
-
-export function validateAuthenticationConfig(authentication: AuthenticationConfig) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(authentication, authenticationValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}

@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { ValidationError } from '../error/errors';
 
 /**
  * Configuration for the API proxy engine.
@@ -236,15 +235,3 @@ export const proxyValidatorSchema = Joi.object().keys({
     target: targetSchema.required(),
     timeout: Joi.number()
 });
-
-export function validateProxyConfig(proxy: Proxy) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(proxy, proxyValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}

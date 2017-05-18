@@ -20,10 +20,6 @@ export interface AccessLoggerConfig {
     colorize?: boolean;
     console?: LogConsoleConfig;
     file?: LogFileConfig;
-    /**
-     * If true, disabled the statistical data recording.
-     */
-    disableStats?: boolean;
 }
 
 export interface LoggerConfig {
@@ -31,7 +27,13 @@ export interface LoggerConfig {
      * Level of messages that this logger should log.
      */
     level?: string;
+    /**
+     * Configure a Console reporter for the log system.
+     */
     console?: LogConsoleConfig;
+    /**
+     * Configure a File reporter for the log system.
+     */
     file?: LogFileConfig;
 }
 
@@ -200,7 +202,6 @@ export let loggerConfigSchema = Joi.object().keys({
 export let accessLoggerConfigSchema = Joi.object().keys({
     colorize: Joi.boolean(),
     console: logConsoleConfigSchema,
-    disableStats: Joi.boolean(),
     expressFormat: Joi.boolean(),
     file: logFileConfigSchema,
     msg: Joi.string()

@@ -2,7 +2,6 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
-import { ValidationError } from '../error/errors';
 
 export interface ThrottlingConfig {
     /**
@@ -124,15 +123,3 @@ export let throttlingConfigValidatorSchema = Joi.object().keys({
     statusCode: Joi.number(),
     windowMs: Joi.number()
 });
-
-export function validateThrottlingConfig(throttling: ThrottlingConfig) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(throttling, throttlingConfigValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}

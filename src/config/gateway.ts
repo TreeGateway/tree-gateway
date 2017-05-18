@@ -8,7 +8,7 @@ import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfi
 import { ValidationError } from '../error/errors';
 
 /**
- * The API config descriptor.
+ * The Server config descriptor.
  */
 export interface ServerConfig {
     /**
@@ -16,7 +16,7 @@ export interface ServerConfig {
      */
     database: RedisConfig;
     /**
-     * Folder where the gateway will search for its middleware functions.
+     * Folder where the gateway will install its middleware functions.
      */
     middlewarePath?: string;
     /**
@@ -30,7 +30,7 @@ export interface ServerConfig {
 }
 
 /**
- * The API config descriptor.
+ * The Gateway config descriptor.
  */
 export interface GatewayConfig {
     /**
@@ -76,7 +76,7 @@ export interface MonitorConfig {
 
 export interface RedisConfig {
     /**
-     * Standalone redis configuration.
+     * Configure the connection to a standalone Redis.
      */
     standalone?: RedisNodeConfig;
     /**
@@ -88,22 +88,22 @@ export interface RedisConfig {
      */
     cluster?: RedisNodeConfig[];
     /**
-     * Redis connection options.
+     * Configure additional options to be passed to redis driver.
      */
     options?: RedisOptionsConfig;
 }
 
 export interface RedisNodeConfig {
     /**
-     * Node host.
+     * The hostname of the redis node.
      */
     host: string;
     /**
-     * Node port.
+     * The port of the redis node.
      */
     port?: string | number;
     /**
-     * Node password.
+     * The password to connect on the redis node.
      */
     password?: string;
 }

@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { ValidationError } from '../error/errors';
 
 /**
  * Configure support for Cors requests.
@@ -101,15 +100,3 @@ export let corsConfigSchema = Joi.object().keys({
     origin: corsOriginSchema.required(),
     preflightContinue: Joi.boolean()
 });
-
-export function validateApiCorsConfig(cors: ApiCorsConfig) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(cors, apiCorsConfigSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}

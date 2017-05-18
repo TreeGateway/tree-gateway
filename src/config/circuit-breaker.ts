@@ -2,7 +2,6 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
-import { ValidationError } from '../error/errors';
 
 export interface CircuitBreakerConfig {
     /**
@@ -119,15 +118,3 @@ export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     timeoutMessage: Joi.string(),
     timeoutStatusCode: Joi.number()
 });
-
-export function validateCircuitBreakerConfig(circuitBreaker: CircuitBreakerConfig) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(circuitBreaker, circuitBreakerConfigValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}

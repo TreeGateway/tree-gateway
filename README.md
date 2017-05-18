@@ -63,19 +63,13 @@ Via NPM:
 $ npm install tree-gateway -g
 ```
 
-Via Docker:
-
-```sh
-$ docker run --name tree-gateway -p 8000:8000 -d tree-gateway
-```
-
 Tree Gateway needs a [redis](https://redis.io/) database to store its configuration and temporary data. Install it first, or use docker to quickly put a redis instance running:
 
 ```sh
 $ docker run -p 6379:6379 -d --name redis redis:3.0.7-alpine
 ```
 
-And you can link the tree-gateway container to the redis, running the gateway container as:
+And you can also run tree-gateway via docker as:
 
 ```sh
 $ docker run --name tree-gateway -p 8000:8000 --link redis:redis -d tree-gateway

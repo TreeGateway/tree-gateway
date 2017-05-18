@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { ValidationError } from '../error/errors';
 
 /**
  * Configurations for groups of endpoints.
@@ -38,15 +37,3 @@ export const groupValidatorSchema = Joi.object().keys({
     id: Joi.string().alphanum().min(3).max(30).required(),
     member: Joi.array().items(memberValidatorSchema).required()
 });
-
-export function validateGroup(group: Group) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(group, groupValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}

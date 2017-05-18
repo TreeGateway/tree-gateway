@@ -2,7 +2,6 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
-import { ValidationError } from '../error/errors';
 
 export interface CacheConfig {
     /**
@@ -64,15 +63,3 @@ export let cacheConfigValidatorSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string()),
     server: serverCacheValidatorSchema
 });
-
-export function validateCacheConfig(cache: CacheConfig) {
-    return new Promise((resolve, reject) => {
-        Joi.validate(cache, cacheConfigValidatorSchema, (err, value) => {
-            if (err) {
-                reject(new ValidationError(err));
-            } else {
-                resolve(value);
-            }
-        });
-    });
-}
