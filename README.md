@@ -6,7 +6,7 @@
 # tree-gateway
 This is a full featured and free API Gateway in node JS
 
-** Table of Contents** 
+**Table of Contents** 
 
 - [Tree Gateway](#)
   - [Why do I need an API Gateway?](#why-do-i-need-an-api-gateway)
