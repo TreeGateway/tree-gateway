@@ -13,11 +13,6 @@ export interface AccessLoggerConfig {
      * Enabling this will override any msg if true. Will only output colors when colorize set to true
      */
     expressFormat?: boolean;
-    /**
-     * Color the text and status code, using the Express/morgan color palette
-     * (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
-     */
-    colorize?: boolean;
     console?: LogConsoleConfig;
     file?: LogFileConfig;
 }
@@ -38,6 +33,10 @@ export interface LoggerConfig {
 }
 
 export interface LogConsoleConfig {
+    /**
+     * Level of messages that this logger should log.
+     */
+    level?: string;
     /**
      * flag indicating if we should prepend output with timestamps (default true).
      */
@@ -87,6 +86,10 @@ export interface LogConsoleConfig {
 }
 
 export interface LogFileConfig {
+    /**
+     * Level of messages that this logger should log.
+     */
+    level?: string;
     /**
      * The directory name where the logfiles will be saved.
      */
@@ -167,6 +170,7 @@ const logConsoleConfigSchema = Joi.object().keys({
     depth: Joi.number().positive(),
     humanReadableUnhandledException: Joi.boolean(),
     json: Joi.boolean(),
+    level: Joi.string().valid('error', 'info', 'debug'),
     prettyPrint: Joi.boolean(),
     showLevel: Joi.boolean(),
     silent: Joi.boolean(),
@@ -180,6 +184,7 @@ const logFileConfigSchema = Joi.object().keys({
     depth: Joi.number().positive(),
     eol: Joi.string(),
     json: Joi.boolean(),
+    level: Joi.string().valid('error', 'info', 'debug'),
     logstash: Joi.boolean(),
     maxFiles: Joi.number().positive(),
     maxRetries: Joi.number().positive(),
@@ -200,7 +205,6 @@ export let loggerConfigSchema = Joi.object().keys({
 });
 
 export let accessLoggerConfigSchema = Joi.object().keys({
-    colorize: Joi.boolean(),
     console: logConsoleConfigSchema,
     expressFormat: Joi.boolean(),
     file: logFileConfigSchema,

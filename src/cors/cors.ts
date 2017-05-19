@@ -2,7 +2,7 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
-import { ApiCorsConfig } from '../config/cors';
+import { ApiCorsConfig, CorsConfig } from '../config/cors';
 import * as _ from 'lodash';
 import * as pathUtil from 'path';
 import * as Groups from '../group';
@@ -52,7 +52,7 @@ export class ApiCors {
         this.setupMiddlewares(apiRouter, corsInfos);
     }
 
-    configureCorsOptions(cors: ApiCorsConfig): corsMiddleware.CorsOptions {
+    configureCorsOptions(cors: CorsConfig): corsMiddleware.CorsOptions {
         const corsOptions: corsMiddleware.CorsOptions = _.omit(cors, 'id', 'origin', 'maxAge', 'group');
         if (cors.maxAge) {
             corsOptions.maxAge = humanInterval(cors.maxAge);

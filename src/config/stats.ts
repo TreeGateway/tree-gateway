@@ -22,10 +22,6 @@ export interface GranularityConfig {
      * Time to live for each time serie
      */
     ttl: string;
-    /**
-     * A prefix for the timeseries keys on database ()
-     */
-    prefix?: string;
 }
 
 const granularityValidatorSchema = Joi.object().keys({

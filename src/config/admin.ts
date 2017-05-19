@@ -16,11 +16,11 @@ export interface AdminConfig {
     protocol: ProtocolConfig;
 
     /**
-     * Configurations for gateway users service
+     * Configurations for admin users service
      */
     userService: UsersConfig;
     /**
-     * Configurations for gateway access logger.
+     * Configurations for gateway admin server access logger.
      */
     accessLogger?: AccessLoggerConfig;
     /**
@@ -28,11 +28,11 @@ export interface AdminConfig {
      */
     disableStats?: boolean;
     /**
-     * If provided, the service will publish all api documentation under thie informed path.
+     * If provided, the service will publish all api documentation under the informed path.
      */
     apiDocs?: ApiDocs;
     /**
-     * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
+     * Configure cors support for Admin API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
      */
     cors?: CorsConfig;
 }

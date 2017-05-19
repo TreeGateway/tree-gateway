@@ -26,6 +26,7 @@ import * as os from 'os';
 import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
 import * as path from 'path';
+import * as cors from 'cors';
 
 class StatsController {
     requestStats: Stats;
@@ -285,6 +286,8 @@ export class Gateway {
                 this.logger.debug('Configuring API Cors support');
             }
             this.apiCors.cors(apiRouter, api);
+        } else {
+            this.configureDefaultCors(apiRouter);
         }
         if (api.circuitBreaker) {
             if (this.logger.isDebugEnabled()) {
@@ -418,7 +421,6 @@ export class Gateway {
 
     private configureAdminCors() {
         if (this.config.gateway.admin.cors) {
-            const cors = require('cors');
             const corsOptions = new ApiCors().configureCorsOptions(this.config.gateway.admin.cors);
             this.adminApp.use(cors(corsOptions));
         }
@@ -442,6 +444,13 @@ export class Gateway {
                             path.join(__dirname, './admin/api/swagger.json');
 
             Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs.path, host, schemes);
+        }
+    }
+
+    private configureDefaultCors(apiRouter: express.Router) {
+        if (this.config.gateway.cors) {
+            const corsOptions = new ApiCors().configureCorsOptions(this.config.gateway.cors);
+            apiRouter.use(cors(corsOptions));
         }
     }
 

@@ -5,6 +5,7 @@ import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { AdminConfig, adminConfigValidatorSchema } from './admin';
 import { ProtocolConfig, protocolConfigSchema } from './protocol';
 import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfigSchema } from './logger';
+import { CorsConfig, corsConfigSchema } from './cors';
 import { ValidationError } from '../error/errors';
 
 /**
@@ -61,6 +62,11 @@ export interface GatewayConfig {
      * If provided, Configure the admin service for the gateway
      */
     admin?: AdminConfig;
+     /**
+     * Configure default cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
+     * It can be configured also in the API configuration
+     */
+    cors?: CorsConfig;
 }
 
 export interface MonitorConfig {
@@ -167,6 +173,7 @@ const monitorConfigSchema = Joi.object().keys({
 export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
+    cors: corsConfigSchema,
     logger: loggerConfigSchema,
     monitor: Joi.array().items(monitorConfigSchema),
     protocol: protocolConfigSchema.required(),
