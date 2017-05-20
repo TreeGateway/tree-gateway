@@ -57,14 +57,36 @@ export interface ApiCorsConfig extends CorsConfig {
  * Configures the Access-Control-Allow-Origin CORS header.
  */
 export interface CorsOrigin {
+    /**
+     * If true, enable all origins to make cors requests.
+     */
     enableAll?: boolean;
+    /**
+     * If true, disable all origins to make cors requests.
+     */
     disableAll?: boolean;
+    /**
+     * Specify which origins are allowed.
+     */
     allow?: Array<CorsOriginConfig>;
+    /**
+     * The name of an installed ```'cors/origin'``` middleware function, called to resolve
+     * if the request should be allowed.
+     */
     dynamic?: string;
 }
 
+/**
+ * Configures the allowed cors origins.
+ */
 export interface CorsOriginConfig {
+    /**
+     * Use regular expressions to check origins that must be allowed.
+     */
     regexp?: string;
+    /**
+     * The origin that must be allowed.
+     */
     value?: string;
 }
 

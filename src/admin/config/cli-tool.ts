@@ -39,6 +39,12 @@ export class Cli {
         switch (this.args.middlewareCommand) {
             case 'filter':
                 return this.processMiddlewareFilter();
+            case 'requestInterceptor':
+                return this.processMiddlewareRequestInterceptor();
+            case 'responseInterceptor':
+                return this.processMiddlewareResponseInterceptor();
+            case 'authStrategy':
+                return this.processMiddlewareAuthStrategy();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
@@ -85,6 +91,156 @@ export class Cli {
                             .catch(reject);
                     } else if (this.args.get) {
                         sdk.middleware.getFilter(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareRequestInterceptor(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.requestInterceptors(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeRequestInterceptor(this.args.remove)
+                            .then(() => {
+                                console.info(`Filter removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateRequestInterceptor(name, fileName)
+                            .then(() => {
+                                console.info(`Filter updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addRequestInterceptor(name, fileName)
+                            .then(() => {
+                                console.info(`Filter added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getRequestInterceptor(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareResponseInterceptor(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.responseInterceptors(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeResponseInterceptor(this.args.remove)
+                            .then(() => {
+                                console.info(`Interceptor removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateResponseInterceptor(name, fileName)
+                            .then(() => {
+                                console.info(`Interceptor updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addResponseInterceptor(name, fileName)
+                            .then(() => {
+                                console.info(`Interceptor added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getResponseInterceptor(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareAuthStrategy(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.authStrategies(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeAuthStrategy(this.args.remove)
+                            .then(() => {
+                                console.info(`Interceptor removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateAuthStrategy(name, fileName)
+                            .then(() => {
+                                console.info(`Interceptor updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addAuthStrategy(name, fileName)
+                            .then(() => {
+                                console.info(`Interceptor added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getAuthStrategy(this.args.get)
                             .then((file) => {
                                 console.info(file.toString());
                             })

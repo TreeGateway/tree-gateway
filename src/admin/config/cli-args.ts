@@ -140,4 +140,114 @@ filterCommand.addArgument(
     }
 );
 
+const requestInterceptor = middlewareCommands.addParser('requestInterceptor', {
+    addHelp: true,
+    help: 'Request Interceptor configurations'
+});
+
+requestInterceptor.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Request Interceptor listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+requestInterceptor.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Request Interceptor name to be removed',
+    }
+);
+
+requestInterceptor.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Request Interceptor file (JS format) to be updated. Ex: -u interceptor1 ./interceptors/interceptor1.js',
+        nargs: 2
+    }
+);
+
+requestInterceptor.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Request Interceptor file (JS format) to be added. Ex: -a interceptor1 ./interceptors/interceptor1.js',
+    }
+);
+
+requestInterceptor.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Request Interceptor to be retrieved',
+    }
+);
+
+const responseInterceptor = middlewareCommands.addParser('responseInterceptor', {
+    addHelp: true,
+    help: 'Response Interceptor configurations'
+});
+
+responseInterceptor.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Response Interceptor listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+responseInterceptor.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Response Interceptor name to be removed',
+    }
+);
+
+responseInterceptor.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Response Interceptor file (JS format) to be updated. Ex: -u interceptor1 ./interceptors/interceptor1.js',
+        nargs: 2
+    }
+);
+
+responseInterceptor.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Response Interceptor file (JS format) to be added. Ex: -a interceptor1 ./interceptors/interceptor1.js',
+    }
+);
+
+responseInterceptor.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Response Interceptor to be retrieved',
+    }
+);
+
+const authStrategy = middlewareCommands.addParser('authStrategy', {
+    addHelp: true,
+    help: 'Auth Strategy configurations'
+});
+
+authStrategy.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Auth Strategy listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+authStrategy.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Auth Strategy name to be removed',
+    }
+);
+
+authStrategy.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Auth Strategy file (JS format) to be updated. Ex: -u strategy1 ./strategies/stragety1.js',
+        nargs: 2
+    }
+);
+
+authStrategy.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Auth Strategy file (JS format) to be added. Ex: -a strategy1 ./strategies/stragety1.js',
+    }
+);
+
+authStrategy.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Auth Strategy to be retrieved',
+    }
+);
 export let configArgs = parser.parseArgs();

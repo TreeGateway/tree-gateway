@@ -7,6 +7,7 @@ import adminApi from './admin/api/admin-api';
 import { UsersRest } from './admin/api/users';
 import { Server } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from './config/api';
+import {StatsConfig} from './config/stats';
 import { ApiProxy } from './proxy/proxy';
 import * as Utils from './proxy/utils';
 import { ApiRateLimit } from './throttling/throttling';
@@ -272,7 +273,7 @@ export class Gateway {
 
         const apiRouter = express.Router();
         if (!api.proxy.disableStats) {
-            this.configureStatsMiddleware(apiRouter, api.path);
+            this.configureStatsMiddleware(apiRouter, api.path, api.proxy.statsConfig);
         }
 
         if (api.throttling) {
@@ -406,7 +407,7 @@ export class Gateway {
             this.adminApp.use(compression());
             if (this.config.gateway.admin.accessLogger) {
                 if (!this.config.gateway.admin.disableStats) {
-                    this.configureStatsMiddleware(this.adminApp, 'admin');
+                    this.configureStatsMiddleware(this.adminApp, 'admin', this.config.gateway.admin.statsConfig);
                 }
                 AccessLogger.configureAccessLoger(this.config.gateway.admin.accessLogger,
                     this.config.rootPath, this.adminApp, './logs/admin');
@@ -454,8 +455,8 @@ export class Gateway {
         }
     }
 
-    private configureStatsMiddleware(server: express.Router, key: string) {
-        const stats = this.createStatsController(key);
+    private configureStatsMiddleware(server: express.Router, key: string, statsConfig: StatsConfig) {
+        const stats = this.createStatsController(key, statsConfig);
         if (stats) {
             const handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
                 const p = req.path;
@@ -475,11 +476,11 @@ export class Gateway {
         }
     }
 
-    private createStatsController(path: string): StatsController {
-        if ((this.config.gateway.statsConfig)) {
+    private createStatsController(path: string, statsConfig: StatsConfig): StatsController {
+        if ((this.config.gateway.statsConfig || statsConfig)) {
             const stats: StatsController = new StatsController();
-            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', path, 'request'));
-            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', path, 'status'));
+            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', path, 'request'), statsConfig);
+            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', path, 'status'), statsConfig);
 
             return stats;
         }

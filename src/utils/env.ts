@@ -13,5 +13,8 @@ export function checkEnvVariable(value: string | number, asNumber?: boolean) {
         }
         return process.env[envVariable];
     }
+    if (asNumber) {
+        return parseInt(value, 10);
+    }
     return value;
 }

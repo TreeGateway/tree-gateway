@@ -11,7 +11,7 @@ export interface Group {
      */
     id: string;
     /**
-     * An optional description for API.
+     * An optional description for the group.
      */
     description?: string;
     /**

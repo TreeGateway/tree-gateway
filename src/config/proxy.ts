@@ -1,6 +1,7 @@
 'use strict';
 
 import * as Joi from 'joi';
+import { StatsConfig, statsConfigValidatorSchema } from './stats';
 
 /**
  * Configuration for the API proxy engine.
@@ -11,7 +12,7 @@ export interface Proxy {
      * used on the URL, as:
      * ```
      * "target": {
-     *      "path": "http://httpbin.org",
+     *      "host": "http://httpbin.org",
      *  }
      *
      * ```
@@ -19,7 +20,7 @@ export interface Proxy {
      * Or you can leave the decision for the gateway:
      *
      * "target": {
-     *      "path": "httpbin.org",
+     *      "host": "httpbin.org",
      *  }
      *
      * So the gateway will use the same protocol used to access the gateway for the
@@ -110,13 +111,18 @@ export interface Proxy {
     preserveHostHdr?: boolean;
     /**
      * Configure a specific timeout for requests. Timed-out requests will respond with 504
-     * status code and a X-Timeout-Reason header.
+     * status code and a X-Timeout-Reason header. You can inform the amount of milisencods, or use
+     * a [human-interval](https://www.npmjs.com/package/human-interval) string
      */
-    timeout?: number;
+    timeout?: string | number;
     /**
-     * If true, disabled the statistical data recording.
+     * If true, disable the statistical data recording.
      */
     disableStats?: boolean;
+    /**
+     * Configurations for api requests stats.
+     */
+    statsConfig?: StatsConfig;
     /**
      * This sets the body size limit (default: 1mb). If the body size is larger than the specified (or default)
      * limit, a 413 Request Entity Too Large error will be returned. See [bytes.js](https://www.npmjs.com/package/bytes)
@@ -231,7 +237,8 @@ export const proxyValidatorSchema = Joi.object().keys({
     limit: Joi.string(),
     memoizeHost: Joi.boolean(),
     preserveHostHdr: Joi.boolean(),
+    statsConfig: statsConfigValidatorSchema,
     supressViaHeader: Joi.boolean(),
     target: targetSchema.required(),
-    timeout: Joi.number()
+    timeout: Joi.alternatives([Joi.string(), Joi.number().positive()])
 });

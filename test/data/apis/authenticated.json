@@ -6,7 +6,7 @@
         "target": {
             "host": "http://httpbin.org"
         },
-        "timeout": 5000
+        "timeout": "five seconds"
     },
     "authentication": {
         "strategy": {

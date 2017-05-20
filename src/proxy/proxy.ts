@@ -8,6 +8,7 @@ import { ProxyInterceptor } from './interceptor';
 import * as _ from 'lodash';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 const proxy = require('express-http-proxy');
 
@@ -58,7 +59,7 @@ export class ApiProxy {
             result.preserveHostHdr = apiProxy.preserveHostHdr;
         }
         if (apiProxy.timeout) {
-            result.timeout = apiProxy.timeout;
+            result.timeout = getMilisecondsInterval(apiProxy.timeout);
         }
         if (apiProxy.https) {
             result.https = apiProxy.https;
