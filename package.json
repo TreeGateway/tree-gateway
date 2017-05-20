@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
   "keywords": [
@@ -34,6 +34,9 @@
   "nyc": {
     "include": [
       "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/admin/config/cli*.ts"
     ],
     "extension": [
       ".ts"
