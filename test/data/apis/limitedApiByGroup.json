@@ -22,7 +22,7 @@
     },
     "throttling": [
         {
-            "windowMs": 60000,
+            "timeWindow": "one minute",
             "max": 1,
             "group": ["Group1"]        
         }

@@ -3,6 +3,9 @@
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
 
+/**
+ * Configure Authentication for APIs.
+ */
 export interface AuthenticationConfig {
     /**
      * The strategy used for authentication

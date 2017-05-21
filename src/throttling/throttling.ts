@@ -13,6 +13,7 @@ import { AutoWired, Inject } from 'typescript-ioc';
 import { Configuration } from '../configuration';
 import { Database } from '../database';
 import { StatsRecorder } from '../stats/stats-recorder';
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 interface ThrottlingInfo {
     limiter?: express.RequestHandler;
@@ -34,14 +35,15 @@ export class ApiRateLimit {
 
         throttlings.forEach((throttling: ThrottlingConfig) => {
             const throttlingInfo: ThrottlingInfo = {};
-            const rateConfig: any = _.defaults(_.omit(throttling, 'store', 'keyGenerator', 'handler', 'group'), {
+            const rateConfig: any = _.defaults(_.omit(throttling, 'store', 'keyGenerator', 'handler', 'group', 'timeWindow'), {
                 message: 'Too many requests, please try again later.',
                 statusCode: 429
             }
             );
+            rateConfig.windowMs = getMilisecondsInterval(throttling.timeWindow, 60000);
             rateConfig.store = new RedisStore({
                 client: this.database.redisClient,
-                expire: (throttling.windowMs / 1000) + 1,
+                expire: (rateConfig.windowMs / 1000) + 1,
                 path: path
             });
 

@@ -10,7 +10,7 @@
     },
     "throttling": [
         {
-            "windowMs": 60000,
+            "timeWindow": 60000,
             "max": 1        
         }
     ],

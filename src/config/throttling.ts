@@ -8,9 +8,9 @@ export interface ThrottlingConfig {
      * milliseconds - how long to keep records of requests in memory.
      * Defaults to 60000 (1 minute).
      */
-    windowMs?: number;
+    timeWindow?: number;
     /**
-     * max number of connections during windowMs before starting to delay responses.
+     * max number of connections during timeWindow before starting to delay responses.
      * Defaults to 1. Set to 0 to disable delaying.
      */
     delayAfter?: number;
@@ -20,7 +20,7 @@ export interface ThrottlingConfig {
      */
     delayMs?: number;
     /**
-     * max number of connections during windowMs milliseconds before sending a 429 response.
+     * max number of connections during timeWindow milliseconds before sending a 429 response.
      * Defaults to 5. Set to 0 to disable.
      */
     max?: number;
@@ -105,7 +105,6 @@ export interface ThrottlingConfig {
      * Configurations for throttling stats.
      */
     statsConfig?: StatsConfig;
-
 }
 
 export let throttlingConfigValidatorSchema = Joi.object().keys({
@@ -121,5 +120,5 @@ export let throttlingConfigValidatorSchema = Joi.object().keys({
     skip: Joi.string().alphanum(),
     statsConfig: statsConfigValidatorSchema,
     statusCode: Joi.number(),
-    windowMs: Joi.number()
+    timeWindow: Joi.alternatives([Joi.string(), Joi.number().positive()])
 });
