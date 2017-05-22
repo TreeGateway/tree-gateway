@@ -45,6 +45,16 @@ export class Cli {
                 return this.processMiddlewareResponseInterceptor();
             case 'authStrategy':
                 return this.processMiddlewareAuthStrategy();
+            case 'authVerify':
+                return this.processMiddlewareAuthVerify();
+            case 'throttlingKeyGenerator':
+                return this.processMiddlewareThrottlingKeyGenerator();
+            case 'throttlingHandler':
+                return this.processMiddlewareThrottlingHandler();
+            case 'throttlingSkip':
+                return this.processMiddlewareThrottlingSkip();
+            case 'circuitbreaker':
+                return this.processMiddlewareCircuitBreaker();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
@@ -241,6 +251,256 @@ export class Cli {
                             .catch(reject);
                     } else if (this.args.get) {
                         sdk.middleware.getAuthStrategy(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareAuthVerify(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.authVerify(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeAuthVerify(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateAuthVerify(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addAuthVerify(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getAuthVerify(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareThrottlingKeyGenerator(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.throttlingKeyGenerator(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeThrottlingKeyGenerator(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateThrottlingKeyGenerator(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addThrottlingKeyGenerator(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getThrottlingKeyGenerator(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareThrottlingHandler(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.throttlingHandler(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeThrottlingHandler(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateThrottlingHandler(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addThrottlingHandler(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getThrottlingHandler(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareThrottlingSkip(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.throttlingSkip(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeThrottlingSkip(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateThrottlingSkip(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addThrottlingSkip(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getThrottlingSkip(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareCircuitBreaker(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.circuitBreaker(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeCircuitBreaker(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateCircuitBreaker(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addCircuitBreaker(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getCircuitBreakerMiddleware(this.args.get)
                             .then((file) => {
                                 console.info(file.toString());
                             })

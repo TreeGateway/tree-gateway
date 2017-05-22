@@ -42,7 +42,7 @@ export interface Middleware {
     addAuthStrategy(name: string, fileName: string): Promise<void>;
     addAuthVerify(name: string, fileName: string): Promise<void>;
     addThrottlingKeyGenerator(name: string, fileName: string): Promise<void>;
-    addThrottlingHander(name: string, fileName: string): Promise<void>;
+    addThrottlingHandler(name: string, fileName: string): Promise<void>;
     addThrottlingSkip(name: string, fileName: string): Promise<void>;
     addCircuitBreaker(name: string, fileName: string): Promise<void>;
     addCors(name: string, fileName: string): Promise<void>;
@@ -398,7 +398,7 @@ export class MiddlewareClient implements Middleware {
         return this.installMiddleware('throttling/keyGenerators', fileName);
     }
 
-    addThrottlingHander(name: string, fileName: string): Promise<void> {
+    addThrottlingHandler(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('throttling/handlers', fileName);
     }
 

@@ -250,4 +250,189 @@ authStrategy.addArgument(
         help: 'Inform the name of the Auth Strategy to be retrieved',
     }
 );
+
+const authVerify = middlewareCommands.addParser('authVerify', {
+    addHelp: true,
+    help: 'Auth Verify configurations'
+});
+
+authVerify.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Auth Verify listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+authVerify.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Auth Verify name to be removed',
+    }
+);
+
+authVerify.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Auth Verify file (JS format) to be updated. Ex: -u verify1 ./verifiers/verify1.js',
+        nargs: 2
+    }
+);
+
+authVerify.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Auth Verify file (JS format) to be added. Ex: -a verify1 ./verifiers/verify1.js',
+    }
+);
+
+authVerify.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Auth Verify to be retrieved',
+    }
+);
+
+const throttlingKeyGenerator = middlewareCommands.addParser('throttlingKeyGenerator', {
+    addHelp: true,
+    help: 'Throttling Key Generator configurations'
+});
+
+throttlingKeyGenerator.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Throttling Key Generator listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+throttlingKeyGenerator.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Throttling Key Generator name to be removed',
+    }
+);
+
+throttlingKeyGenerator.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Throttling Key Generator file (JS format) to be updated. Ex: -u keyGen1 ./throttling/keyGen1.js',
+        nargs: 2
+    }
+);
+
+throttlingKeyGenerator.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Throttling Key Generator file (JS format) to be added. Ex: -a keyGen1 ./throttling/keyGen1.js',
+    }
+);
+
+throttlingKeyGenerator.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Throttling Key Generator to be retrieved',
+    }
+);
+
+const throttlingHandler = middlewareCommands.addParser('throttlingHandler', {
+    addHelp: true,
+    help: 'Throttling Handler configurations'
+});
+
+throttlingHandler.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Throttling Handler listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+throttlingHandler.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Throttling Handler name to be removed',
+    }
+);
+
+throttlingHandler.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Throttling Handler file (JS format) to be updated. Ex: -u handler1 ./throttling/handler1.js',
+        nargs: 2
+    }
+);
+
+throttlingHandler.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Throttling Handler file (JS format) to be added. Ex: -a handler1 ./throttling/handler1.js',
+    }
+);
+
+throttlingHandler.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Throttling Handler to be retrieved',
+    }
+);
+
+const throttlingSkip = middlewareCommands.addParser('throttlingSkip', {
+    addHelp: true,
+    help: 'Throttling Skip configurations'
+});
+
+throttlingSkip.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Throttling Skip listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+throttlingSkip.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Throttling Skip name to be removed',
+    }
+);
+
+throttlingSkip.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Throttling Skip file (JS format) to be updated. Ex: -u skip1 ./throttling/skip1.js',
+        nargs: 2
+    }
+);
+
+throttlingSkip.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Throttling Skip file (JS format) to be added. Ex: -a skip1 ./throttling/skip1.js',
+    }
+);
+
+throttlingSkip.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Throttling Skip to be retrieved',
+    }
+);
+
+const circuitbreaker = middlewareCommands.addParser('circuitbreaker', {
+    addHelp: true,
+    help: 'Circuitbreaker configurations'
+});
+
+circuitbreaker.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Circuitbreaker listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+circuitbreaker.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Circuitbreaker name to be removed',
+    }
+);
+
+circuitbreaker.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Circuitbreaker file (JS format) to be updated. Ex: -u breaker1 ./circuitbreaker/breaker1.js',
+        nargs: 2
+    }
+);
+
+circuitbreaker.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Circuitbreaker file (JS format) to be added. Ex: -a breaker1 ./circuitbreaker/breaker1.js',
+    }
+);
+
+circuitbreaker.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Circuitbreaker to be retrieved',
+    }
+);
 export let configArgs = parser.parseArgs();
