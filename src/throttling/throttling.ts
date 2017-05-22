@@ -35,12 +35,13 @@ export class ApiRateLimit {
 
         throttlings.forEach((throttling: ThrottlingConfig) => {
             const throttlingInfo: ThrottlingInfo = {};
-            const rateConfig: any = _.defaults(_.omit(throttling, 'store', 'keyGenerator', 'handler', 'group', 'timeWindow'), {
+            const rateConfig: any = _.defaults(_.omit(throttling, 'store', 'keyGenerator', 'handler', 'group', 'timeWindow', 'delay'), {
                 message: 'Too many requests, please try again later.',
                 statusCode: 429
             }
             );
             rateConfig.windowMs = getMilisecondsInterval(throttling.timeWindow, 60000);
+            rateConfig.delayMs = getMilisecondsInterval(throttling.delay, 0);
             rateConfig.store = new RedisStore({
                 client: this.database.redisClient,
                 expire: (rateConfig.windowMs / 1000) + 1,

@@ -23,6 +23,7 @@
     "throttling": [
         {
             "timeWindow": "one minute",
+            "delay": "1 second",
             "max": 1,
             "group": ["Group1"]        
         }

@@ -11,6 +11,7 @@
     "throttling": [
         {
             "timeWindow": 60000,
+            "delay": 1000,
             "max": 1        
         }
     ],

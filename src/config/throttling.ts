@@ -5,22 +5,24 @@ import { StatsConfig, statsConfigValidatorSchema } from './stats';
 
 export interface ThrottlingConfig {
     /**
-     * milliseconds - how long to keep records of requests in memory.
-     * Defaults to 60000 (1 minute).
+     * How long to keep records of requests in memory. You can inform the amount of milisencods,
+     * or use a [human-interval](https://www.npmjs.com/package/human-interval) string.
+     * Defaults to '1 minute'
      */
-    timeWindow?: number;
+    timeWindow?: number | string;
     /**
      * max number of connections during timeWindow before starting to delay responses.
      * Defaults to 1. Set to 0 to disable delaying.
      */
     delayAfter?: number;
     /**
-     * milliseconds - how long to delay the response, multiplied by (number of recent hits - delayAfter).
-     * Defaults to 1000 (1 second). Set to 0 to disable delaying.
+     * How long to delay the response, multiplied by (number of recent hits - delayAfter).
+     * You can inform the amount of milisencods, or use a [human-interval](https://www.npmjs.com/package/human-interval) string
+     * Defaults to 0 (delaying disabled).
      */
-    delayMs?: number;
+    delay?: number | string;
     /**
-     * max number of connections during timeWindow milliseconds before sending a 429 response.
+     * max number of connections during timeWindow before sending a 429 response.
      * Defaults to 5. Set to 0 to disable.
      */
     max?: number;
@@ -108,8 +110,8 @@ export interface ThrottlingConfig {
 }
 
 export let throttlingConfigValidatorSchema = Joi.object().keys({
+    delay: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     delayAfter: Joi.number(),
-    delayMs: Joi.number(),
     disableStats: Joi.boolean(),
     group: Joi.array().items(Joi.string()),
     handler: Joi.string().alphanum(),
