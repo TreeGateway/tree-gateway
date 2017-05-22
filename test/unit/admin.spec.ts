@@ -284,6 +284,27 @@ describe('Admin API', () => {
                 done();
             });
         });
+        it('should be able to add users', (done) => {
+            const simpleUser2 = {
+                email: 'test2@mail.com',
+                login: 'simple2',
+                name: 'Simple user 2',
+                password: '123test',
+                roles: <string[]>[]
+            };
+
+            adminRequest.post({
+                body: simpleUser2,
+                headers: { 'authorization': `JWT ${adminToken}` },
+                json: true,
+                url:`/users`
+            }, (error: any, response: any, body: any) => {
+                expect(error).to.not.exist;
+                expect(response.statusCode).to.equal(201);
+                done();
+            });
+        });
+
         it('should be able to remove users', (done) => {
             adminRequest.delete({
                 headers: { 'authorization': `JWT ${adminToken}` },
