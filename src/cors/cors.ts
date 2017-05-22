@@ -10,8 +10,7 @@ import * as corsMiddleware from 'cors';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { Configuration } from '../configuration';
-
-const humanInterval = require('human-interval');
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 interface CorsInfo {
     corsMiddleware?: express.RequestHandler;
@@ -55,7 +54,7 @@ export class ApiCors {
     configureCorsOptions(cors: CorsConfig): corsMiddleware.CorsOptions {
         const corsOptions: corsMiddleware.CorsOptions = _.omit(cors, 'id', 'origin', 'maxAge', 'group');
         if (cors.maxAge) {
-            corsOptions.maxAge = humanInterval(cors.maxAge);
+            corsOptions.maxAge = getMilisecondsInterval(cors.maxAge);
         }
         if (cors.origin.enableAll) {
             corsOptions.origin = true;

@@ -1,12 +1,12 @@
 'use strict';
 
-const humanInterval = require('human-interval');
 import * as _ from 'lodash';
 import { StatsConfig } from '../config/stats';
 import { StatsHandler } from './stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { Database } from '../database';
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 class Constants {
     static STATS_SYNC = 'STATS_SYNC';
@@ -25,8 +25,8 @@ export class RedisStats extends StatsHandler {
     initialize(id: string, config: StatsConfig) {
         this.id = id;
         this.prefix = config.prefix;
-        this.duration = humanInterval(config.granularity.duration) / 1000;
-        this.ttl = humanInterval(config.granularity.ttl) / 1000;
+        this.duration = getMilisecondsInterval(config.granularity.duration) / 1000;
+        this.ttl = getMilisecondsInterval(config.granularity.ttl) / 1000;
     }
 
     private getKey(key: string, keyTimestamp: number, extra: string[]) {

@@ -6,7 +6,7 @@ import * as os from 'os';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
-const humanInterval = require('human-interval');
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 @AutoWired
 export abstract class Monitor {
@@ -25,7 +25,7 @@ export abstract class Monitor {
     }
 
     start() {
-        this.period = humanInterval(this.config.statsConfig.granularity.duration);
+        this.period = getMilisecondsInterval(this.config.statsConfig.granularity.duration);
         const self = this;
         this.interval = setInterval(() => {
             this.run(this.period).then(value => self.registerStats(value)).catch(err => {
