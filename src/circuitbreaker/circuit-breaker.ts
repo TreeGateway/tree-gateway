@@ -13,6 +13,7 @@ import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { Configuration } from '../configuration';
 import { StatsRecorder } from '../stats/stats-recorder';
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 class StatsController {
     open: Stats;
@@ -45,8 +46,8 @@ export class ApiCircuitBreaker {
                 maxFailures: (cbConfig.maxFailures || 10),
                 rejectMessage: (cbConfig.rejectMessage || 'Service unavailable'),
                 rejectStatusCode: (cbConfig.rejectStatusCode || 503),
-                stateHandler: new RedisStateHandler(cbStateID, cbConfig.resetTimeout || 120000),
-                timeout: cbConfig.timeout || 30000,
+                stateHandler: new RedisStateHandler(cbStateID, getMilisecondsInterval(cbConfig.resetTimeout, 120000)),
+                timeout: getMilisecondsInterval(cbConfig.timeout, 30000),
                 timeoutMessage: (cbConfig.timeoutMessage || 'Operation timeout'),
                 timeoutStatusCode: (cbConfig.timeoutStatusCode || 504)
             };
@@ -100,21 +101,21 @@ export class ApiCircuitBreaker {
             const p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onOpen);
             const openHandler = require(p);
             breakerInfo.circuitBreaker.on('open', () => {
-                openHandler(path);
+                openHandler(path, 'open');
             });
         }
         if (config.onClose) {
             const p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onClose);
             const closeHandler = require(p);
             breakerInfo.circuitBreaker.on('close', () => {
-                closeHandler(path);
+                closeHandler(path, 'close');
             });
         }
         if (config.onRejected) {
             const p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onRejected);
             const rejectedHandler = require(p);
             breakerInfo.circuitBreaker.on('rejected', () => {
-                rejectedHandler(path);
+                rejectedHandler(path, 'rejected');
             });
         }
     }

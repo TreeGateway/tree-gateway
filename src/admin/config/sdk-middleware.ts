@@ -14,7 +14,7 @@ export interface Middleware {
     throttlingKeyGenerator(name?: string): Promise<Array<string>>;
     throttlingHandler(name?: string): Promise<Array<string>>;
     throttlingSkip(name?: string): Promise<Array<string>>;
-    circuitBreakerOpen(name?: string): Promise<Array<string>>;
+    circuitBreaker(name?: string): Promise<Array<string>>;
     corsOrigin(name?: string): Promise<Array<string>>;
     removeFilter(name: string): Promise<void>;
     removeRequestInterceptor( name: string): Promise<void>;
@@ -178,9 +178,9 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
-    circuitBreakerOpen(name?: string): Promise<Array<string>> {
+    circuitBreaker(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreakerOpen({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({name})
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);

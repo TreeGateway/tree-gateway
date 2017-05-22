@@ -6,8 +6,7 @@ import { RedisStore } from './redis-store';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { Database } from '../database';
-
-const humanInterval = require('human-interval');
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
 @AutoWired
 export class ServerCache {
@@ -77,7 +76,7 @@ export class ServerCache {
         result.push(`return ret;`);
         result.push(`}`);
 
-        const cacheTime = humanInterval(serverCache.cacheTime);
+        const cacheTime = getMilisecondsInterval(serverCache.cacheTime);
         result.push(`ServerCache.cacheStore.set(${req}.originalUrl, {`);
         result.push(`content: body,`);
         result.push(`mimeType: this._headers["content-type"]`);

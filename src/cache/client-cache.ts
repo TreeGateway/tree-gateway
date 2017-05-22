@@ -4,8 +4,8 @@ import { ClientCacheConfig } from '../config/cache';
 import * as _ from 'lodash';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
+import {getMilisecondsInterval} from '../utils/time-intervals';
 
-const humanInterval = require('human-interval');
 @AutoWired
 export class ClientCache {
     @Inject
@@ -29,7 +29,7 @@ export class ClientCache {
             cacheTime: '0'
         });
 
-        const cacheTime = (humanInterval(cacheConfig.cacheTime) / 1000);
+        const cacheTime = (getMilisecondsInterval(cacheConfig.cacheTime) / 1000);
         const result = new Array<string>();
 
         if (cacheTime > 0) {

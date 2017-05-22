@@ -62,7 +62,7 @@ export class MiddlewareRest {
 
     @GET
     @Path('circuitbreaker')
-    circuitBreakerOpen(@QueryParam('name') name?: string): Promise<Array<string>> {
+    circuitBreaker(@QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('circuitbreaker', name);
     }
 
