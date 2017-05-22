@@ -5,7 +5,7 @@ import { ArgumentParser } from 'argparse';
 const parser = new ArgumentParser({
     addHelp: true,
     description: 'Tree-Gateway Admin',
-    version: '0.0.4'
+    version: '0.0.5'
 });
 
 parser.addArgument(['-s', '--swagger'], {
