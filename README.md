@@ -29,7 +29,7 @@ It provides:
     - request filters - allow you to filter which request should be processed.
     - request or response interceptors - allow transformations on requests to be sent to your APIs or responses received from them. All of those interceptors can be written as common javascript modules.
   - **Rate limits** - To control quotas for your customers and to define actions to be taken when any quota is exceeded (And again, all customizations can be written as simple javascript functions).
-  - **Caching system** - Allow you to easily inject and control caching behaviour for your APIs. Tree Gateway provides two kinds of cache:
+  - **Caching system** - Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:
     - At browser level - Intercepting the responses and controling how the HTTP cache headers are used.
     - At a server level - Caching responses for your APIs in memory (using the redis database).
   - **Integrated CircuitBreaker** - A fast [circuitbreaker](https://martinfowler.com/bliki/CircuitBreaker.html) to fast fail your responses when your API is having problems to work. It support custom handlers for events like "open" or "close" circuit.
