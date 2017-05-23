@@ -80,7 +80,7 @@
     "swagger-client": "^3.0.9",
     "typescript-ioc": "^0.4.0",
     "typescript-rest": "^1.0.2",
-    "typescript-rest-swagger": "0.0.5",
+    "typescript-rest-swagger": "0.0.6",
     "uuid": "^3.0.1",
     "winston": "^2.3.1"
   },

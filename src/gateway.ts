@@ -28,6 +28,7 @@ import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
 import * as path from 'path';
 import * as cors from 'cors';
+import {getMilisecondsInterval} from './utils/time-intervals';
 
 class StatsController {
     requestStats: Stats;
@@ -130,7 +131,7 @@ export class Gateway {
                 if (self.config.gateway.admin.protocol.http) {
                     expected++;
                     const httpServer = http.createServer(self.adminApp);
-
+                    httpServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
                     self.adminServer.set('http', <http.Server>httpServer.listen(self.config.gateway.admin.protocol.http.listenPort, () => {
                         self.logger.info(`Gateway Admin Server listenning HTTP on port ${self.config.gateway.admin.protocol.http.listenPort}`);
                         started++;
@@ -142,6 +143,7 @@ export class Gateway {
                 if (self.config.gateway.admin.protocol.https) {
                     expected++;
                     const httpsServer = self.createHttpsServer(self.adminApp);
+                    httpsServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
                     self.adminServer.set('https', httpsServer.listen(self.config.gateway.admin.protocol.https.listenPort, () => {
                         self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.gateway.admin.protocol.https.listenPort}`);
                         started++;

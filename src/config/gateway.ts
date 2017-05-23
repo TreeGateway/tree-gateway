@@ -67,6 +67,11 @@ export interface GatewayConfig {
      * It can be configured also in the API configuration
      */
     cors?: CorsConfig;
+    /**
+     * Configure a timeout for the gateway http.Server. You can inform the amount of milisencods, or use
+     * a [human-interval](https://www.npmjs.com/package/human-interval) string. Defaults to 'one minute'.
+     */
+    timeout: string | number;
 }
 
 export interface MonitorConfig {
@@ -178,6 +183,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     monitor: Joi.array().items(monitorConfigSchema),
     protocol: protocolConfigSchema.required(),
     statsConfig: statsConfigValidatorSchema,
+    timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     underProxy: Joi.boolean()
 });
 

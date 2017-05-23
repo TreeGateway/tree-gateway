@@ -143,5 +143,4 @@ export let authenticationValidatorSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string()),
     statsConfig: statsConfigValidatorSchema,
     strategy: authenticationStrategyValidatorSchema.required()
-
 });
