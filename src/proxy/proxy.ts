@@ -70,12 +70,11 @@ export class ApiProxy {
         if (!_.isUndefined(apiProxy.memoizeHost)) {
             result.memoizeHost = apiProxy.memoizeHost;
         }
-        if (apiProxy.disableParseReqBody) {
-            result.parseReqBody = false;
-        }
         const filterChain: Array<Function> = this.filter.buildFilters(api);
         const debug = this.logger.isDebugEnabled();
         const self = this;
+        let canAccessRequestBody = false;
+        let canAccessResponseBody = false;
         if (filterChain && filterChain.length > 0) {
             result.filter = function(req: express.Request, res: express.Response) {
                 let filterResult = true;
@@ -89,15 +88,20 @@ export class ApiProxy {
                 });
                 return filterResult;
             };
+            canAccessRequestBody = true;
         }
         const requestInterceptor: Function = this.interceptor.requestInterceptor(api);
         if (requestInterceptor) {
             result.decorateRequest = requestInterceptor;
+            canAccessRequestBody = true;
         }
         const responseInterceptor: Function = this.interceptor.responseInterceptor(api);
         if (responseInterceptor) {
             result.intercept = responseInterceptor;
+            canAccessResponseBody = true;
         }
+        result.parseReqBody = apiProxy.parseReqBody && canAccessRequestBody;
+        result.parseResBody = apiProxy.parseResBody && canAccessResponseBody;
         return result;
     }
 }

@@ -136,10 +136,15 @@ export interface Proxy {
      */
     memoizeHost?: boolean;
     /**
-     * Allows you to control parsing the request body. Disabling body parsing is useful for large uploads where
-     * it would be inefficient to hold the data in memory.
+     * Allows you to control when to parse the request body. Just enable it if you need to access the ```request.body```
+     * inside a proxy middleware, like ```filter``` or ```interceptor```.
      */
-    disableParseReqBody?: boolean;
+    parseReqBody?: boolean;
+    /**
+     * Allows you to control when to parse the response data. Just enable it if you need to access the ```response body```
+     * inside a proxy ```response interceptor``` middleware.
+     */
+    parseResBody?: boolean;
 }
 
 /**
@@ -229,13 +234,14 @@ const interceptorsSchema = Joi.object().keys({
 });
 
 export const proxyValidatorSchema = Joi.object().keys({
-    disableParseReqBody: Joi.boolean(),
     disableStats: Joi.boolean(),
     filter: Joi.array().items(filterSchema),
     https: Joi.boolean(),
     interceptor: interceptorsSchema,
     limit: Joi.string(),
     memoizeHost: Joi.boolean(),
+    parseReqBody: Joi.boolean(),
+    parseResBody: Joi.boolean(),
     preserveHostHdr: Joi.boolean(),
     statsConfig: statsConfigValidatorSchema,
     supressViaHeader: Joi.boolean(),

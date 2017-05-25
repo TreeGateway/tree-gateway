@@ -1,0 +1,12 @@
+{
+    "name": "BenchmarkHelloAPI",
+    "version": "1.0.0",
+    "path": "benchmark/hello",
+    "proxy": {
+        "target": {
+            "host": "http://localhost:9000"
+        },
+        "timeout": "five seconds", 
+        "disableParseReqBody": true
+    }
+}
