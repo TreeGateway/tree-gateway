@@ -7,6 +7,7 @@
             "host": "http://localhost:9000"
         },
         "timeout": "five seconds", 
-        "disableParseReqBody": true
+        "parseReqBody": false, 
+        "disableStats": true
     }
 }

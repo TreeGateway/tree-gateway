@@ -17,7 +17,7 @@ export class ProxyInterceptor {
 
     requestInterceptor(api: ApiConfig) {
         if (this.hasRequestInterceptor(api.proxy)) {
-            return (this.buildRequestInterceptor(api));
+            return this.buildRequestInterceptor(api);
         }
         return null;
     }
@@ -27,6 +27,14 @@ export class ProxyInterceptor {
             return (this.buildResponseInterceptor(api));
         }
         return null;
+    }
+
+    hasRequestInterceptor(proxy: config.Proxy) {
+        return (proxy.interceptor && proxy.interceptor.request && proxy.interceptor.request.length > 0);
+    }
+
+    hasResponseInterceptor(proxy: config.Proxy) {
+        return (proxy.interceptor && proxy.interceptor.response && proxy.interceptor.response.length > 0);
     }
 
     private buildRequestInterceptor(api: ApiConfig) {
@@ -39,22 +47,21 @@ export class ProxyInterceptor {
                 body.push(Groups.buildGroupAllowTest('originalReq', api.group, interceptor.group));
                 body.push(`)`);
             }
-            body.push(`proxyReq = require('${p}')(proxyReq, originalReq);`);
+            body.push(`require('${p}')(proxyReq, originalReq);`);
         });
-        body.push(`return proxyReq;`);
 
         return createFunction({ pathToRegexp: pathToRegexp }, 'proxyReq', 'originalReq', body.join(''));
     }
 
     private buildResponseInterceptor(api: ApiConfig) {
         const body = new Array<string>();
-        body.push(`var continueChain = function(rsp, data, req, res, calback){ callback(null, data);};`);
+        body.push(`var continueChain = function(body, headers, request, calback){ callback(null, body);};`);
         const proxy: config.Proxy = api.proxy;
         proxy.interceptor.response.forEach((interceptor, index) => {
             if (interceptor.group) {
                 body.push(`var f${index};`);
                 body.push(`if (`);
-                body.push(Groups.buildGroupNotAllowTest('req', api.group, interceptor.group));
+                body.push(Groups.buildGroupNotAllowTest('request', api.group, interceptor.group));
                 body.push(`)`);
                 body.push(`f${index} = continueChain;`);
                 body.push(`else f${index} = `);
@@ -63,29 +70,23 @@ export class ProxyInterceptor {
             }
             const p = path.join(this.config.middlewarePath, 'interceptor', 'response', interceptor.name);
             body.push(`require('${p}');`);
-            body.push(`f${index}(rsp, data, req, res, (error, value)=>{ \
+            body.push(`f${index}(body, proxyRes.headers, request, (error, b, h)=>{ \
                 if (error) { \
                    callback(error); \
                    return; \
                 } \
-                data = value;`
+                body = b; \
+                headersHandler(h);`
+                // headers = _.defaults(h || {}, headers);`
             );
         });
         proxy.interceptor.response.forEach((interceptor, index) => {
             if (index === 0) {
-                body.push(`callback(null, data);`);
+                body.push(`callback(null, body);`);
             }
             body.push(`});`);
         });
 
-        return createFunction({ pathToRegexp: pathToRegexp }, 'rsp', 'data', 'req', 'res', 'callback', body.join(''));
-    }
-
-    private hasRequestInterceptor(proxy: config.Proxy) {
-        return (proxy.interceptor && proxy.interceptor.request && proxy.interceptor.request.length > 0);
-    }
-
-    private hasResponseInterceptor(proxy: config.Proxy) {
-        return (proxy.interceptor && proxy.interceptor.response && proxy.interceptor.response.length > 0);
+        return createFunction({ pathToRegexp: pathToRegexp}, 'body', 'proxyRes', 'request', 'response', 'headersHandler', 'callback', body.join(''));
     }
 }

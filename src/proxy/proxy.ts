@@ -5,28 +5,52 @@ import { ApiConfig } from '../config/api';
 import { Proxy } from '../config/proxy';
 import { ProxyFilter } from './filter';
 import { ProxyInterceptor } from './interceptor';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import {getMilisecondsInterval} from '../utils/time-intervals';
-
-const proxy = require('express-http-proxy');
+// import { Configuration } from '../configuration';
+import * as url from 'url';
+import * as getRawBody from 'raw-body';
+const agentKeepAlive = require('agentkeepalive');
+const httpProxy = require('../../lib/http-proxy');
+const memoryStream = require('memory-streams').WritableStream;
 
 /**
- * The API Proxy system. It uses [[express-http-proxy]](https://github.com/villadora/express-http-proxy)
+ * The API Proxy system. It uses [[http-proxy]](https://github.com/nodejitsu/node-http-proxy)
  * to proxy requests to a target API.
  */
 @AutoWired
 export class ApiProxy {
+    // @Inject private config: Configuration;
     @Inject private filter: ProxyFilter;
     @Inject private interceptor: ProxyInterceptor;
     @Inject private logger: Logger;
 
+    private agentHttp: any;
+    private agentHttps: any;
+
+    constructor() {
+        const agentOptions = {
+            keepAlive: true,
+            keepAliveMsecs:1000,
+            keepAliveTimeout: 30000, // free socket keepalive for 30 seconds
+            maxFreeSockets: 10,
+            maxSockets: 200,
+            timeout: 60000,
+        };
+        this.agentHttp =  new agentKeepAlive(agentOptions);
+        this.agentHttps =  new agentKeepAlive.HttpsAgent(agentOptions);
+    }
+
     /**
      * Configure a proxy for a given API
      */
-    proxy(apiRouter: express.Router, api: ApiConfig) {
-        apiRouter.use(proxy(api.proxy.target.host, this.configureProxy(api)));
+    proxy(apiRouter: express.Router, api: ApiConfig) { // protocol: string
+        if (api.proxy.parseReqBody) {
+            apiRouter.use(this.configureBodyParser(api));
+        }
+        apiRouter.use(this.configureProxy(api));
     }
 
     configureProxyHeader(apiRouter: express.Router, api: ApiConfig) {
@@ -48,35 +72,153 @@ export class ApiProxy {
         }
     }
 
-    private configureProxy(api: ApiConfig) {
+    private getHttpAgent(api: ApiConfig) {
         const apiProxy: Proxy = api.proxy;
-        const result: any = {
-            forwardPath: function(req: express.Request, res: express.Response) {
-                return req.url;
+        const proxyTarget = url.parse(api.proxy.target.host);
+        if (apiProxy.https || (proxyTarget.protocol && proxyTarget.protocol === 'https:')) {
+            return this.agentHttps;
+        }
+        return this.agentHttp;
+    }
+
+    private configureBodyParser(api: ApiConfig) {
+        const limit = api.proxy.limit || '1mb';
+        return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+            this.maybeParseBody(req, limit)
+                .then(buf => {
+                    req.body = buf;
+                    next();
+                })
+                .catch(err => next(err));
+        };
+    }
+
+    private configureProxy(api: ApiConfig) {
+        const self = this;
+        const apiProxy: Proxy = api.proxy;
+        const proxyConfig: any = {
+            agent: self.getHttpAgent(api),
+            changeOrigin: true,
+            target: api.proxy.target.host
+        };
+        if (apiProxy.timeout) {
+            proxyConfig.proxyTimeout = getMilisecondsInterval(apiProxy.timeout);
+        }
+
+        const shouldWrapResponse = api.proxy.parseResBody && this.interceptor.hasResponseInterceptor(api.proxy);
+        proxyConfig.delayHeaders = shouldWrapResponse;
+        const proxy = httpProxy.createProxyServer(proxyConfig);
+
+        const filter: (req: express.Request, res: express.Response) => boolean = this.getFilterMiddleware(api);
+        this.handleRequestInterceptor(api, proxy);
+        this.handleResponseInterceptor(api, proxy);
+
+        return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+            if (shouldWrapResponse) {
+                (<any>res).__write = res.write;
+                (<any>res).__data = new memoryStream();
+                res.write = (data: any, encoding?: any, cb?: any) => {
+                    return (<any>res).__data.write(data, encoding, cb);
+                };
+            }
+
+            if (filter(req, res)) {
+                proxy.web(req, res);
+            } else {
+                next();
             }
         };
-        if (apiProxy.preserveHostHdr) {
-            result.preserveHostHdr = apiProxy.preserveHostHdr;
+    }
+
+    private handleResponseInterceptor(api: ApiConfig, proxy: any) {
+        const responseInterceptor: Function = this.interceptor.responseInterceptor(api);
+        if (responseInterceptor) {
+            if (api.proxy.parseResBody) {
+                proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
+                    responseInterceptor(res.__data.toBuffer(), proxyRes, req, res,
+                        (newHeaders: any) => {
+                            if (newHeaders) {
+                                Object.keys(newHeaders).forEach(name => {
+                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                    res.set(name.toLowerCase(), newHeaders[name]);
+                                });
+                            }
+                        },
+                        (err: any, body: any) => {
+                            if (err) {
+                                this.logger.error();
+                            }
+                            res.write = res.__write;
+                            delete res['__write'];
+                            delete res['__data'];
+                            res.send(body);
+                        });
+                });
+            } else {
+                proxy.on('proxyRes', (proxyRes: any, req: any, res: any) => {
+                    responseInterceptor(null, proxyRes, req, res,
+                        (newHeaders: any) => {
+                            if (newHeaders) {
+                                Object.keys(newHeaders).forEach(name => {
+                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                });
+                            }
+                        },
+                        (err: any, body: any) => {
+                            if (err) {
+                                this.logger.error();
+                            }
+                            // ignore body when parseResBody is false.
+                        });
+                });
+            }
         }
-        if (apiProxy.timeout) {
-            result.timeout = getMilisecondsInterval(apiProxy.timeout);
+    }
+
+    private handleRequestInterceptor(api: ApiConfig, proxy: any) {
+        const requestInterceptor: Function = this.interceptor.requestInterceptor(api);
+        const parseReqBody = api.proxy.parseReqBody;
+        if (requestInterceptor) {
+            proxy.on('proxyReq', (proxyReq: any, userReq: any, response: any, options: any) => {
+                requestInterceptor(proxyReq, userReq);
+                if (parseReqBody) {
+                    this.updateBody(proxyReq, userReq);
+                }
+            });
+        } else if (parseReqBody) {
+            proxy.on('proxyReq', (proxyReq: any, userReq: any, response: any, options: any) => {
+                this.updateBody(proxyReq, userReq);
+            });
         }
-        if (apiProxy.https) {
-            result.https = apiProxy.https;
+    }
+
+    private updateBody(proxyReq: any, userReq: any) {
+        let body = proxyReq.body || userReq.body;
+        if (body) {
+            body = this.asBuffer(body);
+            proxyReq.setHeader('Content-Length', (<Buffer>body).length);
+            proxyReq.write(body);
         }
-        if (apiProxy.limit) {
-            result.limit = apiProxy.limit;
+    }
+
+    private asBuffer(body: any) {
+        let ret;
+        if (Buffer.isBuffer(body)) {
+            ret = body;
+        } else if (typeof body === 'object') {
+            ret = new Buffer(JSON.stringify(body));
+        } else if (typeof body === 'string') {
+            ret = new Buffer(body);
         }
-        if (!_.isUndefined(apiProxy.memoizeHost)) {
-            result.memoizeHost = apiProxy.memoizeHost;
-        }
+        return ret;
+    }
+
+    private getFilterMiddleware(api: ApiConfig): (req: express.Request, res: express.Response) => boolean {
+        const self = this;
         const filterChain: Array<Function> = this.filter.buildFilters(api);
         const debug = this.logger.isDebugEnabled();
-        const self = this;
-        let canAccessRequestBody = false;
-        let canAccessResponseBody = false;
         if (filterChain && filterChain.length > 0) {
-            result.filter = function(req: express.Request, res: express.Response) {
+            return (req: express.Request, res: express.Response) => {
                 let filterResult = true;
                 filterChain.forEach(f => {
                     if (filterResult) {
@@ -88,20 +230,18 @@ export class ApiProxy {
                 });
                 return filterResult;
             };
-            canAccessRequestBody = true;
         }
-        const requestInterceptor: Function = this.interceptor.requestInterceptor(api);
-        if (requestInterceptor) {
-            result.decorateRequest = requestInterceptor;
-            canAccessRequestBody = true;
+        return (req: express.Request, res: express.Response) => true;
+    }
+
+    private maybeParseBody(req: express.Request, limit: string) {
+        if (req.body) {
+            return Promise.resolve(req.body);
+        } else {
+            return getRawBody(req, {
+                length: req.headers['content-length'],
+                limit: limit
+            });
         }
-        const responseInterceptor: Function = this.interceptor.responseInterceptor(api);
-        if (responseInterceptor) {
-            result.intercept = responseInterceptor;
-            canAccessResponseBody = true;
-        }
-        result.parseReqBody = apiProxy.parseReqBody && canAccessRequestBody;
-        result.parseResBody = apiProxy.parseResBody && canAccessResponseBody;
-        return result;
     }
 }

@@ -84,6 +84,33 @@ describe('Gateway Tests', () => {
                 done();
             });
         });
+        it('should be able to send post requests', (done) => {
+            gatewayRequest.post({
+                body: {test: 'test123'},
+                json: true,
+                url: '/simple/post'
+            }, (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                done();
+            });
+        });
+        it('should be able to send post requests with interceptors', (done) => {
+            gatewayRequest.post({
+                body: {test: 'test123'},
+                json: true,
+                url: '/hasbody/post'
+            }, (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                expect(body.headers['X-Proxied-By']).to.equal('Tree-Gateway');
+                expect(body.headers['X-Proxied-2-By']).to.equal('Tree-Gateway');
+                expect(response.headers['via']).to.equal('previous Interceptor wrote: Changed By Tree-Gateway, 1.1 Tree-Gateway');
+                const bodyData = JSON.parse(body.data);
+                expect(bodyData.test).to.equal('test123');
+                expect(bodyData.insertedProperty).to.equal('newProperty');
+                expect(body.changedByResponseInterceptor).to.equal('changed');
+                done();
+            });
+        });
         it('should be able to filter requests by path', (done) => {
             gatewayRequest('/test/user-agent', (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(404);
@@ -355,8 +382,10 @@ describe('Gateway Tests', () => {
              .then(() => sdk.middleware.addFilter('mySecondFilter', path.join(base, '/filter', 'mySecondFilter.js')))
              .then(() => sdk.middleware.addRequestInterceptor('myRequestInterceptor', path.join(base, '/interceptor/request', 'myRequestInterceptor.js')))
              .then(() => sdk.middleware.addRequestInterceptor('mySecondRequestInterceptor', path.join(base, '/interceptor/request', 'mySecondRequestInterceptor.js')))
+             .then(() => sdk.middleware.addRequestInterceptor('changeBodyInterceptor', path.join(base, '/interceptor/request', 'changeBodyInterceptor.js')))
              .then(() => sdk.middleware.addResponseInterceptor('myResponseInterceptor', path.join(base, '/interceptor/response', 'myResponseInterceptor.js')))
              .then(() => sdk.middleware.addResponseInterceptor('SecondInterceptor', path.join(base, '/interceptor/response', 'SecondInterceptor.js')))
+             .then(() => sdk.middleware.addResponseInterceptor('changeBodyResponseInterceptor', path.join(base, '/interceptor/response', 'changeBodyResponseInterceptor.js')))
              .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
              .then(() => {
                  setTimeout(resolve, 1500);

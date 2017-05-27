@@ -1,0 +1,25 @@
+{
+    "name": "PostTestAPI",
+    "version": "1.0.0",
+    "path": "hasbody/",
+    "proxy": {
+        "target": {
+            "host": "http://httpbin.org"
+        },
+        "parseReqBody": true,
+        "parseResBody": true,
+        "timeout": 5000,
+        "interceptor": {
+            "request": [
+                {"name":"myRequestInterceptor"},
+                {"name":"mySecondRequestInterceptor"},
+                {"name":"changeBodyInterceptor"}                
+            ], 
+            "response": [
+                {"name":"myResponseInterceptor"}, 
+                {"name":"SecondInterceptor"},
+                {"name":"changeBodyResponseInterceptor"}                
+            ] 
+        }
+    }
+}

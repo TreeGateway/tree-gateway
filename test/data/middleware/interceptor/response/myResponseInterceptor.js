@@ -1,4 +1,6 @@
-module.exports = function(rsp, data, req, res, callback) {
-    res.set('Via', 'Changed By Tree-Gateway');
-    callback(null, data);
+module.exports = function(body, headers, request, callback) {
+    var newHeaders = {
+        Via: 'Changed By Tree-Gateway'
+    };
+    callback(null, body, newHeaders);
 };
