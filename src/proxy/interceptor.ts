@@ -77,7 +77,6 @@ export class ProxyInterceptor {
                 } \
                 body = b; \
                 headersHandler(h);`
-                // headers = _.defaults(h || {}, headers);`
             );
         });
         proxy.interceptor.response.forEach((interceptor, index) => {

@@ -2,15 +2,14 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
-import { Proxy } from '../config/proxy';
+import { Proxy, HttpAgent } from '../config/proxy';
 import { ProxyFilter } from './filter';
 import { ProxyInterceptor } from './interceptor';
-// import * as _ from 'lodash';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import {getMilisecondsInterval} from '../utils/time-intervals';
-// import { Configuration } from '../configuration';
 import * as url from 'url';
+import * as _ from 'lodash';
 import * as getRawBody from 'raw-body';
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../lib/http-proxy');
@@ -22,31 +21,14 @@ const memoryStream = require('memory-streams').WritableStream;
  */
 @AutoWired
 export class ApiProxy {
-    // @Inject private config: Configuration;
     @Inject private filter: ProxyFilter;
     @Inject private interceptor: ProxyInterceptor;
     @Inject private logger: Logger;
 
-    private agentHttp: any;
-    private agentHttps: any;
-
-    constructor() {
-        const agentOptions = {
-            keepAlive: true,
-            keepAliveMsecs:1000,
-            keepAliveTimeout: 30000, // free socket keepalive for 30 seconds
-            maxFreeSockets: 10,
-            maxSockets: 200,
-            timeout: 60000,
-        };
-        this.agentHttp =  new agentKeepAlive(agentOptions);
-        this.agentHttps =  new agentKeepAlive.HttpsAgent(agentOptions);
-    }
-
     /**
      * Configure a proxy for a given API
      */
-    proxy(apiRouter: express.Router, api: ApiConfig) { // protocol: string
+    proxy(apiRouter: express.Router, api: ApiConfig) {
         if (api.proxy.parseReqBody) {
             apiRouter.use(this.configureBodyParser(api));
         }
@@ -73,12 +55,26 @@ export class ApiProxy {
     }
 
     private getHttpAgent(api: ApiConfig) {
-        const apiProxy: Proxy = api.proxy;
+        const apiAgentOptions: HttpAgent = api.proxy.httpAgent || {};
         const proxyTarget = url.parse(api.proxy.target.host);
-        if (apiProxy.https || (proxyTarget.protocol && proxyTarget.protocol === 'https:')) {
-            return this.agentHttps;
+        const agentOptions: any = {
+            keepAlive: true
+        };
+        if (_.isBoolean(apiAgentOptions.keepAlive) && !apiAgentOptions.keepAlive) {
+            agentOptions.keepAlive = false;
         }
-        return this.agentHttp;
+        if (agentOptions.keepAlive) {
+            agentOptions.keepAliveMsecs = getMilisecondsInterval(apiAgentOptions.keepAliveTime, 1000);
+            agentOptions.keepAliveTimeout = getMilisecondsInterval(apiAgentOptions.keepAliveTimeout, 30000);
+            agentOptions.maxFreeSockets = apiAgentOptions.maxFreeSockets || 10;
+            agentOptions.maxSockets = apiAgentOptions.maxSockets || 200;
+        }
+        agentOptions.timeout = getMilisecondsInterval(apiAgentOptions.timeout, 30000);
+
+        if (proxyTarget.protocol && proxyTarget.protocol === 'https:') {
+            return new agentKeepAlive.HttpsAgent(agentOptions);
+        }
+        return new agentKeepAlive(agentOptions);
     }
 
     private configureBodyParser(api: ApiConfig) {
@@ -97,10 +93,13 @@ export class ApiProxy {
         const self = this;
         const apiProxy: Proxy = api.proxy;
         const proxyConfig: any = {
-            agent: self.getHttpAgent(api),
-            changeOrigin: true,
-            target: api.proxy.target.host
+            changeOrigin: !apiProxy.preserveHostHdr,
+            target: apiProxy.target.host
         };
+        const httpAgent = self.getHttpAgent(api);
+        if (httpAgent) {
+            proxyConfig.agent = httpAgent;
+        }
         if (apiProxy.timeout) {
             proxyConfig.proxyTimeout = getMilisecondsInterval(apiProxy.timeout);
         }

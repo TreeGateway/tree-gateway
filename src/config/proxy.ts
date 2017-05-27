@@ -30,10 +30,10 @@ export interface Proxy {
      */
     target: Target;
     /**
-     * If set to true, will enforce the requests to the API target to use HTTPS protocol.
-     * f your path already define a protocol on target URL, this option is ignored.
+     * Optional configurations for the [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) to be used
+     * by proxy requests.
      */
-    https?: boolean;
+    httpAgent?: HttpAgent;
     /**
      * If True, no Via header will be added to proxied responses.
      */
@@ -130,14 +130,8 @@ export interface Proxy {
      */
     limit?: string;
     /**
-     * Defaults to true.
-     * When true, the host argument will be parsed on first request, and memoized for all subsequent requests.
-     * When false, host argument will be parsed on each request.
-     */
-    memoizeHost?: boolean;
-    /**
      * Allows you to control when to parse the request body. Just enable it if you need to access the ```request.body```
-     * inside a proxy middleware, like ```filter``` or ```interceptor```.
+     * inside a proxy middleware, like a ```filter``` or ```interceptor```.
      */
     parseReqBody?: boolean;
     /**
@@ -212,10 +206,28 @@ export interface Target {
     deny?: Array<string>;
 }
 
+export interface HttpAgent {
+    keepAlive?: boolean;
+    keepAliveTime?: string | number;
+    keepAliveTimeout?: string | number;
+    maxFreeSockets?: number;
+    maxSockets?: number;
+    timeout?: string | number;
+}
+
 const targetSchema = Joi.object().keys({
     allow: Joi.array().items(Joi.string()),
     deny: Joi.array().items(Joi.string()),
     host: Joi.string().required()
+});
+
+const httpAgentSchema = Joi.object().keys({
+    keepAlive: Joi.boolean(),
+    keepAliveTime: Joi.alternatives([Joi.string(), Joi.number().positive()]),
+    keepAliveTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
+    maxFreeSockets: Joi.number().positive(),
+    maxSockets: Joi.number().positive(),
+    timeout: Joi.alternatives([Joi.string(), Joi.number().positive()])
 });
 
 const filterSchema = Joi.object().keys({
@@ -236,7 +248,7 @@ const interceptorsSchema = Joi.object().keys({
 export const proxyValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
     filter: Joi.array().items(filterSchema),
-    https: Joi.boolean(),
+    httpAgent: httpAgentSchema,
     interceptor: interceptorsSchema,
     limit: Joi.string(),
     memoizeHost: Joi.boolean(),

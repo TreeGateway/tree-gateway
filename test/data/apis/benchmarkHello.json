@@ -6,6 +6,14 @@
         "target": {
             "host": "http://localhost:9000"
         },
+        "httpAgent": {
+            "keepAlive": true,
+            "keepAliveTime": "one second",
+            "keepAliveTimeout": "30 seconds",
+            "maxFreeSockets": 10,
+            "maxSockets": 200,
+            "timeout": "one minute"
+        },
         "timeout": "five seconds", 
         "parseReqBody": false, 
         "disableStats": true

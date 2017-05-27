@@ -18,5 +18,5 @@ _This benchmark requires three terminals running:_
 
 1. **A gateway server:** `node dist/app.js`
 2. **A target API:** `node benchmark/scripts/hello.js`
-3. **A wrk process:** `loadtest -c 20 -n 5000 -k http://localhost:8000/benchmark/hello
+3. **A wrk process:** `loadtest -c 20 -n 20000 -k http://localhost:8000/benchmark/hello
 
