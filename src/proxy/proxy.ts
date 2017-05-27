@@ -111,6 +111,13 @@ export class ApiProxy {
         const shouldWrapResponse = api.proxy.parseResBody && this.interceptor.hasResponseInterceptor(api.proxy);
         proxyConfig.delayHeaders = shouldWrapResponse;
         const proxy = httpProxy.createProxyServer(proxyConfig);
+        proxy.on('error', (err: any, req: express.Request, res: express.Response) => {
+            const hostname = (req.headers && req.headers.host) || (req.hostname || req.host);     // (websocket) || (node0.10 || node 4/5)
+            const target = apiProxy.target.host ;
+            const errReference = 'https://nodejs.org/api/errors.html#errors_common_system_errors'; // link to Node Common Systems Errors page
+
+            this.logger.error('[Tree-Gateway] Error occurred while trying to proxy request %s from %s to %s (%s) (%s)', req.url, hostname, target, err.code, errReference);
+        });
 
         const filter: (req: express.Request, res: express.Response) => boolean = this.getFilterMiddleware(api);
         this.handleRequestInterceptor(api, proxy);
