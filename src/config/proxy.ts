@@ -30,7 +30,7 @@ export interface Proxy {
      */
     target: Target;
     /**
-     * Optional configurations for the [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) to be used
+     * Configure the [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used
      * by proxy requests.
      */
     httpAgent?: HttpAgent;
@@ -206,12 +206,40 @@ export interface Target {
     deny?: Array<string>;
 }
 
+/**
+ * Configure the [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) used
+ * by proxy requests.
+ */
 export interface HttpAgent {
+    /**
+     * Keep sockets around in a pool to be used by other requests in the future. Defaults to true.
+     */
     keepAlive?: boolean;
+    /**
+     * When using HTTP KeepAlive, how often to send TCP KeepAlive packets over sockets being kept alive.
+     * You can inform the amount of milisencods, or use a [human-interval](https://www.npmjs.com/package/human-interval)
+     * string. Default = ```'one second'```. Only relevant if keepAlive is set to true.
+     */
     keepAliveTime?: string | number;
-    keepAliveTimeout?: string | number;
+    /**
+     * Sets the free socket to timeout after freeSocketKeepAliveTimeout milliseconds of inactivity on the free socket.
+     * You can inform the amount of milisencods, or use a [human-interval](https://www.npmjs.com/package/human-interval)
+     * string. Default is ```'15 seconds'```. Only relevant if keepAlive is set to true.
+     */
+    freeSocketKeepAliveTimeout?: string | number;
+    /**
+     * Maximum number of sockets to leave open in a free state. Only relevant if keepAlive is set to true. Default = 256.
+     */
     maxFreeSockets?: number;
+    /**
+     * Maximum number of sockets to allow per host. Default = Infinity.
+     */
     maxSockets?: number;
+    /**
+     * Sets the working socket to timeout after timeout milliseconds of inactivity on the working socket.
+     * You can inform the amount of milisencods, or use a [human-interval](https://www.npmjs.com/package/human-interval)
+     * string. Default is freeSocketKeepAliveTimeout * 2.
+     */
     timeout?: string | number;
 }
 
@@ -222,9 +250,9 @@ const targetSchema = Joi.object().keys({
 });
 
 const httpAgentSchema = Joi.object().keys({
+    freeSocketKeepAliveTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     keepAlive: Joi.boolean(),
     keepAliveTime: Joi.alternatives([Joi.string(), Joi.number().positive()]),
-    keepAliveTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     maxFreeSockets: Joi.number().positive(),
     maxSockets: Joi.number().positive(),
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()])

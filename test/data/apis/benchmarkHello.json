@@ -9,7 +9,7 @@
         "httpAgent": {
             "keepAlive": true,
             "keepAliveTime": "one second",
-            "keepAliveTimeout": "30 seconds",
+            "freeSocketKeepAliveTimeout": "30 seconds",
             "maxFreeSockets": 10,
             "maxSockets": 200,
             "timeout": "one minute"

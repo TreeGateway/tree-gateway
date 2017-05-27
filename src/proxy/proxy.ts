@@ -65,11 +65,15 @@ export class ApiProxy {
         }
         if (agentOptions.keepAlive) {
             agentOptions.keepAliveMsecs = getMilisecondsInterval(apiAgentOptions.keepAliveTime, 1000);
-            agentOptions.keepAliveTimeout = getMilisecondsInterval(apiAgentOptions.keepAliveTimeout, 30000);
-            agentOptions.maxFreeSockets = apiAgentOptions.maxFreeSockets || 10;
-            agentOptions.maxSockets = apiAgentOptions.maxSockets || 200;
+            agentOptions.freeSocketKeepAliveTimeout = getMilisecondsInterval(apiAgentOptions.freeSocketKeepAliveTimeout, 15000);
+            agentOptions.maxFreeSockets = apiAgentOptions.maxFreeSockets || 256;
         }
-        agentOptions.timeout = getMilisecondsInterval(apiAgentOptions.timeout, 30000);
+        if (apiAgentOptions.maxSockets) {
+            agentOptions.maxSockets = apiAgentOptions.maxSockets;
+        }
+        if (apiAgentOptions.timeout) {
+            agentOptions.timeout = getMilisecondsInterval(apiAgentOptions.timeout);
+        }
 
         if (proxyTarget.protocol && proxyTarget.protocol === 'https:') {
             return new agentKeepAlive.HttpsAgent(agentOptions);
