@@ -48,7 +48,7 @@
             }
         },
         "logger": {
-            "level": "info",
+            "level": "error",
             "console": {
                 "colorize": true
             },
@@ -57,19 +57,6 @@
                 "outputDir": "./logs",
                 "json": false, 
                 "prettyPrint": true 
-            }
-        },
-        "accessLogger": {
-            "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
-            "console": {
-                "timestamp": true,
-                "colorize": true
-            },
-            "file": {
-                "timestamp": true,
-                "json": false,
-                "prettyPrint": true,
-                "outputDir": "./logs"
             }
         },
         "statsConfig": {

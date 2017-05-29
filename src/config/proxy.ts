@@ -82,11 +82,10 @@ export interface Proxy {
      *
      * Example of a response interceptor:
      * ```
-     * module.exports = function(rsp, data, req, res, callback) {
-     *    // rsp - original response from the target
-     *    data = JSON.parse(data.toString('utf8'));
+     * module.exports = function(body, headers, request, callback) {
+     *    data = JSON.parse(body.toString('utf8'));
      *    callback(null, JSON.stringify(data));
-     *    // callback follow the node conventions ```callback(error, value)```
+     *    // callback follow the conventions ```callback(error, value, newHeaders, removeHeaders)```
      * };
      * ```
      *

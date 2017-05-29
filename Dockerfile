@@ -10,6 +10,7 @@ COPY ./tree-gateway.json /usr/src/app/
 COPY ./package.json /usr/src/app/
 COPY ./rest.config /usr/src/app/
 COPY ./dist /usr/src/app/dist
+COPY ./lib /usr/src/app/lib
 COPY ./README.md /usr/src/app/
 
 # Install dependencies

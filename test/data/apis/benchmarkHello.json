@@ -8,11 +8,8 @@
         },
         "httpAgent": {
             "keepAlive": true,
-            "keepAliveTime": "one second",
-            "freeSocketKeepAliveTimeout": "30 seconds",
-            "maxFreeSockets": 10,
-            "maxSockets": 200,
-            "timeout": "one minute"
+            "keepAliveTime": "five seconds",
+            "freeSocketKeepAliveTimeout": "50 seconds"
         },
         "timeout": "five seconds", 
         "parseReqBody": false, 

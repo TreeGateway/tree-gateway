@@ -146,11 +146,21 @@ export class ApiProxy {
             if (api.proxy.parseResBody) {
                 proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
                     responseInterceptor(res.__data.toBuffer(), proxyRes, req, res,
-                        (newHeaders: any) => {
+                        (newHeaders: any, removeHeaders: string[]) => {
                             if (newHeaders) {
                                 Object.keys(newHeaders).forEach(name => {
                                     proxyRes.headers[name.toLowerCase()] = newHeaders[name];
                                     res.set(name.toLowerCase(), newHeaders[name]);
+                                });
+                            }
+                            if (removeHeaders) {
+                                removeHeaders.forEach(name => {
+                                    delete proxyRes.headers[name];
+                                    res.removeHeader(name);
+                                    if (name !== name.toLowerCase()) {
+                                        delete proxyRes.headers[name.toLowerCase()];
+                                        res.removeHeader(name.toLowerCase());
+                                    }
                                 });
                             }
                         },
@@ -167,10 +177,18 @@ export class ApiProxy {
             } else {
                 proxy.on('proxyRes', (proxyRes: any, req: any, res: any) => {
                     responseInterceptor(null, proxyRes, req, res,
-                        (newHeaders: any) => {
+                        (newHeaders: any, removeHeaders: string[]) => {
                             if (newHeaders) {
                                 Object.keys(newHeaders).forEach(name => {
                                     proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                });
+                            }
+                            if (removeHeaders) {
+                                removeHeaders.forEach(name => {
+                                    delete proxyRes.headers[name];
+                                    if (name !== name.toLowerCase()) {
+                                        delete proxyRes.headers[name.toLowerCase()];
+                                    }
                                 });
                             }
                         },

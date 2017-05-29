@@ -386,6 +386,7 @@ describe('Gateway Tests', () => {
              .then(() => sdk.middleware.addResponseInterceptor('myResponseInterceptor', path.join(base, '/interceptor/response', 'myResponseInterceptor.js')))
              .then(() => sdk.middleware.addResponseInterceptor('SecondInterceptor', path.join(base, '/interceptor/response', 'SecondInterceptor.js')))
              .then(() => sdk.middleware.addResponseInterceptor('changeBodyResponseInterceptor', path.join(base, '/interceptor/response', 'changeBodyResponseInterceptor.js')))
+             .then(() => sdk.middleware.addResponseInterceptor('removeHeaderResponseInterceptor', path.join(base, '/interceptor/response', 'removeHeaderResponseInterceptor.js')))
              .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
              .then(() => {
                  setTimeout(resolve, 1500);
@@ -403,8 +404,11 @@ describe('Gateway Tests', () => {
              .then(() => sdk.middleware.removeFilter('mySecondFilter'))
              .then(() => sdk.middleware.removeRequestInterceptor('myRequestInterceptor'))
              .then(() => sdk.middleware.removeRequestInterceptor('mySecondRequestInterceptor'))
+             .then(() => sdk.middleware.removeRequestInterceptor('changeBodyInterceptor'))
              .then(() => sdk.middleware.removeResponseInterceptor('myResponseInterceptor'))
              .then(() => sdk.middleware.removeResponseInterceptor('SecondInterceptor'))
+             .then(() => sdk.middleware.removeResponseInterceptor('changeBodyResponseInterceptor'))
+             .then(() => sdk.middleware.removeResponseInterceptor('removeHeaderResponseInterceptor'))
              .then(() => sdk.middleware.removeCircuitBreaker('myOpenHandler'))
              .then(() => {
                  setTimeout(resolve, 1500);

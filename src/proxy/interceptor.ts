@@ -70,13 +70,13 @@ export class ProxyInterceptor {
             }
             const p = path.join(this.config.middlewarePath, 'interceptor', 'response', interceptor.name);
             body.push(`require('${p}');`);
-            body.push(`f${index}(body, proxyRes.headers, request, (error, b, h)=>{ \
+            body.push(`f${index}(body, proxyRes.headers, request, (error, b, updateHeaders, removeHeaders)=>{ \
                 if (error) { \
                    callback(error); \
                    return; \
                 } \
                 body = b; \
-                headersHandler(h);`
+                headersHandler(updateHeaders, removeHeaders);`
             );
         });
         proxy.interceptor.response.forEach((interceptor, index) => {
