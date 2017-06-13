@@ -4,6 +4,7 @@ import {SDK} from './sdk';
 import { ApiConfig } from '../../config/api';
 import { GatewayConfig } from '../../config/gateway';
 import * as fs from 'fs-extra-promise';
+import * as YAML from 'yamljs';
 
 export class Cli {
     private args: any;
@@ -528,14 +529,14 @@ export class Cli {
                             })
                             .catch(reject);
                     } else if (this.args.add) {
-                        fs.readJSONAsync(this.args.add)
+                        this.loadConfigObject(this.args.add)
                             .then((api: ApiConfig) => sdk.apis.addApi(api))
                             .then(apiId => {
                                 console.info(`API created. ID: ${apiId}`);
                             })
                             .catch(reject);
                     } else if (this.args.update) {
-                        fs.readJSONAsync(this.args.update)
+                        this.loadConfigObject(this.args.update)
                             .then((api: ApiConfig) => sdk.apis.updateApi(api.id, api))
                             .then(() => {
                                 console.info(`API updated`);
@@ -563,7 +564,7 @@ export class Cli {
             SDK.initialize(this.args.swagger, this.args.username, this.args.password)
                 .then((sdk: SDK) => {
                     if (this.args.update) {
-                        fs.readJSONAsync(this.args.update)
+                        this.loadConfigObject(this.args.update)
                             .then((gateway: GatewayConfig) => sdk.gateway.updateConfig(gateway))
                             .then(() => {
                                 console.info(`Gateway config updated`);
@@ -583,6 +584,17 @@ export class Cli {
                             .catch(reject);
                     }
                 });
+        });
+    }
+
+    private loadConfigObject(fileName: string): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            const nameLowerCase = fileName.toLowerCase();
+            if (nameLowerCase.endsWith('.yml') || nameLowerCase.endsWith('.yaml')) {
+                resolve(YAML.load(fileName));
+            } else {
+                fs.readJSONAsync(fileName).then(resolve).catch(reject);
+            }
         });
     }
 }
