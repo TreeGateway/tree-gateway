@@ -32,6 +32,7 @@ export class ApiProxy {
         if (api.proxy.parseReqBody) {
             apiRouter.use(this.configureBodyParser(api));
         }
+        this.filter.buildFilters(apiRouter, api);
         apiRouter.use(this.configureProxy(api));
     }
 
@@ -119,7 +120,6 @@ export class ApiProxy {
             this.logger.error('[Tree-Gateway] Error occurred while trying to proxy request %s from %s to %s (%s) (%s)', req.url, hostname, target, err.code, errReference);
         });
 
-        const filter: (req: express.Request, res: express.Response) => boolean = this.getFilterMiddleware(api);
         this.handleRequestInterceptor(api, proxy);
         this.handleResponseInterceptor(api, proxy);
 
@@ -132,11 +132,7 @@ export class ApiProxy {
                 };
             }
 
-            if (filter(req, res)) {
-                proxy.web(req, res);
-            } else {
-                next();
-            }
+            proxy.web(req, res);
         };
     }
 
@@ -239,27 +235,6 @@ export class ApiProxy {
             ret = new Buffer(body);
         }
         return ret;
-    }
-
-    private getFilterMiddleware(api: ApiConfig): (req: express.Request, res: express.Response) => boolean {
-        const self = this;
-        const filterChain: Array<Function> = this.filter.buildFilters(api);
-        const debug = this.logger.isDebugEnabled();
-        if (filterChain && filterChain.length > 0) {
-            return (req: express.Request, res: express.Response) => {
-                let filterResult = true;
-                filterChain.forEach(f => {
-                    if (filterResult) {
-                        filterResult = f(req, res);
-                    }
-                    if (debug) {
-                        self.logger.debug(`Filter ${(filterResult ? 'accepted' : 'rejected')} the path ${req.path}`);
-                    }
-                });
-                return filterResult;
-            };
-        }
-        return (req: express.Request, res: express.Response) => true;
     }
 
     private maybeParseBody(req: express.Request, limit: string) {
