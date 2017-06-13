@@ -7,6 +7,7 @@ import { EventEmitter } from 'events';
 import { RedisConfig, ServerConfig, GatewayConfig, validateServerConfig } from './config/gateway';
 import { AutoWired, Container, Singleton } from 'typescript-ioc';
 import { checkEnvVariable } from './utils/env';
+import * as YAML from 'yamljs';
 
 @Singleton
 @AutoWired
@@ -80,17 +81,17 @@ export class Configuration extends EventEmitter {
 
     private loadGatewayConfig(serverConfigFile: string): Promise<void> {
         let configFileName: string = serverConfigFile;
-        configFileName = _.trim(configFileName);
+        configFileName = this.removeExtension(_.trim(configFileName));
 
         if (_.startsWith(configFileName, '.')) {
             configFileName = path.join(process.cwd(), configFileName);
         }
 
-        let config: ServerConfig = fs.readJsonSync(configFileName);
+        let config: ServerConfig = this.loadConfigObject(configFileName);
         if (process.env.NODE_ENV) {
-            const envConfigFileName = configFileName.replace(`.json`, `-${process.env.NODE_ENV}.json`);
-            if (fs.existsSync(envConfigFileName)) {
-                const envConfig = fs.readJsonSync(envConfigFileName);
+            const envConfigFileName = (`${configFileName}-${process.env.NODE_ENV}`);
+            const envConfig = this.loadConfigObject(envConfigFileName);
+            if (envConfig) {
                 config = <ServerConfig>_.defaultsDeep(envConfig, config);
             }
         }
@@ -153,5 +154,25 @@ export class Configuration extends EventEmitter {
                     }).catch(reject);
             }, 1);
         });
+    }
+
+    private loadConfigObject(fileName: string): ServerConfig {
+        if (fs.existsSync(`${fileName}.yml`)) {
+            return YAML.load(`${fileName}.yml`);
+        } else if (fs.existsSync(`${fileName}.yaml`)) {
+            return YAML.load(`${fileName}.yaml`);
+        } else if (fs.existsSync(`${fileName}.json`)) {
+            return fs.readJSONSync(`${fileName}.json`);
+        } else {
+            return null;
+        }
+    }
+
+    private removeExtension(fileName: string) {
+        const lowerFileName = fileName.toLowerCase();
+        if (lowerFileName.endsWith('.yaml') || lowerFileName.endsWith('.yml') || lowerFileName.endsWith('.json')) {
+            return fileName.substring(0, fileName.lastIndexOf('.'));
+        }
+        return fileName;
     }
 }
