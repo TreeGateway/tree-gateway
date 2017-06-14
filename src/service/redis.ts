@@ -199,8 +199,8 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
             this.database.redisClient.multi()
                 .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
                 .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
-                // .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 60)
-                // .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 60)
+                .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 60)
+                .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 60)
                 .exec()
                 .then((replies: any[][]) => {
                     if (replies[0][1] === 1 && replies[1][1] === 1) {
