@@ -109,8 +109,8 @@ export class ApiProxy {
             proxyConfig.proxyTimeout = getMilisecondsInterval(apiProxy.timeout);
         }
 
-        const shouldWrapResponse = api.proxy.parseResBody && this.interceptor.hasResponseInterceptor(api.proxy);
-        proxyConfig.delayHeaders = shouldWrapResponse;
+        const shouldWrapResponse = this.interceptor.hasResponseInterceptor(api.proxy);
+
         const proxy = httpProxy.createProxyServer(proxyConfig);
         proxy.on('error', (err: any, req: express.Request, res: express.Response) => {
             const hostname = (req.headers && req.headers.host) || (req.hostname || req.host);     // (websocket) || (node0.10 || node 4/5)
@@ -125,77 +125,47 @@ export class ApiProxy {
 
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
             if (shouldWrapResponse) {
-                (<any>res).__write = res.write;
+                const options: any = {};
                 (<any>res).__data = new memoryStream();
-                res.write = (data: any, encoding?: any, cb?: any) => {
-                    return (<any>res).__data.write(data, encoding, cb);
-                };
+                options.destPipe = {stream: (<any>res).__data};
+                proxy.web(req, res, options);
+            } else {
+                proxy.web(req, res);
             }
-
-            proxy.web(req, res);
         };
     }
 
     private handleResponseInterceptor(api: ApiConfig, proxy: any) {
         const responseInterceptor: Function = this.interceptor.responseInterceptor(api);
         if (responseInterceptor) {
-            if (api.proxy.parseResBody) {
-                proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
-                    responseInterceptor(res.__data.toBuffer(), proxyRes, req, res,
-                        (newHeaders: any, removeHeaders: string[]) => {
-                            if (newHeaders) {
-                                Object.keys(newHeaders).forEach(name => {
-                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
-                                    res.set(name.toLowerCase(), newHeaders[name]);
-                                });
-                            }
-                            if (removeHeaders) {
-                                removeHeaders.forEach(name => {
-                                    delete proxyRes.headers[name];
-                                    res.removeHeader(name);
-                                    if (name !== name.toLowerCase()) {
-                                        delete proxyRes.headers[name.toLowerCase()];
-                                        res.removeHeader(name.toLowerCase());
-                                    }
-                                });
-                            }
-                        },
-                        (err: any, body: any) => {
-                            if (err) {
-                                this.logger.error();
-                            }
-                            res.write = res.__write;
-                            delete res['__write'];
-                            delete res['__data'];
-                            res.send(body);
-                        });
-                });
-            } else {
-                proxy.on('proxyRes', (proxyRes: any, req: any, res: any) => {
-                    responseInterceptor(null, proxyRes, req, res,
-                        (newHeaders: any, removeHeaders: string[]) => {
-                            if (newHeaders) {
-                                Object.keys(newHeaders).forEach(name => {
-                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
-                                });
-                            }
-                            if (removeHeaders) {
-                                removeHeaders.forEach(name => {
-                                    delete proxyRes.headers[name];
-                                    if (name !== name.toLowerCase()) {
-                                        delete proxyRes.headers[name.toLowerCase()];
-                                    }
-                                });
-                            }
-                        },
-                        (err: any, body: any) => {
-                            if (err) {
-                                this.logger.error();
-                            }
-                            // ignore body when parseResBody is false.
-                        });
-                });
-            }
+            proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
+                responseInterceptor(res.__data.toBuffer(), proxyRes, req, res,
+                    (newHeaders: any, removeHeaders: string[]) => {
+                        if (newHeaders) {
+                            Object.keys(newHeaders).forEach(name => {
+                                proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                res.set(name.toLowerCase(), newHeaders[name]);
+                            });
+                        }
+                        if (removeHeaders) {
+                            removeHeaders.forEach(name => {
+                                delete proxyRes.headers[name];
+                                res.removeHeader(name);
+                                if (name !== name.toLowerCase()) {
+                                    delete proxyRes.headers[name.toLowerCase()];
+                                    res.removeHeader(name.toLowerCase());
+                                }
+                            });
+                        }
+                    },
+                    (err: any, body: any) => {
+                        if (err) {
+                            this.logger.error();
+                        }
+                        delete res['__data'];
+                        res.send(body);
+                    });
+            });
         }
     }
 

@@ -55,7 +55,7 @@ export class ProxyInterceptor {
 
     private buildResponseInterceptor(api: ApiConfig) {
         const body = new Array<string>();
-        body.push(`var continueChain = function(body, headers, request, calback){ callback(null, body);};`);
+        body.push(`var continueChain = function(body, headers, request){ return {body: body}; };`);
         const proxy: config.Proxy = api.proxy;
         proxy.interceptor.response.forEach((interceptor, index) => {
             if (interceptor.group) {
@@ -70,13 +70,12 @@ export class ProxyInterceptor {
             }
             const p = path.join(this.config.middlewarePath, 'interceptor', 'response', interceptor.name);
             body.push(`require('${p}');`);
-            body.push(`f${index}(body, proxyRes.headers, request, (error, b, updateHeaders, removeHeaders)=>{ \
-                if (error) { \
+            body.push(`Promise.resolve(f${index}(body, proxyRes.headers, request)).catch((error) => { \
                    callback(error); \
                    return; \
-                } \
-                body = b; \
-                headersHandler(updateHeaders, removeHeaders);`
+                }).then(result => { \
+                    body = result.body; \
+                    headersHandler(result.updateHeaders, result.removeHeaders);`
             );
         });
         proxy.interceptor.response.forEach((interceptor, index) => {
@@ -85,7 +84,6 @@ export class ProxyInterceptor {
             }
             body.push(`});`);
         });
-
         return createFunction({ pathToRegexp: pathToRegexp}, 'body', 'proxyRes', 'request', 'response', 'headersHandler', 'callback', body.join(''));
     }
 }

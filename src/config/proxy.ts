@@ -133,11 +133,6 @@ export interface Proxy {
      * inside a proxy middleware, like a ```filter``` or ```interceptor```.
      */
     parseReqBody?: boolean;
-    /**
-     * Allows you to control when to parse the response data. Just enable it if you need to access the ```response body```
-     * inside a proxy ```response interceptor``` middleware.
-     */
-    parseResBody?: boolean;
 }
 
 /**
@@ -280,7 +275,6 @@ export const proxyValidatorSchema = Joi.object().keys({
     limit: Joi.string(),
     memoizeHost: Joi.boolean(),
     parseReqBody: Joi.boolean(),
-    parseResBody: Joi.boolean(),
     preserveHostHdr: Joi.boolean(),
     statsConfig: statsConfigValidatorSchema,
     supressViaHeader: Joi.boolean(),
