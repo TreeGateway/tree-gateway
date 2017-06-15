@@ -20,10 +20,6 @@ It provides:
 
 
 
-  - A flexible and robust **Routing system**: Our proxy system allows you to create 
-    - multiple versions of APIs.
-    - request filters - allow you to filter which request should be processed.
-    - request or response interceptors - allow transformations on requests to be sent to your APIs or responses received from them. All of those interceptors can be written as common javascript modules.
   - **Rate limits** - To control quotas for your customers and to define actions to be taken when any quota is exceeded (And again, all customizations can be written as simple javascript functions).
   - **Caching system** - Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:
     - At browser level - Intercepting the responses and controling how the HTTP cache headers are used.
