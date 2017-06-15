@@ -1,1 +1,0 @@
-This is a fork from [http-proxy](https://github.com/nodejitsu/node-http-proxy), adapted to satisfy some tree-gateway specific requirenments.
