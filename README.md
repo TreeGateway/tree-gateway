@@ -16,12 +16,12 @@ It provides:
 |Tree Gateway  | Features |
 | --| --| 
 |![Authentication](images/security.png) <br/>**Authentication** | More than **300 strategies** available through an easy [passportjs](http://passportjs.org/) integration, including support to **JWT tokens**, **Oauth**, **Basic** and many **others**. Custom strategies can also be writen directly in Javascript.|
-| ![Routing](images/routing.png) <br/>**Routing** | A flexible and robust **Routing system**. Our proxy system is an robust plugable engine where it is possible to define request filters, allowing any kind of transformations.| 
+| ![Routing](images/routing.png) <br/>**Routing** | A flexible and robust **Routing system** that allows any kind onf customized request pipeline. A plugable engine allow any kind of transformations or verifications to your API requests.| 
 | ![Rate Limit](images/throttling.png) <br/>**Rate Limits** | To control quotas for your customers and to define actions to be taken when any quota is exceeded (And again, all customizations can be written as simple javascript functions).| 
+| ![Rate Limit](images/cache.jpg) <br/>**Caching system** | Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:<ul><li>At browser level - Intercepting the responses and controling how the HTTP cache headers are used.</li><li>At a server level - Caching responses for your APIs in memory (using the redis database).</li></ul>| 
 
 
 
-  - **Rate limits** - To control quotas for your customers and to define actions to be taken when any quota is exceeded (And again, all customizations can be written as simple javascript functions).
   - **Caching system** - Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:
     - At browser level - Intercepting the responses and controling how the HTTP cache headers are used.
     - At a server level - Caching responses for your APIs in memory (using the redis database).
