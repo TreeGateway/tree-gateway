@@ -19,7 +19,7 @@ It provides:
 | ![Routing](images/routing.png) <br/>**Routing** | A flexible and robust **Routing system** that allows any kind onf customized request pipeline. A plugable engine allow any kind of transformations or verifications to your API requests.| 
 | ![Rate Limit](images/throttling.png) <br/>**Rate Limits** | To control quotas for your customers and to define actions to be taken when any quota is exceeded (And again, all customizations can be written as simple javascript functions).| 
 | ![Cache](images/cache.jpg) <br/>**Caching** | Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:<ul><li>At browser level - Intercepting the responses and controling how the HTTP cache headers are used.</li><li>At a server level - Caching responses for your APIs in memory (using the redis database).</li></ul>| 
-| ![Circuit Breaker](images/circuitbreaker.jpg) <br/>**Circuit Breaker** | A fast [circuitbreaker](https://martinfowler.com/bliki/CircuitBreaker.html) to fast fail your responses when your API is having problems to work. It support custom handlers for events like "open" or "close" circuit.| 
+| ![Circuit Breaker](images/circuitbreaker.png) <br/>**Circuit Breaker** | A fast [circuitbreaker](https://martinfowler.com/bliki/CircuitBreaker.html) to fast fail your responses when your API is having problems to work. It support custom handlers for events like "open" or "close" circuit.| 
 
 
   - Real Time **Monitoring and Analytics** - 
