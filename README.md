@@ -16,7 +16,7 @@ It provides:
 |Tree Gateway  | Features |
 | --| --| 
 |![Authentication](images/security.png) <br/>**Authentication** | More than **300 strategies** available through an easy [passportjs](http://passportjs.org/) integration, including support to **JWT tokens**, **Oauth**, **Basic** and many **others**. Custom strategies can also be writen directly in Javascript.|
-|A flexible and robust **Routing system**. Our proxy system is an robust plugable engine where it is possible to define request and response filters or interceptors, allowing any kind of transformations.| ![Routing](images/routing.png) <br/>**Routing** | 
+| ![Routing](images/routing.png) <br/>**Routing** | A flexible and robust **Routing system**. Our proxy system is an robust plugable engine where it is possible to define request and response filters or interceptors, allowing any kind of transformations.| 
 
 
 
