@@ -2,7 +2,7 @@
 
 An API gateway provides a single, unified entry point across one or more internal APIs. It is an important element in any microservice architecture.
 
-![No Gateway](images/no-gateway.png) ![Versus](images/versus.png) ![Tree Gateway](images/gateway.png)
+![No Gateway](images/no-gateway.png) or ![Tree Gateway](images/gateway.png)
 
 
 ## Why Tree Gateway?
