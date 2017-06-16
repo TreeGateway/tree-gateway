@@ -213,6 +213,13 @@ describe('Gateway Tests', () => {
                 done();
             });
         });
+
+        it('should be able to accept cors requests verified by middleware', (done) => {
+            gatewayRequest('/cors-middleware/get', (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                done();
+            });
+        });
     });
 
     describe('The Gateway Authenticator', () => {
@@ -388,6 +395,7 @@ describe('Gateway Tests', () => {
              .then(() => sdk.middleware.addResponseInterceptor('changeBodyResponseInterceptor', path.join(base, '/interceptor/response', 'changeBodyResponseInterceptor.js')))
              .then(() => sdk.middleware.addResponseInterceptor('removeHeaderResponseInterceptor', path.join(base, '/interceptor/response', 'removeHeaderResponseInterceptor.js')))
              .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
+             .then(() => sdk.middleware.addCors('corsOrigin', path.join(base, '/cors/origin', 'corsOrigin.js')))
              .then(() => {
                  setTimeout(resolve, 1500);
              })
@@ -410,6 +418,7 @@ describe('Gateway Tests', () => {
              .then(() => sdk.middleware.removeResponseInterceptor('changeBodyResponseInterceptor'))
              .then(() => sdk.middleware.removeResponseInterceptor('removeHeaderResponseInterceptor'))
              .then(() => sdk.middleware.removeCircuitBreaker('myOpenHandler'))
+             .then(() => sdk.middleware.removeCors('corsOrigin'))
              .then(() => {
                  setTimeout(resolve, 1500);
              })

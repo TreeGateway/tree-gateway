@@ -1,6 +1,7 @@
 'use strict';
 
 import * as Joi from 'joi';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 /**
  * Configure support for Cors requests.
@@ -73,7 +74,7 @@ export interface CorsOrigin {
      * The name of an installed ```'cors/origin'``` middleware function, called to resolve
      * if the request should be allowed.
      */
-    dynamic?: string;
+    middleware?: MiddlewareConfig;
 }
 
 /**
@@ -98,8 +99,8 @@ const corsOriginConfigSchema = Joi.object().keys({
 const corsOriginSchema = Joi.object().keys({
     allow: Joi.array().items(corsOriginConfigSchema.min(1)),
     disableAll: Joi.boolean(),
-    dynamic: Joi.string(),
-    enableAll: Joi.boolean()
+    enableAll: Joi.boolean(),
+    middleware: middlewareConfigValidatorSchema
 }).min(1).max(1);
 
 export let apiCorsConfigSchema = Joi.object().keys({

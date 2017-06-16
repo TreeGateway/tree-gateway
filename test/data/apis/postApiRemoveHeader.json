@@ -1,5 +1,5 @@
 {
-    "name": "PostTestAPI",
+    "name": "PostTestAPIRemove",
     "version": "1.0.0",
     "path": "removeheader/",
     "proxy": {
@@ -10,15 +10,15 @@
         "timeout": 5000,
         "interceptor": {
             "request": [
-                {"name":"myRequestInterceptor"},
-                {"name":"mySecondRequestInterceptor"},
-                {"name":"changeBodyInterceptor"}                
+                {"middleware": { "name":"myRequestInterceptor"} },
+                {"middleware": { "name":"mySecondRequestInterceptor"} },
+                {"middleware": { "name":"changeBodyInterceptor"} }
             ], 
             "response": [
-                {"name":"myResponseInterceptor"}, 
-                {"name":"SecondInterceptor"},
-                {"name":"changeBodyResponseInterceptor"},
-                {"name":"removeHeaderResponseInterceptor"}                
+                {"middleware": { "name":"myResponseInterceptor"} }, 
+                {"middleware": { "name":"SecondInterceptor"} },
+                {"middleware": { "name":"changeBodyResponseInterceptor"} },
+                {"middleware": { "name":"removeHeaderResponseInterceptor"} }
             ] 
         }
     }

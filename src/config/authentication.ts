@@ -2,6 +2,8 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+import { ValidationError } from '../error/errors';
 
 /**
  * Configure Authentication for APIs.
@@ -10,7 +12,7 @@ export interface AuthenticationConfig {
     /**
      * The strategy used for authentication
      */
-    strategy: AuthenticationStrategyConfig;
+    strategy: MiddlewareConfig;
     /**
      * A list of groups that should be handled by this authenticator. If not provided, everything
      * will be handled.
@@ -27,12 +29,6 @@ export interface AuthenticationConfig {
     statsConfig?: StatsConfig;
 }
 
-export interface AuthenticationStrategyConfig {
-    jwt?: JWTAuthentication;
-    basic?: BasicAuthentication;
-    local?: LocalAuthentication;
-}
-
 export interface BasicAuthentication {
     /**
      * Is a function with the parameters verify(userid, password, done) {
@@ -40,7 +36,7 @@ export interface BasicAuthentication {
      *  - password The password.
      *  - done is a passport error first callback accepting arguments done(error, user, info)
      */
-    verify: string;
+    verify: MiddlewareConfig;
 }
 
 export interface LocalAuthentication {
@@ -50,7 +46,7 @@ export interface LocalAuthentication {
      *  - password The password.
      *  - done is a passport error first callback accepting arguments done(error, user, info)
      */
-    verify: string;
+    verify: MiddlewareConfig;
     /**
      * Optional, defaults to 'username'
      */
@@ -93,7 +89,7 @@ export interface JWTAuthentication {
      *  - jwt_payload is an object literal containing the decoded JWT payload.
      *  - done is a passport error first callback accepting arguments done(error, user, info)
      */
-    verify?: string;
+    verify?: MiddlewareConfig;
 }
 
 export interface JWTRequestExtractor {
@@ -119,28 +115,49 @@ const jwtAuthenticationSchema = Joi.object().keys({
     ignoreExpiration: Joi.boolean(),
     issuer: Joi.string(),
     secretOrKey: Joi.string().required(),
-    verify: Joi.string()
+    verify: middlewareConfigValidatorSchema
 });
 
 const basicAuthenticationSchema = Joi.object().keys({
-    verify: Joi.string().required()
+    verify: middlewareConfigValidatorSchema.required()
 });
 
 const localAuthenticationSchema = Joi.object().keys({
     passwordField: Joi.string(),
     usernameField: Joi.string(),
-    verify: Joi.string().required()
+    verify: middlewareConfigValidatorSchema.required()
 });
-
-export let authenticationStrategyValidatorSchema = Joi.object().keys({
-    basic: basicAuthenticationSchema,
-    jwt: jwtAuthenticationSchema,
-    local: localAuthenticationSchema,
-}).unknown(true).length(1);
 
 export let authenticationValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
     group: Joi.array().items(Joi.string()),
     statsConfig: statsConfigValidatorSchema,
-    strategy: authenticationStrategyValidatorSchema.required()
+    strategy: middlewareConfigValidatorSchema.required()
 });
+
+export function validateLocalAuthConfig(config: LocalAuthentication) {
+    const result = Joi.validate(config, localAuthenticationSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
+}
+
+export function validateBasicAuthConfig(config: BasicAuthentication) {
+    const result = Joi.validate(config, basicAuthenticationSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
+}
+
+export function validateJwtAuthConfig(config: JWTAuthentication) {
+    const result = Joi.validate(config, jwtAuthenticationSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
+}

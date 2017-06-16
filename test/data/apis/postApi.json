@@ -10,14 +10,26 @@
         "timeout": 5000,
         "interceptor": {
             "request": [
-                {"name":"myRequestInterceptor"},
-                {"name":"mySecondRequestInterceptor"},
-                {"name":"changeBodyInterceptor"}                
+                {
+                    "middleware": { 
+                        "name":"myRequestInterceptor"
+                    }
+                },
+                {
+                    "middleware": { 
+                        "name":"mySecondRequestInterceptor"
+                    }
+                },
+                {
+                    "middleware": { 
+                        "name":"changeBodyInterceptor"
+                    } 
+                }
             ], 
             "response": [
-                {"name":"myResponseInterceptor"}, 
-                {"name":"SecondInterceptor"},
-                {"name":"changeBodyResponseInterceptor"}                
+                {"middleware": { "name":"myResponseInterceptor"} }, 
+                {"middleware": { "name":"SecondInterceptor"} },
+                {"middleware": { "name":"changeBodyResponseInterceptor"} }
             ] 
         }
     }

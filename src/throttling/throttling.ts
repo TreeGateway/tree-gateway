@@ -4,16 +4,15 @@ import * as express from 'express';
 import { ApiConfig } from '../config/api';
 import { ThrottlingConfig } from '../config/throttling';
 import * as _ from 'lodash';
-import * as pathUtil from 'path';
 import * as Groups from '../group';
 import { RedisStore } from './redis-store';
 import { Stats } from '../stats/stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { Configuration } from '../configuration';
 import { Database } from '../database';
 import { StatsRecorder } from '../stats/stats-recorder';
 import {getMilisecondsInterval} from '../utils/time-intervals';
+import { MiddlewareLoader } from '../utils/middleware-loader';
 
 interface ThrottlingInfo {
     limiter?: express.RequestHandler;
@@ -22,10 +21,10 @@ interface ThrottlingInfo {
 
 @AutoWired
 export class ApiRateLimit {
-    @Inject private config: Configuration;
     @Inject private logger: Logger;
     @Inject private database: Database;
     @Inject private statsRecorder: StatsRecorder;
+    @Inject private middlewareLoader: MiddlewareLoader;
 
     throttling(apiRouter: express.Router, api: ApiConfig) {
         const path: string = api.path;
@@ -49,12 +48,10 @@ export class ApiRateLimit {
             });
 
             if (throttling.keyGenerator) {
-                const p = pathUtil.join(this.config.middlewarePath, 'throttling', 'keyGenerator', throttling.keyGenerator);
-                rateConfig.keyGenerator = require(p);
+                rateConfig.keyGenerator = this.middlewareLoader.loadMiddleware('throttling/keyGenerator', throttling.keyGenerator);
             }
             if (throttling.skip) {
-                const p = pathUtil.join(this.config.middlewarePath, 'throttling', 'skip', throttling.skip);
-                rateConfig.skip = require(p);
+                rateConfig.skip = this.middlewareLoader.loadMiddleware('throttling/skip', throttling.skip);
             }
             this.configureThrottlingHandlerFunction(path, throttling, rateConfig);
             throttlingInfo.limiter = new rateLimit(rateConfig);
@@ -79,8 +76,7 @@ export class ApiRateLimit {
         const stats = this.createStats(path, throttling);
         if (stats) {
             if (throttling.handler) {
-                const p = pathUtil.join(this.config.middlewarePath, 'throttling', 'handler', throttling.handler);
-                const customHandler = require(p);
+                const customHandler = this.middlewareLoader.loadMiddleware('throttling/handler', throttling.handler);
                 rateConfig.handler = function(req: express.Request, res: express.Response, next: express.NextFunction) {
                     stats.registerOccurrence(req.path, 1);
                     customHandler(req, res, next);
@@ -99,8 +95,7 @@ export class ApiRateLimit {
                 };
             }
         } else if (throttling.handler) {
-            const p = pathUtil.join(this.config.middlewarePath, 'throttling', 'handler', throttling.handler);
-            rateConfig.handler = require(p);
+            rateConfig.handler = this.middlewareLoader.loadMiddleware('throttling/handler', throttling.handler);
         }
     }
 

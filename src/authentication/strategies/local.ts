@@ -1,15 +1,16 @@
 'use strict';
 
 import { Strategy } from 'passport-local';
-import { LocalAuthentication } from '../../config/authentication';
+import { LocalAuthentication, validateLocalAuthConfig } from '../../config/authentication';
 import * as _ from 'lodash';
-import * as pathUtil from 'path';
-import { Configuration } from '../../configuration';
+import { Container } from 'typescript-ioc';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
 
-module.exports = function(authConfig: LocalAuthentication, config: Configuration) {
+module.exports = function(authConfig: LocalAuthentication) {
+    validateLocalAuthConfig(authConfig);
     const opts: any = _.omit(authConfig, 'verify');
     opts.session = false;
-    const p = pathUtil.join(config.middlewarePath, 'authentication', 'verify', authConfig.verify);
-    const verifyFunction = require(p);
+    const middlewareLoader: MiddlewareLoader = Container.get(MiddlewareLoader);
+    const verifyFunction = middlewareLoader.loadMiddleware('authentication/verify', authConfig.verify);
     return new Strategy(opts, verifyFunction);
 };

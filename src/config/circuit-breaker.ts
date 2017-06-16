@@ -2,6 +2,7 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 /**
  * Configuer the circuit breaker for API requests.
@@ -54,7 +55,7 @@ export interface CircuitBreakerConfig {
      * middleware/circuitbreaker/myOpenHandler.js
      * ```
      */
-    onOpen?: string;
+    onOpen?: MiddlewareConfig;
     /**
      * The name of the function to execute once the circuit is open.
      * It receives the API path being called.
@@ -70,7 +71,7 @@ export interface CircuitBreakerConfig {
      * middleware/circuitbreaker/myCloseHandler.js
      * ```
      */
-    onClose?: string;
+    onClose?: MiddlewareConfig;
     /**
      * The name of the function to execute once the circuit rejected (fast fail) a request.
      * It receives the API path being called.
@@ -86,7 +87,7 @@ export interface CircuitBreakerConfig {
      * middleware/circuitbreaker/myRejectHandler.js
      * ```
      */
-    onRejected?: string;
+    onRejected?: MiddlewareConfig;
     /**
      * Message to be sent when an api call occurs in a timeout.
      * Defaults to: Operation timeout
@@ -113,9 +114,9 @@ export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
     group: Joi.array().items(Joi.string()),
     maxFailures: Joi.number(),
-    onClose: Joi.string(),
-    onOpen: Joi.string(),
-    onRejected: Joi.string(),
+    onClose: middlewareConfigValidatorSchema,
+    onOpen: middlewareConfigValidatorSchema,
+    onRejected: middlewareConfigValidatorSchema,
     rejectMessage: Joi.string(),
     rejectStatusCode: Joi.number(),
     resetTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),

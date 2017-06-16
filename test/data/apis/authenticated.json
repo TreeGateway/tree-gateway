@@ -10,7 +10,8 @@
     },
     "authentication": {
         "strategy": {
-            "jwt": {
+            "name": "jwt",
+            "options": {
                 "extractFrom": {
                     "authHeader": "Bearer",
                     "queryParam": "jwt"
@@ -18,7 +19,9 @@
                 "secretOrKey": "secret",
                 "algorithms": ["HS256", "HS384"],
                 "ignoreExpiration": true,
-                "verify": "verifyJwtUser"
+                "verify": {
+                    "name": "verifyJwtUser"
+                }
             }
         } 
     }

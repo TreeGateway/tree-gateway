@@ -2,19 +2,15 @@
 
 import * as express from 'express';
 import { Proxy } from '../config/proxy';
-import * as path from 'path';
 import { ApiConfig } from '../config/api';
 import * as Groups from '../group';
 import { Logger } from '../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
-import { Configuration } from '../configuration';
+import { Inject } from 'typescript-ioc';
+import { MiddlewareLoader } from '../utils/middleware-loader';
 
-@AutoWired
 export class ProxyFilter {
-    @Inject
-    private config: Configuration;
-    @Inject
-    private logger: Logger;
+    @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private logger: Logger;
 
     buildFilters(apiRouter: express.Router, api: ApiConfig) {
         if (api.proxy.target.allow) {
@@ -34,8 +30,7 @@ export class ProxyFilter {
         }
 
         api.proxy.filter.forEach((filter, index) => {
-            const p = path.join(this.config.middlewarePath, 'filter', filter.name);
-            const filterMiddleware = require(p);
+            const filterMiddleware = this.middlewareLoader.loadMiddleware('filter', filter.middleware);
             if (filter.group) {
                 const groupValidator = Groups.buildGroupAllowFilter(api.group, filter.group);
                 apiRouter.use((req, res, next) => {

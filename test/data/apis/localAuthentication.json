@@ -10,10 +10,13 @@
     },
     "authentication": {
         "strategy": {
-            "local": {
+            "name": "local", 
+            "options": {
                 "usernameField": "userid",
                 "passwordField": "passwd",
-                "verify": "verifyBasicUser"
+                "verify": {
+                    "name": "verifyBasicUser"
+                }
             }
         }
     }

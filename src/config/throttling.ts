@@ -2,6 +2,7 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 export interface ThrottlingConfig {
     /**
@@ -53,7 +54,7 @@ export interface ThrottlingConfig {
      * middleware/throttling/keyGenerator/myKeyGen.js
      * ```
      */
-    keyGenerator?: string;
+    keyGenerator?: MiddlewareConfig;
     /**
      * The name of the function used to skip requests. Returning true from the function
      *  will skip limiting for that request. Defaults:
@@ -68,7 +69,7 @@ export interface ThrottlingConfig {
      * middleware/throttling/skip/mySkipFunction.js
      * ```
      */
-    skip?: string;
+    skip?: MiddlewareConfig;
     /**
      * The name of the function to execute once the max limit is exceeded. It receives the request
      * and the response objects. The "next" param is available if you need to pass to the
@@ -92,7 +93,7 @@ export interface ThrottlingConfig {
      * middleware/throttling/handler/myHandler.js
      * ```
      */
-    handler?: string;
+    handler?: MiddlewareConfig;
     /**
      * A list of groups that should be handled by this limiter. If not provided, everything
      * will be handled.
@@ -114,12 +115,12 @@ export let throttlingConfigValidatorSchema = Joi.object().keys({
     delayAfter: Joi.number(),
     disableStats: Joi.boolean(),
     group: Joi.array().items(Joi.string()),
-    handler: Joi.string().alphanum(),
+    handler: middlewareConfigValidatorSchema,
     headers: Joi.boolean(),
-    keyGenerator: Joi.string().alphanum(),
+    keyGenerator: middlewareConfigValidatorSchema,
     max: Joi.number(),
     message: Joi.string(),
-    skip: Joi.string().alphanum(),
+    skip: middlewareConfigValidatorSchema,
     statsConfig: statsConfigValidatorSchema,
     statusCode: Joi.number(),
     timeWindow: Joi.alternatives([Joi.string(), Joi.number().positive()])

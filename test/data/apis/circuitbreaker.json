@@ -11,6 +11,8 @@
         "timeout": 1,
         "resetTimeout": "30 seconds",
         "maxFailures": 1,
-        "onOpen": "myOpenHandler"
+        "onOpen": {
+            "name": "myOpenHandler"
+        }
     }]
 }

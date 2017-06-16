@@ -7,13 +7,12 @@ import * as express from 'express';
 import * as _ from 'lodash';
 import { CircuitBreaker } from './express-circuit-breaker';
 import * as Groups from '../group';
-import * as pathUtil from 'path';
 import { RedisStateHandler } from './redis-state-handler';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { Configuration } from '../configuration';
 import { StatsRecorder } from '../stats/stats-recorder';
 import {getMilisecondsInterval} from '../utils/time-intervals';
+import { MiddlewareLoader } from '../utils/middleware-loader';
 
 class StatsController {
     open: Stats;
@@ -28,9 +27,9 @@ interface BreakerInfo {
 
 @AutoWired
 export class ApiCircuitBreaker {
-    @Inject private config: Configuration;
     @Inject private logger: Logger;
     @Inject private statsRecorder: StatsRecorder;
+    @Inject private middlewareLoader: MiddlewareLoader;
 
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
@@ -98,22 +97,19 @@ export class ApiCircuitBreaker {
             });
         }
         if (config.onOpen) {
-            const p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onOpen);
-            const openHandler = require(p);
+            const openHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onOpen);
             breakerInfo.circuitBreaker.on('open', () => {
                 openHandler(path, 'open');
             });
         }
         if (config.onClose) {
-            const p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onClose);
-            const closeHandler = require(p);
+            const closeHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onClose);
             breakerInfo.circuitBreaker.on('close', () => {
                 closeHandler(path, 'close');
             });
         }
         if (config.onRejected) {
-            const p = pathUtil.join(this.config.middlewarePath, 'circuitbreaker', config.onRejected);
-            const rejectedHandler = require(p);
+            const rejectedHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onRejected);
             breakerInfo.circuitBreaker.on('rejected', () => {
                 rejectedHandler(path, 'rejected');
             });

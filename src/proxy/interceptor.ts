@@ -1,19 +1,16 @@
 'use strict';
 
 import * as config from '../config/proxy';
-import * as path from 'path';
 import { ApiConfig } from '../config/api';
 import * as Groups from '../group';
-import { AutoWired, Inject } from 'typescript-ioc';
-import { Configuration } from '../configuration';
+import { Inject } from 'typescript-ioc';
 import { createFunction } from '../utils/functions';
+import { MiddlewareLoader } from '../utils/middleware-loader';
 
 const pathToRegexp = require('path-to-regexp');
 
-@AutoWired
 export class ProxyInterceptor {
-    @Inject
-    private config: Configuration;
+    @Inject private middlewareLoader: MiddlewareLoader;
 
     requestInterceptor(api: ApiConfig) {
         if (this.hasRequestInterceptor(api.proxy)) {
@@ -40,23 +37,26 @@ export class ProxyInterceptor {
     private buildRequestInterceptor(api: ApiConfig) {
         const body = new Array<string>();
         const proxy: config.Proxy = api.proxy;
+        const interceptors: any = {};
         proxy.interceptor.request.forEach((interceptor, index) => {
-            const p = path.join(this.config.middlewarePath, 'interceptor', 'request', interceptor.name);
+            const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/request', interceptor.middleware);
+            interceptors[interceptor.middleware.name] = interceptorMiddleware;
             if (interceptor.group) {
                 body.push(`if (`);
                 body.push(Groups.buildGroupAllowTest('originalReq', api.group, interceptor.group));
                 body.push(`)`);
             }
-            body.push(`require('${p}')(proxyReq, originalReq);`);
+            body.push(`interceptors['${interceptor.middleware.name}'](proxyReq, originalReq);`);
         });
 
-        return createFunction({ pathToRegexp: pathToRegexp }, 'proxyReq', 'originalReq', body.join(''));
+        return createFunction({ pathToRegexp: pathToRegexp, interceptors: interceptors }, 'proxyReq', 'originalReq', body.join(''));
     }
 
     private buildResponseInterceptor(api: ApiConfig) {
         const body = new Array<string>();
         body.push(`var continueChain = function(body, headers, request){ return {body: body}; };`);
         const proxy: config.Proxy = api.proxy;
+        const interceptors: any = {};
         proxy.interceptor.response.forEach((interceptor, index) => {
             if (interceptor.group) {
                 body.push(`var f${index};`);
@@ -68,8 +68,9 @@ export class ProxyInterceptor {
             } else {
                 body.push(`var f${index} = `);
             }
-            const p = path.join(this.config.middlewarePath, 'interceptor', 'response', interceptor.name);
-            body.push(`require('${p}');`);
+            const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/response', interceptor.middleware);
+            interceptors[interceptor.middleware.name] = interceptorMiddleware;
+            body.push(`interceptors['${interceptor.middleware.name}'];`);
             body.push(`Promise.resolve(f${index}(body, proxyRes.headers, request)).catch((error) => { \
                    callback(error); \
                    return; \
@@ -84,6 +85,6 @@ export class ProxyInterceptor {
             }
             body.push(`});`);
         });
-        return createFunction({ pathToRegexp: pathToRegexp}, 'body', 'proxyRes', 'request', 'response', 'headersHandler', 'callback', body.join(''));
+        return createFunction({ pathToRegexp: pathToRegexp, interceptors: interceptors}, 'body', 'proxyRes', 'request', 'response', 'headersHandler', 'callback', body.join(''));
     }
 }

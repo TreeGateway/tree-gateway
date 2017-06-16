@@ -2,6 +2,7 @@
 
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 /**
  * Configuration for the API proxy engine.
@@ -56,7 +57,7 @@ export interface Proxy {
      * So, the above filter should be saved in a file called myFilter.js and configured as:
      * ```
      * filter:[
-     *   {name: "myFilter"}
+     *   {middleware{ name: "myFilter"} }
      * ]
      * ```
      */
@@ -97,7 +98,7 @@ export interface Proxy {
      *
      * ```
      * interceptor:{
-     *    request: ["myRequestInterceptor"]
+     *    request: [{middleware{ name: "myRequestInterceptor"} }]
      * }
      * ```
      *
@@ -142,9 +143,9 @@ export interface Proxy {
  */
 export interface Filter {
     /**
-     * The filter name.
+     * The filter to be used.
      */
-    name: string;
+    middleware: MiddlewareConfig;
     /**
      * A list of groups that should be filtered by this filter. If not provided, everything
      * will be filtered.
@@ -174,9 +175,9 @@ export interface Interceptors {
  */
 export interface Interceptor {
     /**
-     * The interceptor name.
+     * The interceptor to be used.
      */
-    name: string;
+    middleware: MiddlewareConfig;
     /**
      * A list of groups that should be filtered by this filter. If not provided, everything
      * will be filtered.
@@ -254,12 +255,12 @@ const httpAgentSchema = Joi.object().keys({
 
 const filterSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string()),
-    name: Joi.string().required()
+    middleware: middlewareConfigValidatorSchema.required()
 });
 
 const interceptorSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string()),
-    name: Joi.string().required()
+    middleware: middlewareConfigValidatorSchema.required()
 });
 
 const interceptorsSchema = Joi.object().keys({

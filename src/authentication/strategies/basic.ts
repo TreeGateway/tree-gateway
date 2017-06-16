@@ -1,12 +1,13 @@
 'use strict';
 
 import { BasicStrategy } from 'passport-http';
-import { BasicAuthentication } from '../../config/authentication';
-import * as pathUtil from 'path';
-import { Configuration } from '../../configuration';
+import { BasicAuthentication, validateBasicAuthConfig } from '../../config/authentication';
+import { Container } from 'typescript-ioc';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
 
-module.exports = function(authConfig: BasicAuthentication, config: Configuration) {
-    const p = pathUtil.join(config.middlewarePath, 'authentication', 'verify', authConfig.verify);
-    const verifyFunction = require(p);
+module.exports = function(authConfig: BasicAuthentication) {
+    validateBasicAuthConfig(authConfig);
+    const middlewareLoader: MiddlewareLoader = Container.get(MiddlewareLoader);
+    const verifyFunction = middlewareLoader.loadMiddleware('authentication/verify', authConfig.verify);
     return new BasicStrategy(verifyFunction);
 };

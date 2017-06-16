@@ -10,8 +10,11 @@
     },
     "authentication": {
         "strategy": {
-            "basic": {
-                "verify": "verifyBasicUser"
+            "name": "basic",
+            "options": {
+                "verify": {
+                    "name": "verifyBasicUser"
+                }
             }
         }
     }

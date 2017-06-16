@@ -23,11 +23,15 @@
         },
         "filter": [
             {
-                "name": "myCustomFilter",
+                "middleware": {
+                    "name": "myCustomFilter"
+                },
                 "group": ["Group1"]
             },
             {
-                "name": "mySecondFilter", 
+                "middleware": {
+                    "name": "mySecondFilter"
+                },
                 "group": ["Group1"]
             }
         ],

@@ -1,13 +1,14 @@
 'use strict';
 
 import { Strategy, StrategyOptions, ExtractJwt } from 'passport-jwt';
-import { JWTAuthentication } from '../../config/authentication';
+import { JWTAuthentication, validateJwtAuthConfig } from '../../config/authentication';
 import * as _ from 'lodash';
-import * as pathUtil from 'path';
 import * as express from 'express';
-import { Configuration } from '../../configuration';
+import { Container } from 'typescript-ioc';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
 
-module.exports = function(authConfig: JWTAuthentication, config: Configuration) {
+module.exports = function(authConfig: JWTAuthentication) {
+    validateJwtAuthConfig(authConfig);
     const opts: any = _.omit(authConfig, 'extractFrom', 'verify');
     if (authConfig.extractFrom) {
         const extractors: Array<string> = _.keys(authConfig.extractFrom);
@@ -26,8 +27,8 @@ module.exports = function(authConfig: JWTAuthentication, config: Configuration) 
     let verifyFunction;
     if (authConfig.verify) {
         opts['passReqToCallback'] = true;
-        const p = pathUtil.join(config.middlewarePath, 'authentication', 'verify', authConfig.verify);
-        verifyFunction = require(p);
+        const middlewareLoader: MiddlewareLoader = Container.get(MiddlewareLoader);
+        verifyFunction = middlewareLoader.loadMiddleware('authentication/verify', authConfig.verify);
     } else {
         verifyFunction = (jwtPayload: any, done: any) => {
             done(null, jwtPayload);

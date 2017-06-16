@@ -4,13 +4,12 @@ import * as express from 'express';
 import { ApiConfig } from '../config/api';
 import { ApiCorsConfig, CorsConfig } from '../config/cors';
 import * as _ from 'lodash';
-import * as pathUtil from 'path';
 import * as Groups from '../group';
 import * as corsMiddleware from 'cors';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { Configuration } from '../configuration';
 import {getMilisecondsInterval} from '../utils/time-intervals';
+import { MiddlewareLoader } from '../utils/middleware-loader';
 
 interface CorsInfo {
     corsMiddleware?: express.RequestHandler;
@@ -20,10 +19,8 @@ interface CorsInfo {
 
 @AutoWired
 export class ApiCors {
-    @Inject
-    private config: Configuration;
-    @Inject
-    private logger: Logger;
+    @Inject private logger: Logger;
+    @Inject private middlewareLoader: MiddlewareLoader;
 
     cors(apiRouter: express.Router, api: ApiConfig) {
         const path: string = api.path;
@@ -72,9 +69,16 @@ export class ApiCors {
                     }
                 });
             }
-        } else if (cors.origin.dynamic) {
-            const p = pathUtil.join(this.config.middlewarePath, 'cors', 'origin', cors.origin.dynamic);
-            corsOptions.origin = require(p);
+        } else if (cors.origin.middleware) {
+            const corsMiddleware = this.middlewareLoader.loadMiddleware('cors/origin', cors.origin.middleware);
+            corsOptions.origin = (origin: string, callback: (error?: any, value?: boolean) => void) => {
+                Promise.resolve(corsMiddleware(origin))
+                    .then(result => {
+                        callback(null, result);
+                    }).catch(error => {
+                        callback(error);
+                    });
+           };
         }
         return corsOptions;
     }

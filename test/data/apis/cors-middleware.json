@@ -1,0 +1,17 @@
+{
+    "name": "TestCorsAPI",
+    "version": "1.0.0",
+    "path": "cors-middleware/",
+    "proxy": {
+        "target": {
+            "host": "http://httpbin.org"
+        }
+    },
+    "cors" : [{
+        "origin": {
+            "middleware": {
+                "name": "corsOrigin"
+            }
+        }
+    }]
+}
