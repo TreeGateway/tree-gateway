@@ -1,4 +1,4 @@
-module.exports = function(body, headers, request, callback) {
+module.exports = function(body, headers, request) {
     var newHeaders = {
         Via: 'Changed By Tree-Gateway'
     };

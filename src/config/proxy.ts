@@ -3,6 +3,7 @@
 import * as Joi from 'joi';
 import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+import { ValidationError } from '../error/errors';
 
 /**
  * Configuration for the API proxy engine.
@@ -83,10 +84,9 @@ export interface Proxy {
      *
      * Example of a response interceptor:
      * ```
-     * module.exports = function(body, headers, request, callback) {
+     * module.exports = function(body, headers, request) {
      *    data = JSON.parse(body.toString('utf8'));
-     *    callback(null, JSON.stringify(data));
-     *    // callback follow the conventions ```callback(error, value, newHeaders, removeHeaders)```
+     *    return {body: data};
      * };
      * ```
      *
@@ -162,11 +162,11 @@ export interface Interceptors {
     /**
      * A list of request interceptors
      */
-    request: Array<Interceptor>;
+    request?: Array<Interceptor>;
     /**
      * A list of response interceptors
      */
-    response: Array<Interceptor>;
+    response?: Array<Interceptor>;
 }
 
 /**
@@ -238,6 +238,23 @@ export interface HttpAgent {
     timeout?: string | number;
 }
 
+/**
+ * A [jsonata](https://www.npmjs.com/package/jsonata) expression, used by core interceptors
+ * to transform responses.
+ */
+export interface JSONAtaExpression {
+    /**
+     * The jsonata expressio
+     */
+    expression: string;
+}
+
+export interface ResponseInterceptorResult {
+    body?: any;
+    removeHeaders?: Array<string>;
+    updateHeaders?: any;
+}
+
 const targetSchema = Joi.object().keys({
     allow: Joi.array().items(Joi.string()),
     deny: Joi.array().items(Joi.string()),
@@ -264,8 +281,12 @@ const interceptorSchema = Joi.object().keys({
 });
 
 const interceptorsSchema = Joi.object().keys({
-    request: Joi.array().items(interceptorSchema).required(),
-    response: Joi.array().items(interceptorSchema).required()
+    request: Joi.array().items(interceptorSchema),
+    response: Joi.array().items(interceptorSchema)
+}).min(1);
+
+const jsonataExpressionSchema = Joi.object().keys({
+    expression: Joi.string().required()
 });
 
 export const proxyValidatorSchema = Joi.object().keys({
@@ -282,3 +303,12 @@ export const proxyValidatorSchema = Joi.object().keys({
     target: targetSchema.required(),
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()])
 });
+
+export function validateJsonAtaExpression(config: JSONAtaExpression) {
+    const result = Joi.validate(config, jsonataExpressionSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
+}

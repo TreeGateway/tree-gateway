@@ -1,0 +1,44 @@
+---
+name: TestInterceptedByDefaultAPI
+version: 1.0.0
+path: "/interceptedByDefault"
+group: 
+  - id: "Group1"
+    description: "Endpoints Group One"
+    member:
+      - method: 
+        - "GET"
+  - id: "Group2"
+    description: "Endpoints Group Two"
+    member:
+      - method: 
+        - "POST"
+proxy:
+  target:
+    host: http://httpbin.org
+  timeout: 5000
+  parseReqBody: true
+  interceptor:
+    response:
+      - middleware:
+          name: responseBodyTransformer
+          options:
+            expression: >
+              {
+                'argumentNames': $sort($keys(args), function($l, $r) {
+                    $l < $r
+                  })
+              }
+        group:
+          - Group1
+    request:
+      - middleware:
+          name: requestBodyTransformer
+          options:
+            expression: >
+              {
+                'test': test
+              }
+        group:
+          - Group2
+        

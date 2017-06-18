@@ -169,7 +169,7 @@ export function buildGroupNotAllowTest(request: string, groups: Array<Group>, na
                     if (i > 0) {
                         func.push(`&&`);
                     }
-                    func.push(`(${request}.method ==! '${method.toUpperCase()}')`);
+                    func.push(`(${request}.method !== '${method.toUpperCase()}')`);
                 });
                 func.push(`)`);
             }
@@ -184,7 +184,7 @@ export function buildGroupNotAllowTest(request: string, groups: Array<Group>, na
                     if (i > 0) {
                         func.push(`&&`);
                     }
-                    func.push(`(${request}.protocol ==! '${protocol.toLowerCase()}')`);
+                    func.push(`(${request}.protocol !== '${protocol.toLowerCase()}')`);
                 });
                 func.push(`)`);
             }

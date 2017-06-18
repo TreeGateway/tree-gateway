@@ -12,6 +12,7 @@ import {Gateway} from '../../src/gateway';
 import {Database} from '../../src/database';
 import {UserService} from '../../src/service/users';
 import {SDK} from '../../src/admin/config/sdk';
+import * as YAML from 'yamljs';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -157,6 +158,28 @@ describe('Gateway Tests', () => {
             gatewayRequest('/intercepted/headers', (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(200);
                 expect(response.headers['via']).to.equal('Changed By Tree-Gateway, 1.1 Tree-Gateway');
+                done();
+            });
+        });
+        it('should be able to intercept responses with default middlewares', (done) => {
+            gatewayRequest('/interceptedByDefault/get?arg1=1&param2=2', (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                const result = JSON.parse(body);
+                expect(result.argumentNames).to.have.length(2);
+                expect(result.argumentNames[0]).to.equal('param2');
+                expect(result.argumentNames[1]).to.equal('arg1');
+                done();
+            });
+        });
+        it('should be able to intercept requests with default middlewares', (done) => {
+            gatewayRequest.post({
+                body: {test: 'test123'},
+                json: true,
+                url: '/interceptedByDefault/post'
+            }, (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                const result = JSON.parse(body.data);
+                expect(result.test).to.eq('test123');
                 done();
             });
         });
@@ -355,7 +378,13 @@ describe('Gateway Tests', () => {
 
             fs.readdirAsync(pathApi)
                 .then((files) => {
-                    const promises = files.map(file => fs.readJsonAsync(pathApi+file));
+                    const promises = files.map(file => {
+                        if (file.endsWith('.yml') || file.endsWith('.yaml')) {
+                            const api = YAML.load(pathApi+file);
+                            return Promise.resolve(api);
+                        }
+                        return fs.readJsonAsync(pathApi+file);
+                    });
                     return Promise.all(promises);
                 })
                 .then((apis: any[]) => {

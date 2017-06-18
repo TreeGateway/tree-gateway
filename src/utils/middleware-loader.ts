@@ -14,6 +14,12 @@ export class MiddlewareLoader {
             'basic': '../authentication/strategies/basic',
             'jwt': '../authentication/strategies/jwt',
             'local': '../authentication/strategies/local'
+        },
+        'interceptor/request': {
+            'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer'
+        },
+        'interceptor/response': {
+            'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer'
         }
     };
 
