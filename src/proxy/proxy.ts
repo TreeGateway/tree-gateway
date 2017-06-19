@@ -227,7 +227,7 @@ export class ApiProxy {
             return Promise.resolve(req.body);
         } else {
             return getRawBody(req, {
-                length: req.headers['content-length'],
+                length: <string>req.headers['content-length'],
                 limit: limit
             });
         }
