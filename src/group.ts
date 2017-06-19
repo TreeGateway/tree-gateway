@@ -147,6 +147,11 @@ export function buildGroupDenyTest(request: string, groups: Array<Group>, names:
     return func.join('');
 }
 
+export function buildGroupNotAllowFilter(groups: Array<Group>, groupIds: Array<string>): (req: express.Request, res: express.Response) => boolean {
+    const body = `return ${buildGroupNotAllowTest('req', groups, groupIds)};`;
+    return <(req: express.Request, res: express.Response) => boolean>createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body);
+}
+
 export function buildGroupNotAllowTest(request: string, groups: Array<Group>, names: Array<string>) {
     const func = new Array<string>();
     const filtered = filter(groups, names);

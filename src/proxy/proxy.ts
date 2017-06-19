@@ -4,7 +4,7 @@ import * as express from 'express';
 import { ApiConfig } from '../config/api';
 import { Proxy, HttpAgent } from '../config/proxy';
 import { ProxyFilter } from './filter';
-import { ProxyInterceptor } from './interceptor';
+import { ProxyInterceptor, ResponseInterceptors } from './interceptor';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import {getMilisecondsInterval} from '../utils/time-intervals';
@@ -109,8 +109,6 @@ export class ApiProxy {
             proxyConfig.proxyTimeout = getMilisecondsInterval(apiProxy.timeout);
         }
 
-        const shouldWrapResponse = this.interceptor.hasResponseInterceptor(api.proxy);
-
         const proxy = httpProxy.createProxyServer(proxyConfig);
         proxy.on('error', (err: any, req: express.Request, res: express.Response) => {
             const hostname = (req.headers && req.headers.host) || (req.hostname || req.host);     // (websocket) || (node0.10 || node 4/5)
@@ -120,11 +118,27 @@ export class ApiProxy {
             this.logger.error('[Tree-Gateway] Error occurred while trying to proxy request %s from %s to %s (%s) (%s)', req.url, hostname, target, err.code, errReference);
         });
 
+        const maybeWrapResponse = this.interceptor.hasResponseInterceptor(api.proxy);
+        const responseInterceptor: ResponseInterceptors = this.interceptor.responseInterceptor(api);
         this.handleRequestInterceptor(api, proxy);
-        this.handleResponseInterceptor(api, proxy);
+        this.handleResponseInterceptor(api, proxy, responseInterceptor);
+
+        function validateInterceptors (req: express.Request, res: express.Response): boolean {
+            if (responseInterceptor) {
+                let ignoreAll = true;
+                (<any>res).__ignore = new Array<boolean>();
+                responseInterceptor.validators.forEach((validator, index) => {
+                    const ignore = validator(req);
+                    (<any>res).__ignore.push(ignore);
+                    ignoreAll = ignoreAll && ignore;
+                });
+                return maybeWrapResponse && !ignoreAll;
+            }
+            return false;
+        }
 
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (shouldWrapResponse) {
+            if (validateInterceptors(req, res)) {
                 const options: any = {};
                 (<any>res).__data = new memoryStream();
                 options.destPipe = {stream: (<any>res).__data};
@@ -135,36 +149,37 @@ export class ApiProxy {
         };
     }
 
-    private handleResponseInterceptor(api: ApiConfig, proxy: any) {
-        const responseInterceptor: Function = this.interceptor.responseInterceptor(api);
+    private handleResponseInterceptor(api: ApiConfig, proxy: any, responseInterceptor: ResponseInterceptors) {
         if (responseInterceptor) {
             proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
-                responseInterceptor(res.__data.toBuffer(), proxyRes, req, res,
-                    (newHeaders: any, removeHeaders: string[]) => {
-                        if (newHeaders) {
-                            Object.keys(newHeaders).forEach(name => {
-                                proxyRes.headers[name.toLowerCase()] = newHeaders[name];
-                                res.set(name.toLowerCase(), newHeaders[name]);
-                            });
-                        }
-                        if (removeHeaders) {
-                            removeHeaders.forEach(name => {
-                                delete proxyRes.headers[name];
-                                res.removeHeader(name);
-                                if (name !== name.toLowerCase()) {
-                                    delete proxyRes.headers[name.toLowerCase()];
-                                    res.removeHeader(name.toLowerCase());
-                                }
-                            });
-                        }
-                    },
-                    (err: any, body: any) => {
-                        if (err) {
-                            this.logger.error();
-                        }
-                        delete res['__data'];
-                        res.send(body);
-                    });
+                if (res.__data) {
+                    responseInterceptor.middelware(res.__data.toBuffer(), proxyRes, req, res, res.__ignore,
+                        (newHeaders: any, removeHeaders: string[]) => {
+                            if (newHeaders) {
+                                Object.keys(newHeaders).forEach(name => {
+                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                    res.set(name.toLowerCase(), newHeaders[name]);
+                                });
+                            }
+                            if (removeHeaders) {
+                                removeHeaders.forEach(name => {
+                                    delete proxyRes.headers[name];
+                                    res.removeHeader(name);
+                                    if (name !== name.toLowerCase()) {
+                                        delete proxyRes.headers[name.toLowerCase()];
+                                        res.removeHeader(name.toLowerCase());
+                                    }
+                                });
+                            }
+                        },
+                        (err: any, body: any) => {
+                            if (err) {
+                                this.logger.error();
+                            }
+                            delete res['__data'];
+                            res.send(body);
+                        });
+                }
             });
         }
     }

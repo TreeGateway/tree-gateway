@@ -9,6 +9,11 @@ import { MiddlewareLoader } from '../utils/middleware-loader';
 
 const pathToRegexp = require('path-to-regexp');
 
+export interface ResponseInterceptors {
+    middelware: Function;
+    validators: Array<Function>;
+}
+
 export class ProxyInterceptor {
     @Inject private middlewareLoader: MiddlewareLoader;
 
@@ -54,23 +59,25 @@ export class ProxyInterceptor {
 
     private buildResponseInterceptor(api: ApiConfig) {
         const body = new Array<string>();
-        body.push(`var continueChain = function(body, headers, request){ return {body: body}; };`);
         const proxy: config.Proxy = api.proxy;
         const interceptors: any = {};
+        const result: ResponseInterceptors = {
+            middelware: null,
+            validators: []
+        };
+        body.push(`var continueChain = function(body, headers, request){ return {body: body}; };`);
         proxy.interceptor.response.forEach((interceptor, index) => {
-            if (interceptor.group) {
-                body.push(`var f${index};`);
-                body.push(`if (`);
-                body.push(Groups.buildGroupNotAllowTest('request', api.group, interceptor.group));
-                body.push(`)`);
-                body.push(`f${index} = continueChain;`);
-                body.push(`else f${index} = `);
-            } else {
-                body.push(`var f${index} = `);
-            }
             const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/response', interceptor.middleware);
             interceptors[interceptor.middleware.name] = interceptorMiddleware;
-            body.push(`interceptors['${interceptor.middleware.name}'];`);
+            if (interceptor.group) {
+                result.validators.push(Groups.buildGroupNotAllowFilter(api.group, interceptor.group));
+            } else {
+                result.validators.push((req: any) => false);
+            }
+            body.push(`var f${index};`);
+            body.push(`if (ignore[${index}])`);
+            body.push(`f${index} = continueChain;`);
+            body.push(`else f${index} = interceptors['${interceptor.middleware.name}'];`);
             body.push(`Promise.resolve(f${index}(body, proxyRes.headers, request)).catch((error) => { \
                    callback(error); \
                    return; \
@@ -85,6 +92,10 @@ export class ProxyInterceptor {
             }
             body.push(`});`);
         });
-        return createFunction({ pathToRegexp: pathToRegexp, interceptors: interceptors}, 'body', 'proxyRes', 'request', 'response', 'headersHandler', 'callback', body.join(''));
+        result.middelware = createFunction({
+            interceptors: interceptors,
+            pathToRegexp: pathToRegexp
+        }, 'body', 'proxyRes', 'request', 'response', 'ignore', 'headersHandler', 'callback', body.join(''));
+        return result;
     }
 }
