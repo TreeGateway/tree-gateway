@@ -86,11 +86,11 @@ export class ApiProxy {
         const limit = api.proxy.limit || '1mb';
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
             this.maybeParseBody(req, limit)
-                .then(buf => {
+                .then((buf: any) => {
                     req.body = buf;
                     next();
                 })
-                .catch(err => next(err));
+                .catch((err: any) => next(err));
         };
     }
 
