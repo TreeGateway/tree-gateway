@@ -13,6 +13,7 @@ import * as YAML from 'yamljs';
 @AutoWired
 export class Configuration extends EventEmitter {
     static gatewayConfigFile: string;
+    static resetBeforeStart: boolean;
 
     private config: ServerConfig;
     private isLoaded: boolean;
@@ -139,20 +140,35 @@ export class Configuration extends EventEmitter {
 
     private loadDatabaseConfig(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const self = this;
             setTimeout(() => {
                 const Database = require('./database').Database;
                 const database = Container.get(Database);
 
-                database.redisClient.get('{config}:gateway')
-                    .then((config: string) => {
-                        if (config) {
-                            const configGateway: GatewayConfig = JSON.parse(config);
-                            self.config.gateway = <GatewayConfig>_.defaultsDeep(configGateway, self.config.gateway);
-                        }
-                        resolve();
-                    }).catch(reject);
+                if (Configuration.resetBeforeStart) {
+                    console.info('reseting database');
+                    database.redisClient.flushdb()
+                        .then(() => this.getConfigFromDB(database))
+                        .then(resolve)
+                        .catch(reject);
+                } else {
+                    this.getConfigFromDB(database)
+                        .then(resolve)
+                        .catch(reject);
+                }
             }, 1);
+        });
+    }
+
+    private getConfigFromDB(database: any) {
+        return new Promise<void>((resolve, reject) => {
+            database.redisClient.get('{config}:gateway')
+                .then((config: string) => {
+                    if (config) {
+                        const configGateway: GatewayConfig = JSON.parse(config);
+                        this.config.gateway = <GatewayConfig>_.defaultsDeep(configGateway, this.config.gateway);
+                    }
+                    resolve();
+                }).catch(reject);
         });
     }
 

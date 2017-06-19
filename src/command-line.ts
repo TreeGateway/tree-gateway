@@ -16,6 +16,17 @@ parser.addArgument(
     }
 );
 
+parser.addArgument(
+    ['-r', '--reset'],
+    {
+        constant: true,
+        defaultValue: false,
+        help: 'Before start the gateway, reset all configurations.',
+        nargs: '?'
+    }
+);
+
 const parameters = parser.parseArgs();
 
 Configuration.gatewayConfigFile = parameters.config;
+Configuration.resetBeforeStart = parameters.reset;
