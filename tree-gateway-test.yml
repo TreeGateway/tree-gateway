@@ -16,5 +16,5 @@ gateway:
             http:
                 listenPort: 8011
     logger:
-        level: 'debug'
+        level: 'info'
     
