@@ -39,12 +39,14 @@ export class ProxyFilter {
                             if (result) {
                                 return next();
                             }
-                            res.sendStatus(404);
+                            if (!res.headersSent) {
+                                res.sendStatus(404);
+                            }
                         }).catch(err => {
                             next(err);
                         });
                     } else {
-                        res.sendStatus(404);
+                        next();
                     }
                 });
             } else {
@@ -53,7 +55,9 @@ export class ProxyFilter {
                         if (result) {
                             return next();
                         }
-                        res.sendStatus(404);
+                        if (!res.headersSent) {
+                            res.sendStatus(404);
+                        }
                     }).catch(err => {
                         next(err);
                     });

@@ -130,6 +130,18 @@ describe('Gateway Tests', () => {
                 });
             });
         });
+        it('should be able to filter IPs', (done) => {
+            gatewayRequest.post({
+                body: {test: 'test123'},
+                json: true,
+                url: '/filtered/post'
+            }, (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(403);
+                expect(body).to.equal('IP Filtered');
+                done();
+            });
+        });
+
         it('should be able to intercept requests ', (done) => {
             gatewayRequest('/intercepted/get', (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(200);

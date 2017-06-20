@@ -15,6 +15,10 @@ export class MiddlewareLoader {
             'jwt': '../authentication/strategies/jwt',
             'local': '../authentication/strategies/local'
         },
+        'filter': {
+            'ipFilter': '../proxy/filters/ipFilter'
+        }
+        ,
         'interceptor/request': {
             'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer'
         },
