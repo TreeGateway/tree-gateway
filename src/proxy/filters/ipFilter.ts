@@ -11,19 +11,19 @@ import {getMilisecondsInterval} from '../../utils/time-intervals';
 const ipFilter = require('ip-filter');
 const IPV6_PREFIX = '::ffff:';
 
-interface BlacklistConfig {
+interface IpFilterConfig {
     blacklist?: Array<string>;
-    database?: BlacklistDatabaseConfig;
+    database?: IpFilterDatabaseConfig;
     message?: string;
     statusCode?: number;
 }
 
-interface BlacklistDatabaseConfig {
+interface IpFilterDatabaseConfig {
     key?: string;
     checkInterval?: string | number;
 }
 
-const blacklistConfigSchema = Joi.object().keys({
+const ipFilterConfigSchema = Joi.object().keys({
     blacklist: Joi.array().items(Joi.string()),
     database: Joi.object().keys({
         checkInterval: Joi.alternatives([Joi.string(), Joi.number().positive()]),
@@ -33,8 +33,8 @@ const blacklistConfigSchema = Joi.object().keys({
     statusCode: Joi.number()
 });
 
-function validateBlacklistConfig(config: BlacklistConfig) {
-    const result = Joi.validate(config, blacklistConfigSchema);
+function validateIpFilterConfig(config: IpFilterConfig) {
+    const result = Joi.validate(config, ipFilterConfigSchema);
     if (result.error) {
         throw new ValidationError(result.error);
     } else {
@@ -42,8 +42,8 @@ function validateBlacklistConfig(config: BlacklistConfig) {
     }
 }
 
-module.exports = function(config: BlacklistConfig) {
-    validateBlacklistConfig(config);
+module.exports = function(config: IpFilterConfig) {
+    validateIpFilterConfig(config);
 
     let blocked: Array<string> = config.blacklist || [];
     if (config.database) {
