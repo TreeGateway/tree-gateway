@@ -16,7 +16,7 @@ export class MiddlewareLoader {
             'local': '../authentication/strategies/local'
         },
         'filter': {
-            'ipFilter': '../proxy/filters/ipFilter'
+            'ipFilter': '../filter/filters/ipFilter'
         }
         ,
         'interceptor/request': {

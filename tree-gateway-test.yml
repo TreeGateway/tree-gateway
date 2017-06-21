@@ -15,6 +15,24 @@ gateway:
         protocol:
             http:
                 listenPort: 8011
+        filter:
+            - name: ipFilter 
+              options: 
+                whitelist: 
+                    - "127.0.0.1"
+                    - "::1"
+                statusCode: 403
+                message: IP Filtered
+
     logger:
         level: 'info'
+    filter:
+        - name: ipFilter 
+          options: 
+            whitelist: 
+                - "127.0.0.1"
+                - "::1"
+            statusCode: 403
+            message: IP Filtered
+
     

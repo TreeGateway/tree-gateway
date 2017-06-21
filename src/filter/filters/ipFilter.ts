@@ -16,6 +16,7 @@ interface IpFilterConfig {
     database?: IpFilterDatabaseConfig;
     message?: string;
     statusCode?: number;
+    whitelist?: Array<string>;
 }
 
 interface IpFilterDatabaseConfig {
@@ -30,7 +31,8 @@ const ipFilterConfigSchema = Joi.object().keys({
         key: Joi.string()
     }),
     message: Joi.string(),
-    statusCode: Joi.number()
+    statusCode: Joi.number(),
+    whitelist: Joi.array().items(Joi.string())
 });
 
 function validateIpFilterConfig(config: IpFilterConfig) {
@@ -42,9 +44,7 @@ function validateIpFilterConfig(config: IpFilterConfig) {
     }
 }
 
-module.exports = function(config: IpFilterConfig) {
-    validateIpFilterConfig(config);
-
+function getBlacklistFilter(config: IpFilterConfig) {
     let blocked: Array<string> = config.blacklist || [];
     if (config.database) {
         const database: Database = Container.get(Database);
@@ -73,4 +73,43 @@ module.exports = function(config: IpFilterConfig) {
         }
         return allowed;
     };
+}
+
+function getWhitelistFilter(config: IpFilterConfig) {
+    let unblocked: Array<string> = config.whitelist || [];
+    if (config.database) {
+        const database: Database = Container.get(Database);
+        const logger: Logger = Container.get(Logger);
+        setInterval(() => {
+            database.redisClient.smembers(config.database.key || '{ipFilter}:whitelist')
+                .then((data: Array<string>) => {
+                    unblocked = data;
+                }).catch((err: any) => {
+                    logger.error(`Error retrieving whitelist ips from redis database. ${err.message}`);
+                });
+        }, getMilisecondsInterval(config.database.checkInterval, 30000));
+    }
+    return (req: express.Request, res: express.Response) => {
+        if (!unblocked) {
+            return true;
+        }
+        let ip: string = req.ip || req.connection.remoteAddress;
+        let allowed = ipFilter(ip, unblocked, { strict: false });
+        if (!allowed && ip.startsWith(IPV6_PREFIX)) {
+            ip = ip.substring(IPV6_PREFIX.length);
+            allowed = ipFilter(ip, unblocked, { strict: false });
+        }
+        if (!allowed) {
+            res.status(config.statusCode || 403).send(config.message || 'Not allowed.');
+        }
+        return allowed;
+    };
+}
+
+module.exports = function(config: IpFilterConfig) {
+    validateIpFilterConfig(config);
+    if (config.whitelist) {
+        return getWhitelistFilter(config);
+    }
+    return getBlacklistFilter(config);
 };

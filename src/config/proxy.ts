@@ -41,29 +41,6 @@ export interface Proxy {
      */
     supressViaHeader?: boolean;
     /**
-     * Add filters to the request pipeline. A Filter is a function that receives
-     * the request and the response object and must return a boolean value to inform
-     * it the given request should target the destination API or if it should be ignored.
-     *
-     * Example:
-     * ```
-     * module.exports = function (req, res) {
-     *   return true;
-     * };
-     * ```
-     *
-     * Each filter must be defined on its own .js file (placed on middleware/filter folder)
-     * and the fileName must match: <filterName>.js.
-     *
-     * So, the above filter should be saved in a file called myFilter.js and configured as:
-     * ```
-     * filter:[
-     *   {middleware{ name: "myFilter"} }
-     * ]
-     * ```
-     */
-    filter?: Array<Filter>;
-    /**
      * Add interceptors to the request pipeline. An Interceptor is a function that receives
      * the request or the response object and can modify these objects.
      *
@@ -71,7 +48,7 @@ export interface Proxy {
      *
      * Example of a request interceptor:
      * ```
-     * module.exports = function(proxyReq, originalReq) {
+     * module.exports = function(proxyReq) {
      *    // you can update headers
      *    proxyReq.headers['Content-Type'] = 'text/html';
      *    // you can change the method
@@ -134,24 +111,6 @@ export interface Proxy {
      * inside a proxy middleware, like a ```filter``` or ```interceptor```.
      */
     parseReqBody?: boolean;
-}
-
-/**
- * Add filters to the request pipeline. A Filter is a function that receives
- * the request and the response object and must return a boolean value to inform
- * it the given request should target the destination API or if it should be ignored.
- */
-export interface Filter {
-    /**
-     * The filter to be used.
-     */
-    middleware: MiddlewareConfig;
-    /**
-     * A list of groups that should be filtered by this filter. If not provided, everything
-     * will be filtered.
-     * Defaults to *.
-     */
-    group?: Array<string>;
 }
 
 /**
@@ -270,11 +229,6 @@ const httpAgentSchema = Joi.object().keys({
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()])
 });
 
-const filterSchema = Joi.object().keys({
-    group: Joi.array().items(Joi.string()),
-    middleware: middlewareConfigValidatorSchema.required()
-});
-
 const interceptorSchema = Joi.object().keys({
     group: Joi.array().items(Joi.string()),
     middleware: middlewareConfigValidatorSchema.required()
@@ -291,7 +245,6 @@ const jsonataExpressionSchema = Joi.object().keys({
 
 export const proxyValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
-    filter: Joi.array().items(filterSchema),
     httpAgent: httpAgentSchema,
     interceptor: interceptorsSchema,
     limit: Joi.string(),

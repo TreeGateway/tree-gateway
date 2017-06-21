@@ -8,9 +8,9 @@ import { Proxy, proxyValidatorSchema } from './proxy';
 import { Group, groupValidatorSchema } from './group';
 import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
 import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './serviceDiscovery';
+import { Filter, filterSchema} from './filter';
 import * as Joi from 'joi';
 import { ValidationError } from '../error/errors';
-
 /**
  * The API config descriptor.
  */
@@ -66,6 +66,29 @@ export interface ApiConfig {
      */
     cors?: Array<ApiCorsConfig>;
     /**
+     * Add filters to the request pipeline. A Filter is a function that receives
+     * the request and the response object and must return a boolean value to inform
+     * it the given request should target the destination API or if it should be ignored.
+     *
+     * Example:
+     * ```
+     * module.exports = function (req) {
+     *   return true;
+     * };
+     * ```
+     *
+     * Each filter must be defined on its own .js file (placed on middleware/filter folder)
+     * and the fileName must match: <filterName>.js.
+     *
+     * So, the above filter should be saved in a file called myFilter.js and configured as:
+     * ```
+     * filter:[
+     *   {middleware{ name: "myFilter"} }
+     * ]
+     * ```
+     */
+    filter?: Array<Filter>;
+    /**
      * Configuration for service discovery.
      */
     serviceDiscovery?: ServiceDiscoveryConfig;
@@ -77,6 +100,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     circuitBreaker: Joi.array().items(circuitBreakerConfigValidatorSchema),
     cors: Joi.array().items(apiCorsConfigSchema),
     description: Joi.string(),
+    filter: Joi.array().items(filterSchema),
     group: Joi.array().items(groupValidatorSchema),
     id: Joi.string().guid(),
     name: Joi.string().alphanum().min(3).max(30).required(),

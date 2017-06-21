@@ -6,6 +6,7 @@ import { AdminConfig, adminConfigValidatorSchema } from './admin';
 import { ProtocolConfig, protocolConfigSchema } from './protocol';
 import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfigSchema } from './logger';
 import { CorsConfig, corsConfigSchema } from './cors';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ValidationError } from '../error/errors';
 
 /**
@@ -71,7 +72,30 @@ export interface GatewayConfig {
      * Configure a timeout for the gateway http.Server. You can inform the amount of milisencods, or use
      * a [human-interval](https://www.npmjs.com/package/human-interval) string. Defaults to 'one minute'.
      */
-    timeout: string | number;
+    timeout?: string | number;
+    /**
+     * Add filters to the request pipeline. A Filter is a function that receives
+     * the request and the response object and must return a boolean value to inform
+     * it the given request should target the destination API or if it should be ignored.
+     *
+     * Example:
+     * ```
+     * module.exports = function (req) {
+     *   return true;
+     * };
+     * ```
+     *
+     * Each filter must be defined on its own .js file (placed on middleware/filter folder)
+     * and the fileName must match: <filterName>.js.
+     *
+     * So, the above filter should be saved in a file called myFilter.js and configured as:
+     * ```
+     * filter:[
+     *   { name: "myFilter"}
+     * ]
+     * ```
+     */
+    filter?: Array<MiddlewareConfig>;
 }
 
 export interface MonitorConfig {
@@ -179,6 +203,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
     cors: corsConfigSchema,
+    filter: Joi.array().items(middlewareConfigValidatorSchema),
     logger: loggerConfigSchema,
     monitor: Joi.array().items(monitorConfigSchema),
     protocol: protocolConfigSchema.required(),

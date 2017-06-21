@@ -15,6 +15,7 @@ import { ApiCors } from './cors/cors';
 import { ApiCircuitBreaker } from './circuitbreaker/circuit-breaker';
 import { ApiAuth } from './authentication/auth';
 import { ApiCache } from './cache/cache';
+import { ApiFilter } from './filter/filter';
 import { Logger } from './logger';
 import { AccessLogger } from './express-logger';
 import { Stats } from './stats/stats';
@@ -45,6 +46,7 @@ export class Gateway {
     @Inject private apiCircuitBreaker: ApiCircuitBreaker;
     @Inject private apiCache: ApiCache;
     @Inject private apiAuth: ApiAuth;
+    @Inject private apiFilter: ApiFilter;
     @Inject private logger: Logger;
     @Inject private statsRecorder: StatsRecorder;
     @Inject private monitors: Monitors;
@@ -277,6 +279,7 @@ export class Gateway {
         if (!api.proxy.disableStats) {
             this.configureStatsMiddleware(apiRouter, api.path, api.proxy.statsConfig);
         }
+        this.apiFilter.buildApiFilters(apiRouter, api);
 
         if (api.throttling) {
             if (this.logger.isDebugEnabled()) {
@@ -396,7 +399,10 @@ export class Gateway {
             }
 
             this.configService.installAllMiddlewares()
-                .then(() => this.loadApis())
+                .then(() => {
+                    this.apiFilter.buildGatewayFilters(this.app, this.config.gateway.filter);
+                    return this.loadApis();
+                })
                 .then(resolve)
                 .catch(reject);
         });
@@ -414,6 +420,7 @@ export class Gateway {
                 AccessLogger.configureAccessLoger(this.config.gateway.admin.accessLogger,
                     this.config.rootPath, this.adminApp, './logs/admin');
             }
+            this.apiFilter.buildGatewayFilters(this.adminApp, this.config.gateway.admin.filter);
             this.configureAdminCors();
             this.configureApiDocs();
 

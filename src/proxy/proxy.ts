@@ -3,7 +3,6 @@
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
 import { Proxy, HttpAgent } from '../config/proxy';
-import { ProxyFilter } from './filter';
 import { ProxyInterceptor, ResponseInterceptors } from './interceptor';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
@@ -21,7 +20,6 @@ const memoryStream = require('memory-streams').WritableStream;
  */
 @AutoWired
 export class ApiProxy {
-    @Inject private filter: ProxyFilter;
     @Inject private interceptor: ProxyInterceptor;
     @Inject private logger: Logger;
 
@@ -29,7 +27,6 @@ export class ApiProxy {
      * Configure a proxy for a given API
      */
     proxy(apiRouter: express.Router, api: ApiConfig) {
-        this.filter.buildFilters(apiRouter, api);
         if (api.proxy.parseReqBody) {
             apiRouter.use(this.configureBodyParser(api));
         }

@@ -30,31 +30,31 @@
         "target": {
             "host": "http://httpbin.org"
         },
-        "filter": [
-            {
-                "middleware": {
-                    "name": "ipFilter", 
-                    "options": {
-                        "blacklist": ["127.0.0.1", "::1"],
-                        "statusCode": 403,
-                        "message": "IP Filtered"
-                    }
-                },
-                "group": ["Group2"]
-            },
-            {
-                "middleware": {
-                    "name": "myCustomFilter"
-                },
-                "group": ["Group1"]
-            },
-            {
-                "middleware": {
-                    "name": "mySecondFilter"
-                },
-                "group": ["Group1"]
-            }
-        ],
         "timeout": 5000
-    }
+    },
+    "filter": [
+        {
+            "middleware": {
+                "name": "ipFilter", 
+                "options": {
+                    "blacklist": ["127.0.0.1", "::1"],
+                    "statusCode": 403,
+                    "message": "IP Filtered"
+                }
+            },
+            "group": ["Group2"]
+        },
+        {
+            "middleware": {
+                "name": "myCustomFilter"
+            },
+            "group": ["Group1"]
+        },
+        {
+            "middleware": {
+                "name": "mySecondFilter"
+            },
+            "group": ["Group1"]
+        }
+    ]    
 }

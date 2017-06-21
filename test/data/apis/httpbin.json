@@ -36,8 +36,8 @@
             "allow": ["Group1"],
             "deny": ["Group2"]
         },
-        "filter": [
-        ],
         "timeout": 5000
-    }
+    },
+    "filter": [
+    ]
 }
