@@ -29,10 +29,10 @@ export class ApiProxy {
      * Configure a proxy for a given API
      */
     proxy(apiRouter: express.Router, api: ApiConfig) {
+        this.filter.buildFilters(apiRouter, api);
         if (api.proxy.parseReqBody) {
             apiRouter.use(this.configureBodyParser(api));
         }
-        this.filter.buildFilters(apiRouter, api);
         apiRouter.use(this.configureProxy(api));
     }
 
