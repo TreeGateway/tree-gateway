@@ -33,6 +33,7 @@ export class ApiProxy {
         if (api.proxy.parseReqBody) {
             apiRouter.use(this.configureBodyParser(api));
         }
+        this.interceptor.buildRequestInterceptors(apiRouter, api);
         apiRouter.use(this.configureProxy(api));
     }
 
@@ -120,7 +121,6 @@ export class ApiProxy {
 
         const maybeWrapResponse = this.interceptor.hasResponseInterceptor(api.proxy);
         const responseInterceptor: ResponseInterceptors = this.interceptor.responseInterceptor(api);
-        this.handleRequestInterceptor(api, proxy);
         this.handleResponseInterceptor(api, proxy, responseInterceptor);
 
         function validateInterceptors (req: express.Request, res: express.Response): boolean {
@@ -182,44 +182,6 @@ export class ApiProxy {
                 }
             });
         }
-    }
-
-    private handleRequestInterceptor(api: ApiConfig, proxy: any) {
-        const requestInterceptor: Function = this.interceptor.requestInterceptor(api);
-        const parseReqBody = api.proxy.parseReqBody;
-        if (requestInterceptor) {
-            proxy.on('proxyReq', (proxyReq: any, userReq: any, response: any, options: any) => {
-                requestInterceptor(proxyReq, userReq);
-                if (parseReqBody) {
-                    this.updateBody(proxyReq, userReq);
-                }
-            });
-        } else if (parseReqBody) {
-            proxy.on('proxyReq', (proxyReq: any, userReq: any, response: any, options: any) => {
-                this.updateBody(proxyReq, userReq);
-            });
-        }
-    }
-
-    private updateBody(proxyReq: any, userReq: any) {
-        let body = proxyReq.body || userReq.body;
-        if (body) {
-            body = this.asBuffer(body);
-            proxyReq.setHeader('Content-Length', (<Buffer>body).length);
-            proxyReq.write(body);
-        }
-    }
-
-    private asBuffer(body: any) {
-        let ret;
-        if (Buffer.isBuffer(body)) {
-            ret = body;
-        } else if (typeof body === 'object') {
-            ret = new Buffer(JSON.stringify(body));
-        } else if (typeof body === 'string') {
-            ret = new Buffer(body);
-        }
-        return ret;
     }
 
     private maybeParseBody(req: express.Request, limit: string) {

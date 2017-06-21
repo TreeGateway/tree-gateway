@@ -1,5 +1,5 @@
-module.exports = function(proxyReq, originalReq) {
-    const body = JSON.parse(originalReq.body);
+module.exports = function(req) {
+    const body = JSON.parse(req.body);
     body.insertedProperty = 'newProperty';
-    originalReq.body = body;
+    return {body: body};
 };

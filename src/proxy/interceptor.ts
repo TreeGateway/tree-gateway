@@ -1,9 +1,11 @@
 'use strict';
 
+import * as express from 'express';
 import * as config from '../config/proxy';
 import { ApiConfig } from '../config/api';
 import * as Groups from '../group';
 import { Inject } from 'typescript-ioc';
+import { Logger } from '../logger';
 import { createFunction } from '../utils/functions';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 
@@ -16,12 +18,12 @@ export interface ResponseInterceptors {
 
 export class ProxyInterceptor {
     @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private logger: Logger;
 
-    requestInterceptor(api: ApiConfig) {
+    buildRequestInterceptors(apiRouter: express.Router, api: ApiConfig) {
         if (this.hasRequestInterceptor(api.proxy)) {
-            return this.buildRequestInterceptor(api);
+            this.createRequestInterceptors(apiRouter, api);
         }
-        return null;
     }
 
     responseInterceptor(api: ApiConfig) {
@@ -39,22 +41,53 @@ export class ProxyInterceptor {
         return (proxy.interceptor && proxy.interceptor.response && proxy.interceptor.response.length > 0);
     }
 
-    private buildRequestInterceptor(api: ApiConfig) {
-        const body = new Array<string>();
+    private createRequestInterceptors(apiRouter: express.Router, api: ApiConfig) {
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Configuring request interceptors for Proxy target [${api.path}]. Interceptors [${JSON.stringify(api.proxy.interceptor.request)}]`);
+        }
         const proxy: config.Proxy = api.proxy;
-        const interceptors: any = {};
+
         proxy.interceptor.request.forEach((interceptor, index) => {
             const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/request', interceptor.middleware);
-            interceptors[interceptor.middleware.name] = interceptorMiddleware;
             if (interceptor.group) {
-                body.push(`if (`);
-                body.push(Groups.buildGroupAllowTest('originalReq', api.group, interceptor.group));
-                body.push(`)`);
+                const groupValidator = Groups.buildGroupAllowFilter(api.group, interceptor.group);
+                apiRouter.use((req, res, next) => {
+                    if (groupValidator(req, res)) {
+                        const proxyReq = (<any>req).proxyReq || {
+                            body: req.body,
+                            headers: Object.assign({}, req.headers),
+                            method: req.method,
+                            url: req.url
+                        };
+                        Promise.resolve(interceptorMiddleware(proxyReq))
+                            .then(result => {
+                                (<any>req).proxyReq = Object.assign(proxyReq, result || {});
+                                next();
+                            }).catch(err => {
+                                next(err);
+                            });
+                    } else {
+                        next();
+                    }
+                });
+            } else {
+                apiRouter.use((req, res, next) => {
+                    const proxyReq = (<any>req).proxyReq || {
+                        body: req.body,
+                        headers: Object.assign({}, req.headers),
+                        method: req.method,
+                        url: req.url
+                    };
+                    Promise.resolve(interceptorMiddleware(proxyReq))
+                        .then(result => {
+                            (<any>req).proxyReq = Object.assign(proxyReq, result || {});
+                            next();
+                        }).catch(err => {
+                            next(err);
+                        });
+                });
             }
-            body.push(`interceptors['${interceptor.middleware.name}'](proxyReq, originalReq);`);
         });
-
-        return createFunction({ pathToRegexp: pathToRegexp, interceptors: interceptors }, 'proxyReq', 'originalReq', body.join(''));
     }
 
     private buildResponseInterceptor(api: ApiConfig) {

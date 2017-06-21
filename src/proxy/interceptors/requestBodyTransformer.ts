@@ -6,12 +6,14 @@ const jsonata = require('jsonata');
 module.exports = function(config: JSONAtaExpression) {
     validateJsonAtaExpression(config);
     const expression = jsonata(config.expression);
-    return (proxyReq: any, originalReq: any) => {
+    return (req: any) => {
+        const result: any = {};
         try {
-            const body = JSON.parse(originalReq.body);
-            originalReq.body = expression.evaluate(body);
+            const body = JSON.parse(req.body);
+            result.body = expression.evaluate(body);
         } catch (e) {
-            originalReq.body = '';
+            result.body = '';
         }
+        return result;
     };
 };

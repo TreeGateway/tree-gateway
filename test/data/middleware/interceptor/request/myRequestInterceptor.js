@@ -1,3 +1,5 @@
-module.exports = function(proxyReq, originalReq) {
-    proxyReq.setHeader('X-Proxied-By', 'Tree-Gateway');
+module.exports = function(req) {
+    var headers = req.headers;
+    headers['X-Proxied-By'] =  'Tree-Gateway';
+    return {headers: headers};
 };
