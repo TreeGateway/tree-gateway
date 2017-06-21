@@ -6,7 +6,7 @@ import { Configuration } from './configuration';
 const parser = new ArgumentParser({
     addHelp: true,
     description: 'Tree-Gateway',
-    version: '0.1.0'
+    version: '0.2.0'
 });
 
 parser.addArgument(
