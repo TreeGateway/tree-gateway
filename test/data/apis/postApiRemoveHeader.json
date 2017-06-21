@@ -6,6 +6,7 @@
         "target": {
             "host": "http://httpbin.org"
         },
+        "supressViaHeader": true,
         "parseReqBody": true,
         "timeout": 5000,
         "interceptor": {

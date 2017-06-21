@@ -112,6 +112,23 @@ describe('Gateway Tests', () => {
                 done();
             });
         });
+        it('should be able to send post requests with interceptors that remove headers', (done) => {
+            gatewayRequest.post({
+                body: {test: 'test123'},
+                json: true,
+                url: '/removeheader/post'
+            }, (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                expect(body.headers['X-Proxied-By']).to.equal('Tree-Gateway');
+                expect(body.headers['X-Proxied-2-By']).to.equal('Tree-Gateway');
+                expect(response.headers).to.not.have.property('via');
+                const bodyData = JSON.parse(body.data);
+                expect(bodyData.test).to.equal('test123');
+                expect(bodyData.insertedProperty).to.equal('newProperty');
+                expect(body.changedByResponseInterceptor).to.equal('changed');
+                done();
+            });
+        });
         it('should be able to filter requests by path', (done) => {
             gatewayRequest('/test/user-agent', (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(404);
