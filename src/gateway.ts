@@ -81,19 +81,18 @@ export class Gateway {
     }
 
     start(): Promise<void> {
-        const self = this;
         return new Promise<void>((resolve, reject) => {
-            self.initialize()
+            this.initialize()
                 .then(() => {
-                    self.apiServer = new Map<string, http.Server>();
+                    this.apiServer = new Map<string, http.Server>();
                     let started = 0;
                     let expected = 0;
-                    if (self.config.gateway.protocol.http) {
+                    if (this.config.gateway.protocol.http) {
                         expected++;
-                        const httpServer = http.createServer(self.app);
+                        const httpServer = http.createServer(this.app);
 
-                        self.apiServer.set('http', <http.Server>httpServer.listen(self.config.gateway.protocol.http.listenPort, () => {
-                            self.logger.info(`Gateway listenning HTTP on port ${self.config.gateway.protocol.http.listenPort}`);
+                        this.apiServer.set('http', <http.Server>httpServer.listen(this.config.gateway.protocol.http.listenPort, () => {
+                            this.logger.info(`Gateway listenning HTTP on port ${this.config.gateway.protocol.http.listenPort}`);
                             started++;
                             if (started === expected) {
                                 this.serverRunning = true;
@@ -101,11 +100,11 @@ export class Gateway {
                             }
                         }));
                     }
-                    if (self.config.gateway.protocol.https) {
+                    if (this.config.gateway.protocol.https) {
                         expected++;
-                        const httpsServer = self.createHttpsServer(self.app);
-                        self.apiServer.set('https', httpsServer.listen(self.config.gateway.protocol.https.listenPort, () => {
-                            self.logger.info(`Gateway listenning HTTPS on port ${self.config.gateway.protocol.https.listenPort}`);
+                        const httpsServer = this.createHttpsServer(this.app);
+                        this.apiServer.set('https', httpsServer.listen(this.config.gateway.protocol.https.listenPort, () => {
+                            this.logger.info(`Gateway listenning HTTPS on port ${this.config.gateway.protocol.https.listenPort}`);
                             started++;
                             if (started === expected) {
                                 this.serverRunning = true;
@@ -121,33 +120,32 @@ export class Gateway {
     }
 
     startAdmin(): Promise<void> {
-        const self = this;
         return new Promise<void>((resolve, reject) => {
-            if (!self.config.gateway.admin) {
+            if (!this.config.gateway.admin) {
                 return resolve();
             }
-            if (self.adminApp) {
-                self.adminServer = new Map<string, http.Server>();
+            if (this.adminApp) {
+                this.adminServer = new Map<string, http.Server>();
                 let started = 0;
                 let expected = 0;
-                if (self.config.gateway.admin.protocol.http) {
+                if (this.config.gateway.admin.protocol.http) {
                     expected++;
-                    const httpServer = http.createServer(self.adminApp);
+                    const httpServer = http.createServer(this.adminApp);
                     httpServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
-                    self.adminServer.set('http', <http.Server>httpServer.listen(self.config.gateway.admin.protocol.http.listenPort, () => {
-                        self.logger.info(`Gateway Admin Server listenning HTTP on port ${self.config.gateway.admin.protocol.http.listenPort}`);
+                    this.adminServer.set('http', <http.Server>httpServer.listen(this.config.gateway.admin.protocol.http.listenPort, () => {
+                        this.logger.info(`Gateway Admin Server listenning HTTP on port ${this.config.gateway.admin.protocol.http.listenPort}`);
                         started++;
                         if (started === expected) {
                             resolve();
                         }
                     }));
                 }
-                if (self.config.gateway.admin.protocol.https) {
+                if (this.config.gateway.admin.protocol.https) {
                     expected++;
-                    const httpsServer = self.createHttpsServer(self.adminApp);
+                    const httpsServer = this.createHttpsServer(this.adminApp);
                     httpsServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
-                    self.adminServer.set('https', httpsServer.listen(self.config.gateway.admin.protocol.https.listenPort, () => {
-                        self.logger.info(`Gateway Admin Server listenning HTTPS on port ${self.config.gateway.admin.protocol.https.listenPort}`);
+                    this.adminServer.set('https', httpsServer.listen(this.config.gateway.admin.protocol.https.listenPort, () => {
+                        this.logger.info(`Gateway Admin Server listenning HTTPS on port ${this.config.gateway.admin.protocol.https.listenPort}`);
                         started++;
                         if (started === expected) {
                             resolve();
@@ -162,27 +160,26 @@ export class Gateway {
 
     stop(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const self = this;
             this.monitors.stopMonitors();
             if (this.apiServer) {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {
-                    self.serverRunning = false;
+                    this.serverRunning = false;
                     return resolve();
                 }
                 this.apiServer.forEach(server => {
                     server.close(() => {
                         toClose--;
                         if (toClose === 0) {
-                            self.logger.info('Gateway server stopped');
-                            self.serverRunning = false;
+                            this.logger.info('Gateway server stopped');
+                            this.serverRunning = false;
                             resolve();
                         }
                     });
                 });
                 this.apiServer = null;
             } else {
-                self.serverRunning = false;
+                this.serverRunning = false;
                 resolve();
             }
         });
@@ -190,7 +187,6 @@ export class Gateway {
 
     stopAdmin() {
         return new Promise<void>((resolve, reject) => {
-            const self = this;
             if (this.adminServer) {
                 let toClose = this.adminServer.size;
                 if (toClose === 0) {
@@ -200,7 +196,7 @@ export class Gateway {
                     server.close(() => {
                         toClose--;
                         if (toClose === 0) {
-                            self.logger.info('Gateway Admin server stopped');
+                            this.logger.info('Gateway Admin server stopped');
                             resolve();
                         }
                     });
@@ -365,22 +361,21 @@ export class Gateway {
     }
 
     private initialize(): Promise<void> {
-        const self = this;
         return new Promise<void>((resolve, reject) => {
-            self.app = express();
-            self.monitors.startMonitors();
+            this.app = express();
+            this.monitors.startMonitors();
 
-            self.configureServer()
-                .then(() => self.configService.removeAllListeners()
-                    .on(ConfigEvents.CONFIG_UPDATED, (packageId: string, needsReload: boolean) => self.updateConfig(packageId, needsReload))
-                    .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => self.circuitChanged(id, state))
+            this.configureServer()
+                .then(() => this.configService.removeAllListeners()
+                    .on(ConfigEvents.CONFIG_UPDATED, (packageId: string, needsReload: boolean) => this.updateConfig(packageId, needsReload))
+                    .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => this.circuitChanged(id, state))
                     .subscribeEvents())
                 .then(() => {
-                    self.configureAdminServer();
+                    this.configureAdminServer();
                     resolve();
                 })
                 .catch((err) => {
-                    self.logger.error(`Error configuring gateway server: ${err.message}\n${JSON.stringify(this.config.gateway)}`);
+                    this.logger.error(`Error configuring gateway server: ${err.message}\n${JSON.stringify(this.config.gateway)}`);
                     reject(err);
                 });
         });

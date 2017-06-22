@@ -72,6 +72,12 @@ export class MiddlewareRest {
         return this.service.list('cors/origin', name);
     }
 
+    @GET
+    @Path('proxy/router')
+    proxyRouter(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('proxy/router', name);
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter( @PathParam('name') name: string): Promise<void> {
@@ -132,6 +138,12 @@ export class MiddlewareRest {
         return this.service.remove('cors/origin', name);
     }
 
+    @DELETE
+    @Path('proxy/router/:name')
+    removeProxyRouter( @PathParam('name') name: string): Promise<void> {
+        return this.service.remove('proxy/router', name);
+    }
+
     @PUT
     @Path('filters/:name')
     updateFilter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
@@ -190,6 +202,12 @@ export class MiddlewareRest {
     @Path('cors/:name')
     updateCors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('cors/origin', name, file.buffer);
+    }
+
+    @PUT
+    @Path('proxy/router/:name')
+    updateProxyRouter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+        return this.service.save('proxy/router', name, file.buffer);
     }
 
     @GET
@@ -324,6 +342,20 @@ export class MiddlewareRest {
     getCorsMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('cors/origin', name)
+                .then(value => {
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
+                })
+                .catch(err => {
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
+
+    @GET
+    @Path('proxy/router/:name')
+    getProxyRouterMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
+            this.service.read('proxy/router', name)
                 .then(value => {
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
                 })
@@ -476,6 +508,21 @@ export class MiddlewareRest {
             this.service.add('cors/origin', name, file.buffer)
                 .then(value => {
                     resolve(new Return.NewResource<void>(path.join('cors', name)));
+                })
+                .catch(err => {
+                    reject(new Errors.InternalServerError('Error saving handler.'));
+                });
+        });
+    }
+
+    @POST
+    @Path('proxy/router')
+    addProxyRouter( @FileParam('file') file: Express.Multer.File,
+        @FormParam('name') name: string) {
+        return new Promise<Return.NewResource<void>>((resolve, reject) => {
+            this.service.add('proxy/router', name, file.buffer)
+                .then(value => {
+                    resolve(new Return.NewResource<void>(path.join('proxy/router', name)));
                 })
                 .catch(err => {
                     reject(new Errors.InternalServerError('Error saving handler.'));

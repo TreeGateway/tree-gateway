@@ -2,7 +2,7 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
-import { Proxy, HttpAgent } from '../config/proxy';
+import { Proxy, HttpAgent, ProxyRouter } from '../config/proxy';
 import { ProxyInterceptor, ResponseInterceptors } from './interceptor';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
@@ -10,6 +10,7 @@ import {getMilisecondsInterval} from '../utils/time-intervals';
 import * as url from 'url';
 import * as _ from 'lodash';
 import * as getRawBody from 'raw-body';
+import { MiddlewareLoader } from '../utils/middleware-loader';
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../lib/http-proxy');
 const memoryStream = require('memory-streams').WritableStream;
@@ -22,6 +23,7 @@ const memoryStream = require('memory-streams').WritableStream;
 export class ApiProxy {
     @Inject private interceptor: ProxyInterceptor;
     @Inject private logger: Logger;
+    @Inject private middlewareLoader: MiddlewareLoader;
 
     /**
      * Configure a proxy for a given API
@@ -31,6 +33,7 @@ export class ApiProxy {
             apiRouter.use(this.configureBodyParser(api));
         }
         this.interceptor.buildRequestInterceptors(apiRouter, api);
+        this.buildRouterMiddleware(apiRouter, api);
         apiRouter.use(this.configureProxy(api));
     }
 
@@ -55,7 +58,6 @@ export class ApiProxy {
 
     private getHttpAgent(api: ApiConfig) {
         const apiAgentOptions: HttpAgent = api.proxy.httpAgent || {};
-        const proxyTarget = url.parse(api.proxy.target.host);
         const agentOptions: any = {
             keepAlive: true
         };
@@ -73,9 +75,15 @@ export class ApiProxy {
         if (apiAgentOptions.timeout) {
             agentOptions.timeout = getMilisecondsInterval(apiAgentOptions.timeout);
         }
-
-        if (proxyTarget.protocol && proxyTarget.protocol === 'https:') {
-            return new agentKeepAlive.HttpsAgent(agentOptions);
+        if (api.proxy.target.router) {
+            if (api.proxy.target.router.ssl) {
+                return new agentKeepAlive.HttpsAgent(agentOptions);
+            }
+        } else {
+            const proxyTarget = url.parse(api.proxy.target.host);
+            if (proxyTarget.protocol && proxyTarget.protocol === 'https:') {
+                return new agentKeepAlive.HttpsAgent(agentOptions);
+            }
         }
         return new agentKeepAlive(agentOptions);
     }
@@ -93,13 +101,12 @@ export class ApiProxy {
     }
 
     private configureProxy(api: ApiConfig) {
-        const self = this;
         const apiProxy: Proxy = api.proxy;
         const proxyConfig: any = {
             changeOrigin: !apiProxy.preserveHostHdr,
             target: apiProxy.target.host
         };
-        const httpAgent = self.getHttpAgent(api);
+        const httpAgent = this.getHttpAgent(api);
         if (httpAgent) {
             proxyConfig.agent = httpAgent;
         }
@@ -136,10 +143,12 @@ export class ApiProxy {
 
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
             if (validateInterceptors(req, res)) {
-                const options: any = {};
+                const options: any = (<any>req).proxyOptions || {};
                 (<any>res).__data = new memoryStream();
                 options.destPipe = {stream: (<any>res).__data};
                 proxy.web(req, res, options);
+            } else if ((<any>req).proxyOptions) {
+                proxy.web(req, res, (<any>req).proxyOptions);
             } else {
                 proxy.web(req, res);
             }
@@ -188,6 +197,22 @@ export class ApiProxy {
             return getRawBody(req, {
                 length: <string>req.headers['content-length'],
                 limit: limit
+            });
+        }
+    }
+
+    private buildRouterMiddleware(apiRouter: express.Router, api: ApiConfig) {
+        if (api.proxy.target.router) {
+            const router: ProxyRouter = api.proxy.target.router;
+            const routerMiddleware = this.middlewareLoader.loadMiddleware('proxy/router', router.middleware);
+            apiRouter.use((req, res, next) => {
+                Promise.resolve(routerMiddleware(req))
+                    .then(result => {
+                        (<any>req).proxyOptions = {target: result};
+                        next();
+                    }).catch(err => {
+                        next(err);
+                    });
             });
         }
     }

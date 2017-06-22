@@ -147,9 +147,13 @@ export interface Interceptor {
 
 export interface Target {
     /**
-     * The proxy target host.
+     * The proxy target destination.
      */
-    host: string;
+    host?: string;
+    /**
+     * A dinamic router for proxy requests destination
+     */
+    router?: ProxyRouter;
     /**
      * A list of allowed groups
      */
@@ -158,6 +162,37 @@ export interface Target {
      * A list of denied groups
      */
     deny?: Array<string>;
+}
+
+/**
+ * A dinamic router for proxy requests
+ */
+export interface ProxyRouter {
+    /**
+     * if true use https protocol intead of http.
+     */
+    ssl: boolean;
+    /**
+     * Add a router middleware to the pipeline. A Router is a function that receives
+     * the request object and must return a string value to inform
+     * the target destination for this proxy.
+     *
+     * Example:
+     * ```
+     * module.exports = function (req) {
+     *   return 'http://httpbin.org';
+     * };
+     * ```
+     *
+     * Each router must be defined on its own .js file (placed on middleware/proxy/router folder)
+     * and the fileName must match: <routerName>.js.
+     *
+     * So, the above router should be saved in a file called myRouter.js and configured as:
+     * ```
+     * {middleware{ name: "myRouter"} }
+     * ```
+     */
+    middleware?: MiddlewareConfig;
 }
 
 /**
@@ -214,11 +249,17 @@ export interface ResponseInterceptorResult {
     updateHeaders?: any;
 }
 
+const routerConfigValidatorSchema =  Joi.object().keys({
+    middleware: middlewareConfigValidatorSchema.required(),
+    ssl: Joi.boolean()
+});
+
 const targetSchema = Joi.object().keys({
     allow: Joi.array().items(Joi.string()),
     deny: Joi.array().items(Joi.string()),
-    host: Joi.string().required()
-});
+    host: Joi.string(),
+    router: routerConfigValidatorSchema
+}).xor('host', 'router');
 
 const httpAgentSchema = Joi.object().keys({
     freeSocketKeepAliveTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),

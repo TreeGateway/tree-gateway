@@ -56,6 +56,10 @@ export class Cli {
                 return this.processMiddlewareThrottlingSkip();
             case 'circuitbreaker':
                 return this.processMiddlewareCircuitBreaker();
+            case 'cors':
+                return this.processMiddlewareCors();
+            case 'proxyRouter':
+                return this.processMiddlewareProxyRouter();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
@@ -502,6 +506,106 @@ export class Cli {
                             .catch(reject);
                     } else if (this.args.get) {
                         sdk.middleware.getCircuitBreakerMiddleware(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareCors(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.corsOrigin(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeCors(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateCors(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addCors(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getCorsMiddleware(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareProxyRouter(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.proxyRouter(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeProxyRouter(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateProxyRouter(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addProxyRouter(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getProxyRouterMiddleware(this.args.get)
                             .then((file) => {
                                 console.info(file.toString());
                             })

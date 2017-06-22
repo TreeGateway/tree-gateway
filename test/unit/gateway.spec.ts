@@ -147,6 +147,12 @@ describe('Gateway Tests', () => {
                 });
             });
         });
+        it('should be able to route requests with trafficSplit router', (done) => {
+            gatewayRequest('/trafficSplit/get', (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                done();
+            });
+        });
         it('should be able to filter IPs', (done) => {
             gatewayRequest.post({
                 body: {test: 'test123'},

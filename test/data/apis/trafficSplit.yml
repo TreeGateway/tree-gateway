@@ -1,0 +1,16 @@
+---
+name: TestTrafficSplitAPI
+version: 1.0.0
+path: "/trafficSplit"
+proxy:
+  target:
+    router:
+      middleware:
+        name: trafficSplit
+        options:
+          destinations: 
+            - target: http://httpbin.org
+              weight: 75
+            - target: http://httpbin.org/anything
+              weight: 25
+  timeout: 5000

@@ -59,6 +59,19 @@
                 "prettyPrint": true 
             }
         },
+        "accessLogger": {
+            "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+            "console": {
+                "timestamp": true,
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "json": false,
+                "prettyPrint": true,
+                "outputDir": "./logs"
+            }
+        },
         "statsConfig": {
             "granularity": {
                 "duration": "1 hour",

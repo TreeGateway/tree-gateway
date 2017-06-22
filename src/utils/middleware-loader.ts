@@ -17,13 +17,15 @@ export class MiddlewareLoader {
         },
         'filter': {
             'ipFilter': '../filter/filters/ipFilter'
-        }
-        ,
+        },
         'interceptor/request': {
             'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer'
         },
         'interceptor/response': {
             'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer'
+        },
+        'proxy/router': {
+            'trafficSplit': '../proxy/routers/trafficSplit'
         }
     };
 

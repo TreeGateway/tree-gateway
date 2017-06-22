@@ -16,6 +16,7 @@ export interface Middleware {
     throttlingSkip(name?: string): Promise<Array<string>>;
     circuitBreaker(name?: string): Promise<Array<string>>;
     corsOrigin(name?: string): Promise<Array<string>>;
+    proxyRouter(name?: string): Promise<Array<string>>;
     removeFilter(name: string): Promise<void>;
     removeRequestInterceptor( name: string): Promise<void>;
     removeResponseInterceptor( name: string): Promise<void>;
@@ -26,6 +27,7 @@ export interface Middleware {
     removeThrottlingSkip( name: string): Promise<void>;
     removeCircuitBreaker( name: string): Promise<void>;
     removeCors(name: string): Promise<void>;
+    removeProxyRouter(name: string): Promise<void>;
     updateFilter(name: string, fileName: string): Promise<void>;
     updateRequestInterceptor(name: string, fileName: string): Promise<void>;
     updateResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -36,6 +38,7 @@ export interface Middleware {
     updateThrottlingSkip(name: string, fileName: string): Promise<void>;
     updateCircuitBreaker(name: string, fileName: string): Promise<void>;
     updateCors(name: string, fileName: string): Promise<void>;
+    updateProxyRouter(name: string, fileName: string): Promise<void>;
     addFilter(name: string, fileName: string): Promise<void>;
     addRequestInterceptor(name: string, fileName: string): Promise<void>;
     addResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -46,6 +49,7 @@ export interface Middleware {
     addThrottlingSkip(name: string, fileName: string): Promise<void>;
     addCircuitBreaker(name: string, fileName: string): Promise<void>;
     addCors(name: string, fileName: string): Promise<void>;
+    addProxyRouter(name: string, fileName: string): Promise<void>;
     getFilter(name: string): Promise<Buffer>;
     getRequestInterceptor(name: string): Promise<Buffer>;
     getResponseInterceptor(name: string): Promise<Buffer>;
@@ -56,6 +60,7 @@ export interface Middleware {
     getThrottlingSkip(name: string): Promise<Buffer>;
     getCircuitBreakerMiddleware(name: string): Promise<Buffer>;
     getCorsMiddleware(name: string): Promise<Buffer>;
+    getProxyRouterMiddleware(name: string): Promise<Buffer>;
 }
 
 export class MiddlewareClient implements Middleware {
@@ -204,6 +209,19 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
+    proxyRouter(name?: string): Promise<Array<string>> {
+        return new Promise<Array<string>>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({name})
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
     removeFilter(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({name})
@@ -334,6 +352,19 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
+    removeProxyRouter(name: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({name})
+                .then((response: any) => {
+                    if (response.status === 204) {
+                        return resolve();
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
     updateFilter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('filters', fileName, true);
     }
@@ -374,6 +405,10 @@ export class MiddlewareClient implements Middleware {
         return this.installMiddleware('cors', fileName, true);
     }
 
+    updateProxyRouter(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('proxy/router', fileName, true);
+    }
+
     addFilter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('filters', fileName);
     }
@@ -412,6 +447,10 @@ export class MiddlewareClient implements Middleware {
 
     addCors(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('cors', fileName);
+    }
+
+    addProxyRouter(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('proxy/router', fileName);
     }
 
     getFilter(name: string): Promise<Buffer> {
@@ -534,6 +573,19 @@ export class MiddlewareClient implements Middleware {
     getCorsMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
             this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({name})
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
+    getProxyRouterMiddleware(name: string): Promise<Buffer> {
+        return new Promise<Buffer>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({name})
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);

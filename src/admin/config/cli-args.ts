@@ -435,4 +435,78 @@ circuitbreaker.addArgument(
         help: 'Inform the name of the Circuitbreaker to be retrieved',
     }
 );
+
+const cors = middlewareCommands.addParser('cors', {
+    addHelp: true,
+    help: 'Cors configurations'
+});
+
+cors.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Cors listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+cors.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Cors name to be removed',
+    }
+);
+
+cors.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Cors file (JS format) to be updated. Ex: -u handler1 ./cors/handler1.js',
+        nargs: 2
+    }
+);
+
+cors.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Cors file (JS format) to be added. Ex: -a handler1 ./cors/handler1.js',
+    }
+);
+
+cors.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Cors to be retrieved',
+    }
+);
+
+const proxyRouter = middlewareCommands.addParser('proxyRouter', {
+    addHelp: true,
+    help: 'Proxy Router configurations'
+});
+
+proxyRouter.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Proxy Router listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+proxyRouter.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Proxy Router name to be removed',
+    }
+);
+
+proxyRouter.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Proxy Router file (JS format) to be updated. Ex: -u handler1 ./proxy/router/handler1.js',
+        nargs: 2
+    }
+);
+
+proxyRouter.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Proxy Router file (JS format) to be added. Ex: -a handler1 ./proxy/router/handler1.js',
+    }
+);
+
+proxyRouter.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Proxy Router to be retrieved',
+    }
+);
 export let configArgs = parser.parseArgs();
