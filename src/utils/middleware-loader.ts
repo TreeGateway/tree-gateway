@@ -25,6 +25,8 @@ export class MiddlewareLoader {
             'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer'
         },
         'proxy/router': {
+            'header': '../proxy/routers/header',
+            'query': '../proxy/routers/query',
             'trafficSplit': '../proxy/routers/trafficSplit'
         }
     };

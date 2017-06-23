@@ -153,6 +153,35 @@ describe('Gateway Tests', () => {
                 done();
             });
         });
+        it('should be able to route requests with querySplit router', (done) => {
+            gatewayRequest('/querySplit/get', (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                const result = JSON.parse(body);
+                expect(result.url).to.equal('http://httpbin.org/get');
+                gatewayRequest('/querySplit/get?apiVersion=2', (err: any, res: any, b: any) => {
+                    expect(res.statusCode).to.equal(200);
+                    const result2 = JSON.parse(b);
+                    expect(result2.url).to.equal('http://httpbin.org/anything/get?apiVersion=2');
+                    done();
+                });
+            });
+        });
+        it('should be able to route requests with headerSplit router', (done) => {
+            gatewayRequest('/headerSplit/get', (error: any, response: any, body: any) => {
+                expect(response.statusCode).to.equal(200);
+                const result = JSON.parse(body);
+                expect(result.url).to.equal('http://httpbin.org/get');
+                gatewayRequest.get({
+                    headers: { 'authorization': '2' },
+                    url: '/headerSplit/get'
+                }, (err: any, res: any, b: any) => {
+                    expect(res.statusCode).to.equal(200);
+                    const result2 = JSON.parse(b);
+                    expect(result2.url).to.equal('http://httpbin.org/anything/get');
+                    done();
+                });
+            });
+        });
         it('should be able to filter IPs', (done) => {
             gatewayRequest.post({
                 body: {test: 'test123'},

@@ -1,0 +1,18 @@
+---
+name: TestQuerySplitAPI
+version: 1.0.0
+path: "/querySplit"
+proxy:
+  target:
+    router:
+      middleware:
+        name: query
+        options:
+          param: apiVersion
+          defaultTarget: http://httpbin.org
+          destinations: 
+            - target: http://httpbin.org
+              value: '1'
+            - target: http://httpbin.org/anything
+              value: '2'
+  timeout: 5000

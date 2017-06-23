@@ -32,8 +32,8 @@ export class ApiProxy {
         if (api.proxy.parseReqBody) {
             apiRouter.use(this.configureBodyParser(api));
         }
-        this.interceptor.buildRequestInterceptors(apiRouter, api);
         this.buildRouterMiddleware(apiRouter, api);
+        this.interceptor.buildRequestInterceptors(apiRouter, api);
         apiRouter.use(this.configureProxy(api));
     }
 
