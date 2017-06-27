@@ -220,10 +220,18 @@ section.success {
     padding-top: 75px;
   }
 }
+img#logo {
+  width: 300px;
+}
 #portfolio .text-image {
   top: 215px;
   position: absolute;
   color: white;
+}
+@media (max-width: 767px) {
+  #portfolio .text-image {
+    top: 185px;
+  }
 }
 #portfolio .text-image > * {
   font-size: 20px;
