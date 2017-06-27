@@ -220,6 +220,14 @@ section.success {
     padding-top: 75px;
   }
 }
+#portfolio .text-image {
+  top: 215px;
+  position: absolute;
+  color: white;
+}
+#portfolio .text-image > * {
+  font-size: 20px;
+}
 #portfolio .portfolio-item {
   margin: 0 0 15px;
   right: 0;
