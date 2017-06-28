@@ -75,11 +75,19 @@ hr.star-primary:after {
 	width: 300px !important;
 }
 
+.form-control {
+    color: white !important;
+}
+
+.help-block {
+    color: red !important;
+}
+
 .box-code {
 	-webkit-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
 	-moz-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
 	box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
-	background: #676767;
+	background: black;
 }
 
 .list-inline>li {
@@ -242,21 +250,26 @@ section.success {
 	}
 }
 
+@media(max-width:767px) {
+	img#logo-top {
+		width: 120px !important;
+		margin: -10px 15px !important;
+	}
+}
+
+img#logo-top {
+    width: 200px;
+    margin: -22px -4px;
+}
+
 img#logo {
     width: 300px;
 }
 
 #portfolio {
 	.text-image {
-		top: 215px;
-		position: absolute;
+		top: -40px;
 		color: white;
-	}
-
-	@media(max-width:767px) {
-		.text-image {
-			top: 185px;
-		}
 	}
 
 	.text-image > * {

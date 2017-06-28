@@ -12,6 +12,7 @@ $(function() {
             
             // get values from FORM
             var email = $("input#email").val();
+            var btnSendEmail = $("input#email");
 
             // parameters: service_id, template_id, template_parameters
             emailjs.send("gmail","request_demo_template",{from_name: email})
