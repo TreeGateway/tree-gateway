@@ -57,13 +57,13 @@
                         <a href="#intro">Intro</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#contact">Contact</a>
+                        <a href="#installation">Installation</a>
                     </li>
                     <li class="page-scroll">
                         <a href="#portfolio">Features</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#installation">Installation</a>
+                        <a href="#contact">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -105,32 +105,30 @@
         </div>
     </section>
 
-    <!-- Contactt Section -->
-    <section class="success" id="contact">
+    <!-- Installation Section -->
+    <section class="success" id="installation">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2>Request a Demo</h2>
-                    <br/>
+                    <h2>Installation</h2>
+                    <hr class="star-light">
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <form name="sentMessage" id="contactForm" novalidate>
-                        <div class="row control-group">
-                            <div class="form-group col-xs-12 floating-label-form-group controls">
-                                <input type="email" class="form-control" placeholder="Email Address" id="email" required data-validation-required-message="Please enter your email address.">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <br>
-                        <div id="success"></div>
-                        <div class="row">
-                            <div class="form-group col-xs-12 text-center">
-                                <button id="btnSubmit" type="submit" class="btn btn-lg btn-outline">Send</button>
-                            </div>
-                        </div>
-                    </form>
+                <div class="col-lg-4 col-lg-offset-2">
+                    <p>Just run</p>
+                    <p class="box-code">$ npm install tree-gateway -g</p>
+                    <p>After this, you can run the gateway using the following command:</p>
+                    <p class="box-code">$ treeGateway -c ./tree-gateway.json</p>
+                </div>
+                <div class="col-lg-4">
+                    <p>The ./tree-gateway.json file is the server config file that you must provide according to tree-gateway <a href="https://github.com/Leanty/tree-gateway/wiki/tree-gateway-Config-File" style="color:black">Config File syntax</a>.</p>
+                    <p>If you prefer to use Docker please visit the <a href="https://hub.docker.com/r/treegateway/tree-gateway" style="color:black">TreeGateway Docker Hub Page</a>.</p>
+                </div>
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <a href="https://github.com/Leanty/tree-gateway/wiki/Install" class="btn btn-lg btn-outline">
+                        <i class="fa fa-download"></i> Need more info?
+                    </a>
                 </div>
             </div>
         </div>
@@ -272,30 +270,32 @@
         </div>
     </section>
 
-    <!-- Installation Section -->
-    <section class="success" id="installation">
+    <!-- Contact Section -->
+    <section class="success" id="contact">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2>Installation</h2>
-                    <hr class="star-light">
+                    <h2>Request a Demo</h2>
+                    <br/>
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-4 col-lg-offset-2">
-                    <p>Just run</p>
-                    <p class="box-code">$ npm install tree-gateway -g</p>
-                    <p>After this, you can run the gateway using the following command:</p>
-                    <p class="box-code">$ treeGateway -c ./tree-gateway.json</p>
-                </div>
-                <div class="col-lg-4">
-                    <p>The ./tree-gateway.json file is the server config file that you must provide according to tree-gateway <a href="https://github.com/Leanty/tree-gateway/wiki/tree-gateway-Config-File" style="color:black">Config File syntax</a>.</p>
-                    <p>If you prefer to use Docker please visit the <a href="https://hub.docker.com/r/treegateway/tree-gateway" style="color:black">TreeGateway Docker Hub Page</a>.</p>
-                </div>
-                <div class="col-lg-8 col-lg-offset-2 text-center">
-                    <a href="https://github.com/Leanty/tree-gateway/wiki/Install" class="btn btn-lg btn-outline">
-                        <i class="fa fa-download"></i> Need more info?
-                    </a>
+                <div class="col-lg-8 col-lg-offset-2">
+                    <form name="sentMessage" id="contactForm" novalidate>
+                        <div class="row control-group">
+                            <div class="form-group col-xs-12 floating-label-form-group controls">
+                                <input type="email" class="form-control" placeholder="Email Address" id="email" required data-validation-required-message="Please enter your email address.">
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <br>
+                        <div id="success"></div>
+                        <div class="row">
+                            <div class="form-group col-xs-12 text-center">
+                                <button id="btnSubmit" type="submit" class="btn btn-lg btn-outline">Send</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
