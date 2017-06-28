@@ -93,10 +93,10 @@ module.exports = function(config: ConsultConfig) {
     const consulConfig: consul.ConsulOptions = {};
 
     if (config.host) {
-        consulConfig.host = checkEnvVariable(config.host);
+        consulConfig.host = <string>checkEnvVariable(config.host);
     }
     if (config.port) {
-        consulConfig.port = checkEnvVariable(config.port);
+        consulConfig.port = <string>checkEnvVariable(config.port);
     }
     if (config.secure) {
         consulConfig.secure = config.secure;

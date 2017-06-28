@@ -41,8 +41,8 @@ export class Database {
 
         if (config.cluster) {
             config.cluster.forEach(node => {
-                node.port = checkEnvVariable(node.port, true);
-                node.host = checkEnvVariable(node.host);
+                node.port = <number>checkEnvVariable(node.port, true);
+                node.host = <string>checkEnvVariable(node.host);
             });
             client = new Redis.Cluster(<any>config.cluster, {
                 redisOptions: config.options,
@@ -54,8 +54,8 @@ export class Database {
                 sentinels: config.sentinel.nodes
             });
             config.sentinel.nodes.forEach(node => {
-                node.port = checkEnvVariable(node.port, true);
-                node.host = checkEnvVariable(node.host);
+                node.port = <number>checkEnvVariable(node.port, true);
+                node.host = <string>checkEnvVariable(node.host);
             });
             client = new Redis(params);
         } else {
@@ -68,8 +68,8 @@ export class Database {
                 config.options.password = config.standalone.password;
             }
 
-            client = new Redis(checkEnvVariable(config.standalone.port, true),
-                checkEnvVariable(config.standalone.host), config.options);
+            client = new Redis(<number>checkEnvVariable(config.standalone.port, true),
+                <string>checkEnvVariable(config.standalone.host), config.options);
         }
 
         return client;

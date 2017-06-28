@@ -102,7 +102,7 @@ export class Configuration extends EventEmitter {
             rootPath: path.dirname(configFileName),
         });
 
-        serverConfig.rootPath = checkEnvVariable(serverConfig.rootPath);
+        serverConfig.rootPath = <string>checkEnvVariable(serverConfig.rootPath);
 
         if (_.startsWith(serverConfig.rootPath, '.')) {
             serverConfig.rootPath = path.join(path.dirname(configFileName), serverConfig.rootPath);
@@ -112,7 +112,7 @@ export class Configuration extends EventEmitter {
             middlewarePath: path.join(serverConfig.rootPath, 'middleware')
         });
 
-        serverConfig.middlewarePath = checkEnvVariable(serverConfig.middlewarePath);
+        serverConfig.middlewarePath = <string>checkEnvVariable(serverConfig.middlewarePath);
 
         if (_.startsWith(serverConfig.middlewarePath, '.')) {
             serverConfig.middlewarePath = path.join(serverConfig.rootPath, serverConfig.middlewarePath);
