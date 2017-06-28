@@ -509,4 +509,77 @@ proxyRouter.addArgument(
         help: 'Inform the name of the Proxy Router to be retrieved',
     }
 );
+
+const serviceDiscovery = middlewareCommands.addParser('serviceDiscovery', {
+    addHelp: true,
+    help: 'Service Discovery configurations'
+});
+
+serviceDiscovery.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Service Discovery listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+serviceDiscovery.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Service Discovery name to be removed',
+    }
+);
+
+serviceDiscovery.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Service Discovery file (JS format) to be updated. Ex: -u handler1 ./servicediscovery/handler1.js',
+        nargs: 2
+    }
+);
+
+serviceDiscovery.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Service Discovery file (JS format) to be added. Ex: -a handler1 ./servicediscovery/handler1.js',
+    }
+);
+
+serviceDiscovery.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Service Discovery to be retrieved',
+    }
+);
+const serviceDiscoveryProvider = middlewareCommands.addParser('serviceDiscoveryProvider', {
+    addHelp: true,
+    help: 'Service Discovery Providers configurations'
+});
+
+serviceDiscoveryProvider.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Service Discovery Provider listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+serviceDiscoveryProvider.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Service Discovery Provider name to be removed',
+    }
+);
+
+serviceDiscoveryProvider.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Service Discovery Provider file (JS format) to be updated. Ex: -u handler1 ./servicediscovery/provider/handler1.js',
+        nargs: 2
+    }
+);
+
+serviceDiscoveryProvider.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Service Discovery Provider file (JS format) to be added. Ex: -a handler1 ./servicediscovery/provider/handler1.js',
+    }
+);
+
+serviceDiscoveryProvider.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Service Discovery Provider to be retrieved',
+    }
+);
 export let configArgs = parser.parseArgs();

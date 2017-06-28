@@ -60,6 +60,10 @@ export class Cli {
                 return this.processMiddlewareCors();
             case 'proxyRouter':
                 return this.processMiddlewareProxyRouter();
+            case 'serviceDiscovery':
+                return this.processMiddlewareServiceDiscovery();
+            case 'serviceDiscoveryProvider':
+                return this.processMiddlewareServiceDiscoveryProvider();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
@@ -606,6 +610,106 @@ export class Cli {
                             .catch(reject);
                     } else if (this.args.get) {
                         sdk.middleware.getProxyRouterMiddleware(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareServiceDiscovery(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.serviceDiscovery(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeServiceDiscovery(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateServiceDiscovery(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addServiceDiscovery(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getServiceDiscoveryMiddleware(this.args.get)
+                            .then((file) => {
+                                console.info(file.toString());
+                            })
+                            .catch(reject);
+                    }
+                });
+        });
+    }
+
+    private processMiddlewareServiceDiscoveryProvider(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(this.args.swagger, this.args.username, this.args.password)
+                .then((sdk: SDK) => {
+                    if (this.args.list) {
+                        const args: any = {};
+                        this.args.list.forEach((param: string) => {
+                            const parts = param.split(':');
+                            if (parts.length === 2) {
+                                args[parts[0]] = parts[1];
+                            }
+                        });
+                        sdk.middleware.serviceDiscoveryProvider(<string>args['name'])
+                            .then(filters => {
+                                console.info(JSON.stringify(filters));
+                            })
+                            .catch(reject);
+                    } else if (this.args.remove) {
+                        sdk.middleware.removeServiceDiscoveryProvider(this.args.remove)
+                            .then(() => {
+                                console.info(`Middleware removed`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.update) {
+                        const name = this.args.update[0];
+                        const fileName = this.args.update[1];
+                        sdk.middleware.updateServiceDiscoveryProvider(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware updated`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.add) {
+                        const name = this.args.add[0];
+                        const fileName = this.args.add[1];
+                        sdk.middleware.addServiceDiscoveryProvider(name, fileName)
+                            .then(() => {
+                                console.info(`Middleware added`);
+                            })
+                            .catch(reject);
+                    } else if (this.args.get) {
+                        sdk.middleware.getServiceDiscoveryProviderMiddleware(this.args.get)
                             .then((file) => {
                                 console.info(file.toString());
                             })

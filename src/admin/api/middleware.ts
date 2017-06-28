@@ -78,6 +78,18 @@ export class MiddlewareRest {
         return this.service.list('proxy/router', name);
     }
 
+    @GET
+    @Path('servicediscovery')
+    serviceDiscovery(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('servicediscovery', name);
+    }
+
+    @GET
+    @Path('servicediscovery/provider')
+    serviceDiscoveryProvider(@QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('servicediscovery/provider', name);
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter( @PathParam('name') name: string): Promise<void> {
@@ -144,6 +156,18 @@ export class MiddlewareRest {
         return this.service.remove('proxy/router', name);
     }
 
+    @DELETE
+    @Path('servicediscovery/:name')
+    removeServiceDiscovery( @PathParam('name') name: string): Promise<void> {
+        return this.service.remove('servicediscovery', name);
+    }
+
+    @DELETE
+    @Path('servicediscovery/provider/:name')
+    removeServiceDiscoveryProvider( @PathParam('name') name: string): Promise<void> {
+        return this.service.remove('servicediscovery/provider', name);
+    }
+
     @PUT
     @Path('filters/:name')
     updateFilter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
@@ -208,6 +232,18 @@ export class MiddlewareRest {
     @Path('proxy/router/:name')
     updateProxyRouter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('proxy/router', name, file.buffer);
+    }
+
+    @PUT
+    @Path('servicediscovery/:name')
+    updateServiceDiscovery( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+        return this.service.save('servicediscovery', name, file.buffer);
+    }
+
+    @PUT
+    @Path('servicediscovery/provider/:name')
+    updateServiceDiscoveryProvider( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+        return this.service.save('servicediscovery/provider', name, file.buffer);
     }
 
     @GET
@@ -356,6 +392,34 @@ export class MiddlewareRest {
     getProxyRouterMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('proxy/router', name)
+                .then(value => {
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
+                })
+                .catch(err => {
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
+
+    @GET
+    @Path('servicediscovery/:name')
+    getServiceDiscoveryMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
+            this.service.read('servicediscovery', name)
+                .then(value => {
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
+                })
+                .catch(err => {
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
+
+    @GET
+    @Path('servicediscovery/provider/:name')
+    getServiceDiscoveryProviderMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
+            this.service.read('servicediscovery/provider', name)
                 .then(value => {
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
                 })
@@ -523,6 +587,36 @@ export class MiddlewareRest {
             this.service.add('proxy/router', name, file.buffer)
                 .then(value => {
                     resolve(new Return.NewResource<void>(path.join('proxy/router', name)));
+                })
+                .catch(err => {
+                    reject(new Errors.InternalServerError('Error saving handler.'));
+                });
+        });
+    }
+
+    @POST
+    @Path('servicediscovery')
+    addServiceDiscovery( @FileParam('file') file: Express.Multer.File,
+        @FormParam('name') name: string) {
+        return new Promise<Return.NewResource<void>>((resolve, reject) => {
+            this.service.add('servicediscovery', name, file.buffer)
+                .then(value => {
+                    resolve(new Return.NewResource<void>(path.join('servicediscovery', name)));
+                })
+                .catch(err => {
+                    reject(new Errors.InternalServerError('Error saving handler.'));
+                });
+        });
+    }
+
+    @POST
+    @Path('servicediscovery/provider')
+    addServiceDiscoveryProvider( @FileParam('file') file: Express.Multer.File,
+        @FormParam('name') name: string) {
+        return new Promise<Return.NewResource<void>>((resolve, reject) => {
+            this.service.add('servicediscovery/provider', name, file.buffer)
+                .then(value => {
+                    resolve(new Return.NewResource<void>(path.join('servicediscovery/provider', name)));
                 })
                 .catch(err => {
                     reject(new Errors.InternalServerError('Error saving handler.'));
