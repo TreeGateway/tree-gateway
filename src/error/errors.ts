@@ -16,7 +16,7 @@ export class ValidationError extends Errors.ForbidenError {
         }
         super(message);
         this.entity = { erro: message };
-        Object['setPrototypeOf'](this, ValidationError.prototype);
+        Object.setPrototypeOf(this, ValidationError.prototype);
     }
 
     private static buildValidationErrorString(err: Joi.ValidationError) {
@@ -51,7 +51,7 @@ export class UnauthorizedError extends Errors.UnauthorizedError {
     constructor(message?: string) {
         super(message);
 
-        Object['setPrototypeOf'](this, UnauthorizedError.prototype);
+        Object.setPrototypeOf(this, UnauthorizedError.prototype);
     }
 }
 
@@ -59,6 +59,14 @@ export class NotFoundError extends Errors.NotFoundError {
     constructor(message?: string) {
         super(message);
 
-        Object['setPrototypeOf'](this, NotFoundError.prototype);
+        Object.setPrototypeOf(this, NotFoundError.prototype);
+    }
+}
+
+export class UnavailableError extends Error {
+    statusCode: number = 503;
+    constructor (message: string) {
+        super(message);
+        Object.setPrototypeOf(this, UnavailableError.prototype);
     }
 }

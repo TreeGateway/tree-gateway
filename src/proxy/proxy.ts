@@ -11,6 +11,8 @@ import * as url from 'url';
 import * as _ from 'lodash';
 import * as getRawBody from 'raw-body';
 import { MiddlewareLoader } from '../utils/middleware-loader';
+import { ServiceDiscovery } from '../servicediscovery/service-discovery';
+
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../lib/http-proxy');
 const memoryStream = require('memory-streams').WritableStream;
@@ -24,6 +26,7 @@ export class ApiProxy {
     @Inject private interceptor: ProxyInterceptor;
     @Inject private logger: Logger;
     @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private serviceDiscovery: ServiceDiscovery;
 
     /**
      * Configure a proxy for a given API
@@ -33,6 +36,7 @@ export class ApiProxy {
             apiRouter.use(this.configureBodyParser(api));
         }
         this.buildRouterMiddleware(apiRouter, api);
+        this.buildServiceDiscoveryMiddleware(apiRouter, api);
         this.interceptor.buildRequestInterceptors(apiRouter, api);
         apiRouter.use(this.configureProxy(api));
     }
@@ -204,16 +208,36 @@ export class ApiProxy {
     private buildRouterMiddleware(apiRouter: express.Router, api: ApiConfig) {
         if (api.proxy.target.router) {
             const router: ProxyRouter = api.proxy.target.router;
-            const routerMiddleware = this.middlewareLoader.loadMiddleware('proxy/router', router.middleware);
-            apiRouter.use((req, res, next) => {
-                Promise.resolve(routerMiddleware(req))
-                    .then(result => {
-                        (<any>req).proxyOptions = {target: result};
-                        next();
-                    }).catch(err => {
-                        next(err);
-                    });
-            });
+            if (api.proxy.target.router.middleware) {
+                const routerMiddleware = this.middlewareLoader.loadMiddleware('proxy/router', router.middleware);
+                apiRouter.use((req, res, next) => {
+                    Promise.resolve(routerMiddleware(req))
+                        .then(result => {
+                            (<any>req).proxyOptions = {target: result};
+                            next();
+                        }).catch(err => {
+                            next(err);
+                        });
+                });
+            }
+        }
+    }
+
+    private buildServiceDiscoveryMiddleware(apiRouter: express.Router, api: ApiConfig) {
+        if (api.proxy.target.router) {
+            const router: ProxyRouter = api.proxy.target.router;
+            if (api.proxy.target.router.serviceDiscovery) {
+                const serviceDiscovery = this.serviceDiscovery.loadServiceDiscovery(router.serviceDiscovery, router.ssl);
+                apiRouter.use((req, res, next) => {
+                    Promise.resolve(serviceDiscovery((<any>req).proxyOptions?(<any>req).proxyOptions.target:null))
+                        .then(result => {
+                            (<any>req).proxyOptions = {target: result};
+                            next();
+                        }).catch(err => {
+                            next(err);
+                        });
+                });
+            }
         }
     }
 }

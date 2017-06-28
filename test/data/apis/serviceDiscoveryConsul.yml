@@ -1,0 +1,13 @@
+---
+name: TestServiceDiscoveryConsulAPI
+version: 1.0.0
+path: "/serviceDiscoveryConsul"
+proxy:
+  target:
+    router:
+      serviceDiscovery:
+        name: consul
+        options: 
+          serviceName: testConsulService
+
+  timeout: 5000

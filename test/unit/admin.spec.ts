@@ -4,21 +4,15 @@ import 'mocha';
 import * as chai from 'chai';
 
 import * as request from 'request';
-import * as fs from 'fs-extra-promise';
-import * as path from 'path';
 import {ApiConfig} from '../../src/config/api';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
-import {Gateway} from '../../src/gateway';
-import {Database} from '../../src/database';
 import {UserService} from '../../src/service/users';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
 
 let config: Configuration;
-let database: Database;
-let gateway: Gateway;
 let adminRequest: any;
 let adminToken: string;
 let configToken: string;
@@ -66,46 +60,11 @@ const createUsers = () => {
     });
 };
 
-function startGateway() {
-    return new Promise<void>((resolve, reject) => {
-        database = Container.get(Database);
-        gateway = Container.get(Gateway);
-        gateway.start()
-            .then(() => gateway.startAdmin())
-            .then(() => {
-                gateway.server.set('env', 'test');
-                adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
-
-                return database.redisClient.flushdb();
-            })
-            .then(() => createUsers())
-            .then(resolve)
-            .catch(reject);
-    });
-}
-
-describe('Admin API', () => {
+describe('Gateway Admin Tasks', () => {
     before(function(){
         config = Container.get(Configuration);
-        if (config.loaded) {
-            return startGateway();
-        }
-        return new Promise<void>((resolve, reject) => {
-            config.on('load', () => {
-                startGateway()
-                    .then(resolve)
-                    .catch(reject);
-            });
-            config.on('error', reject);
-        });
-    });
-
-    after(function(){
-        return database.redisClient.flushdb()
-            .then(() => gateway.stopAdmin())
-            .then(() => gateway.stop())
-            .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'middleware')))
-            .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'logs')));
+        adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
+        return createUsers();
     });
 
     describe('/users', () => {
@@ -115,7 +74,7 @@ describe('Admin API', () => {
                 done();
             });
         });
-        it('should be able to sign users in', (done) => {
+        it('should be able to sign admin users in', (done) => {
             const form = {
                 'login': 'admin',
                 'password': '123test'
@@ -129,7 +88,7 @@ describe('Admin API', () => {
                 done();
             });
         });
-        it('should be able to sign users in', (done) => {
+        it('should be able to sign editor users in', (done) => {
             const form = {
                 'login': 'config',
                 'password': '123test'
@@ -143,7 +102,7 @@ describe('Admin API', () => {
                 done();
             });
         });
-        it('should be able to sign users in', (done) => {
+        it('should be able to sign simple users in', (done) => {
             const form = {
                 'login': 'simple',
                 'password': '123test'
@@ -249,25 +208,6 @@ describe('Admin API', () => {
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
                 expect(response.statusCode).to.equal(204);
-                done();
-            });
-        });
-    });
-
-    describe('/cache', () => {
-        const apiMock = <ApiConfig> {
-            description: 'API mock',
-            name: 'apiMock',
-            version: '1.0'
-        };
-
-        before((done) => {
-            adminRequest.post('/apis', {
-                body: apiMock,
-                headers: { 'authorization': `JWT ${configToken}` },
-                json: true
-            }, (error: any, response: any, body: any) => {
-                apiMock.id = getIdFromResponse(response);
                 done();
             });
         });

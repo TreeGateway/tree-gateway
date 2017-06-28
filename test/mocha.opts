@@ -3,4 +3,4 @@
 --full-trace
 --bail
 --timeout 15000
-test/**/*.spec.ts
+test/unit/tests.spec.ts

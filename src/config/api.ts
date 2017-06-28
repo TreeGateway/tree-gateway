@@ -7,7 +7,6 @@ import { CacheConfig, cacheConfigValidatorSchema } from './cache';
 import { Proxy, proxyValidatorSchema } from './proxy';
 import { Group, groupValidatorSchema } from './group';
 import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
-import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './serviceDiscovery';
 import { Filter, filterSchema} from './filter';
 import * as Joi from 'joi';
 import { ValidationError } from '../error/errors';
@@ -88,10 +87,6 @@ export interface ApiConfig {
      * ```
      */
     filter?: Array<Filter>;
-    /**
-     * Configuration for service discovery.
-     */
-    serviceDiscovery?: ServiceDiscoveryConfig;
 }
 
 export let apiConfigValidatorSchema = Joi.object().keys({
@@ -103,10 +98,9 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     filter: Joi.array().items(filterSchema),
     group: Joi.array().items(groupValidatorSchema),
     id: Joi.string().guid(),
-    name: Joi.string().alphanum().min(3).max(30).required(),
+    name: Joi.string().alphanum().min(3).max(50).required(),
     path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
     proxy: proxyValidatorSchema,
-    serviceDiscovery: serviceDiscoveryConfigValidatorSchema,
     throttling: Joi.array().items(throttlingConfigValidatorSchema),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required()
 });

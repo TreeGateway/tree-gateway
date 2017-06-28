@@ -7,6 +7,7 @@ import { ProtocolConfig, protocolConfigSchema } from './protocol';
 import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfigSchema } from './logger';
 import { CorsConfig, corsConfigSchema } from './cors';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './service-discovery';
 import { ValidationError } from '../error/errors';
 
 /**
@@ -96,6 +97,10 @@ export interface GatewayConfig {
      * ```
      */
     filter?: Array<MiddlewareConfig>;
+    /**
+     * Configuration for service discovery.
+     */
+    serviceDiscovery?: ServiceDiscoveryConfig;
 }
 
 export interface MonitorConfig {
@@ -207,6 +212,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     logger: loggerConfigSchema,
     monitor: Joi.array().items(monitorConfigSchema),
     protocol: protocolConfigSchema.required(),
+    serviceDiscovery: serviceDiscoveryConfigValidatorSchema,
     statsConfig: statsConfigValidatorSchema,
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     underProxy: Joi.boolean()

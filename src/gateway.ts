@@ -29,7 +29,8 @@ import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
 import * as path from 'path';
 import * as cors from 'cors';
-import {getMilisecondsInterval} from './utils/time-intervals';
+import { getMilisecondsInterval } from './utils/time-intervals';
+import { ServiceDiscovery } from './servicediscovery/service-discovery';
 
 class StatsController {
     requestStats: Stats;
@@ -51,6 +52,7 @@ export class Gateway {
     @Inject private statsRecorder: StatsRecorder;
     @Inject private monitors: Monitors;
     @Inject private configService: ConfigService;
+    @Inject private serviceDiscovery: ServiceDiscovery;
 
     private app: express.Application;
     private adminApp: express.Application;
@@ -394,6 +396,7 @@ export class Gateway {
             }
 
             this.configService.installAllMiddlewares()
+                .then(() => this.serviceDiscovery.loadServiceDiscoveryProviders(this.config.gateway))
                 .then(() => {
                     this.apiFilter.buildGatewayFilters(this.app, this.config.gateway.filter);
                     return this.loadApis();

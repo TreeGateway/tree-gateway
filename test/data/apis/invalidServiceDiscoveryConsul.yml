@@ -1,0 +1,13 @@
+---
+name: TestServiceDiscoveryConsulAPI
+version: 1.0.0
+path: "/invalidServiceDiscoveryConsul"
+proxy:
+  target:
+    router:
+      serviceDiscovery:
+        name: consul
+        options: 
+          serviceName: aServiceWihtNoAvailableNodes
+
+  timeout: 5000

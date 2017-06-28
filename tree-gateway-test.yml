@@ -35,4 +35,9 @@ gateway:
             statusCode: 403
             message: IP Filtered
 
-    
+    serviceDiscovery:
+        provider:
+            - name: consul
+              options:
+                host: localhost
+                port: 8500

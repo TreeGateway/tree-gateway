@@ -1,0 +1,105 @@
+'use strict';
+
+import 'mocha';
+import * as chai from 'chai';
+
+import * as request from 'request';
+import {Container} from 'typescript-ioc';
+import {Configuration} from '../../src/configuration';
+
+const expect = chai.expect;
+// tslint:disable:no-unused-expression
+// tslint:disable:no-console
+
+let gatewayRequest: any;
+let config: Configuration;
+
+describe('The Gateway Authenticator', () => {
+    before(() => {
+        config = Container.get(Configuration);
+        gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
+
+    });
+
+    it('should be able deny request without authentication', (done) => {
+        gatewayRequest('/secure/get?arg=1', (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(401);
+            done();
+        });
+    });
+
+    it('should be able to verify JWT authentication on requests to API', (done) => {
+        gatewayRequest.get({
+            headers: { 'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ' },
+            url:'/secure/get?arg=1'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            const result = JSON.parse(body);
+            expect(result.args.arg).to.equal('1');
+            done();
+        });
+    });
+
+    it('should be able to verify JWT authentication on requests to API via query param', (done) => {
+        gatewayRequest.get({
+            url:'/secure/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            const result = JSON.parse(body);
+            expect(result.args.jwt).to.exist;
+            done();
+        });
+    });
+
+    it('should be able to verify Basic authentication on requests to API', (done) => {
+        gatewayRequest.get({
+            headers: { 'authorization': 'Basic dGVzdDp0ZXN0MTIz' },
+            url:'/secureBasic/get?arg=1'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            const result = JSON.parse(body);
+            expect(result.args.arg).to.equal('1');
+            done();
+        });
+    });
+
+    it('should be able to verify authentication only to restricted groups in API', (done) => {
+        gatewayRequest.get({
+            url:'/secureBasic-by-group/get?arg=1'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(401);
+            done();
+        });
+    });
+
+    it('should be able to verify authentication only to restricted groups in API', (done) => {
+        gatewayRequest.get({
+            url:'/secureBasic-by-group/headers'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
+
+    it('should be able to verify Local authentication on requests to API', (done) => {
+        gatewayRequest.get({
+            url:'/secureLocal/get?userid=test&passwd=test123'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            const result = JSON.parse(body);
+            expect(result.args.userid).to.equal('test');
+            done();
+        });
+    });
+
+    it('should be able to verify a custom authentication on requests to API', (done) => {
+        gatewayRequest.get({
+            url:'/secureCustom/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            const result = JSON.parse(body);
+            expect(result.args.jwt).to.exist;
+            done();
+        });
+    });
+});

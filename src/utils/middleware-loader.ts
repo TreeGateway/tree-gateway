@@ -28,6 +28,12 @@ export class MiddlewareLoader {
             'header': '../proxy/routers/header',
             'query': '../proxy/routers/query',
             'trafficSplit': '../proxy/routers/trafficSplit'
+        },
+        'servicediscovery': {
+            'consul': '../servicediscovery/middleware/consul'
+        },
+        'servicediscovery/provider': {
+            'consul': '../servicediscovery/middleware/provider/consul'
         }
     };
 

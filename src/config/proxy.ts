@@ -193,6 +193,27 @@ export interface ProxyRouter {
      * ```
      */
     middleware?: MiddlewareConfig;
+    /**
+     * Add a serviceDiscovery middleware to the router pipeline. A ServiceDiscovery middleware is
+     * a function that receives the desired service name and must return a string value to inform
+     * the target destination for this proxy.
+     *
+     * Example:
+     * ```
+     * module.exports = function (serviceName) {
+     *   return 'http://httpbin.org';
+     * };
+     * ```
+     *
+     * Each router must be defined on its own .js file (placed on middleware/servicediscovery/router folder)
+     * and the fileName must match: <middlewareName>.js.
+     *
+     * So, the above router should be saved in a file called middlewareName.js and configured as:
+     * ```
+     * {middleware{ name: "middlewareName"} }
+     * ```
+     */
+    serviceDiscovery?: MiddlewareConfig;
 }
 
 /**
@@ -250,9 +271,10 @@ export interface ResponseInterceptorResult {
 }
 
 const routerConfigValidatorSchema =  Joi.object().keys({
-    middleware: middlewareConfigValidatorSchema.required(),
+    middleware: middlewareConfigValidatorSchema,
+    serviceDiscovery: middlewareConfigValidatorSchema,
     ssl: Joi.boolean()
-});
+}).or('middleware', 'serviceDiscovery');
 
 const targetSchema = Joi.object().keys({
     allow: Joi.array().items(Joi.string()),
