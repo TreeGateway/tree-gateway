@@ -224,9 +224,9 @@ export class ApiProxy {
     }
 
     private buildServiceDiscoveryMiddleware(apiRouter: express.Router, api: ApiConfig) {
-        if (api.proxy.target.router) {
-            const router: ProxyRouter = api.proxy.target.router;
-            if (api.proxy.target.router.serviceDiscovery) {
+        const router: ProxyRouter = api.proxy.target.router;
+        if (router) {
+            if (router.serviceDiscovery) {
                 const serviceDiscovery = this.serviceDiscovery.loadServiceDiscovery(router.serviceDiscovery, router.ssl);
                 apiRouter.use((req, res, next) => {
                     Promise.resolve(serviceDiscovery((<any>req).proxyOptions?(<any>req).proxyOptions.target:null))
