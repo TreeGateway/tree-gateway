@@ -19,5 +19,6 @@ proxy:
         name: consul
         options:
           serviceName: testConsulService
+          loadBalancer: random
 
   timeout: 5000
