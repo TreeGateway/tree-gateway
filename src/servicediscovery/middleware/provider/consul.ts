@@ -4,6 +4,7 @@ import * as Joi from 'joi';
 import * as consul from 'consul';
 import { ValidationError } from '../../../error/errors';
 import { checkEnvVariable } from '../../../utils/env';
+import { getMilisecondsInterval } from '../../../utils/time-intervals';
 import * as fs from 'fs-extra-promise';
 
 interface ConsultConfig {
@@ -53,7 +54,7 @@ interface DefaultsConsulConfig {
     /**
      * Limit how long to wait for changes (ex: 5m), used with index
      */
-    wait?: string;
+    wait?: string | number;
     /**
      * ACL token
      */
@@ -66,7 +67,7 @@ const defaultsConsulConfigSchema = Joi.object().keys({
     index: Joi.string(),
     stale: Joi.boolean(),
     token: Joi.string(),
-    wait: Joi.string(),
+    wait: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     wan: Joi.boolean()
 });
 
@@ -102,7 +103,10 @@ module.exports = function(config: ConsultConfig) {
         consulConfig.secure = config.secure;
     }
     if (config.defaults) {
-        consulConfig.defaults = config.defaults;
+        if (config.defaults.wait) {
+            config.defaults.wait = `${getMilisecondsInterval(config.defaults.wait)}ms`;
+        }
+        consulConfig.defaults = <any>config.defaults;
     }
     if (config.ca) {
         consulConfig.ca = <any[]>config.ca.map(ca => fs.readFileSync(ca));
