@@ -13,10 +13,8 @@ export class CircuitBreakerKeys {
 
 @AutoWired
 export class RedisStateHandler implements StateHandler {
-    @Inject
-    private logger: Logger;
-    @Inject
-    private database: Database;
+    @Inject private logger: Logger;
+    @Inject private database: Database;
 
     private id: string;
     private state: State;
@@ -26,22 +24,18 @@ export class RedisStateHandler implements StateHandler {
     constructor(id: string, resetTimeout: number) {
         this.id = id;
         this.resetTimeout = resetTimeout;
-        // this.prefix = config.prefix;
-        // this.duration = humanInterval(config.granularity.duration)/1000;
-        // this.ttl = humanInterval(config.granularity.ttl)/1000;
     }
 
     initialState() {
-        const self = this;
         this.database.redisClient.hget(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id)
             .then((state: any) => {
                 if (state === 'open') {
-                    self.openState();
+                    this.openState();
                 } else {
-                    self.closeState();
+                    this.closeState();
                 }
             }).catch((err: any) => {
-                self.forceClose();
+                this.forceClose();
             });
     }
 
@@ -111,11 +105,10 @@ export class RedisStateHandler implements StateHandler {
         }
 
         this.state = State.OPEN;
-        const self = this;
         // After reset timeout circuit should enter half open state
-        setTimeout(function() {
-            self.forceHalfOpen();
-        }, self.resetTimeout);
+        setTimeout(() => {
+            this.forceHalfOpen();
+        }, this.resetTimeout);
 
         return true;
     }

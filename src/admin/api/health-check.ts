@@ -13,9 +13,10 @@ export class HealthCheck {
     @GET
     check(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            this.database.redisClient.ping().then(() => {
-                resolve('OK');
-            })
+            this.database.redisClient.ping()
+                .then(() => {
+                    resolve('OK');
+                })
                 .catch((err: any) => {
                     reject(new Errors.InternalServerError());
                 });

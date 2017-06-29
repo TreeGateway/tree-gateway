@@ -1,10 +1,10 @@
 'use strict';
-import * as redis from 'ioredis';
 import * as _ from 'lodash';
+import { Database } from '../database';
+import { Inject } from 'typescript-ioc';
 
 export interface Options {
     path: string;
-    client: redis.Redis;
     id?: string;
     expire?: number;
     prefix?: string;
@@ -12,6 +12,7 @@ export interface Options {
 
 export class RedisStore {
     options: Options;
+    @Inject private database: Database;
 
     constructor(options: Options) {
         this.options = _.defaults(options, {
@@ -23,10 +24,10 @@ export class RedisStore {
     incr(key: string, cb: any) {
         const rdskey = this.getRedisKey(key);
         const opt: Options = this.options;
-        opt.client.multi()
+        this.database.redisClient.multi()
             .incr(rdskey)
             .ttl(rdskey)
-            .exec(function(err, replies) {
+            .exec((err, replies) => {
                 if (err) {
                     return cb(err);
                 }
@@ -34,7 +35,7 @@ export class RedisStore {
                 // if this is new or has no expire
                 if (replies[0][1] === 1 || replies[1][1] === -1) {
                     // then expire it after the timeout
-                    opt.client.expire(rdskey, opt.expire);
+                    this.database.redisClient.expire(rdskey, opt.expire);
                 }
 
                 cb(null, replies[0][1]);
@@ -43,7 +44,7 @@ export class RedisStore {
 
     resetKey(key: string) {
         const rdskey = this.getRedisKey(key);
-        this.options.client.del(rdskey);
+        this.database.redisClient.del(rdskey);
     }
 
     private getRedisKey(key: string) {

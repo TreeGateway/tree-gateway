@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { StatsConfig } from '../config/stats';
 import { StatsHandler } from './stats';
 import { Logger } from '../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
 import { Database } from '../database';
 import {getMilisecondsInterval} from '../utils/time-intervals';
 
@@ -12,7 +12,6 @@ class Constants {
     static STATS_SYNC = 'STATS_SYNC';
 }
 
-@AutoWired
 export class RedisStats extends StatsHandler {
     id: string;
     ttl: number;

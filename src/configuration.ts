@@ -3,11 +3,17 @@
 import * as fs from 'fs-extra-promise';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as YAML from 'yamljs';
 import { EventEmitter } from 'events';
 import { RedisConfig, ServerConfig, GatewayConfig, validateServerConfig } from './config/gateway';
 import { AutoWired, Container, Singleton } from 'typescript-ioc';
 import { checkEnvVariable } from './utils/env';
-import * as YAML from 'yamljs';
+import { UserService } from './service/users';
+import { MiddlewareService } from './service/middleware';
+import { ApiService } from './service/api';
+import { ConfigService } from './service/config';
+import { GatewayService } from './service/gateway';
+import { StatsHandler } from './stats/stats';
 
 @Singleton
 @AutoWired
@@ -71,12 +77,19 @@ export class Configuration extends EventEmitter {
     }
 
     private loadContainerConfigurations() {
-        const ConfigService = require('./service/api').ConfigService;
-        const RedisConfigService = require('./service/redis').RedisConfigService;
-        const StatsHandler = require('./stats/stats').StatsHandler;
+
+        const RedisApiService = require('./service/redis/api').RedisApiService;
+        const RedisConfigService = require('./service/redis/config').RedisConfigService;
+        const RedisUserService = require('./service/redis/users').RedisUserService;
+        const RedisMiddlewareService = require('./service/redis/middleware').RedisMiddlewareService;
+        const RedisGatewayService = require('./service/redis/gateway').RedisGatewayService;
         const RedisStats = require('./stats/redis-stats').RedisStats;
 
+        Container.bind(GatewayService).to(RedisGatewayService);
+        Container.bind(MiddlewareService).to(RedisMiddlewareService);
+        Container.bind(ApiService).to(RedisApiService);
         Container.bind(ConfigService).to(RedisConfigService);
+        Container.bind(UserService).to(RedisUserService);
         Container.bind(StatsHandler).to(RedisStats);
     }
 

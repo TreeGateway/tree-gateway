@@ -4,17 +4,14 @@ import { CacheEntry, CacheStore } from './cache-store';
 import { ServerCacheConfig } from '../config/cache';
 import { RedisStore } from './redis-store';
 import { Logger } from '../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { Inject } from 'typescript-ioc';
 import { Database } from '../database';
 import {getMilisecondsInterval} from '../utils/time-intervals';
 
-@AutoWired
 export class ServerCache {
     static cacheStore: CacheStore<CacheEntry>;
-    @Inject
-    private logger: Logger;
-    @Inject
-    private database: Database;
+    @Inject private logger: Logger;
+    @Inject private database: Database;
 
     constructor() {
         if (!ServerCache.cacheStore) {

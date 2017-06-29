@@ -21,7 +21,7 @@ import { AccessLogger } from './express-logger';
 import { Stats } from './stats/stats';
 import { StatsRecorder } from './stats/stats-recorder';
 import { Monitors } from './monitor/monitors';
-import { ConfigService } from './service/api';
+import { ConfigService } from './service/config';
 import { Configuration } from './configuration';
 import * as fs from 'fs-extra-promise';
 import * as os from 'os';

@@ -9,7 +9,6 @@ import { RedisStore } from './redis-store';
 import { Stats } from '../stats/stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { Database } from '../database';
 import { StatsRecorder } from '../stats/stats-recorder';
 import {getMilisecondsInterval} from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
@@ -22,7 +21,6 @@ interface ThrottlingInfo {
 @AutoWired
 export class ApiRateLimit {
     @Inject private logger: Logger;
-    @Inject private database: Database;
     @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
 
@@ -42,7 +40,6 @@ export class ApiRateLimit {
             rateConfig.windowMs = getMilisecondsInterval(throttling.timeWindow, 60000);
             rateConfig.delayMs = getMilisecondsInterval(throttling.delay, 0);
             rateConfig.store = new RedisStore({
-                client: this.database.redisClient,
                 expire: (rateConfig.windowMs / 1000) + 1,
                 path: path
             });
