@@ -9,7 +9,8 @@ import * as fs from 'fs-extra-promise';
 
 interface ConsultConfig {
     /**
-     * Agent address. Default: 127.0.0.1
+     * Agent address. Default: 127.0.0.1. It is not recommended to access
+     * consul agent remotely. [see this](https://github.com/hashicorp/consul/issues/1916)
      */
     host?: string;
     /**
@@ -52,7 +53,7 @@ interface DefaultsConsulConfig {
      */
     index?: string;
     /**
-     * Limit how long to wait for changes (ex: 5m), used with index
+     * Limit how long to wait for changes (ex: 5 minutes), used with index
      */
     wait?: string | number;
     /**
