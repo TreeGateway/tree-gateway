@@ -12,7 +12,7 @@ import { Database } from '../database';
 @AutoWired
 @Singleton
 export class Monitors {
-    private static MONITORS_PREFIX: string = 'monitors';
+    private static MACHINES_PREFIX: string = 'machines';
 
     @Inject
     private config: Configuration;
@@ -47,21 +47,21 @@ export class Monitors {
                     this.activeMonitors.push(monitor);
                 }
             });
-            this.registerMonitor();
         }
+        this.registerMachine();
     }
 
     stopMonitors() {
         if (this.config.gateway.monitor) {
             this.activeMonitors.forEach(monitor => monitor.stop());
             this.activeMonitors = [];
-            this.unregisterMonitor();
         }
+        this.unregisterMachine();
     }
 
     getActiveMachines(): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.database.redisClient.hgetall(Monitors.MONITORS_PREFIX)
+            this.database.redisClient.hgetall(Monitors.MACHINES_PREFIX)
                 .then((monitors: any) => {
                     const result: Array<string> = [];
                     const now = Date.now();
@@ -69,7 +69,7 @@ export class Monitors {
                         if (now - monitors[machine] < 10001) {
                             result.push(machine);
                         } else {
-                            this.database.redisClient.hdel(`${Monitors.MONITORS_PREFIX}`, machine);
+                            this.database.redisClient.hdel(`${Monitors.MACHINES_PREFIX}`, machine);
                         }
                     });
                     resolve(result);
@@ -78,21 +78,18 @@ export class Monitors {
         });
     }
 
-    private registerMonitor() {
-        const self = this;
+    private registerMachine() {
         const period = 10000;
-        self.interval = setInterval(() => {
-            this.database.redisClient.hmset(`${Monitors.MONITORS_PREFIX}`, Monitor.getMachineId(), Date.now());
+        this.interval = setInterval(() => {
+            this.database.redisClient.hmset(`${Monitors.MACHINES_PREFIX}`, Monitor.getMachineId(), Date.now());
         }, period);
     }
 
-    private unregisterMonitor() {
-        const self = this;
-        if (self.interval) {
-            clearInterval(self.interval);
-            self.interval = null;
+    private unregisterMachine() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
         }
-        this.database.redisClient.hdel(`${Monitors.MONITORS_PREFIX}`, Monitor.getMachineId());
+        this.database.redisClient.hdel(`${Monitors.MACHINES_PREFIX}`, Monitor.getMachineId());
     }
-
 }
