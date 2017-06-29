@@ -41,3 +41,5 @@ gateway:
               options:
                 host: localhost
                 port: 8500
+                defaults: 
+                    wait: 3 minutes

@@ -176,7 +176,7 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                                 // Ignore event
                             }
                         } catch (err) {
-                            this.logger.error(`Error processing received message. Message: ${message}. Err: ${JSON.stringify(err)}`);
+                            this.logger.error(`Error processing received message. Message: ${message}. Err: ${this.logger.inspectObject(err)}`);
                         }
                     });
                 })

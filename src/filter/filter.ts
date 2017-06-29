@@ -27,7 +27,7 @@ export class ApiFilter {
     buildGatewayFilters(apiRouter: express.Router, filters: Array<MiddlewareConfig>) {
         if (filters) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Configuring custom filters for Tree Gateway. Filters [${JSON.stringify(filters)}]`);
+                this.logger.debug(`Configuring custom filters for Tree Gateway. Filters [${this.logger.inspectObject(filters)}]`);
             }
             filters.forEach((filter) => {
                 const filterMiddleware = this.middlewareLoader.loadMiddleware('filter', filter);
@@ -49,7 +49,7 @@ export class ApiFilter {
 
     private buildCustomFilters(apiRouter: express.Router, api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Configuring custom filters for Proxy target [${api.path}]. Filters [${JSON.stringify(api.filter)}]`);
+            this.logger.debug(`Configuring custom filters for Proxy target [${api.path}]. Filters [${this.logger.inspectObject(api.filter)}]`);
         }
 
         api.filter.forEach((filter) => {
@@ -92,7 +92,7 @@ export class ApiFilter {
     private buildAllowFilter(apiRouter: express.Router, api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
             const groups = Groups.filter(api.group, api.proxy.target.allow);
-            this.logger.debug(`Configuring allow filter for Proxy target [${api.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring allow filter for Proxy target [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
         }
         const groupValidator = Groups.buildGroupAllowFilter(api.group, api.proxy.target.allow);
         apiRouter.use((req, res, next) => {
@@ -107,7 +107,7 @@ export class ApiFilter {
     private buildDenyFilter(apiRouter: express.Router, api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
             const groups = Groups.filter(api.group, api.proxy.target.deny);
-            this.logger.debug(`Configuring deny filter for Proxy target [${api.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring deny filter for Proxy target [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
         }
 
         const groupValidator = Groups.buildGroupDenyFilter(api.group, api.proxy.target.deny);

@@ -108,7 +108,7 @@ export class RedisStats extends StatsHandler {
                     }
 
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
+                        this.logger.debug(`Retrieving stats for key ${key}: ${this.logger.inspectObject(data)}`);
                     }
                     return resolve(data);
                 })

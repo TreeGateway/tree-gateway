@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra-promise';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { Configuration } from './configuration';
+import { inspect } from 'util';
 
 @Singleton
 @AutoWired
@@ -72,5 +73,9 @@ export class Logger {
 
     error(...args: any[]) {
         this.winston.error.apply(this, arguments);
+    }
+
+    inspectObject(object: any) {
+        inspect(object, {colors: true, depth: 15});
     }
 }

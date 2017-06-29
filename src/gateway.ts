@@ -258,7 +258,7 @@ export class Gateway {
                     resolve();
                 })
                 .catch((err) => {
-                    this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
+                    this.logger.error(`Error loading api config: ${err.message}\n${this.logger.inspectObject(api)}`);
 
                     reject(err);
                 });
@@ -339,7 +339,7 @@ export class Gateway {
         if (needsReload) {
             this.config.reload()
                 .then(() => this.restart())
-                .catch((error) => this.logger.error(`Error updating gateway config. Error: ${JSON.stringify(error)}`));
+                .catch((error) => this.logger.error(`Error updating gateway config. Error: ${this.logger.inspectObject(error)}`));
         } else {
             this.apiCircuitBreaker.removeAllBreakers();
             this.configService.installAllMiddlewares()
@@ -349,7 +349,7 @@ export class Gateway {
                     this.logger.info(`Configuration package ${packageId} applied successfuly.`);
                 })
                 .catch(err => {
-                    this.logger.error(`Error applying configuration package ${packageId}. Error: ${JSON.stringify(err)}`);
+                    this.logger.error(`Error applying configuration package ${packageId}. Error: ${this.logger.inspectObject(err)}`);
                 });
         }
     }
@@ -377,7 +377,7 @@ export class Gateway {
                     resolve();
                 })
                 .catch((err) => {
-                    this.logger.error(`Error configuring gateway server: ${err.message}\n${JSON.stringify(this.config.gateway)}`);
+                    this.logger.error(`Error configuring gateway server: ${err.message}\n${this.logger.inspectObject(this.config.gateway)}`);
                     reject(err);
                 });
         });

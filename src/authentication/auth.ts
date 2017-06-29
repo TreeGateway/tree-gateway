@@ -74,7 +74,7 @@ export class ApiAuth {
         const path: string = api.path;
         if (this.logger.isDebugEnabled()) {
             const groups = Groups.filter(api.group, authentication.group);
-            this.logger.debug(`Configuring Group filters for Authentication on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
+            this.logger.debug(`Configuring Group filters for Authentication on path [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
         }
         const f = Groups.buildGroupAllowFilter(api.group, authentication.group);
         const stats = this.createAuthStats(path, authentication);
