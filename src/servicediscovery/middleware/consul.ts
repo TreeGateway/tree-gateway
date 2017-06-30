@@ -58,7 +58,7 @@ function roundRobin(serviceInstances: Array<string>) {
     return serviceInstances[index];
 }
 
-function observeService(serviceName: string, config: ConsulConfig, knownServiceInstances: Map<string,Array<string>>) {
+function observeService(serviceName: string, config: ConsulConfig, knownServiceInstances: Map<string, Array<string>>) {
     const options: any = {
         passing: true,
         service: serviceName
@@ -79,7 +79,7 @@ function observeService(serviceName: string, config: ConsulConfig, knownServiceI
         const serviceInstances = new Array<string>();
         knownServiceInstances.set(serviceName, serviceInstances);
         data.forEach((entry: any) => {
-            serviceInstances.push(`${config.ssl?'https':'http'}://${entry.Node.Address}:${entry.Service.Port}/`);
+            serviceInstances.push(`${config.ssl ? 'https' : 'http'}://${entry.Node.Address}:${entry.Service.Port}/`);
         });
     });
 }
@@ -87,7 +87,7 @@ function observeService(serviceName: string, config: ConsulConfig, knownServiceI
 module.exports = function(config: ConsulConfig) {
     validateConsulConfig(config);
 
-    const knownServiceInstances: Map<string,Array<string>> = new Map<string,Array<string>>();
+    const knownServiceInstances: Map<string, Array<string>> = new Map<string, Array<string>>();
 
     if (config.serviceName) {
         observeService(config.serviceName, config, knownServiceInstances);
@@ -117,7 +117,7 @@ module.exports = function(config: ConsulConfig) {
                     }
                     if (instances && instances.length) {
                         const entry = instances[0];
-                        resolve(`${config.ssl?'https':'http'}://${entry.Node.Address}:${entry.Service.Port}/`);
+                        resolve(`${config.ssl ? 'https' : 'http'}://${entry.Node.Address}:${entry.Service.Port}/`);
                     } else {
                         return reject(new UnavailableError(`No instance available for service '${serviceName}'`));
                     }

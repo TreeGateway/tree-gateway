@@ -6,7 +6,7 @@ import { RedisStore } from './redis-store';
 import { Logger } from '../logger';
 import { Inject } from 'typescript-ioc';
 import { Database } from '../database';
-import {getMilisecondsInterval} from '../utils/time-intervals';
+import { getMilisecondsInterval } from '../utils/time-intervals';
 
 export class ServerCache {
     static cacheStore: CacheStore<CacheEntry>;

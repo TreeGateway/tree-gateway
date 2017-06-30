@@ -65,7 +65,7 @@ export class NotFoundError extends Errors.NotFoundError {
 
 export class UnavailableError extends Error {
     statusCode: number = 503;
-    constructor (message: string) {
+    constructor(message: string) {
         super(message);
         Object.setPrototypeOf(this, UnavailableError.prototype);
     }

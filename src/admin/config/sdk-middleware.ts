@@ -20,14 +20,14 @@ export interface Middleware {
     serviceDiscovery(name?: string): Promise<Array<string>>;
     serviceDiscoveryProvider(name?: string): Promise<Array<string>>;
     removeFilter(name: string): Promise<void>;
-    removeRequestInterceptor( name: string): Promise<void>;
-    removeResponseInterceptor( name: string): Promise<void>;
-    removeAuthStrategy( name: string): Promise<void>;
-    removeAuthVerify( name: string): Promise<void>;
-    removeThrottlingKeyGenerator( name: string): Promise<void>;
-    removeThrottlingHandler( name: string): Promise<void>;
-    removeThrottlingSkip( name: string): Promise<void>;
-    removeCircuitBreaker( name: string): Promise<void>;
+    removeRequestInterceptor(name: string): Promise<void>;
+    removeResponseInterceptor(name: string): Promise<void>;
+    removeAuthStrategy(name: string): Promise<void>;
+    removeAuthVerify(name: string): Promise<void>;
+    removeThrottlingKeyGenerator(name: string): Promise<void>;
+    removeThrottlingHandler(name: string): Promise<void>;
+    removeThrottlingSkip(name: string): Promise<void>;
+    removeCircuitBreaker(name: string): Promise<void>;
     removeCors(name: string): Promise<void>;
     removeProxyRouter(name: string): Promise<void>;
     removeServiceDiscovery(name: string): Promise<void>;
@@ -85,13 +85,13 @@ export class MiddlewareClient implements Middleware {
             !this.swaggerClient.spec.schemes.length || !this.swaggerClient.spec.host) {
             throw new Error('Invalid swagger specification. Can not found the target endpoint to call.');
         }
-        this.middlewareRequest = request.defaults({baseUrl: `${this.swaggerClient.spec.schemes[0]}://${this.swaggerClient.spec.host}`});
+        this.middlewareRequest = request.defaults({ baseUrl: `${this.swaggerClient.spec.schemes[0]}://${this.swaggerClient.spec.host}` });
 
     }
 
     filters(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestFilters({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestFilters({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -104,7 +104,7 @@ export class MiddlewareClient implements Middleware {
 
     requestInterceptors(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRequestInterceptors({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRequestInterceptors({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -117,7 +117,7 @@ export class MiddlewareClient implements Middleware {
 
     responseInterceptors(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestResponseInterceptors({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestResponseInterceptors({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -130,7 +130,7 @@ export class MiddlewareClient implements Middleware {
 
     authStrategies(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestAuthStrategies({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestAuthStrategies({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -143,7 +143,7 @@ export class MiddlewareClient implements Middleware {
 
     authVerify(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestAuthVerify({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestAuthVerify({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -156,7 +156,7 @@ export class MiddlewareClient implements Middleware {
 
     throttlingKeyGenerator(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingKeyGenerator({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingKeyGenerator({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -169,7 +169,7 @@ export class MiddlewareClient implements Middleware {
 
     throttlingHandler(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingHandler({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingHandler({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -182,7 +182,7 @@ export class MiddlewareClient implements Middleware {
 
     throttlingSkip(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingSkip({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingSkip({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -195,7 +195,7 @@ export class MiddlewareClient implements Middleware {
 
     circuitBreaker(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -208,7 +208,7 @@ export class MiddlewareClient implements Middleware {
 
     corsOrigin(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestCorsOrigin({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestCorsOrigin({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -221,7 +221,7 @@ export class MiddlewareClient implements Middleware {
 
     proxyRouter(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -234,7 +234,7 @@ export class MiddlewareClient implements Middleware {
 
     serviceDiscovery(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscovery({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscovery({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -247,7 +247,7 @@ export class MiddlewareClient implements Middleware {
 
     serviceDiscoveryProvider(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscoveryProvider({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscoveryProvider({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -260,7 +260,7 @@ export class MiddlewareClient implements Middleware {
 
     removeFilter(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -273,7 +273,7 @@ export class MiddlewareClient implements Middleware {
 
     removeRequestInterceptor(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestInterceptor({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestInterceptor({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -286,7 +286,7 @@ export class MiddlewareClient implements Middleware {
 
     removeResponseInterceptor(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveResponseInterceptor({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveResponseInterceptor({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -299,7 +299,7 @@ export class MiddlewareClient implements Middleware {
 
     removeAuthStrategy(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthStrategy({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthStrategy({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -312,7 +312,7 @@ export class MiddlewareClient implements Middleware {
 
     removeAuthVerify(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthVerify({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthVerify({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -325,7 +325,7 @@ export class MiddlewareClient implements Middleware {
 
     removeThrottlingKeyGenerator(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingKeyGenerator({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingKeyGenerator({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -338,7 +338,7 @@ export class MiddlewareClient implements Middleware {
 
     removeThrottlingHandler(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingHandler({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingHandler({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -351,7 +351,7 @@ export class MiddlewareClient implements Middleware {
 
     removeThrottlingSkip(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingSkip({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingSkip({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -364,7 +364,7 @@ export class MiddlewareClient implements Middleware {
 
     removeCircuitBreaker(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCircuitBreaker({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCircuitBreaker({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -377,7 +377,7 @@ export class MiddlewareClient implements Middleware {
 
     removeCors(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCors({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCors({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -390,7 +390,7 @@ export class MiddlewareClient implements Middleware {
 
     removeProxyRouter(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -403,7 +403,7 @@ export class MiddlewareClient implements Middleware {
 
     removeServiceDiscovery(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscovery({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscovery({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -416,7 +416,7 @@ export class MiddlewareClient implements Middleware {
 
     removeServiceDiscoveryProvider(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscoveryProvider({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscoveryProvider({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -533,7 +533,7 @@ export class MiddlewareClient implements Middleware {
 
     getFilter(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetFilter({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetFilter({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -546,7 +546,7 @@ export class MiddlewareClient implements Middleware {
 
     getRequestInterceptor(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestInterceptor({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestInterceptor({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -559,7 +559,7 @@ export class MiddlewareClient implements Middleware {
 
     getResponseInterceptor(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetResponseInterceptor({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetResponseInterceptor({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -572,7 +572,7 @@ export class MiddlewareClient implements Middleware {
 
     getAuthStrategy(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthStrategy({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthStrategy({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -585,7 +585,7 @@ export class MiddlewareClient implements Middleware {
 
     getAuthVerify(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthVerify({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthVerify({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -598,7 +598,7 @@ export class MiddlewareClient implements Middleware {
 
     getThrottlingKeyGenerator(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingKeyGenerator({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingKeyGenerator({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -611,7 +611,7 @@ export class MiddlewareClient implements Middleware {
 
     getThrottlingHandler(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingHandler({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingHandler({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -624,7 +624,7 @@ export class MiddlewareClient implements Middleware {
 
     getThrottlingSkip(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingSkip({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingSkip({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -637,7 +637,7 @@ export class MiddlewareClient implements Middleware {
 
     getCircuitBreakerMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetCircuitBreakerMiddleware({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetCircuitBreakerMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -650,7 +650,7 @@ export class MiddlewareClient implements Middleware {
 
     getCorsMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -663,7 +663,7 @@ export class MiddlewareClient implements Middleware {
 
     getProxyRouterMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -676,7 +676,7 @@ export class MiddlewareClient implements Middleware {
 
     getServiceDiscoveryMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryMiddleware({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -689,7 +689,7 @@ export class MiddlewareClient implements Middleware {
 
     getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({name})
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -710,8 +710,8 @@ export class MiddlewareClient implements Middleware {
     private installMiddleware(servicePath: string, filePath: string, update?: boolean): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const stream = this.getStream(filePath);
-            const fileName = filePath.substring(filePath.lastIndexOf('/')+1);
-            const req = this.middlewareRequest.post('/middleware/'+servicePath, {
+            const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+            const req = this.middlewareRequest.post('/middleware/' + servicePath, {
                 headers: { 'authorization': `JWT ${this.authToken}` }
             }, (error: any, response: any, body: any) => {
                 if (error) {

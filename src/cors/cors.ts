@@ -8,7 +8,7 @@ import * as Groups from '../group';
 import * as corsMiddleware from 'cors';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import {getMilisecondsInterval} from '../utils/time-intervals';
+import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 
 interface CorsInfo {
@@ -78,7 +78,7 @@ export class ApiCors {
                     }).catch(error => {
                         callback(error);
                     });
-           };
+            };
         }
         return corsOptions;
     }

@@ -13,10 +13,10 @@ export class APIRest {
     @Inject private service: ApiService;
 
     @GET
-    list(@QueryParam('name')name?: string,
-         @QueryParam('version')version?: string,
-         @QueryParam('description')description?: string,
-         @QueryParam('path')path?: string): Promise<Array<ApiConfig>> {
+    list( @QueryParam('name') name?: string,
+        @QueryParam('version') version?: string,
+        @QueryParam('description') description?: string,
+        @QueryParam('path') path?: string): Promise<Array<ApiConfig>> {
         return this.service.list(name, version, description, path);
     }
 

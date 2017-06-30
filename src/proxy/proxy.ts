@@ -6,7 +6,7 @@ import { Proxy, HttpAgent, ProxyRouter } from '../config/proxy';
 import { ProxyInterceptor, ResponseInterceptors } from './interceptor';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import {getMilisecondsInterval} from '../utils/time-intervals';
+import { getMilisecondsInterval } from '../utils/time-intervals';
 import * as url from 'url';
 import * as _ from 'lodash';
 import * as getRawBody from 'raw-body';
@@ -121,7 +121,7 @@ export class ApiProxy {
         const proxy = httpProxy.createProxyServer(proxyConfig);
         proxy.on('error', (err: any, req: express.Request, res: express.Response) => {
             const hostname = (req.headers && req.headers.host) || (req.hostname || req.host);     // (websocket) || (node0.10 || node 4/5)
-            const target = apiProxy.target.host ;
+            const target = apiProxy.target.host;
             const errReference = 'https://nodejs.org/api/errors.html#errors_common_system_errors'; // link to Node Common Systems Errors page
 
             this.logger.error('[Tree-Gateway] Error occurred while trying to proxy request %s from %s to %s (%s) (%s)', req.url, hostname, target, err.code, errReference);
@@ -131,7 +131,7 @@ export class ApiProxy {
         const responseInterceptor: ResponseInterceptors = this.interceptor.responseInterceptor(api);
         this.handleResponseInterceptor(api, proxy, responseInterceptor);
 
-        function validateInterceptors (req: express.Request, res: express.Response): boolean {
+        function validateInterceptors(req: express.Request, res: express.Response): boolean {
             if (responseInterceptor) {
                 let ignoreAll = true;
                 (<any>res).__ignore = new Array<boolean>();
@@ -149,7 +149,7 @@ export class ApiProxy {
             if (validateInterceptors(req, res)) {
                 const options: any = (<any>req).proxyOptions || {};
                 (<any>res).__data = new memoryStream();
-                options.destPipe = {stream: (<any>res).__data};
+                options.destPipe = { stream: (<any>res).__data };
                 proxy.web(req, res, options);
             } else if ((<any>req).proxyOptions) {
                 proxy.web(req, res, (<any>req).proxyOptions);
@@ -213,7 +213,7 @@ export class ApiProxy {
                 apiRouter.use((req, res, next) => {
                     Promise.resolve(routerMiddleware(req))
                         .then(result => {
-                            (<any>req).proxyOptions = {target: result};
+                            (<any>req).proxyOptions = { target: result };
                             next();
                         }).catch(err => {
                             next(err);
@@ -229,9 +229,9 @@ export class ApiProxy {
             if (router.serviceDiscovery) {
                 const serviceDiscovery = this.serviceDiscovery.loadServiceDiscovery(router.serviceDiscovery, router.ssl);
                 apiRouter.use((req, res, next) => {
-                    Promise.resolve(serviceDiscovery((<any>req).proxyOptions?(<any>req).proxyOptions.target:null))
+                    Promise.resolve(serviceDiscovery((<any>req).proxyOptions ? (<any>req).proxyOptions.target : null))
                         .then(result => {
-                            (<any>req).proxyOptions = {target: result};
+                            (<any>req).proxyOptions = { target: result };
                             next();
                         }).catch(err => {
                             next(err);

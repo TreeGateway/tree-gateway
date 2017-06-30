@@ -5,9 +5,9 @@ import { ApiConfig } from '../../config/api';
 export interface Apis {
     list(filters: any): Promise<Array<ApiConfig>>;
     addApi(api: ApiConfig): Promise<string>;
-    updateApi( id: string, api: ApiConfig): Promise<void>;
-    removeApi( id: string): Promise<void>;
-    getApi( id: string): Promise<ApiConfig>;
+    updateApi(id: string, api: ApiConfig): Promise<void>;
+    removeApi(id: string): Promise<void>;
+    getApi(id: string): Promise<ApiConfig>;
 }
 
 export class ApisClient implements Apis {
@@ -32,7 +32,7 @@ export class ApisClient implements Apis {
 
     addApi(api: ApiConfig): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestAddApi({api})
+            this.swaggerClient.apis.APIs.APIRestAddApi({ api })
                 .then((response: any) => {
                     if (response.status === 201) {
                         return resolve(response.headers['location'].substring(5));
@@ -43,10 +43,10 @@ export class ApisClient implements Apis {
         });
     }
 
-    updateApi( id: string, api: ApiConfig): Promise<void> {
+    updateApi(id: string, api: ApiConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             api.id = id;
-            this.swaggerClient.apis.APIs.APIRestUpdateApi({id, api})
+            this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -57,9 +57,9 @@ export class ApisClient implements Apis {
         });
     }
 
-    removeApi( id: string): Promise<void> {
+    removeApi(id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestRemoveApi({id})
+            this.swaggerClient.apis.APIs.APIRestRemoveApi({ id })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -70,9 +70,9 @@ export class ApisClient implements Apis {
         });
     }
 
-    getApi( id: string): Promise<ApiConfig> {
+    getApi(id: string): Promise<ApiConfig> {
         return new Promise<ApiConfig>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestGetApi({id})
+            this.swaggerClient.apis.APIs.APIRestGetApi({ id })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);

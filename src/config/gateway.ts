@@ -64,10 +64,10 @@ export interface GatewayConfig {
      * If provided, Configure the admin service for the gateway
      */
     admin?: AdminConfig;
-     /**
-     * Configure default cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
-     * It can be configured also in the API configuration
-     */
+    /**
+    * Configure default cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
+    * It can be configured also in the API configuration
+    */
     cors?: CorsConfig;
     /**
      * Configure a timeout for the gateway http.Server. You can inform the amount of milisencods, or use

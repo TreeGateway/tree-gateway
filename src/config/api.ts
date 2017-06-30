@@ -7,7 +7,7 @@ import { CacheConfig, cacheConfigValidatorSchema } from './cache';
 import { Proxy, proxyValidatorSchema } from './proxy';
 import { Group, groupValidatorSchema } from './group';
 import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
-import { Filter, filterSchema} from './filter';
+import { Filter, filterSchema } from './filter';
 import * as Joi from 'joi';
 import { ValidationError } from '../error/errors';
 /**

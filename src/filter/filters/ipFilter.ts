@@ -6,7 +6,7 @@ import { ValidationError } from '../../error/errors';
 import { Database } from '../../database';
 import { Logger } from '../../logger';
 import { Container } from 'typescript-ioc';
-import {getMilisecondsInterval} from '../../utils/time-intervals';
+import { getMilisecondsInterval } from '../../utils/time-intervals';
 
 const ipFilter = require('ip-filter');
 const IPV6_PREFIX = '::ffff:';

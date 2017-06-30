@@ -31,18 +31,18 @@ export class ApiFilter {
             }
             filters.forEach((filter) => {
                 const filterMiddleware = this.middlewareLoader.loadMiddleware('filter', filter);
-                    apiRouter.use((req, res, next) => {
-                        Promise.resolve(filterMiddleware(req, res)).then(result => {
-                            if (result) {
-                                return next();
-                            }
-                            if (!res.headersSent) {
-                                res.sendStatus(404);
-                            }
-                        }).catch(err => {
-                            next(err);
-                        });
+                apiRouter.use((req, res, next) => {
+                    Promise.resolve(filterMiddleware(req, res)).then(result => {
+                        if (result) {
+                            return next();
+                        }
+                        if (!res.headersSent) {
+                            res.sendStatus(404);
+                        }
+                    }).catch(err => {
+                        next(err);
                     });
+                });
             });
         }
     }

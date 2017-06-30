@@ -6,7 +6,7 @@ import { StatsHandler } from './stats';
 import { Logger } from '../logger';
 import { Inject } from 'typescript-ioc';
 import { Database } from '../database';
-import {getMilisecondsInterval} from '../utils/time-intervals';
+import { getMilisecondsInterval } from '../utils/time-intervals';
 
 class Constants {
     static STATS_SYNC = 'STATS_SYNC';

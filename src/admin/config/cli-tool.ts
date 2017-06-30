@@ -1,6 +1,6 @@
 'use strict';
 
-import {SDK} from './sdk';
+import { SDK } from './sdk';
 import { ApiConfig } from '../../config/api';
 import { GatewayConfig } from '../../config/gateway';
 import * as fs from 'fs-extra-promise';

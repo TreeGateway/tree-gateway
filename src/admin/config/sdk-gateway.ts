@@ -15,9 +15,9 @@ export class GatewayClient implements Gateway {
         this.swaggerClient = swaggerClient;
     }
 
-    updateConfig( config: GatewayConfig ): Promise<void> {
+    updateConfig(config: GatewayConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Gateway.GatewayRestUpdateConfig({config})
+            this.swaggerClient.apis.Gateway.GatewayRestUpdateConfig({ config })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();

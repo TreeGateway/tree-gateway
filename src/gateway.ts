@@ -7,7 +7,7 @@ import adminApi from './admin/api/admin-api';
 import { UsersRest } from './admin/api/users';
 import { Server } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from './config/api';
-import {StatsConfig} from './config/stats';
+import { StatsConfig } from './config/stats';
 import { ApiProxy } from './proxy/proxy';
 import * as Utils from './proxy/utils';
 import { ApiRateLimit } from './throttling/throttling';
@@ -441,15 +441,15 @@ export class Gateway {
             const schemes = (this.config.gateway.admin.protocol.https ? ['https'] : ['http']);
             let host;
             if (this.config.gateway.admin.apiDocs.host) {
-                host = `${this.config.gateway.admin.apiDocs.host}:${(this.config.gateway.admin.protocol.https?this.config.gateway.admin.protocol.https.listenPort:this.config.gateway.admin.protocol.http.listenPort)}`;
+                host = `${this.config.gateway.admin.apiDocs.host}:${(this.config.gateway.admin.protocol.https ? this.config.gateway.admin.protocol.https.listenPort : this.config.gateway.admin.protocol.http.listenPort)}`;
             } else {
                 host = (this.config.gateway.admin.protocol.https ?
-                    `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
-                    `${isTest?'localhost':os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
+                    `${isTest ? 'localhost' : os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
+                    `${isTest ? 'localhost' : os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
             }
             const swaggerFile = isTest ?
-                            './dist/admin/api/swagger.json' :
-                            path.join(__dirname, './admin/api/swagger.json');
+                './dist/admin/api/swagger.json' :
+                path.join(__dirname, './admin/api/swagger.json');
 
             Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs.path, host, schemes);
         }

@@ -40,7 +40,7 @@ export class SDK {
         return new Promise<string>((resolve, reject) => {
             swagger(swaggerUrl)
                 .then((swaggerClient: any) => {
-                    return swaggerClient.apis.Users.UsersRestGetAuthToken({login, password});
+                    return swaggerClient.apis.Users.UsersRestGetAuthToken({ login, password });
                 })
                 .then((response: any) => {
                     if (response.status === 200) {

@@ -4,7 +4,7 @@ import { ClientCacheConfig } from '../config/cache';
 import * as _ from 'lodash';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import {getMilisecondsInterval} from '../utils/time-intervals';
+import { getMilisecondsInterval } from '../utils/time-intervals';
 
 @AutoWired
 export class ClientCache {

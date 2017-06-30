@@ -11,7 +11,7 @@ module.exports = function(config: JSONAtaExpression) {
             try {
                 const bodyData = JSON.parse(body);
                 const result = expression.evaluate(bodyData);
-                resolve({body:result});
+                resolve({ body: result });
             } catch (e) {
                 return reject(e);
             }

@@ -270,7 +270,7 @@ export interface ResponseInterceptorResult {
     updateHeaders?: any;
 }
 
-const routerConfigValidatorSchema =  Joi.object().keys({
+const routerConfigValidatorSchema = Joi.object().keys({
     middleware: middlewareConfigValidatorSchema,
     serviceDiscovery: middlewareConfigValidatorSchema,
     ssl: Joi.boolean()

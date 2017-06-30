@@ -10,7 +10,7 @@ import { Stats } from '../stats/stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
-import {getMilisecondsInterval} from '../utils/time-intervals';
+import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 
 interface ThrottlingInfo {

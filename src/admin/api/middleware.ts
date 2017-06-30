@@ -14,79 +14,79 @@ export class MiddlewareRest {
 
     @GET
     @Path('filters')
-    filters(@QueryParam('name') name?: string): Promise<Array<string>> {
+    filters( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('filter', name);
     }
 
     @GET
     @Path('interceptors/request')
-    requestInterceptors(@QueryParam('name') name?: string): Promise<Array<string>> {
+    requestInterceptors( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('interceptor/request', name);
     }
 
     @GET
     @Path('interceptors/response')
-    responseInterceptors(@QueryParam('name') name?: string): Promise<Array<string>> {
+    responseInterceptors( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('interceptor/response', name);
     }
 
     @GET
     @Path('authentication/strategies')
-    authStrategies(@QueryParam('name') name?: string): Promise<Array<string>> {
+    authStrategies( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('authentication/strategy', name);
     }
 
     @GET
     @Path('authentication/verify')
-    authVerify(@QueryParam('name') name?: string): Promise<Array<string>> {
+    authVerify( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('authentication/verify', name);
     }
 
     @GET
     @Path('throttling/keyGenerators')
-    throttlingKeyGenerator(@QueryParam('name') name?: string): Promise<Array<string>> {
+    throttlingKeyGenerator( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('throttling/keyGenerator', name);
     }
 
     @GET
     @Path('throttling/handlers')
-    throttlingHandler(@QueryParam('name') name?: string): Promise<Array<string>> {
+    throttlingHandler( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('throttling/handler', name);
     }
 
     @GET
     @Path('throttling/skip')
-    throttlingSkip(@QueryParam('name') name?: string): Promise<Array<string>> {
+    throttlingSkip( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('throttling/skip', name);
     }
 
     @GET
     @Path('circuitbreaker')
-    circuitBreaker(@QueryParam('name') name?: string): Promise<Array<string>> {
+    circuitBreaker( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('circuitbreaker', name);
     }
 
     @GET
     @Path('cors')
-    corsOrigin(@QueryParam('name') name?: string): Promise<Array<string>> {
+    corsOrigin( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('cors/origin', name);
     }
 
     @GET
     @Path('proxy/router')
-    proxyRouter(@QueryParam('name') name?: string): Promise<Array<string>> {
+    proxyRouter( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('proxy/router', name);
     }
 
     @GET
     @Path('servicediscovery')
-    serviceDiscovery(@QueryParam('name') name?: string): Promise<Array<string>> {
+    serviceDiscovery( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('servicediscovery', name);
     }
 
     @GET
     @Path('servicediscovery/provider')
-    serviceDiscoveryProvider(@QueryParam('name') name?: string): Promise<Array<string>> {
+    serviceDiscoveryProvider( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('servicediscovery/provider', name);
     }
 

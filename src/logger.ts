@@ -76,6 +76,6 @@ export class Logger {
     }
 
     inspectObject(object: any) {
-        inspect(object, {colors: true, depth: 15});
+        inspect(object, { colors: true, depth: 15 });
     }
 }
