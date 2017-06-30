@@ -1,5 +1,5 @@
 {
-    "name": "TestCorsAPI",
+    "name": "TestCorsMiddlewareAPI",
     "version": "1.0.0",
     "path": "cors-middleware/",
     "proxy": {

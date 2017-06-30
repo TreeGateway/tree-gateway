@@ -67,7 +67,7 @@
     "express-winston": "^2.2.0",
     "fs-extra-promise": "^0.4.1",
     "human-interval": "^0.1.6",
-    "ioredis": "^2.4.0",
+    "ioredis": "^2.5.0",
     "ip-filter": "^2.0.0",
     "joi": "^9.2.0",
     "jsonata": "^1.2.5",

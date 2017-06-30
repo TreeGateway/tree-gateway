@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as YAML from 'yamljs';
 import { EventEmitter } from 'events';
-import { RedisConfig, ServerConfig, GatewayConfig, validateServerConfig } from './config/gateway';
+import { RedisConfig, ServerConfig, GatewayConfig, validateServerConfig, validateGatewayConfig } from './config/gateway';
 import { AutoWired, Container, Singleton } from 'typescript-ioc';
 import { checkEnvVariable } from './utils/env';
 import { UserService } from './service/users';
@@ -178,6 +178,11 @@ export class Configuration extends EventEmitter {
                 .then(gatewayConfig => {
                     if (gatewayConfig) {
                         this.config.gateway = <GatewayConfig>_.defaultsDeep(gatewayConfig, this.config.gateway);
+                        try {
+                            validateGatewayConfig(this.config.gateway);
+                        } catch (e) {
+                            return reject(e);
+                        }
                     }
                     resolve();
                 })
