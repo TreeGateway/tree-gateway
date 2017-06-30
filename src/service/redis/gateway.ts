@@ -42,10 +42,22 @@ export class RedisGatewayService implements GatewayService {
 
     read(): Promise<GatewayConfig> {
         return new Promise<GatewayConfig>((resolve, reject) => {
-            this.database.redisClient.get(RedisGatewayService.GATEWAY_CONFIG_KEY)
+            this.get()
                 .then((config: any) => {
                     if (!config) {
                         throw new NotFoundError('Config not found.');
+                    }
+                    resolve(config);
+                }).catch(reject);
+        });
+    }
+
+    get(): Promise<GatewayConfig> {
+        return new Promise<GatewayConfig>((resolve, reject) => {
+            this.database.redisClient.get(RedisGatewayService.GATEWAY_CONFIG_KEY)
+                .then((config: any) => {
+                    if (!config) {
+                        return resolve(null);
                     }
                     resolve(JSON.parse(config));
                 }).catch(reject);

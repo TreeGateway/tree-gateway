@@ -28,7 +28,6 @@ export class Configuration extends EventEmitter {
         super();
         this.loadGatewayConfig(Configuration.gatewayConfigFile || path.join(process.cwd(), 'tree-gateway.json'))
             .then(() => {
-                this.loadContainerConfigurations();
                 this.isLoaded = true;
                 this.emit('load', this);
             })
@@ -70,29 +69,6 @@ export class Configuration extends EventEmitter {
         return this.isLoaded;
     }
 
-    private ensureLoaded() {
-        if (!this.isLoaded) {
-            throw new Error('Configuration not loaded. Only access configurations after the Configuration \'load\' event is fired.');
-        }
-    }
-
-    private loadContainerConfigurations() {
-
-        const RedisApiService = require('./service/redis/api').RedisApiService;
-        const RedisConfigService = require('./service/redis/config').RedisConfigService;
-        const RedisUserService = require('./service/redis/users').RedisUserService;
-        const RedisMiddlewareService = require('./service/redis/middleware').RedisMiddlewareService;
-        const RedisGatewayService = require('./service/redis/gateway').RedisGatewayService;
-        const RedisStats = require('./stats/redis-stats').RedisStats;
-
-        Container.bind(GatewayService).to(RedisGatewayService);
-        Container.bind(MiddlewareService).to(RedisMiddlewareService);
-        Container.bind(ApiService).to(RedisApiService);
-        Container.bind(ConfigService).to(RedisConfigService);
-        Container.bind(UserService).to(RedisUserService);
-        Container.bind(StatsHandler).to(RedisStats);
-    }
-
     private loadGatewayConfig(serverConfigFile: string): Promise<void> {
         let configFileName: string = serverConfigFile;
         configFileName = this.removeExtension(_.trim(configFileName));
@@ -132,6 +108,7 @@ export class Configuration extends EventEmitter {
         }
 
         this.config = serverConfig;
+        this.loadContainerConfigurations();
         return new Promise<void>((resolve, reject) => {
             if (this.config.gateway) {
                 if (this.config.gateway.protocol.https) {
@@ -151,20 +128,42 @@ export class Configuration extends EventEmitter {
         });
     }
 
+    private ensureLoaded() {
+        if (!this.isLoaded) {
+            throw new Error('Configuration not loaded. Only access configurations after the Configuration \'load\' event is fired.');
+        }
+    }
+
+    private loadContainerConfigurations() {
+
+        const RedisApiService = require('./service/redis/api').RedisApiService;
+        const RedisConfigService = require('./service/redis/config').RedisConfigService;
+        const RedisUserService = require('./service/redis/users').RedisUserService;
+        const RedisMiddlewareService = require('./service/redis/middleware').RedisMiddlewareService;
+        const RedisGatewayService = require('./service/redis/gateway').RedisGatewayService;
+        const RedisStats = require('./stats/redis-stats').RedisStats;
+
+        Container.bind(GatewayService).to(RedisGatewayService);
+        Container.bind(MiddlewareService).to(RedisMiddlewareService);
+        Container.bind(ApiService).to(RedisApiService);
+        Container.bind(ConfigService).to(RedisConfigService);
+        Container.bind(UserService).to(RedisUserService);
+        Container.bind(StatsHandler).to(RedisStats);
+    }
+
     private loadDatabaseConfig(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             setTimeout(() => {
-                const Database = require('./database').Database;
-                const database = Container.get(Database);
-
                 if (Configuration.resetBeforeStart) {
                     console.info('reseting database');
+                    const Database = require('./database').Database;
+                    const database = Container.get(Database);
                     database.redisClient.flushdb()
-                        .then(() => this.getConfigFromDB(database))
+                        .then(() => this.getConfigFromDB())
                         .then(resolve)
                         .catch(reject);
                 } else {
-                    this.getConfigFromDB(database)
+                    this.getConfigFromDB()
                         .then(resolve)
                         .catch(reject);
                 }
@@ -172,16 +171,17 @@ export class Configuration extends EventEmitter {
         });
     }
 
-    private getConfigFromDB(database: any) {
+    private getConfigFromDB() {
         return new Promise<void>((resolve, reject) => {
-            database.redisClient.get('{config}:gateway')
-                .then((config: string) => {
-                    if (config) {
-                        const configGateway: GatewayConfig = JSON.parse(config);
-                        this.config.gateway = <GatewayConfig>_.defaultsDeep(configGateway, this.config.gateway);
+            const gatewayService: GatewayService = Container.get(GatewayService);
+            gatewayService.get()
+                .then(gatewayConfig => {
+                    if (gatewayConfig) {
+                        this.config.gateway = <GatewayConfig>_.defaultsDeep(gatewayConfig, this.config.gateway);
                     }
                     resolve();
-                }).catch(reject);
+                })
+                .catch(reject);
         });
     }
 
