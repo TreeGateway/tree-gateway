@@ -14,6 +14,7 @@ import { MiddlewareService } from './service/middleware';
 import { ApiService } from './service/api';
 import { ConfigService } from './service/config';
 import { GatewayService } from './service/gateway';
+import { PluginsDataService } from './service/plugin-data';
 import { StatsHandler } from './stats/stats';
 
 @Singleton
@@ -142,6 +143,7 @@ export class Configuration extends EventEmitter {
         const RedisUserService = require('./service/redis/users').RedisUserService;
         const RedisMiddlewareService = require('./service/redis/middleware').RedisMiddlewareService;
         const RedisGatewayService = require('./service/redis/gateway').RedisGatewayService;
+        const RedisPluginsDataService = require('./service/redis/plugin-data').RedisPluginsDataService;
         const RedisStats = require('./stats/redis-stats').RedisStats;
 
         Container.bind(GatewayService).to(RedisGatewayService);
@@ -149,6 +151,7 @@ export class Configuration extends EventEmitter {
         Container.bind(ApiService).to(RedisApiService);
         Container.bind(ConfigService).to(RedisConfigService);
         Container.bind(UserService).to(RedisUserService);
+        Container.bind(PluginsDataService).to(RedisPluginsDataService);
         Container.bind(StatsHandler).to(RedisStats);
     }
 

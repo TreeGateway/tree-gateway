@@ -35,6 +35,8 @@ gateway:
                 - "::1"
             statusCode: 403
             message: IP Filtered
+            database:
+                checkInterval: 1 second
 
     serviceDiscovery:
         provider:
