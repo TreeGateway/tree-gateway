@@ -1,7 +1,8 @@
 rootPath: './test/data/root'
 database:
-    options: 
-        db: 1
+    redis: 
+        options: 
+            db: 1
         
 gateway: 
     protocol: 

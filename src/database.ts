@@ -1,7 +1,7 @@
 'use strict';
 
 import * as Redis from 'ioredis';
-import { RedisConfig } from './config/gateway';
+import { RedisConfig } from './config/database';
 import * as _ from 'lodash';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { Configuration } from './configuration';
@@ -15,8 +15,8 @@ export class Database {
     private events: Redis.Redis;
 
     constructor() {
-        this.client = this.initializeRedis(this.config.database);
-        this.events = this.initializeRedis(this.config.database);
+        this.client = this.initializeRedis(this.config.database.redis);
+        this.events = this.initializeRedis(this.config.database.redis);
     }
 
     get redisClient(): Redis.Redis {

@@ -5,7 +5,8 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as YAML from 'yamljs';
 import { EventEmitter } from 'events';
-import { RedisConfig, ServerConfig, GatewayConfig, validateServerConfig, validateGatewayConfig } from './config/gateway';
+import { ServerConfig, GatewayConfig, validateServerConfig, validateGatewayConfig } from './config/gateway';
+import { DatabaseConfig } from './config/database';
 import { AutoWired, Container, Singleton } from 'typescript-ioc';
 import { checkEnvVariable } from './utils/env';
 import { UserService } from './service/users';
@@ -61,7 +62,7 @@ export class Configuration extends EventEmitter {
         return this.config.middlewarePath;
     }
 
-    get database(): RedisConfig {
+    get database(): DatabaseConfig {
         return this.config.database;
     }
 

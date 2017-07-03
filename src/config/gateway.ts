@@ -8,6 +8,7 @@ import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfi
 import { CorsConfig, corsConfigSchema } from './cors';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './service-discovery';
+import { DatabaseConfig, databaseSchema } from './database';
 import { ValidationError } from '../error/errors';
 
 /**
@@ -17,7 +18,7 @@ export interface ServerConfig {
     /**
      * Configurations for gateway database (REDIS).
      */
-    database: RedisConfig;
+    database: DatabaseConfig;
     /**
      * Folder where the gateway will install its middleware functions.
      */
@@ -114,91 +115,6 @@ export interface MonitorConfig {
     statsConfig: StatsConfig;
 }
 
-export interface RedisConfig {
-    /**
-     * Configure the connection to a standalone Redis.
-     */
-    standalone?: RedisNodeConfig;
-    /**
-     * Configure client to use Redis Sentinel.
-     */
-    sentinel?: RedisSentinelConfig;
-    /**
-     * List of cluster nodes.
-     */
-    cluster?: RedisNodeConfig[];
-    /**
-     * Configure additional options to be passed to redis driver.
-     */
-    options?: RedisOptionsConfig;
-}
-
-export interface RedisNodeConfig {
-    /**
-     * The hostname of the redis node.
-     */
-    host: string;
-    /**
-     * The port of the redis node.
-     */
-    port?: string | number;
-    /**
-     * The password to connect on the redis node.
-     */
-    password?: string;
-}
-
-export interface RedisSentinelConfig {
-    /**
-     * List of sentinel nodes.
-     */
-    nodes: RedisNodeConfig[];
-    /**
-     * Group os instances to connect (master/slaves group).
-     */
-    name: string;
-}
-
-export interface RedisOptionsConfig {
-    /**
-     * Fallback password. Used when not defined in a node.
-     */
-    password?: string;
-    /**
-     * Prefix to be appended to all keys (defaults to '').
-     */
-    keyPrefix?: string;
-    /**
-     * Connection name, for monitoring purposes.
-     */
-    connectionName?: string;
-    /**
-     * Database index.
-     */
-    db?: number;
-}
-
-const redisNodeSchema = Joi.object().keys({
-    host: Joi.string().required(),
-    password: Joi.string(),
-    port: Joi.alternatives([Joi.string(), Joi.number().positive()])
-});
-
-const redisConfigSchema = Joi.object().keys({
-    cluster: Joi.array().items(redisNodeSchema),
-    options: Joi.object().keys({
-        connectionName: Joi.string(),
-        db: Joi.number().positive(),
-        keyPrefix: Joi.string(),
-        password: Joi.string()
-    }),
-    sentinel: Joi.object().keys({
-        name: Joi.string().required(),
-        nodes: Joi.array().items(redisNodeSchema).required()
-    }),
-    standalone: redisNodeSchema
-}).xor('standalone', 'sentinel', 'cluster');
-
 const monitorConfigSchema = Joi.object().keys({
     name: Joi.string().valid('cpu', 'mem').required(),
     statsConfig: statsConfigValidatorSchema.required()
@@ -219,7 +135,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
 });
 
 export let serverConfigValidatorSchema = Joi.object().keys({
-    database: redisConfigSchema.required(),
+    database: databaseSchema.required(),
     gateway: gatewayConfigValidatorSchema,
     middlewarePath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/),
     rootPath: Joi.string().regex(/^[a-z\.\/][a-zA-Z0-9\-_\.\/]*$/)
