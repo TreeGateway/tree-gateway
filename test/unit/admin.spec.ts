@@ -124,6 +124,9 @@ describe('Gateway Admin Tasks', () => {
             description: 'API mock',
             name: 'apiMock',
             path: 'newApi',
+            proxy: {
+                target: {host: 'test.com'}
+            },
             version: '1.0'
         };
 

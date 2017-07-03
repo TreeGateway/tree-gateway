@@ -86,7 +86,7 @@ describe('Gateway APIs install', () => {
 
             fs.readdirAsync(pathApi)
                 .then((files) => {
-                    const promises = files.map(file => {
+                    const promises = files.filter(file => !file.endsWith('.DS_Store')).map(file => {
                         if (file.endsWith('.yml') || file.endsWith('.yaml')) {
                             const api = YAML.load(pathApi+file);
                             return Promise.resolve(api);

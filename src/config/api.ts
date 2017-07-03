@@ -100,7 +100,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     id: Joi.string().guid(),
     name: Joi.string().alphanum().min(3).max(50).required(),
     path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
-    proxy: proxyValidatorSchema,
+    proxy: proxyValidatorSchema.required(),
     throttling: Joi.array().items(throttlingConfigValidatorSchema),
     version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required()
 });
