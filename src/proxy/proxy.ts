@@ -147,7 +147,7 @@ export class ApiProxy {
         }
 
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (validateInterceptors(req, res)) {
+            if (validateInterceptors(req, res) || (<any>req).parseRespBody) {
                 const options: any = (<any>req).proxyOptions || {};
                 (<any>res).__data = new memoryStream();
                 options.destPipe = { stream: (<any>res).__data };
@@ -161,38 +161,42 @@ export class ApiProxy {
     }
 
     private handleResponseInterceptor(api: ApiConfig, proxy: any, responseInterceptor: ResponseInterceptors) {
-        if (responseInterceptor) {
             proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
                 if (res.__data) {
-                    responseInterceptor.middelware(res.__data.toBuffer(), proxyRes, req, res, res.__ignore,
-                        (newHeaders: any, removeHeaders: string[]) => {
-                            if (newHeaders) {
-                                Object.keys(newHeaders).forEach(name => {
-                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
-                                    res.set(name.toLowerCase(), newHeaders[name]);
-                                });
-                            }
-                            if (removeHeaders) {
-                                removeHeaders.forEach(name => {
-                                    delete proxyRes.headers[name];
-                                    res.removeHeader(name);
-                                    if (name !== name.toLowerCase()) {
-                                        delete proxyRes.headers[name.toLowerCase()];
-                                        res.removeHeader(name.toLowerCase());
-                                    }
-                                });
-                            }
-                        },
-                        (err: any, body: any) => {
-                            if (err) {
-                                this.logger.error();
-                            }
-                            delete res['__data'];
-                            res.send(body);
-                        });
+                    if (responseInterceptor) {
+                        responseInterceptor.middelware(res.__data.toBuffer(), proxyRes, req, res, res.__ignore,
+                            (newHeaders: any, removeHeaders: string[]) => {
+                                if (newHeaders) {
+                                    Object.keys(newHeaders).forEach(name => {
+                                        proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                        res.set(name.toLowerCase(), newHeaders[name]);
+                                    });
+                                }
+                                if (removeHeaders) {
+                                    removeHeaders.forEach(name => {
+                                        delete proxyRes.headers[name];
+                                        res.removeHeader(name);
+                                        if (name !== name.toLowerCase()) {
+                                            delete proxyRes.headers[name.toLowerCase()];
+                                            res.removeHeader(name.toLowerCase());
+                                        }
+                                    });
+                                }
+                            },
+                            (err: any, body: any) => {
+                                if (err) {
+                                    this.logger.error();
+                                }
+                                delete res['__data'];
+                                res.send(body);
+                            });
+                    } else {
+                        const body = res.__data.toBuffer();
+                        delete res['__data'];
+                        res.send(body);
+                    }
                 }
             });
-        }
     }
 
     private maybeParseBody(req: express.Request, limit: string) {

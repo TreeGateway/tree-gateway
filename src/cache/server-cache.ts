@@ -63,6 +63,7 @@ export class ServerCache {
         if (stats) {
             result.push(`${stats}.cacheMiss.registerOccurrence(${req}.path, 1);`);
         }
+        result.push(`${req}.parseRespBody = true;`);
         result.push(`var send = ${res}.send.bind(${res});`);
         result.push(`${res}.send = function (body) {`);
         result.push(`var ret = send(body);`);
@@ -73,6 +74,7 @@ export class ServerCache {
         result.push(`return ret;`);
         result.push(`}`);
 
+        result.push(`if ( ${res}.statusCode >= 200 && ${res}.statusCode < 300) {`);
         const cacheTime = getMilisecondsInterval(serverCache.cacheTime);
         result.push(`ServerCache.cacheStore.set(${req}.originalUrl, {`);
         result.push(`content: body,`);
@@ -88,6 +90,7 @@ export class ServerCache {
             result.push(`}`);
         }
         result.push(`}, ${cacheTime});`);
+        result.push(`}`);
 
         result.push(`return ret;`);
         result.push(`};`);
