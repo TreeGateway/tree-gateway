@@ -19,7 +19,7 @@ let consulTestService: ConsulTestService;
 let secondConsultestService: SecondConsulTestService;
 
 describe('Gateway Service Discovery', () => {
-    describe('Consul Poovider Service Discovery', () => {
+    describe('Consul Service Discovery Provider', () => {
         before((done) => {
             config = Container.get(Configuration);
             gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});

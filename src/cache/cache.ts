@@ -3,7 +3,7 @@
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
 import { CacheConfig, ServerCacheConfig } from '../config/cache';
-import * as serverCache from './server-cache';
+import { ServerCache } from './server-cache';
 import { ClientCache } from './client-cache';
 import * as Groups from '../group';
 import * as _ from 'lodash';
@@ -14,7 +14,6 @@ import { StatsRecorder } from '../stats/stats-recorder';
 import { createFunction } from '../utils/functions';
 
 const onHeaders = require('on-headers');
-const ServerCache = serverCache.ServerCache;
 
 class StatsController {
     cacheError: Stats;
@@ -71,7 +70,7 @@ export class ApiCache {
             body.push(clientCache.buildCacheMiddleware(cache.client, path));
         }
         if (cache.server) {
-            const serverCache: serverCache.ServerCache = new ServerCache();
+            const serverCache: ServerCache = new ServerCache();
 
             if (stats) {
                 body.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next', 'stats'));
