@@ -7,16 +7,18 @@ import { EventEmitter } from 'events';
 import { PluginsDataService } from '../plugin-data';
 
 export class RedisPluginsDataService extends EventEmitter implements PluginsDataService {
+    private static PREFIX = '{plugin-data}';
+
     @Inject private logger: Logger;
     @Inject private database: Database;
 
     listConfigurationItems(configKey: string): Promise<Array<string>> {
-        return this.database.redisClient.smembers(configKey);
+        return this.database.redisClient.smembers(`${RedisPluginsDataService.PREFIX}:${configKey}`);
     }
 
     addConfigurationItem(configKey: string, value: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.sadd(configKey, value)
+            this.database.redisClient.sadd(`${RedisPluginsDataService.PREFIX}:${configKey}`, value)
                 .then(() => {
                     resolve();
                 })

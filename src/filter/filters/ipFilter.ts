@@ -33,7 +33,7 @@ const ipFilterConfigSchema = Joi.object().keys({
     message: Joi.string(),
     statusCode: Joi.number(),
     whitelist: Joi.array().items(Joi.string())
-});
+}).xor('blacklist', 'whitelist');
 
 function validateIpFilterConfig(config: IpFilterConfig) {
     const result = Joi.validate(config, ipFilterConfigSchema);
@@ -52,7 +52,7 @@ function getBlacklistFilter(config: IpFilterConfig) {
         pluginsDataService.on('changed', (data: Array<string>) => {
             blocked = _.union(config.blacklist, data || []);
         });
-        pluginsDataService.watchConfigurationItems(config.database.key || '{ipFilter}:blacklist',
+        pluginsDataService.watchConfigurationItems(config.database.key || 'ipFilter:blacklist',
                                     getMilisecondsInterval(config.database.checkInterval, 30000));
     }
     return (req: express.Request, res: express.Response) => {
@@ -94,7 +94,7 @@ function getWhitelistFilter(config: IpFilterConfig) {
             allowed = ipFilter(ip, unblocked, { strict: false });
         }
         if (!allowed) {
-            res.status(config.statusCode || 403).send(config.message || 'Not allowed.');
+            res.status(config.statusCode || 403).send(config.message || 'IP not allowed.');
         }
         return allowed;
     };
