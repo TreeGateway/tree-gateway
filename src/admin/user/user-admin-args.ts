@@ -7,7 +7,7 @@ import { Configuration } from '../../configuration';
 const parser = new ArgumentParser({
     addHelp: true,
     description: 'Tree-Gateway User Admin',
-    version: '0.2.0'
+    version: '1.0.0'
 });
 
 parser.addArgument(

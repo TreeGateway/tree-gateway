@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
   "keywords": [
