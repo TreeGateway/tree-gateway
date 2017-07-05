@@ -5,7 +5,7 @@ import { ApiConfig } from '../config/api';
 import { ApiCorsConfig, CorsConfig } from '../config/cors';
 import * as _ from 'lodash';
 import * as Groups from '../group';
-import * as corsMiddleware from 'cors';
+import * as corsLib from 'cors';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { getMilisecondsInterval } from '../utils/time-intervals';
@@ -29,8 +29,8 @@ export class ApiCors {
 
         configusrations.forEach((cors: ApiCorsConfig) => {
             const corsInfo: CorsInfo = {};
-            const corsOptions: corsMiddleware.CorsOptions = this.configureCorsOptions(cors);
-            corsInfo.corsMiddleware = corsMiddleware(corsOptions);
+            const corsOptions: corsLib.CorsOptions = this.configureCorsOptions(cors);
+            corsInfo.corsMiddleware = corsLib(corsOptions);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug(`Configuring Cors for path [${api.path}].`);
@@ -48,8 +48,8 @@ export class ApiCors {
         this.setupMiddlewares(apiRouter, corsInfos);
     }
 
-    configureCorsOptions(cors: CorsConfig): corsMiddleware.CorsOptions {
-        const corsOptions: corsMiddleware.CorsOptions = _.omit(cors, 'id', 'origin', 'maxAge', 'group');
+    configureCorsOptions(cors: CorsConfig): corsLib.CorsOptions {
+        const corsOptions: corsLib.CorsOptions = _.omit(cors, 'id', 'origin', 'maxAge', 'group');
         if (cors.maxAge) {
             corsOptions.maxAge = getMilisecondsInterval(cors.maxAge);
         }
