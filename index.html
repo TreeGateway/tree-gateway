@@ -9,10 +9,12 @@
     <meta name="description" content="Free API Gateway node JS Open source">
     <meta name="author" content="Tree Gateway">
 
-    <title>Treegateway - A full Featured and free API Gateway for Node JS developers</title>
+    <title>Treegateway - A full Featured and free API Gateway</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 
     <!-- Theme CSS -->
     <link href="css/freelancer.min.css" rel="stylesheet">
@@ -31,6 +33,7 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="js/background-video.js"></script>
 </head>
 
 <body id="page-top" class="index">
@@ -80,7 +83,9 @@
                     <img id="logo" class="img-responsive" src="img/logo.png" alt="TreeGateway">
                     <div class="intro-text">
                         <hr class="star-light">
-                        <span class="skills">Full Featured and Free API Gateway for Node JS Developers</span>
+                        <span class="skills">Full Featured and Free API Gateway</span>
+                        <br>
+                        <span style="font-size: 1.25em; font-weight: 100;">Tree Gateway is a free and open source solution that has a complete and customizable pipeline to handle your requests</span>
                         <br><br>
                         <a class="github-button" href="https://github.com/Leanty/tree-gateway" aria-label="Follow @Us on GitHub" data-size="large">Follow</a>
                         <a class="github-button" href="https://github.com/Leanty/tree-gateway" data-icon="octicon-star" data-size="large" aria-label="Star Leanty/tree-gateway on GitHub">Star</a>
@@ -93,13 +98,14 @@
     <!-- Intro Section -->
     <section id="intro">
         <div class="container">
+            <!--<div class="row">
+                <img class="img-responsive img-centered" src="img/presentation2.png" alt="" style="max-width:650px">
+            </div>-->
             <div class="row">
-                <img class="img-responsive img-centered" src="img/presentation.png" alt="">
-            </div>
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2>The entrance for your micro services</h2>
-                    <hr class="star-primary">
+                <div class="col-lg-12 text-center" id="main-intro-text">
+                    <h1>The entrance for your Cloud Micro Services</h1>
+                    <!--<hr class="star-primary">-->
+                    <h3> An API gateway provides a single, unified entry point across one or more internal APIs. It is an important element in any microservice architecture.</h3>
                 </div>
             </div>
         </div>
@@ -135,7 +141,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="portfolio">
+    <section id="portfolio" style="background: white;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -321,6 +327,9 @@
                             </li>
                             <li>
                                 <a href="https://github.com/Leanty/tree-gateway" class="btn-social btn-outline"><span class="sr-only">GitHub</span><i class="fa fa-fw fa-github-square"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/company-beta/24771246" class="btn-social btn-outline"><span class="sr-only">LinkedIn</span><i class="fa fa-fw fa-linkedin"></i></a>
                             </li>
                         </ul>
                     </div>
@@ -576,9 +585,6 @@
         </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
 
@@ -598,6 +604,21 @@
         emailjs.init("user_3zcnAOkGe21W45pMWOWTn");
     })();
     </script>
+    <script>
+        $(document).ready(function() {
+            var videobackground = new $.backgroundVideo($('#main-intro-text'), {
+            "align": "centerXY",
+            "width": 1280,
+            "height": 720,
+            "path": "media/",
+            "filename": "cloud",
+            "types": ["mp4","ogg","webm"],
+            "preload": true,
+            "autoplay": true,
+            "loop": true
+            });
+        });
+        </script>
 </body>
 
 </html>

@@ -239,9 +239,13 @@ img#logo-top {
 img#logo {
   width: 300px;
 }
+.floating-label-form-group input,
+.floating-label-form-group textarea {
+  padding-top: 20px !important;
+}
 #portfolio .text-image {
-  top: -40px;
-  color: white;
+  top: -16px;
+  color: black;
 }
 #portfolio .text-image > * {
   font-size: 20px;
