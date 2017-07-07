@@ -88,7 +88,7 @@ export class Cli {
                 });
                 this.sdk.middleware.filters(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -140,7 +140,7 @@ export class Cli {
                 });
                 this.sdk.middleware.requestInterceptors(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -192,7 +192,7 @@ export class Cli {
                 });
                 this.sdk.middleware.responseInterceptors(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -244,7 +244,7 @@ export class Cli {
                 });
                 this.sdk.middleware.authStrategies(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -296,7 +296,7 @@ export class Cli {
                 });
                 this.sdk.middleware.authVerify(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -348,7 +348,7 @@ export class Cli {
                 });
                 this.sdk.middleware.throttlingKeyGenerator(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -400,7 +400,7 @@ export class Cli {
                 });
                 this.sdk.middleware.throttlingHandler(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -452,7 +452,7 @@ export class Cli {
                 });
                 this.sdk.middleware.throttlingSkip(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -504,7 +504,7 @@ export class Cli {
                 });
                 this.sdk.middleware.circuitBreaker(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -556,7 +556,7 @@ export class Cli {
                 });
                 this.sdk.middleware.corsOrigin(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -608,7 +608,7 @@ export class Cli {
                 });
                 this.sdk.middleware.proxyRouter(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -660,7 +660,7 @@ export class Cli {
                 });
                 this.sdk.middleware.serviceDiscovery(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -712,7 +712,7 @@ export class Cli {
                 });
                 this.sdk.middleware.serviceDiscoveryProvider(<string>args['name'])
                     .then(filters => {
-                        console.info(JSON.stringify(filters));
+                        console.info(YAML.stringify(filters));
                         resolve();
                     })
                     .catch(reject);
@@ -764,7 +764,7 @@ export class Cli {
                 });
                 this.sdk.apis.list(args)
                     .then(apis => {
-                        console.info(JSON.stringify(apis));
+                        console.info(YAML.stringify(apis));
                         resolve();
                     })
                     .catch(reject);
@@ -792,9 +792,15 @@ export class Cli {
                     })
                     .catch(reject);
             } else if (this.args.get) {
-                this.sdk.apis.getApi(this.args.get)
+                const id = this.args.get[0];
+                const format = this.args.get.length > 1 ? this.args.get[1] : 'yaml';
+                this.sdk.apis.getApi(id)
                     .then(api => {
-                        console.info(JSON.stringify(api));
+                        if (format === 'json') {
+                            console.info(JSON.stringify(api, null, 4));
+                        } else {
+                            console.info(YAML.stringify(api, 15));
+                        }
                         resolve();
                     })
                     .catch(reject);
@@ -822,7 +828,11 @@ export class Cli {
             } else if (this.args.get) {
                 this.sdk.gateway.getConfig()
                     .then(gateway => {
-                        console.info(JSON.stringify(gateway));
+                        if (this.args.get === 'json') {
+                            console.info(JSON.stringify(gateway, null, 4));
+                        } else {
+                            console.info(YAML.stringify(gateway, 15));
+                        }
                         resolve();
                     })
                     .catch(reject);

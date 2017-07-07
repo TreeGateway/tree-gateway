@@ -53,7 +53,8 @@ apisCommand.addArgument(
 
 apisCommand.addArgument(
     ['-g', '--get'], {
-        help: 'Inform the api id to be retrieved',
+        help: 'Inform the api id to be retrieved (YAML format, by default). Pass the return format optionally. Ex apis -g <id> json',
+        nargs: '+'
     }
 );
 
@@ -81,7 +82,7 @@ gatewayCommand.addArgument(
     ['-g', '--get'], {
         constant: true,
         defaultValue: false,
-        help: 'Inform the path to the api config file (JSON format) to be retrieved',
+        help: 'Retrieve the api config file (YAML format, by default). Pass the return format optionally. Ex gateway -g json',
         nargs: '?'
     }
 );
