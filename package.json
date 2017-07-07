@@ -142,7 +142,6 @@
   },
   "bin": {
     "treeGateway": "dist/app-cluster.js",
-    "userAdmin": "dist/admin/user/user-admin.js",
     "treeGatewayConfig": "dist/admin/config/cli.js"
   },
   "bugs": {

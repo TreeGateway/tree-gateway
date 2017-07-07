@@ -32,7 +32,7 @@ export interface UsersConfig {
 
 export const userValidatorSchema = Joi.object().keys({
     email: Joi.string().email(),
-    login: Joi.string().alphanum().required(),
+    login: Joi.string().required(),
     name: Joi.string().required(),
     password: Joi.string(),
     roles: Joi.array().items(Joi.string()).unique()

@@ -33,7 +33,7 @@ export class UsersClient implements Users {
 
     addUser(user: UserData): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestAddUser({ user })
+            this.swaggerClient.apis.Users.UsersRestAddUser({ user: user })
                 .then((response: any) => {
                     if (response.status === 201) {
                         return resolve(response.headers['location'].substring(6));
@@ -47,7 +47,7 @@ export class UsersClient implements Users {
     updateUser(login: string, user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             user.login = login;
-            this.swaggerClient.apis.Users.UsersRestUpdateUser({ login, user })
+            this.swaggerClient.apis.Users.UsersRestUpdateUser({ login: login, user: user })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -60,7 +60,7 @@ export class UsersClient implements Users {
 
     removeUser(login: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestRemoveUser({ login })
+            this.swaggerClient.apis.Users.UsersRestRemoveUser({ login: login })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -73,7 +73,7 @@ export class UsersClient implements Users {
 
     getUser(login: string): Promise<UserData> {
         return new Promise<UserData>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestGetUser({ login })
+            this.swaggerClient.apis.Users.UsersRestGetUser({ login: login })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -86,7 +86,7 @@ export class UsersClient implements Users {
 
     changeUserPassword(login: string, password: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestChangePassword({ login, password })
+            this.swaggerClient.apis.Users.UsersRestChangePassword({ login: login, password: password })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();

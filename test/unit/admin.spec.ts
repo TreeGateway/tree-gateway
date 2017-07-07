@@ -7,7 +7,7 @@ import * as request from 'request';
 import {ApiConfig} from '../../src/config/api';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
-import {UserService} from '../../src/service/users';
+import {SDK} from '../../src/admin/config/sdk';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -17,6 +17,7 @@ let adminRequest: any;
 let adminToken: string;
 let configToken: string;
 let simpleToken: string;
+let sdk: SDK = null;
 
 const adminUser = {
     email: 'test@mail.com',
@@ -50,21 +51,23 @@ const getIdFromResponse = (response: any) => {
 };
 
 const createUsers = () => {
-    return new Promise<void>((resolve, reject) => {
-        const userService = Container.get(UserService);
-        userService.create(adminUser)
-        .then(() => userService.create(configUser))
-        .then(() => userService.create(simpleUser))
-        .then(resolve)
-        .catch(reject);
-    });
+    return Promise.all([sdk.users.addUser(adminUser), sdk.users.addUser(configUser), sdk.users.addUser(simpleUser)]);
 };
 
 describe('Gateway Admin Tasks', () => {
     before(function(){
         config = Container.get(Configuration);
         adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
-        return createUsers();
+
+        return new Promise<void>((resolve, reject) => {
+            SDK.initialize(config.gateway)
+                .then((s) => {
+                    sdk = s;
+                    return createUsers();
+                })
+                .then(() => resolve())
+                .catch(reject);
+        });
     });
 
     describe('/users', () => {
@@ -88,7 +91,7 @@ describe('Gateway Admin Tasks', () => {
                 done();
             });
         });
-        it('should be able to sign editor users in', (done) => {
+        it('should be able to sign in editor users', (done) => {
             const form = {
                 'login': 'config',
                 'password': '123test'
@@ -102,7 +105,7 @@ describe('Gateway Admin Tasks', () => {
                 done();
             });
         });
-        it('should be able to sign simple users in', (done) => {
+        it('should be able to sign in simple users', (done) => {
             const form = {
                 'login': 'simple',
                 'password': '123test'
@@ -247,15 +250,52 @@ describe('Gateway Admin Tasks', () => {
                 done();
             });
         });
+    });
 
-        it('should be able to remove users', (done) => {
-            adminRequest.delete({
-                headers: { 'authorization': `JWT ${adminToken}` },
-                url:`/users/simple`
-            }, (error: any, response: any, body: any) => {
-                expect(error).to.not.exist;
-                expect(response.statusCode).to.equal(204);
-                done();
+    describe('users SDK', () => {
+        it('should be able to change password', () => {
+            return sdk.users.changeUserPassword(simpleUser.login, 'newPassword');
+        });
+
+        it('should be able to update user properties', () => {
+            const updatedUser = Object.assign({}, simpleUser);
+            updatedUser.name = 'New updated Name';
+            return new Promise((resolve, reject) => {
+                sdk.users.updateUser(simpleUser.login, updatedUser)
+                    .then(() => sdk.users.getUser(simpleUser.login))
+                    .then(user => {
+                        expect(user.name).to.equals('New updated Name');
+                        resolve();
+                    })
+                    .catch(reject);
+            });
+        });
+        it('should be able to create new user', () => {
+            const newUser = Object.assign({}, simpleUser);
+            newUser.login = simpleUser.login+'_sdk';
+            return new Promise((resolve, reject) => {
+                sdk.users.addUser(newUser)
+                    .then(() => resolve())
+                    .catch(reject);
+            });
+        });
+        it('should be able to remove users', () => {
+            return new Promise((resolve, reject) => {
+                sdk.users.removeUser(simpleUser.login+'_sdk')
+                    .then(() => resolve())
+                    .catch(reject);
+            });
+        });
+        it('should be able to list users', () => {
+            return new Promise((resolve, reject) => {
+                sdk.users.list({})
+                    .then((users) => {
+                        const logins = users.map(user => user.login);
+                        expect(logins).to.have.length(4);
+                        expect(logins).to.have.members(['admin', 'config', 'simple', 'simple2']);
+                        resolve();
+                    })
+                    .catch(reject);
             });
         });
     });

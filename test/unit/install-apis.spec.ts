@@ -2,14 +2,12 @@
 
 import 'mocha';
 
-import * as request from 'request';
 import * as fs from 'fs-extra-promise';
 import * as path from 'path';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
 import {Gateway} from '../../src/gateway';
 import {Database} from '../../src/database';
-import {UserService} from '../../src/service/users';
 import {SDK} from '../../src/admin/config/sdk';
 import * as YAML from 'yamljs';
 
@@ -19,26 +17,8 @@ import * as YAML from 'yamljs';
 let config: Configuration;
 let database: Database;
 let gateway: Gateway;
-let gatewayRequest: any;
 let sdk: SDK = null;
 let loadedApis: string[];
-
-const installUser = {
-    email: 'test@mail.com',
-    login: 'install-user',
-    name: 'Config user',
-    password: '123test',
-    roles: ['tree-gateway-admin', 'tree-gateway-config']
-};
-
-const createUser = () => {
-    return new Promise<{login: string, password: string}>((resolve, reject) => {
-        const userService = Container.get(UserService);
-        userService.create(installUser)
-        .then(() => resolve(installUser))
-        .catch(reject);
-    });
-};
 
 describe('Gateway APIs install', () => {
     before(() => {
@@ -115,12 +95,9 @@ describe('Gateway APIs install', () => {
             .then(() => gateway.startAdmin())
             .then(() => {
                 gateway.server.set('env', 'test');
-                gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
-
                 return database.redisClient.flushdb();
             })
-            .then(() => createUser())
-            .then((user) => SDK.initialize(config.gateway))
+            .then(() => SDK.initialize(config.gateway))
             .then((s) => {
                 sdk = s;
                 resolve();

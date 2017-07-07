@@ -52,8 +52,9 @@ export class UsersRest {
     @PUT
     @Path(':login')
     @swagger.Security('Bearer')
-    updateUser(user: UserData): Promise<void> {
+    updateUser(@PathParam('login') login: string, user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            user.login = login;
             validateUser(user)
                 .then((validUser: UserData) => this.service.update(validUser))
                 .then(() => resolve())
