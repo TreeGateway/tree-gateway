@@ -24,7 +24,7 @@ import { Monitors } from './monitor/monitors';
 import { ConfigService } from './service/config';
 import { Configuration } from './configuration';
 import * as fs from 'fs-extra-promise';
-import * as os from 'os';
+import { getSwaggerHost } from './utils/config';
 import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
 import * as path from 'path';
@@ -439,14 +439,7 @@ export class Gateway {
             const isTest = process.env.NODE_ENV === 'test';
 
             const schemes = (this.config.gateway.admin.protocol.https ? ['https'] : ['http']);
-            let host;
-            if (this.config.gateway.admin.apiDocs.host) {
-                host = `${this.config.gateway.admin.apiDocs.host}:${(this.config.gateway.admin.protocol.https ? this.config.gateway.admin.protocol.https.listenPort : this.config.gateway.admin.protocol.http.listenPort)}`;
-            } else {
-                host = (this.config.gateway.admin.protocol.https ?
-                    `${isTest ? 'localhost' : os.hostname()}:${this.config.gateway.admin.protocol.https.listenPort}` :
-                    `${isTest ? 'localhost' : os.hostname()}:${this.config.gateway.admin.protocol.http.listenPort}`);
-            }
+            const host = getSwaggerHost(this.config.gateway, isTest);
             const swaggerFile = isTest ?
                 './dist/admin/api/swagger.json' :
                 path.join(__dirname, './admin/api/swagger.json');
@@ -483,11 +476,11 @@ export class Gateway {
         }
     }
 
-    private createStatsController(path: string, statsConfig: StatsConfig): StatsController {
+    private createStatsController(statsPath: string, statsConfig: StatsConfig): StatsController {
         if ((this.config.gateway.statsConfig || statsConfig)) {
             const stats: StatsController = new StatsController();
-            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', path, 'request'), statsConfig);
-            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', path, 'status'), statsConfig);
+            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', statsPath, 'request'), statsConfig);
+            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', statsPath, 'status'), statsConfig);
 
             return stats;
         }

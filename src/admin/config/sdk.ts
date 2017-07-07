@@ -3,6 +3,10 @@
 import { Apis, ApisClient } from './sdk-apis';
 import { Gateway, GatewayClient } from './sdk-gateway';
 import { Middleware, MiddlewareClient } from './sdk-middleware';
+import { GatewayConfig } from '../../config/gateway';
+import * as path from 'path';
+import { getSwaggerHost } from '../../utils/config';
+import * as jwt from 'jsonwebtoken';
 
 const swagger = require('swagger-client');
 
@@ -17,39 +21,41 @@ export class SDK {
         this.middlewareClient = new MiddlewareClient(swaggerClient, authToken);
     }
 
-    static initialize(swaggerUrl: string, login: string, password: string): Promise<SDK> {
+    static initialize(gateway: GatewayConfig): Promise<SDK> {
         return new Promise<SDK>((resolve, reject) => {
-            let authToken: string = null;
-            SDK.authenticate(swaggerUrl, login, password)
-                .then(token => {
-                    authToken = token;
-                    return swagger(swaggerUrl, {
-                        authorizations: {
-                            Bearer: `JWT ${token}`
-                        }
-                    });
+            const token: string = SDK.generateSecurityToken(gateway);
+            const swaggerUrl = SDK.getSwaggerUrl(gateway);
+            swagger(swaggerUrl, {
+                    authorizations: {
+                        Bearer: `JWT ${token}`
+                    }
                 })
                 .then((swaggerClient: any) => {
-                    resolve(new SDK(swaggerClient, authToken));
+                    resolve(new SDK(swaggerClient, token));
                 })
                 .catch(reject);
         });
     }
 
-    static authenticate(swaggerUrl: string, login: string, password: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            swagger(swaggerUrl)
-                .then((swaggerClient: any) => {
-                    return swaggerClient.apis.Users.UsersRestGetAuthToken({ login, password });
-                })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.text);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
+    private static generateSecurityToken(gateway: GatewayConfig) {
+        const dataToken = {
+            login: 'treeGateway SDK',
+            name: 'treeGateway SDK',
+            roles: ['tree-gateway-admin', 'tree-gateway-config']
+        };
+
+        const token = jwt.sign(dataToken, gateway.admin.userService.jwtSecret, {
+            expiresIn: 7200
         });
+        return token;
+    }
+
+    private static getSwaggerUrl(gateway: GatewayConfig) {
+        if (gateway && gateway.admin && gateway.admin.apiDocs) {
+            const protocol = (gateway.admin.protocol.https ? 'https' : 'http');
+            return `${protocol}://` + path.posix.join(`${getSwaggerHost(gateway)}`, gateway.admin.apiDocs.path, 'json');
+        }
+        throw new Error('No admin apiDocs configured. Can not access the server rest API');
     }
 
     get apis(): Apis {

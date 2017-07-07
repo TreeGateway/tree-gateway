@@ -1,6 +1,7 @@
 'use strict';
 
 import { ArgumentParser } from 'argparse';
+import { Configuration } from '../../configuration';
 
 const parser = new ArgumentParser({
     addHelp: true,
@@ -8,20 +9,12 @@ const parser = new ArgumentParser({
     version: '1.0.0'
 });
 
-parser.addArgument(['-s', '--swagger'], {
-    help: 'Inform the URL pointing to the swagger file on the Tree Gateway target server',
-    required: true
-});
-
-parser.addArgument(['-u', '--username'], {
-    help: 'Inform the user to sign in into the gateway API',
-    required: true
-});
-
-parser.addArgument(['-p', '--password'], {
-    help: 'Inform the user password to sign in into the gateway API',
-    required: true
-});
+parser.addArgument(
+    ['-c', '--config'],
+    {
+        help: 'The Tree-Gateway config file (tree-gateway.json).'
+    }
+);
 
 const commands = parser.addSubparsers({
     dest: 'command',
@@ -583,3 +576,4 @@ serviceDiscoveryProvider.addArgument(
     }
 );
 export let configArgs = parser.parseArgs();
+Configuration.gatewayConfigFile = configArgs.config;
