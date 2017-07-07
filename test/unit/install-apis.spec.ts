@@ -109,7 +109,6 @@ describe('Gateway APIs install', () => {
 
     function startGateway() {
         return new Promise<void>((resolve, reject) => {
-            const swaggerUrl = `http://localhost:${config.gateway.admin.protocol.http.listenPort}/${config.gateway.admin.apiDocs.path}/json`;
             database = Container.get(Database);
             gateway = Container.get(Gateway);
             gateway.start()
@@ -121,7 +120,7 @@ describe('Gateway APIs install', () => {
                 return database.redisClient.flushdb();
             })
             .then(() => createUser())
-            .then((user) => SDK.initialize(swaggerUrl, 'install-user', '123test'))
+            .then((user) => SDK.initialize(config.gateway))
             .then((s) => {
                 sdk = s;
                 resolve();

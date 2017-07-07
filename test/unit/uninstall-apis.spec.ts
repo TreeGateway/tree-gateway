@@ -25,8 +25,7 @@ describe('Gateway APIs uninstall', () => {
         gateway = Container.get(Gateway);
 
         return new Promise((resolve, reject) => {
-            const swaggerUrl = `http://localhost:${config.gateway.admin.protocol.http.listenPort}/${config.gateway.admin.apiDocs.path}/json`;
-            SDK.initialize(swaggerUrl, 'config', '123test')
+            SDK.initialize(config.gateway)
                 .then((s) => {
                     sdk = s;
                     resolve();
