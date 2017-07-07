@@ -1,6 +1,7 @@
 'use strict';
 
 import { Apis, ApisClient } from './sdk-apis';
+import { Users, UsersClient } from './sdk-users';
 import { Gateway, GatewayClient } from './sdk-gateway';
 import { Middleware, MiddlewareClient } from './sdk-middleware';
 import { GatewayConfig } from '../../config/gateway';
@@ -14,11 +15,13 @@ export class SDK {
     private apisClient: Apis;
     private gatewayClient: Gateway;
     private middlewareClient: Middleware;
+    private usersClient: Users;
 
     private constructor(swaggerClient: any, authToken: string) {
         this.apisClient = new ApisClient(swaggerClient);
         this.gatewayClient = new GatewayClient(swaggerClient);
         this.middlewareClient = new MiddlewareClient(swaggerClient, authToken);
+        this.usersClient = new UsersClient(swaggerClient);
     }
 
     static initialize(gateway: GatewayConfig): Promise<SDK> {
@@ -68,5 +71,9 @@ export class SDK {
 
     get middleware(): Middleware {
         return this.middlewareClient;
+    }
+
+    get users(): Users {
+        return this.usersClient;
     }
 }

@@ -35,13 +35,13 @@ apisCommand.addArgument(
 
 apisCommand.addArgument(
     ['-a', '--add'], {
-        help: 'Inform the path to the api config file (JSON format) to be added',
+        help: 'Inform the path to the api config file (JSON or YAML format) to be added',
     }
 );
 
 apisCommand.addArgument(
     ['-u', '--update'], {
-        help: 'Inform the path to the api config file (JSON format) to be updated',
+        help: 'Inform the path to the api config file (JSON or YAML format) to be updated',
     }
 );
 
@@ -65,7 +65,7 @@ const gatewayCommand = commands.addParser('gateway', {
 
 gatewayCommand.addArgument(
     ['-u', '--update'], {
-        help: 'Inform the path to the gateway config file (JSON format) to be updated',
+        help: 'Inform the path to the gateway config file (JSON or YAML format) to be updated',
     }
 );
 
@@ -84,6 +84,133 @@ gatewayCommand.addArgument(
         defaultValue: false,
         help: 'Retrieve the api config file (YAML format, by default). Pass the return format optionally. Ex gateway -g json',
         nargs: '?'
+    }
+);
+
+const usersCommand = commands.addParser('users', {
+    addHelp: true,
+    help: 'Users configurations'
+});
+
+const usersCommands = usersCommand.addSubparsers({
+    dest: 'usersCommand',
+    title: 'Users Commands (For help, users <command> -h/--help)'
+});
+
+const usersAddCommand = usersCommands.addParser('add', {
+    addHelp: true,
+    help: 'Add a new user.'
+});
+
+usersAddCommand.addArgument(
+    ['-l', '--login'],
+    {
+        help: 'Inform the user login',
+        required: true
+    }
+);
+usersAddCommand.addArgument(
+    ['-p', '--password'],
+    {
+        help: 'Inform the user password',
+        required: true
+    }
+);
+usersAddCommand.addArgument(
+    ['-n', '--name'],
+    {
+        help: 'Inform the user name',
+        required: true
+    }
+);
+usersAddCommand.addArgument(
+    ['-e', '--email'],
+    {
+        help: 'Inform the user email'
+    }
+);
+usersAddCommand.addArgument(
+    ['-r', '--roles'],
+    {
+        help: 'Assign roles to the user. Available roles are: config and admin. Ex: users add --roles admin config',
+        nargs: '*'
+    }
+);
+
+const usersUpdateCommand = usersCommands.addParser('update', {
+    addHelp: true,
+    help: 'Update a user.'
+});
+usersUpdateCommand.addArgument(
+    ['-f', '--file'], {
+        help: 'Inform the path to the user config file (JSON or YAML format) to be updated',
+        required: true
+    }
+);
+
+const usersRemoveCommand = usersCommands.addParser('remove', {
+    addHelp: true,
+    help: 'Remove a user.'
+});
+
+usersRemoveCommand.addArgument(
+    ['-l', '--login'],
+    {
+        help: 'Inform the user login',
+        required: true
+    }
+);
+
+const usersGetCommand = usersCommands.addParser('get', {
+    addHelp: true,
+    help: 'Retrieve a user.'
+});
+
+usersGetCommand.addArgument(
+    ['-l', '--login'],
+    {
+        help: 'Inform the user login',
+        required: true
+    }
+);
+
+usersGetCommand.addArgument(
+    ['-f', '--format'],
+    {
+        help: 'Specify the output format',
+    }
+);
+
+const usersListCommand = usersCommands.addParser('list', {
+    addHelp: true,
+    help: 'List the existing users.'
+});
+
+usersListCommand.addArgument(
+    ['-f', '--filter'], {
+        help: 'Inform the search params for Users listing. Ex: --filter name:joe email:test@',
+        nargs: '*'
+    }
+);
+
+const usersPasswordCommand = usersCommands.addParser('password', {
+    addHelp: true,
+    help: 'Define a password for the given user.'
+});
+
+usersPasswordCommand.addArgument(
+    ['-l', '--login'],
+    {
+        help: 'Inform the user login',
+        required: true
+    }
+);
+
+usersPasswordCommand.addArgument(
+    ['-p', '--password'],
+    {
+        help: 'Inform the user password',
+        required: true
     }
 );
 

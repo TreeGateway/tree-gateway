@@ -2,6 +2,7 @@
 
 import { SDK } from './sdk';
 import { ApiConfig } from '../../config/api';
+import { UserData } from '../../config/users';
 import { GatewayConfig } from '../../config/gateway';
 import { Configuration } from '../../configuration';
 import { Inject } from 'typescript-ioc';
@@ -36,11 +37,131 @@ export class Cli {
                 return this.processApis();
             case 'gateway':
                 return this.processGateway();
+            case 'users':
+                return this.processUsers();
             case 'middleware':
                 return this.processMiddleware();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
+    }
+
+    private processUsers(): Promise<void> {
+        switch (this.args.usersCommand) {
+            case 'add':
+                return this.processUsersAdd();
+            case 'remove':
+                return this.processUsersRemove();
+            case 'list':
+                return this.processUsersList();
+            case 'password':
+                return this.processUsersPassword();
+            case 'get':
+                return this.processUsersGet();
+            case 'update':
+                return this.processUsersUpdate();
+            default:
+                return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.usersCommand}`));
+        }
+    }
+
+    private processUsersAdd(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const user: UserData = {
+                login: this.args.login,
+                name: this.args.name,
+                password: this.args.password,
+                roles: []
+
+            };
+            if (this.args.email) {
+                user.email = this.args.email;
+            }
+            if (this.args.roles) {
+                this.args.roles.forEach((role: string) => {
+                    if (role === 'config' || role === 'admin') {
+                        user.roles.push(`tree-gateway-${role}`);
+                    } else {
+                        console.info(`Invalid role ${role}. Ignoring it...`);
+                    }
+                });
+            }
+            this.sdk.users.addUser(user)
+                .then(() => {
+                    console.info('User created.');
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private processUsersUpdate(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.loadConfigObject(this.args.file)
+                .then((user: UserData) => this.sdk.users.updateUser(user.login, user))
+                .then(() => {
+                    console.info(`User updated`);
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private processUsersRemove(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.sdk.users.removeUser(this.args.login)
+                .then(() => {
+                    console.info('User removed.');
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private processUsersGet(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.sdk.users.getUser(this.args.login)
+                .then(user => {
+                    if (this.args.format === 'json') {
+                        console.info(JSON.stringify(user, null, 4));
+                    } else {
+                        console.info(YAML.stringify(user, 15));
+                    }
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private processUsersList(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.args.filter = this.args.filter || [];
+
+            const args: any = {};
+            this.args.filter.forEach((param: string) => {
+                const parts = param.split(':');
+                if (parts.length === 2) {
+                    args[parts[0]] = parts[1];
+                }
+            });
+            this.sdk.users.list(args)
+                .then((users) => {
+                    console.info(YAML.stringify(users));
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private processUsersPassword(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.sdk.users.changeUserPassword(this.args.login, this.args.password)
+                .then(() => {
+                    console.info('Password changed.');
+                    resolve();
+                })
+                .catch(reject);
+        });
     }
 
     private processMiddleware(): Promise<void> {

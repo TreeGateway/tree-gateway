@@ -22,8 +22,8 @@ export class RedisUserService implements UserService {
     list(): Promise<Array<UserData>> {
         return new Promise((resolve, reject) => {
             this.database.redisClient.hgetall(RedisUserService.USERS_PREFIX)
-                .then((apis: any) => {
-                    resolve(_.map(_.values(apis), (value: string) => JSON.parse(value)));
+                .then((users: any) => {
+                    resolve(_.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password')));
                 })
                 .catch(reject);
         });
@@ -49,6 +49,9 @@ export class RedisUserService implements UserService {
                 .then((exists: number) => {
                     if (exists) {
                         throw new ValidationError(`User ${user.login} already exists`);
+                    }
+                    if (!user.password) {
+                        throw new ValidationError(`Password is required for user.`);
                     }
                     return bcrypt.hash(user.password, 10);
                 }).then((password: string) => {

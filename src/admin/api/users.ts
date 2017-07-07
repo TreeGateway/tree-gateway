@@ -15,28 +15,29 @@ export class UsersRest {
 
     @GET
     @swagger.Security('Bearer')
-    listUsers(): Promise<Array<UserData>> {
+    list(): Promise<Array<UserData>> {
         return this.service.list();
     }
 
     @POST
     @swagger.Security('Bearer')
-    createUser(user: UserData): Promise<Return.NewResource<void>> {
+    addUser(user: UserData): Promise<Return.NewResource<void>> {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            validateUser(user).then((validUser: UserData) =>
-                this.service.create(validUser)
-            )
+            validateUser(user)
+                .then((validUser: UserData) =>
+                    this.service.create(validUser)
+                )
                 .then(() => {
-                    resolve(new Return.NewResource<void>(`/users/${user.login}`));
+                    resolve(new Return.NewResource<void>(`users/${user.login}`));
                 })
                 .catch(reject);
         });
     }
 
     @GET
-    @Path(':userLogin')
+    @Path(':login')
     @swagger.Security('Bearer')
-    getUser( @PathParam('userLogin') login: string): Promise<UserData> {
+    getUser( @PathParam('login') login: string): Promise<UserData> {
         return new Promise<UserData>((resolve, reject) => {
             this.service.get(login)
                 .then(user => {
@@ -49,7 +50,7 @@ export class UsersRest {
     }
 
     @PUT
-    @Path(':userLogin')
+    @Path(':login')
     @swagger.Security('Bearer')
     updateUser(user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
@@ -61,9 +62,9 @@ export class UsersRest {
     }
 
     @DELETE
-    @Path(':userLogin')
+    @Path(':login')
     @swagger.Security('Bearer')
-    removeUser( @PathParam('userLogin') login: string): Promise<void> {
+    removeUser( @PathParam('login') login: string): Promise<void> {
         return this.service.remove(login);
     }
 
@@ -82,12 +83,11 @@ export class UsersRest {
     @POST
     @Path('/authentication/changepassword')
     @swagger.Security('Bearer')
-    changePasswordToken( @ContextRequest req: express.Request,
+    changePassword( @ContextRequest req: express.Request,
         @FormParam('login') login: string,
         @FormParam('password') password: string): Promise<void> {
-        if ((req.user.login !== login) ||
-            (!req.user.roles ||
-                (req.user.roles.indexOf('tree-gateway-admin') < 0))) {
+        if ((req.user.login !== login) &&
+            (!req.user.roles || (req.user.roles.indexOf('tree-gateway-admin') < 0))) {
             throw new Errors.ForbidenError('Access denied');
         }
 
@@ -120,9 +120,9 @@ export class UsersRest {
         });
         app.get('/users', manageUsers);
         app.post('/users', manageUsers);
-        app.get('/users/:userLogin', manageUsers);
-        app.put('/users/:userLogin', manageUsers);
-        app.delete('/users/:userLogin', manageUsers);
+        app.get('/users/:login', manageUsers);
+        app.put('/users/:login', manageUsers);
+        app.delete('/users/:login', manageUsers);
         app.use(adminGateway);
     }
 }

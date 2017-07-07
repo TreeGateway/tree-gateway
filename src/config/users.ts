@@ -34,7 +34,7 @@ export const userValidatorSchema = Joi.object().keys({
     email: Joi.string().email(),
     login: Joi.string().alphanum().required(),
     name: Joi.string().required(),
-    password: Joi.string().required(),
+    password: Joi.string(),
     roles: Joi.array().items(Joi.string()).unique()
 });
 
