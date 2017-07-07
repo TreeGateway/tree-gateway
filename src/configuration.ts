@@ -87,7 +87,9 @@ export class Configuration extends EventEmitter {
                 config = <ServerConfig>_.defaultsDeep(envConfig, config);
             }
         }
-
+        if (!config) {
+            config = this.loadDefaultConfig();
+        }
         let serverConfig: ServerConfig = validateServerConfig(config);
         serverConfig = _.defaults(serverConfig, {
             rootPath: path.dirname(configFileName),
@@ -212,5 +214,13 @@ export class Configuration extends EventEmitter {
             return fileName.substring(0, fileName.lastIndexOf('.'));
         }
         return fileName;
+    }
+
+    private loadDefaultConfig() {
+        const filePath = path.join(process.cwd(), 'tree-gateway.yaml');
+        console.info(`No gateway configuration file was found. Using default configuration and saving it on '${filePath}'`);
+        const config = YAML.load(require.resolve('./tree-gateway-default.yaml'));
+        fs.writeFileSync(filePath, YAML.stringify(config, 15));
+        return config;
     }
 }

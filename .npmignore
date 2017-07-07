@@ -8,6 +8,8 @@ tsfmt.json
 tslint.json
 swagger.config.json
 tree-gateway-test.json
+tree-gateway-test.yml
+tree-gateway.json
 Dockerfile
 .dockerignore
 .DS_Store 

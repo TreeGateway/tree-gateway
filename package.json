@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
   "keywords": [
@@ -19,7 +19,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "start:cluster": "node dist/app-cluster.js",
-    "build": "npm run clean && tsc && npm run swagger",
+    "build": "npm run clean && tsc && npm run swagger && copyfiles -u 1 src/*.yaml dist",
     "clean": "rimraf dist",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
     "format": "tsfmt -r",
@@ -123,6 +123,7 @@
     "@types/winston": "0.0.28",
     "@types/yamljs": "^0.2.30",
     "chai": "^3.5.0",
+    "copyfiles": "^1.2.0",
     "coveralls": "^2.13.1",
     "cross-env": "^4.0.0",
     "istanbul": "^0.4.5",

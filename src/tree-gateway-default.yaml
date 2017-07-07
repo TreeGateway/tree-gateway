@@ -1,0 +1,53 @@
+rootPath: .
+database:
+    redis:
+        standalone:
+            host: localhost
+            port: 6379
+gateway:
+    underProxy: false
+    protocol:
+        http:
+            listenPort: 8000
+    admin:
+        protocol:
+            http:
+                listenPort: 8001
+        accessLogger:
+            msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
+            console:
+                timestamp: true
+                colorize: true
+            file:
+                timestamp: true
+                json: false
+                prettyPrint: true
+                outputDir: ./logs
+        userService:
+            jwtSecret: secret
+        apiDocs:
+            path: api-docs
+            host: localhost
+    logger:
+        level: info
+        console:
+            colorize: true
+        file:
+            timestamp: true
+            outputDir: ./logs
+            json: false
+            prettyPrint: true
+    accessLogger:
+        msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
+        console:
+            timestamp: true
+            colorize: true
+        file:
+            timestamp: true
+            json: false
+            prettyPrint: true
+            outputDir: ./logs
+    statsConfig:
+        granularity:
+            duration: '1 hour'
+            ttl: '2 days'
