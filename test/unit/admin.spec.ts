@@ -304,12 +304,12 @@ describe('Gateway Admin Tasks', () => {
 
     describe('gateway SDK', () => {
         it('should be able to set configuration for gateway', () => {
-            const newConfig = fs.readJSONSync(path.join(process.cwd(), 'tree-gateway.json')).gateway;
-            newConfig.logger.level = 'error';
+            const newConfig = fs.readJSONSync(path.join(process.cwd(), 'test/data/tree-gateway.json')).gateway;
+            newConfig.logger.level = 'debug';
             return new Promise((resolve, reject) => {
                 sdk.gateway.updateConfig(newConfig)
                     .then(() => {
-                        setTimeout(resolve, 12000); // wait gateway restart after a gateway config change
+                        setTimeout(resolve, 5000); // wait gateway restart after a gateway config change
                     })
                     .catch(reject);
             });
@@ -318,7 +318,7 @@ describe('Gateway Admin Tasks', () => {
             return new Promise((resolve, reject) => {
                 sdk.gateway.getConfig()
                     .then(dbConfig => {
-                        expect(dbConfig.logger.level).to.equals('error');
+                        expect(dbConfig.logger.level).to.equals('debug');
                         resolve();
                     })
                     .catch(reject);
@@ -328,7 +328,7 @@ describe('Gateway Admin Tasks', () => {
             return new Promise((resolve, reject) => {
                 sdk.gateway.removeConfig()
                     .then(() => {
-                        setTimeout(resolve, 12000); // wait gateway restart after a gateway config change
+                        setTimeout(resolve, 5000); // wait gateway restart after a gateway config change
                     })
                     .catch(reject);
             });

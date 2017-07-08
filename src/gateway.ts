@@ -341,7 +341,14 @@ export class Gateway {
     private updateConfig(packageId: string, needsReload: boolean) {
         if (needsReload) {
             this.config.reload()
-                .then(() => this.restart())
+                .then(() => {
+                    this.logger.info(`Configuration reloaded. Restarting server...`);
+                    return this.restart();
+                })
+                .then(() => {
+                    this.logger.info(`Server restarted.`);
+                    this.logger.info(`Configuration package ${packageId} applied successfuly.`);
+                })
                 .catch((error) => this.logger.error(`Error updating gateway config. Error: ${this.logger.inspectObject(error)}`));
         } else {
             this.apiCircuitBreaker.removeAllBreakers();

@@ -17,7 +17,7 @@ export class GatewayRest {
         return new Promise<void>((resolve, reject) => {
             validateGatewayConfig(config);
             this.service.save(config)
-                .then(() => resolve())
+                .then(resolve)
                 .catch(reject);
         });
     }

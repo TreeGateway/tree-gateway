@@ -1,0 +1,104 @@
+{
+    "rootPath": ".",
+    "database": {
+        "redis": {
+            "standalone": {
+                "host": "{REDIS_PORT_6379_TCP_ADDR}",
+                "port": "{REDIS_PORT_6379_TCP_PORT}"
+            }
+        }
+    },
+    "gateway": {
+        "underProxy": false,
+        "protocol": {
+            "http": {
+                "listenPort": 8010
+            }
+        },
+        "admin": {
+            "protocol": {
+                "http": {
+                    "listenPort": 8011
+                }
+            },
+            "accessLogger": {
+                "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+                "console": {
+                    "timestamp": true,
+                    "colorize": true
+                },
+                "file": {
+                    "timestamp": true,
+                    "json": false,
+                    "prettyPrint": true,
+                    "outputDir": "./logs"
+                }
+            },
+            "userService": {
+                "jwtSecret": "secret"
+            },
+            "apiDocs": {
+                "path": "api-docs",
+                "host": "localhost"
+            },
+            "cors" : {
+                "origin": {
+                    "allow": [{
+                        "value": "*"
+                    }]
+                }
+            }
+        },
+        "logger": {
+            "level": "debug",
+            "console": {
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "outputDir": "./logs",
+                "json": false, 
+                "prettyPrint": true 
+            }
+        },
+        "accessLogger": {
+            "msg": "HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms) ",
+            "console": {
+                "timestamp": true,
+                "colorize": true
+            },
+            "file": {
+                "timestamp": true,
+                "json": false,
+                "prettyPrint": true,
+                "outputDir": "./logs"
+            }
+        },
+        "statsConfig": {
+            "granularity": {
+                "duration": "1 hour",
+                "ttl": "2 days"
+            }
+        }, 
+        "monitor": [
+            {
+                "name": "cpu",
+                "statsConfig": {
+                    "granularity": {
+                        "duration": "1 minute",
+                        "ttl": "2 days"
+                    }
+                }            
+            }, 
+            {
+                "name": "mem",
+                "statsConfig": {
+                    "granularity": {
+                        "duration": "1 minute",
+                        "ttl": "2 days"
+                    }
+                }            
+            }
+        ]
+    } 
+}
