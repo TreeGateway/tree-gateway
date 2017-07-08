@@ -167,6 +167,7 @@ export class Gateway {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {
                     this.serverRunning = false;
+                    this.apiRoutes.clear();
                     return resolve();
                 }
                 this.apiServer.forEach(server => {
@@ -175,6 +176,7 @@ export class Gateway {
                         if (toClose === 0) {
                             this.logger.info('Gateway server stopped');
                             this.serverRunning = false;
+                            this.apiRoutes.clear();
                             resolve();
                         }
                     });
@@ -182,6 +184,7 @@ export class Gateway {
                 this.apiServer = null;
             } else {
                 this.serverRunning = false;
+                this.apiRoutes.clear();
                 resolve();
             }
         });

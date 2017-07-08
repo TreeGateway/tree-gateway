@@ -114,7 +114,7 @@ export class Configuration extends EventEmitter {
         this.config = serverConfig;
         this.loadContainerConfigurations();
         return new Promise<void>((resolve, reject) => {
-            if (this.config.gateway) {
+            if (this.config.gateway && this.config.gateway.protocol) {
                 if (this.config.gateway.protocol.https) {
                     if (_.startsWith(this.config.gateway.protocol.https.privateKey, '.')) {
                         this.config.gateway.protocol.https.privateKey =
@@ -186,6 +186,9 @@ export class Configuration extends EventEmitter {
                         this.config.gateway = <GatewayConfig>_.defaultsDeep(gatewayConfig, this.config.gateway);
                         try {
                             validateGatewayConfig(this.config.gateway);
+                            if (!this.config.gateway.protocol) {
+                                return reject(new Error('GatewayConfig protocol is required.'));
+                            }
                         } catch (e) {
                             return reject(e);
                         }

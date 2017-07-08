@@ -2,8 +2,10 @@
 
 import 'mocha';
 import * as chai from 'chai';
-
 import * as request from 'request';
+import * as fs from 'fs-extra-promise';
+import * as path from 'path';
+
 import {ApiConfig} from '../../src/config/api';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
@@ -294,6 +296,39 @@ describe('Gateway Admin Tasks', () => {
                         expect(logins).to.have.length(4);
                         expect(logins).to.have.members(['admin', 'config', 'simple', 'simple2']);
                         resolve();
+                    })
+                    .catch(reject);
+            });
+        });
+    });
+
+    describe('gateway SDK', () => {
+        it('should be able to set configuration for gateway', () => {
+            const newConfig = fs.readJSONSync(path.join(process.cwd(), 'tree-gateway.json')).gateway;
+            newConfig.logger.level = 'error';
+            return new Promise((resolve, reject) => {
+                sdk.gateway.updateConfig(newConfig)
+                    .then(() => {
+                        setTimeout(resolve, 12000); // wait gateway restart after a gateway config change
+                    })
+                    .catch(reject);
+            });
+        });
+        it('should be able to retrieve configuration for gateway', () => {
+            return new Promise((resolve, reject) => {
+                sdk.gateway.getConfig()
+                    .then(dbConfig => {
+                        expect(dbConfig.logger.level).to.equals('error');
+                        resolve();
+                    })
+                    .catch(reject);
+            });
+        });
+        it('should be able to remove configuration for gateway', () => {
+            return new Promise((resolve, reject) => {
+                sdk.gateway.removeConfig()
+                    .then(() => {
+                        setTimeout(resolve, 12000); // wait gateway restart after a gateway config change
                     })
                     .catch(reject);
             });

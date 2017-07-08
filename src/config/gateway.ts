@@ -127,7 +127,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     filter: Joi.array().items(middlewareConfigValidatorSchema),
     logger: loggerConfigSchema,
     monitor: Joi.array().items(monitorConfigSchema),
-    protocol: protocolConfigSchema.required(),
+    protocol: protocolConfigSchema,
     serviceDiscovery: serviceDiscoveryConfigValidatorSchema,
     statsConfig: statsConfigValidatorSchema,
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
