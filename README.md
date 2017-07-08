@@ -25,6 +25,7 @@ It provides:
   - **Caching system** - Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:
     - At browser level - Intercepting the responses and controling how the HTTP cache headers are used.
     - At a server level - Caching responses for your APIs in memory (using the redis database).
+  - Easy **Service Discovery**, using your preffered registry.
   - **Integrated CircuitBreaker** - A fast [circuitbreaker](https://martinfowler.com/bliki/CircuitBreaker.html) to fast fail your responses when your API is having problems to work. It support custom handlers for events like "open" or "close" circuit.
   - Real Time **Monitoring and Analytics** - 
     - Collect statistics about any access to your APIs. Capture any event, like a cache hit on a cache entrance, a circuitbreaker open circuit or an authentication attempt.
