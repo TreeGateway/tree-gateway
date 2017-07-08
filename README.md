@@ -14,7 +14,7 @@ A full featured and free API Gateway in Node JS
 An API gateway provides a single, unified entry point across one or more internal APIs. It is an important element in any microservice architecture.
 
 <p align="center">
-  <img src="https://github.com/Leanty/tree-gateway/blob/gh-pages/img/presentation.png" />
+  <img src="https://raw.githubusercontent.com/Leanty/tree-gateway/gh-pages/img/presentation.png" />
 </p>
 
 ## Why Tree Gateway?
