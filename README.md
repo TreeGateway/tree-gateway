@@ -1,23 +1,16 @@
+![alt text](https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAwjAAAAJGFlNWE2MDI1LTM0OGItNDc2NC1hYmU5LTM2NmNkMDlmZjkxNQ.png)
+
+A full featured and free API Gateway in Node JS
+
 [![npm version](https://badge.fury.io/js/tree-gateway.svg)](https://badge.fury.io/js/tree-gateway)
 [![Build Status](https://travis-ci.org/Leanty/tree-gateway.svg?branch=master)](https://travis-ci.org/Leanty/tree-gateway)
 [![Coverage Status](https://coveralls.io/repos/github/Leanty/tree-gateway/badge.svg?branch=master)](https://coveralls.io/github/Leanty/tree-gateway?branch=master)
-
-![alt text](https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAwjAAAAJGFlNWE2MDI1LTM0OGItNDc2NC1hYmU5LTM2NmNkMDlmZjkxNQ.png)
-
-This is a full featured and free API Gateway in Node JS
-
-**Table of Contents** 
-
-- [Tree Gateway](#)
-  - [Why do I need an API Gateway?](#why-do-i-need-an-api-gateway)
-  - [Why Tree Gateway?](#why-tree-gateway)
-  - [Try Tree Gateway](#try-tree-gateway)
-  
 
 ## Why do I need an API Gateway?
 
 An API gateway provides a single, unified entry point across one or more internal APIs. It is an important element in any microservice architecture.
 
+![alt text](https://github.com/Leanty/tree-gateway/blob/gh-pages/img/presentation.png)
 
 ## Why Tree Gateway?
 
