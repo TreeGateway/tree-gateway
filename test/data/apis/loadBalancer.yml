@@ -1,0 +1,21 @@
+---
+name: TestLoadBalancerAPI
+version: 1.0.0
+path: "/loadBalancer"
+proxy:
+  target:
+    router:
+      middleware:
+        name: loadBalancer
+        options:
+          destinations: 
+            - target: http://httpbin.org
+              weight: 75
+              healthCheck: http://httpbin.org/get
+            - target: http://httpbin.org/anything
+              weight: 25
+              healthCheck: http://httpbin.org/anything/get
+          database:
+            checkInterval: 5 minutes
+          strategy: weight
+  timeout: 5000

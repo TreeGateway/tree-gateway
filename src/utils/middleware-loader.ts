@@ -26,6 +26,7 @@ export class MiddlewareLoader {
         },
         'proxy/router': {
             'header': '../proxy/routers/header',
+            'loadBalancer': '../proxy/routers/loadBalancer',
             'query': '../proxy/routers/query',
             'trafficSplit': '../proxy/routers/trafficSplit'
         },
