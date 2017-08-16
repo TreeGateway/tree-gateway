@@ -40,7 +40,6 @@ const loadBalancerConfigSchema = Joi.object().keys({
         target: Joi.string().required(),
         weight: Joi.number()
     })).min(1).required(),
-    healthCheck: Joi.string(),
     strategy: Joi.string().valid('random', 'round-robin', 'weight')
 });
 
