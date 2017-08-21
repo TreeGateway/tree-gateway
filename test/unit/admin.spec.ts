@@ -26,7 +26,7 @@ const adminUser = {
     login: 'admin',
     name: 'Admin user',
     password: '123test',
-    roles: ['tree-gateway-admin', 'tree-gateway-config']
+    roles: ['admin', 'config']
 };
 
 const configUser = {
@@ -34,7 +34,7 @@ const configUser = {
     login: 'config',
     name: 'Config user',
     password: '123test',
-    roles: ['tree-gateway-config']
+    roles: ['config']
 };
 
 const simpleUser = {

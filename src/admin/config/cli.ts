@@ -15,7 +15,12 @@ try {
             .then(() => {
                 database.disconnect();
             }).catch((err: any) => {
-                console.error(`${err}`);
+                if (err && err.response && err.response.body && err.response.body.error) {
+                    const error: any = JSON.parse(err.response.body.error);
+                    console.error(`Error: ${error.entity.error}`);
+                } else {
+                    console.error(`${JSON.stringify(err)}`);
+                }
                 database.disconnect();
                 process.exit(1);
             });

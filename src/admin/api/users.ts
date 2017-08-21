@@ -88,7 +88,7 @@ export class UsersRest {
         @FormParam('login') login: string,
         @FormParam('password') password: string): Promise<void> {
         if ((req.user.login !== login) &&
-            (!req.user.roles || (req.user.roles.indexOf('tree-gateway-admin') < 0))) {
+            (!req.user.roles || (req.user.roles.indexOf('admin') < 0))) {
             throw new Errors.ForbidenError('Access denied');
         }
 
@@ -98,7 +98,7 @@ export class UsersRest {
     static configureAuthMiddleware(app: express.Router) {
         const authenticator = Container.get(UserService).getAuthMiddleware();
         const manageUsers = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (!req.user || !req.user.roles || (req.user.roles.indexOf('tree-gateway-admin') < 0)) {
+            if (!req.user || !req.user.roles || (req.user.roles.indexOf('admin') < 0)) {
                 return next(new Errors.ForbidenError('Access denied'));
             }
             next();
@@ -108,7 +108,7 @@ export class UsersRest {
                 return next();
             }
 
-            if (!req.user || !req.user.roles || (req.user.roles.indexOf('tree-gateway-config') < 0)) {
+            if (!req.user || !req.user.roles || (req.user.roles.indexOf('config') < 0)) {
                 return next(new Errors.ForbidenError('Access denied'));
             }
             next();
