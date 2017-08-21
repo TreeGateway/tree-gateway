@@ -44,7 +44,7 @@ export class SDK {
         const dataToken = {
             login: 'treeGateway SDK',
             name: 'treeGateway SDK',
-            roles: ['tree-gateway-admin', 'tree-gateway-config']
+            roles: ['admin', 'config']
         };
 
         const token = jwt.sign(dataToken, gateway.admin.userService.jwtSecret, {

@@ -15,7 +15,7 @@ export class ValidationError extends Errors.ForbidenError {
             message = ValidationError.buildValidationErrorString(entity);
         }
         super(message);
-        this.entity = { erro: message };
+        this.entity = { error: message };
         Object.setPrototypeOf(this, ValidationError.prototype);
     }
 

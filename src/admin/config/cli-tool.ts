@@ -80,7 +80,7 @@ export class Cli {
             if (this.args.roles) {
                 this.args.roles.forEach((role: string) => {
                     if (role === 'config' || role === 'admin') {
-                        user.roles.push(`tree-gateway-${role}`);
+                        user.roles.push(role);
                     } else {
                         console.info(`Invalid role ${role}. Ignoring it...`);
                     }

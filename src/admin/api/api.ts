@@ -24,12 +24,11 @@ export class APIRest {
     addApi(api: ApiConfig): Promise<Return.NewResource<void>> {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
             validateApiConfig(api)
-                .catch(err => {
-                    throw new Errors.ForbidenError(JSON.stringify(err));
-                })
                 .then(() => this.service.create(api))
                 .then((apiId) => resolve(new Return.NewResource<void>(`apis/${apiId}`)))
-                .catch(reject);
+                .catch(err => {
+                    reject(new Errors.ForbidenError(JSON.stringify(err)));
+                });
         });
     }
 
@@ -40,12 +39,11 @@ export class APIRest {
             api.id = id;
 
             validateApiConfig(api)
-                .catch(err => {
-                    throw new Errors.ForbidenError(JSON.stringify(err));
-                })
                 .then(() => this.service.update(api))
                 .then(() => resolve())
-                .catch(reject);
+                .catch(err => {
+                    reject(new Errors.ForbidenError(JSON.stringify(err)));
+                });
         });
     }
 
