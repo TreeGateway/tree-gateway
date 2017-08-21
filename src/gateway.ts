@@ -5,7 +5,7 @@ import * as compression from 'compression';
 import * as express from 'express';
 import adminApi from './admin/api/admin-api';
 import { UsersRest } from './admin/api/users';
-import { Server } from 'typescript-rest';
+import { Server, HttpError } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from './config/api';
 import { StatsConfig } from './config/stats';
 import { ApiProxy } from './proxy/proxy';
@@ -434,6 +434,18 @@ export class Gateway {
 
             UsersRest.configureAuthMiddleware(this.adminApp);
             Server.buildServices(this.adminApp, ...adminApi);
+
+            this.adminApp.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+                if (err instanceof HttpError) {
+                    if (res.headersSent) { // important to allow default error handler to close connection if headers already sent
+                        return next(err);
+                    }
+                    res.status(err.statusCode);
+                    res.json({error : err.message, code: err.statusCode});
+                } else {
+                    next(err);
+                }
+            });
         }
     }
 
