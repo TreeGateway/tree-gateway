@@ -16,7 +16,6 @@ node {
 			sh """
 				npm install
 				npm run build
-				npm run test
 				docker build -t treegateway .
 				find . -type f
 			"""
