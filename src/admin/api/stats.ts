@@ -135,7 +135,7 @@ export class StatsRest {
                 return reject(new Errors.NotFoundError('API not found'));
             }
             if (path) {
-                const stats = this.statsRecorder.createStats(Stats.getStatsKey(prefix, apiConfig.path, key));
+                const stats = this.statsRecorder.createStats(Stats.getStatsKey(prefix, apiConfig.id, key));
                 stats.getLastOccurrences(count || 24, path, ...extra)
                     .then(resolve)
                     .catch(reject);

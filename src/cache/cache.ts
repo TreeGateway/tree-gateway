@@ -48,7 +48,7 @@ export class ApiCache {
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
             try {
-                const cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path);
+                const cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path, api.id);
                 apiRouter.use(cacheMiddleware);
             } catch (e) {
                 this.logger.error(e);
@@ -56,9 +56,9 @@ export class ApiCache {
         });
     }
 
-    private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string): express.RequestHandler {
+    private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string, apiId: string): express.RequestHandler {
         const body = new Array<string>();
-        const stats = this.createCacheStats(path, cache.server);
+        const stats = this.createCacheStats(apiId, cache.server);
         if (validateGroupFunction) {
             body.push(`if (validateGroupFunction(req, res)){`);
         } else {
@@ -119,12 +119,12 @@ export class ApiCache {
         return caches;
     }
 
-    private createCacheStats(path: string, serverCache: ServerCacheConfig): StatsController {
+    private createCacheStats(apiId: string, serverCache: ServerCacheConfig): StatsController {
         if (!serverCache.disableStats) {
             const stats: StatsController = new StatsController();
-            stats.cacheError = this.statsRecorder.createStats(Stats.getStatsKey('cache', path, 'error'), serverCache.statsConfig);
-            stats.cacheHit = this.statsRecorder.createStats(Stats.getStatsKey('cache', path, 'hit'), serverCache.statsConfig);
-            stats.cacheMiss = this.statsRecorder.createStats(Stats.getStatsKey('cache', path, 'miss'), serverCache.statsConfig);
+            stats.cacheError = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'error'), serverCache.statsConfig);
+            stats.cacheHit = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'hit'), serverCache.statsConfig);
+            stats.cacheMiss = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'miss'), serverCache.statsConfig);
 
             if (stats.cacheMiss) {
                 return stats;

@@ -278,7 +278,7 @@ export class Gateway {
 
         const apiRouter = express.Router();
         if (!api.proxy.disableStats) {
-            this.configureStatsMiddleware(apiRouter, api.path, api.proxy.statsConfig);
+            this.configureStatsMiddleware(apiRouter, api.id, api.proxy.statsConfig);
         }
         this.apiFilter.buildApiFilters(apiRouter, api);
 
@@ -498,11 +498,11 @@ export class Gateway {
         }
     }
 
-    private createStatsController(statsPath: string, statsConfig: StatsConfig): StatsController {
+    private createStatsController(apiId: string, statsConfig: StatsConfig): StatsController {
         if ((this.config.gateway.statsConfig || statsConfig)) {
             const stats: StatsController = new StatsController();
-            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', statsPath, 'request'), statsConfig);
-            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', statsPath, 'status'), statsConfig);
+            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', apiId, 'request'), statsConfig);
+            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', apiId, 'status'), statsConfig);
 
             return stats;
         }

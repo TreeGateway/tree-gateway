@@ -50,8 +50,8 @@ export class ApiAuth {
 
     private createAuthenticator(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig,
         authenticator: express.RequestHandler) {
-        const path: string = api.path;
-        const stats = this.createAuthStats(path, authentication);
+        const apiId: string = api.id;
+        const stats = this.createAuthStats(apiId, authentication);
         if (stats) {
             apiRouter.use((req, res, next) => {
                 authenticator(req, res, (err) => {
@@ -71,13 +71,13 @@ export class ApiAuth {
 
     private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig,
         authenticator: express.RequestHandler) {
-        const path: string = api.path;
+        const apiId: string = api.id;
         if (this.logger.isDebugEnabled()) {
             const groups = Groups.filter(api.group, authentication.group);
             this.logger.debug(`Configuring Group filters for Authentication on path [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
         }
         const f = Groups.buildGroupAllowFilter(api.group, authentication.group);
-        const stats = this.createAuthStats(path, authentication);
+        const stats = this.createAuthStats(apiId, authentication);
         if (stats) {
             apiRouter.use((req, res, next) => {
                 if (f(req, res)) {
@@ -105,11 +105,11 @@ export class ApiAuth {
         }
     }
 
-    private createAuthStats(path: string, authentication: AuthenticationConfig): StatsController {
+    private createAuthStats(apiId: string, authentication: AuthenticationConfig): StatsController {
         if (!authentication.disableStats) {
             const stats: StatsController = new StatsController();
-            stats.failStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', path, 'fail'), authentication.statsConfig);
-            stats.successStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', path, 'success'), authentication.statsConfig);
+            stats.failStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'fail'), authentication.statsConfig);
+            stats.successStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'success'), authentication.statsConfig);
 
             if (stats.failStats) {
                 return stats;

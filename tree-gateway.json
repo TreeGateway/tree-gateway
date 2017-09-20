@@ -77,16 +77,16 @@
         "statsConfig": {
             "granularity": {
                 "duration": "1 hour",
-                "ttl": "2 days"
-            }
+                "ttl": "1 day"
+    }
         }, 
         "monitor": [
             {
                 "name": "cpu",
                 "statsConfig": {
                     "granularity": {
-                        "duration": "1 minute",
-                        "ttl": "2 days"
+                        "duration": "1 hour",
+                        "ttl": "1 day"
                     }
                 }            
             }, 
@@ -94,8 +94,8 @@
                 "name": "mem",
                 "statsConfig": {
                     "granularity": {
-                        "duration": "1 minute",
-                        "ttl": "2 days"
+                        "duration": "1 hour",
+                        "ttl": "1 day"
                     }
                 }            
             }
