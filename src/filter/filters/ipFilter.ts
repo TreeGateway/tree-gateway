@@ -49,7 +49,7 @@ function getBlacklistFilter(config: IpFilterConfig) {
     let blocked: Array<string> = config.blacklist;
     if (config.database) {
         const pluginsDataService: PluginsDataService = Container.get(PluginsDataService);
-        pluginsDataService.on('changed', (data: Array<string>) => {
+        pluginsDataService.on('changed', (configKey: string, data: Array<string>) => {
             blocked = _.union(config.blacklist, data || []);
         });
         pluginsDataService.watchConfigurationItems(config.database.key || 'ipFilter:blacklist',
@@ -77,7 +77,7 @@ function getWhitelistFilter(config: IpFilterConfig) {
     let unblocked: Array<string> = config.whitelist;
     if (config.database) {
         const pluginsDataService: PluginsDataService = Container.get(PluginsDataService);
-        pluginsDataService.on('changed', (data: Array<string>) => {
+        pluginsDataService.on('changed', (configKey: string, data: Array<string>) => {
             unblocked = _.union(config.whitelist, data || []);
         });
         pluginsDataService.watchConfigurationItems(config.database.key || '{ipFilter}:whitelist',

@@ -68,7 +68,9 @@ abstract class Balancer {
     protected observeDatabase(config: LoadBalancerConfig) {
         if (config.database) {
             const pluginsDataService: PluginsDataService = Container.get(PluginsDataService);
-            pluginsDataService.on('changed', (data: Array<string>) => {
+            pluginsDataService.on('changed', (configKey: string, data: Array<string>) => {
+                console.info('DATA: ');
+                console.info(data);
                 if (!_.isEqual(this.previousDBData, data)) {
                     this.previousDBData = data;
                     if (data && data.length) {
