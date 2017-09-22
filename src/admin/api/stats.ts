@@ -97,7 +97,7 @@ export class StatsRest {
         @PathParam('code') code: number,
         @QueryParam('path') path: string,
         @QueryParam('count') count: number): Promise<Array<Array<number>>> {
-        return this.getStats(apiId, 'access', path, 'request', count || 24, `${code}`);
+        return this.getStats(apiId, 'access', path, 'status', count || 24, `${code}`);
     }
 
     @GET

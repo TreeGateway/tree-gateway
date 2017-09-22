@@ -58,7 +58,7 @@ export class ApiCircuitBreaker {
             if (cbConfig.group) {
                 if (this.logger.isDebugEnabled()) {
                     const groups = Groups.filter(api.group, cbConfig.group);
-                    this.logger.debug(`Configuring Group filters for Circuit Breaker on path [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Circuit Breaker on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 breakerInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, cbConfig.group);
             }

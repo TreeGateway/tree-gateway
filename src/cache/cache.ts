@@ -43,7 +43,7 @@ export class ApiCache {
             if (cache.group) {
                 if (this.logger.isDebugEnabled()) {
                     const groups = Groups.filter(api.group, cache.group);
-                    this.logger.debug(`Configuring Group filters for Cache on path [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Cache on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }

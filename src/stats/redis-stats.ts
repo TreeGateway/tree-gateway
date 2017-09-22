@@ -100,14 +100,14 @@ export class RedisStats extends StatsHandler {
             }
 
             Promise.all(hgets)
-                .then((results) => {
+                .then((results: any) => {
                     const data = [];
                     for (let ts = from, i = 0; ts <= to; ts += this.duration, i += 1) {
-                        data.push([ts, (<any>results)[i][1] ? parseInt((<any>results)[i][1], 10) : 0]);
+                        data.push([ts, results[i] ? parseInt(results[i], 10) : 0]);
                     }
 
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Retrieving stats for key ${key}: ${this.logger.inspectObject(data)}`);
+                        this.logger.debug(`Retrieving stats for key ${key}: ${JSON.stringify(data)}`);
                     }
                     return resolve(data);
                 })
