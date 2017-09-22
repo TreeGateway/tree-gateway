@@ -13,6 +13,9 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
     @Inject private database: Database;
 
     listConfigurationItems(configKey: string): Promise<Array<string>> {
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Checking configuration items for plugin config key:${configKey} `);
+        }
         return this.database.redisClient.smembers(`${RedisPluginsDataService.PREFIX}:${configKey}`);
     }
 
@@ -28,14 +31,21 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
 
     watchConfigurationItems(configKey: string, interval: number): void {
         setInterval(() => {
-            this.listConfigurationItems(configKey)
-                .then((data: Array<string>) => {
-                    this.emit('changed', configKey, data);
-                }).catch((err: any) => {
-                    console.info(err);
-                    this.logger.error(`Error retrieving configuration items from redis database.`);
-                    this.logger.inspectObject(err);
-                });
+            this.checkConfigurationItens(configKey);
         }, interval);
+
+        process.nextTick(() => {
+            this.checkConfigurationItens(configKey);
+        });
+    }
+
+    private checkConfigurationItens(configKey: string) {
+        this.listConfigurationItems(configKey)
+        .then((data: Array<string>) => {
+            this.emit('changed', configKey, data);
+        }).catch((err: any) => {
+            this.logger.error(`Error retrieving configuration items from redis database.`);
+            this.logger.inspectObject(err);
+        });
     }
 }
