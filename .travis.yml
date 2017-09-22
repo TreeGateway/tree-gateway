@@ -4,7 +4,6 @@ env:
   global: 
     - REDIS_PORT_6379_TCP_ADDR=localhost 
     - REDIS_PORT_6379_TCP_PORT=6379
-    - COMMIT=${TRAVIS_COMMIT::8}
 node_js:
   - '6'
 services:
@@ -15,13 +14,17 @@ before_install:
 
 script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
 after_success:
-  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-  - export REPO=treegateway/tree-gateway
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build -f Dockerfile -t $REPO:$COMMIT .
-  - docker tag $REPO:$COMMIT $REPO:$TAG
-  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $REPO
+  if ([ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ]) && 
+      [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+    - export REPO=treegateway/tree-gateway
+    - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "master"; else echo $TRAVIS_BRANCH ; fi`
+    - docker build -f Dockerfile -t $REPO:$TAG .
+    - docker tag $REPO:$TAG $REPO:latest
+    - docker push $REPO
+  else
+    echo "Skiping docker hub deploy!"
+  fi
 deploy:
   - provider: npm
     email: thiago@cruxframework.org
