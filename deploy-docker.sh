@@ -1,6 +1,8 @@
+#!/bin/bash
+
 docker login -u $DOCKER_USER -p $DOCKER_PASS
-export REPO=treegateway/tree-gateway
-export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "master"; else echo $TRAVIS_BRANCH ; fi`
+REPO=treegateway/tree-gateway
+TAG=$TRAVIS_BRANCH
 docker build -f Dockerfile -t $REPO:$TAG .
 docker tag $REPO:$TAG $REPO:latest
 docker push $REPO
