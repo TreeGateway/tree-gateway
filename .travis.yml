@@ -13,6 +13,7 @@ before_install:
 script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
 deploy:
   - provider: script
+    skip_cleanup: true
     script: 
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - export REPO=treegateway/tree-gateway
