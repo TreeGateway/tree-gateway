@@ -23,7 +23,7 @@ deploy:
       repo: Leanty/tree-gateway
   - provider: script
     skip_cleanup: true
-    script: deploy-docker.sh
+    script: ./deploy-docker.sh
     on:
       tags: true
       repo: Leanty/tree-gateway
