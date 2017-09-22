@@ -32,7 +32,9 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
                 .then((data: Array<string>) => {
                     this.emit('changed', configKey, data);
                 }).catch((err: any) => {
-                    this.logger.error(`Error retrieving configuration items from redis database. ${this.logger.inspectObject(err.message)}`);
+                    console.info(err);
+                    this.logger.error(`Error retrieving configuration items from redis database.`);
+                    this.logger.inspectObject(err);
                 });
         }, interval);
     }

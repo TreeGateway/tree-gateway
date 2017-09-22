@@ -59,7 +59,7 @@ export class ApiRateLimit {
             if (throttling.group) {
                 if (this.logger.isDebugEnabled()) {
                     const groups = Groups.filter(api.group, throttling.group);
-                    this.logger.debug(`Configuring Group filters for Throtlling on path [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Throtlling on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 throttlingInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, throttling.group);
             }

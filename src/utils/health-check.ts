@@ -94,7 +94,7 @@ export class HealthCheck extends EventEmitter {
                     this.checking = false;
                     if (!_.isEqual(this.previousChecks, this.checks)) {
                         if (this.logger.isDebugEnabled()) {
-                            this.logger.debug(`Health state changed: ${this.logger.inspectObject(this.checks)}`);
+                            this.logger.debug(`Health state changed: ${JSON.stringify(this.checks)}`);
                         }
                         this.emit('change', this.status());
                     }

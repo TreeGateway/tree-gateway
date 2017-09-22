@@ -43,7 +43,7 @@ export class ProxyInterceptor {
 
     private createRequestInterceptors(apiRouter: express.Router, api: ApiConfig) {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Configuring request interceptors for Proxy target [${api.path}]. Interceptors [${this.logger.inspectObject(api.proxy.interceptor.request)}]`);
+            this.logger.debug(`Configuring request interceptors for Proxy target [${api.path}]. Interceptors [${JSON.stringify(api.proxy.interceptor.request)}]`);
         }
         const proxy: config.Proxy = api.proxy;
 

@@ -38,7 +38,7 @@ export class ApiCors {
             if (cors.group) {
                 if (this.logger.isDebugEnabled()) {
                     const groups = Groups.filter(api.group, cors.group);
-                    this.logger.debug(`Configuring Group filters for Cors on path [${api.path}]. Groups [${this.logger.inspectObject(groups)}]`);
+                    this.logger.debug(`Configuring Group filters for Cors on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
                 }
                 corsInfo.groupValidator = Groups.buildGroupAllowFilter(api.group, cors.group);
             }
