@@ -57,7 +57,7 @@ const createUsers = () => {
 };
 
 describe('Gateway Admin Tasks', () => {
-    before(function(){
+    before(() => {
         config = Container.get(Configuration);
         adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 

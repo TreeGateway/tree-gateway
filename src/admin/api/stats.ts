@@ -4,7 +4,6 @@ import { Path, GET, PathParam, Errors, QueryParam } from 'typescript-rest';
 import { Stats } from '../../stats/stats';
 import { Monitors } from '../../monitor/monitors';
 import { Inject } from 'typescript-ioc';
-import { Gateway } from '../../gateway';
 import { StatsRecorder } from '../../stats/stats-recorder';
 import * as swagger from 'typescript-rest-swagger';
 
@@ -13,7 +12,6 @@ import * as swagger from 'typescript-rest-swagger';
 @swagger.Security('Bearer')
 export class StatsRest {
     @Inject private monitors: Monitors;
-    @Inject private gateway: Gateway;
     @Inject private statsRecorder: StatsRecorder;
 
     @GET
@@ -129,13 +127,8 @@ export class StatsRest {
         count?: number,
         ...extra: string[]): Promise<Array<Array<number>>> {
         return new Promise<Array<Array<number>>>((resolve, reject) => {
-            const apiConfig = this.gateway.getApiConfig(apiId);
-
-            if (!apiConfig) {
-                return reject(new Errors.NotFoundError('API not found'));
-            }
             if (path) {
-                const stats = this.statsRecorder.createStats(Stats.getStatsKey(prefix, apiConfig.path, key));
+                const stats = this.statsRecorder.createStats(Stats.getStatsKey(prefix, apiId, key));
                 stats.getLastOccurrences(count || 24, path, ...extra)
                     .then(resolve)
                     .catch(reject);

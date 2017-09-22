@@ -50,7 +50,7 @@ export class ApiRateLimit {
             if (throttling.skip) {
                 rateConfig.skip = this.middlewareLoader.loadMiddleware('throttling/skip', throttling.skip);
             }
-            this.configureThrottlingHandlerFunction(path, throttling, rateConfig);
+            this.configureThrottlingHandlerFunction(path, throttling, rateConfig, api.id);
             throttlingInfo.limiter = new rateLimit(rateConfig);
 
             if (this.logger.isDebugEnabled()) {
@@ -69,8 +69,8 @@ export class ApiRateLimit {
         this.setupMiddlewares(apiRouter, throttlingInfos);
     }
 
-    private configureThrottlingHandlerFunction(path: string, throttling: ThrottlingConfig, rateConfig: any) {
-        const stats = this.createStats(path, throttling);
+    private configureThrottlingHandlerFunction(path: string, throttling: ThrottlingConfig, rateConfig: any, apiId: string) {
+        const stats = this.createStats(apiId, throttling);
         if (stats) {
             if (throttling.handler) {
                 const customHandler = this.middlewareLoader.loadMiddleware('throttling/handler', throttling.handler);
@@ -139,9 +139,9 @@ export class ApiRateLimit {
         return throttlings;
     }
 
-    private createStats(path: string, throttling: ThrottlingConfig): Stats {
+    private createStats(apiId: string, throttling: ThrottlingConfig): Stats {
         if (!throttling.disableStats) {
-            return this.statsRecorder.createStats(Stats.getStatsKey('throt', path, 'exceeded'), throttling.statsConfig);
+            return this.statsRecorder.createStats(Stats.getStatsKey('throt', apiId, 'exceeded'), throttling.statsConfig);
         }
 
         return null;

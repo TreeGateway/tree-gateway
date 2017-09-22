@@ -54,7 +54,7 @@ export class ApiCircuitBreaker {
                 this.logger.debug(`Configuring Circuit Breaker for path [${api.path}].`);
             }
             breakerInfo.circuitBreaker = new CircuitBreaker(cbOptions);
-            this.configureCircuitBreakerEventListeners(breakerInfo, api.path, cbConfig);
+            this.configureCircuitBreakerEventListeners(breakerInfo, api.path, cbConfig, api.id);
             if (cbConfig.group) {
                 if (this.logger.isDebugEnabled()) {
                     const groups = Groups.filter(api.group, cbConfig.group);
@@ -83,8 +83,8 @@ export class ApiCircuitBreaker {
         this.activeBreakers.clear();
     }
 
-    private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: CircuitBreakerConfig) {
-        const stats = this.createCircuitBreakerStats(path, config);
+    private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: CircuitBreakerConfig, apiId: string) {
+        const stats = this.createCircuitBreakerStats(apiId, config);
         if (stats) {
             breakerInfo.circuitBreaker.on('open', () => {
                 stats.open.registerOccurrence('total', 1);
@@ -162,12 +162,12 @@ export class ApiCircuitBreaker {
         return breakers;
     }
 
-    private createCircuitBreakerStats(path: string, config: CircuitBreakerConfig): StatsController {
+    private createCircuitBreakerStats(apiId: string, config: CircuitBreakerConfig): StatsController {
         if (!config.disableStats) {
             const stats: StatsController = new StatsController();
-            stats.close = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', path, 'close'), config.statsConfig);
-            stats.open = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', path, 'open'), config.statsConfig);
-            stats.rejected = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', path, 'rejected'), config.statsConfig);
+            stats.close = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'close'), config.statsConfig);
+            stats.open = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'open'), config.statsConfig);
+            stats.rejected = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'rejected'), config.statsConfig);
 
             if (stats.open) {
                 return stats;
