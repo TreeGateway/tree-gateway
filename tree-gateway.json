@@ -3,8 +3,8 @@
     "database": {
         "redis": {
             "standalone": {
-                "host": "{REDIS_PORT_6379_TCP_ADDR}",
-                "port": "{REDIS_PORT_6379_TCP_PORT}"
+                "host": "localhost",
+                "port": 6379
             }
         }
     },

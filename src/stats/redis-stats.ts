@@ -101,10 +101,9 @@ export class RedisStats extends StatsHandler {
 
             Promise.all(hgets)
                 .then((results: any) => {
-                    this.logger.inspectObject(results);
                     const data = [];
                     for (let ts = from, i = 0; ts <= to; ts += this.duration, i += 1) {
-                        data.push([ts, results[i] && results[i][1] ? parseInt(results[i][1], 10) : 0]);
+                        data.push([ts, results[i] ? parseInt(results[i], 10) : 0]);
                     }
 
                     if (this.logger.isDebugEnabled()) {
