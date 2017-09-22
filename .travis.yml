@@ -16,7 +16,7 @@ script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
 after_success:
   if ([ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ]) && 
       [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
     - export REPO=treegateway/tree-gateway
     - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "master"; else echo $TRAVIS_BRANCH ; fi`
     - docker build -f Dockerfile -t $REPO:$TAG .
