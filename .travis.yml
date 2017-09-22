@@ -1,31 +1,29 @@
 sudo: required
 language: node_js
 env:
-  global: 
-    - REDIS_PORT_6379_TCP_ADDR=localhost 
-    - REDIS_PORT_6379_TCP_PORT=6379
+  global:
+  - REDIS_PORT_6379_TCP_ADDR=localhost
+  - REDIS_PORT_6379_TCP_PORT=6379
 node_js:
-  - '6'
+- '6'
 services:
-  - docker
+- docker
 before_install:
-  - docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
-  - docker run -p 8500:8500 -d --name tree_consul consul
-
+- docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
+- docker run -p 8500:8500 -d --name tree_consul consul
 script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
 deploy:
   - provider: npm
     email: thiago@cruxframework.org
     skip_cleanup: true
     api_key:
-      secure: h36KkxAMuHGXktDL1FB3rgl8s3cPLdSBpbBMN7A5XpXF3E7mMIPEEEfSQ5nfRc5wxmlseBZjyjhcXbEavluAGmBB+d3bBRz3ifqrwqT/DTPRdTMkMhqVKC7ywAzh+pU8qkmcX9TVMmYYJQhFIj7fWy0yr2DRoEEa6Ei4ZEDFH/hHOSzHmfJNZAoXuI7rZ1nJoQZ1UJsGERMNp+xdJdVY1jng33karymkl+zNrqxPPf+enfazxqo4+s5fQM/pAU64IEyj+JCpzYrXG9uu+1CDOVyp+G1bdVYohCJj1nUFqSpaKyYHTjO963ogVnMjMFlDlzy2C6jD6/q6f4dqWiG6W1EAau2VdJdfEVfOqiZ7djPYR8DP/qdLIBUdpcWJKOchL3+Y/S6vz25s/aGWmZrqBp1Lwmuod9vh+Wdfm96kWA9HQO6JIt+bsxa8RNstNnWlb8FCf9O48S/Jhjl5UTcgsSjxvXJe/5V0bqXSW6MNGwP89Y7mnDgV+r2zd/twuYOc020YBNHqdvywQJrMk1m+rP3MLJPgnzjfFrXUKmoL2JI9Nr73rce1U6E3D24KXdE43NmvulXve6DQ23Zc57U2DKNxlxvac+Jx6ksoQ3rYkWa9d3R3bYYD5e3HAn9D+QsJz+kTo8uVlH/9PjAAE4TyhJkQY+XikIVfa36dFmAXeos=
+      secure: cfa0ccHd9C5MBQlRuz3m79uGyvo338PpBgL+xjrXrsz31oMa7TuzSMg43Oi6okWawxtladv3J7wPXI/Ic5Jrfgxa9Jd1/htmRoiAnWvztYv9JIjxhT6qx+UpLCKXLj+rcGPrBZrfsdthSa0hK0dqV1KMQUKgZPnefxL+ROm9J30EQxkoBVaB6EG5VhSJSGcVmFrxDgcjef/7bwquRBtCXr/K3dMRrK5qM/tQAmqKsz8MDdHcr5zqV9rydiehtX0Tb1FcxJ3Jy+uh/HOS2TC+KXIKB9qBVg2tj7vOKZcPIpL4Ag6McUOH5gAhV+fIfKMn964d6wwGMZ6OE3aJB4FEYWTBEaGSf76rQBWSvNLS/aK1oicvGI8Xq9dye6BM9OT1MqkbbD1bTQzhsISYIcO5I8Do6hFYeDTwwscYsNxFZ2S17OukHJ0C7BWpEQ8HX1r3315lyuCi6exRbwzWMKRCIsHns9P5hT6JBuWCa0Z2k6WbxKjoar4H2sVYPdzZvdBdxXxP0lxnEFCt9STPuQq6Vc93IwBCQUYkfY3RZS2xZLwS4tcZ3/GBAKQzbFvLkM7FISnZeUkx3EWclooNk82Rgg1gSe49YJ3nidjQac1lyb0nseDsQvh38LEx7jIs0OrObPm/fQ575XSCPrxAyZMfSCRPBVOa4CBSBLbNx9mjHDU=
     on:
       tags: true
       repo: Leanty/tree-gateway
-  - provider: srcipt
+  - provider: script
     skip_cleanup: true
-    script:
-      deploy-docker.sh
+    script: deploy-docker.sh
     on:
       tags: true
       repo: Leanty/tree-gateway
