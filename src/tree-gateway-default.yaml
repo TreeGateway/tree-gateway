@@ -50,4 +50,4 @@ gateway:
     statsConfig:
         granularity:
             duration: '1 hour'
-            ttl: '2 days'
+            ttl: '1 day'

@@ -22,4 +22,4 @@ EXPOSE 8000 8001
 
 VOLUME ["/usr/src/app/logs"]
 
-CMD [ "npm", "start"]
+CMD [ "npm", "run", "start:cluster"]
