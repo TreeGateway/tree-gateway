@@ -18,3 +18,4 @@ Dockerfile
 coverage
 logs
 benchmark
+Jenkinsfile
