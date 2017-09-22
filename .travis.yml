@@ -9,10 +9,12 @@ services:
 before_install:
   - docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
   - docker run -p 8500:8500 -d --name tree_consul consul
-script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
 
 jobs:
   include:
+    - stage: test
+      script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
+
     - stage: deploy
       deploy:
         - provider: script
