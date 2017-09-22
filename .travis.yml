@@ -1,8 +1,10 @@
 sudo: required
 language: node_js
 env:
-  - REDIS_PORT_6379_TCP_ADDR=localhost REDIS_PORT_6379_TCP_PORT=6379
-  - COMMIT=${TRAVIS_COMMIT::8}
+  global: 
+    - REDIS_PORT_6379_TCP_ADDR=localhost 
+    - REDIS_PORT_6379_TCP_PORT=6379
+    - COMMIT=${TRAVIS_COMMIT::8}
 node_js:
   - '6'
 services:
