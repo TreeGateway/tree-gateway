@@ -19,3 +19,4 @@ coverage
 logs
 benchmark
 Jenkinsfile
+deploy-docker.sh
