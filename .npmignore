@@ -1,5 +1,4 @@
 !dist/**
-!doc/**
 .travis.yml
 src
 test
@@ -18,3 +17,4 @@ Dockerfile
 /.vscode
 coverage
 logs
+benchmark

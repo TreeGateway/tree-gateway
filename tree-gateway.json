@@ -78,7 +78,7 @@
             "granularity": {
                 "duration": "1 hour",
                 "ttl": "1 day"
-    }
+            }
         }, 
         "monitor": [
             {
