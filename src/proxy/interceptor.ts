@@ -57,7 +57,8 @@ export class ProxyInterceptor {
                             body: req.body,
                             headers: Object.assign({}, req.headers),
                             method: req.method,
-                            url: req.url
+                            url: req.url,
+                            user: req.user
                         };
                         Promise.resolve(interceptorMiddleware(proxyReq))
                             .then(result => {
@@ -76,7 +77,8 @@ export class ProxyInterceptor {
                         body: req.body,
                         headers: Object.assign({}, req.headers),
                         method: req.method,
-                        url: req.url
+                        url: req.url,
+                        user: req.user
                     };
                     Promise.resolve(interceptorMiddleware(proxyReq))
                         .then(result => {
