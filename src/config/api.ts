@@ -82,7 +82,7 @@ export interface ApiConfig {
      * So, the above filter should be saved in a file called myFilter.js and configured as:
      * ```
      * filter:[
-     *   {middleware{ name: "myFilter"} }
+     *   {middleware: { name: "myFilter"} }
      * ]
      * ```
      */
