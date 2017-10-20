@@ -24,7 +24,6 @@ import { Monitors } from './monitor/monitors';
 import { ConfigService } from './service/config';
 import { Configuration } from './configuration';
 import * as fs from 'fs-extra-promise';
-import { getSwaggerHost } from './utils/config';
 import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
 import * as path from 'path';
@@ -466,12 +465,11 @@ export class Gateway {
             const isTest = process.env.NODE_ENV === 'test';
 
             const schemes = (this.config.gateway.admin.protocol.https ? ['https'] : ['http']);
-            const host = getSwaggerHost(this.config.gateway, isTest);
             const swaggerFile = isTest ?
                 './dist/admin/api/swagger.json' :
                 path.join(__dirname, './admin/api/swagger.json');
 
-            Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs.path, host, schemes);
+            Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs.path, null, schemes);
         }
     }
 
