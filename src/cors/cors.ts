@@ -49,7 +49,7 @@ export class ApiCors {
     }
 
     configureCorsOptions(cors: CorsConfig): corsLib.CorsOptions {
-        const corsOptions: corsLib.CorsOptions = _.omit(cors, 'id', 'origin', 'maxAge', 'group');
+        const corsOptions: corsLib.CorsOptions = <any>_.omit(cors, 'id', 'origin', 'maxAge', 'group');
         if (cors.maxAge) {
             corsOptions.maxAge = getMilisecondsInterval(cors.maxAge);
         }
