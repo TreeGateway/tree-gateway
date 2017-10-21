@@ -69,7 +69,7 @@ describe('Gateway APIs uninstall', () => {
         });
     });
 
-    after(function(){
+    after(() => {
         return database.redisClient.flushdb()
             .then(() => gateway.stopAdmin())
             .then(() => gateway.stop())
