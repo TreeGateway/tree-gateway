@@ -57,7 +57,7 @@
     "bcrypt": "^1.0.2",
     "cluster": "^0.7.7",
     "compression": "^1.7.1",
-    "consul": "^0.29.0",
+    "consul": "^0.30.0",
     "cors": "^2.8.4",
     "decache": "^4.2.0",
     "eventemitter3": "1.x.x",
@@ -84,7 +84,7 @@
     "request": "^2.83.0",
     "requires-port": "1.x.x",
     "serve-favicon": "~2.3.0",
-    "swagger-client": "^3.2.2",
+    "swagger-client": "^3.3.0",
     "typescript-ioc": "^1.0.2",
     "typescript-rest": "^1.1.2",
     "typescript-rest-swagger": "0.0.8",
@@ -95,7 +95,7 @@
     "yamljs": "^0.2.10"
   },
   "devDependencies": {
-    "@types/argparse": "^1.0.30",
+    "@types/argparse": "^1.0.33",
     "@types/bcrypt": "^1.0.0",
     "@types/chai": "^3.5.1",
     "@types/compression": "0.0.33",
