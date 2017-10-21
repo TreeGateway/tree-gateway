@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 import * as fs from 'fs-extra-promise';
 import * as path from 'path';
 import * as request from 'request';
+import { GatewayConfig } from '../../config/gateway';
+import { getSwaggerHost } from '../../utils/config';
 
 export interface Middleware {
     filters(name?: string): Promise<Array<string>>;
@@ -78,9 +80,12 @@ export class MiddlewareClient implements Middleware {
     private authToken: string;
     private middlewareRequest: any;
 
-    constructor(swaggerClient: any, authToken: string) {
+    constructor(swaggerClient: any, authToken: string, gateway: GatewayConfig) {
         this.swaggerClient = swaggerClient;
         this.authToken = authToken;
+        if (!this.swaggerClient.spec || !this.swaggerClient.spec.host) {
+            this.swaggerClient.spec.host = getSwaggerHost(gateway);
+        }
         if (!this.swaggerClient.spec || !this.swaggerClient.spec.schemes ||
             !this.swaggerClient.spec.schemes.length || !this.swaggerClient.spec.host) {
             throw new Error('Invalid swagger specification. Can not found the target endpoint to call.');

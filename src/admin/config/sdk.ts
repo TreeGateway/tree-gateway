@@ -17,10 +17,10 @@ export class SDK {
     private middlewareClient: Middleware;
     private usersClient: Users;
 
-    private constructor(swaggerClient: any, authToken: string) {
+    private constructor(swaggerClient: any, authToken: string, gateway: GatewayConfig) {
         this.apisClient = new ApisClient(swaggerClient);
         this.gatewayClient = new GatewayClient(swaggerClient);
-        this.middlewareClient = new MiddlewareClient(swaggerClient, authToken);
+        this.middlewareClient = new MiddlewareClient(swaggerClient, authToken, gateway);
         this.usersClient = new UsersClient(swaggerClient);
     }
 
@@ -34,7 +34,7 @@ export class SDK {
                     }
                 })
                 .then((swaggerClient: any) => {
-                    resolve(new SDK(swaggerClient, token));
+                    resolve(new SDK(swaggerClient, token, gateway));
                 })
                 .catch(reject);
         });
