@@ -279,7 +279,7 @@ const routerConfigValidatorSchema = Joi.object().keys({
 const targetSchema = Joi.object().keys({
     allow: Joi.array().items(Joi.string()),
     deny: Joi.array().items(Joi.string()),
-    host: Joi.string(),
+    host: Joi.string().uri(),
     router: routerConfigValidatorSchema
 }).xor('host', 'router');
 
@@ -311,7 +311,6 @@ export const proxyValidatorSchema = Joi.object().keys({
     httpAgent: httpAgentSchema,
     interceptor: interceptorsSchema,
     limit: Joi.string(),
-    memoizeHost: Joi.boolean(),
     parseReqBody: Joi.boolean(),
     preserveHostHdr: Joi.boolean(),
     statsConfig: statsConfigValidatorSchema,
