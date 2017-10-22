@@ -72,6 +72,17 @@ describe('Gateway Admin Tasks', () => {
         });
     });
 
+    describe('/healthcheck', () => {
+        it('should return OK', (done) => {
+            adminRequest.get('/healthcheck', (error: any, response: any, body: any) => {
+                expect(error).to.not.exist;
+                expect(response.statusCode).to.equal(200);
+                expect(body).to.equal('OK');
+                done();
+            });
+        });
+    });
+
     describe('/users', () => {
         it('should reject unauthenticated requests', (done) => {
             adminRequest.get('/users/admin', (error: any, response: any, body: any) => {
@@ -130,7 +141,7 @@ describe('Gateway Admin Tasks', () => {
             name: 'apiMock',
             path: 'newApi',
             proxy: {
-                target: {host: 'test.com'}
+                target: {host: 'http://test.com'}
             },
             version: '1.0'
         };

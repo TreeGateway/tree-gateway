@@ -20,6 +20,17 @@ describe('The Gateway Proxy', () => {
         gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
     });
 
+    describe('/healthcheck', () => {
+        it('should return OK', (done) => {
+            gatewayRequest.get('/healthcheck', (error: any, response: any, body: any) => {
+                expect(error).to.not.exist;
+                expect(response.statusCode).to.equal(200);
+                expect(body).to.equal('OK');
+                done();
+            });
+        });
+    });
+
     it('should be able to proxy an API', (done) => {
         gatewayRequest('/test/get?arg=1', (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);

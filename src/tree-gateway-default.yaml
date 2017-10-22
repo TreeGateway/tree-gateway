@@ -27,7 +27,6 @@ gateway:
             jwtSecret: secret
         apiDocs:
             path: api-docs
-            host: localhost
     logger:
         level: info
         console:
@@ -51,3 +50,4 @@ gateway:
         granularity:
             duration: '1 hour'
             ttl: '1 day'
+    healthcheck: /healthcheck

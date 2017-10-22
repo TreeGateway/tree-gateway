@@ -24,6 +24,8 @@ gateway:
                     - "::1"
                 statusCode: 403
                 message: IP Filtered
+        apiDocs:
+            host: localhost:8011
 
     logger:
         level: 'info'

@@ -104,7 +104,7 @@ export class UsersRest {
             next();
         };
         const adminGateway = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (req.path === '/users/authentication') {
+            if (req.path === '/users/authentication' || req.path === '/healthcheck') {
                 return next();
             }
 
@@ -114,7 +114,7 @@ export class UsersRest {
             next();
         };
         app.use((req, res, next) => {
-            if (req.path === '/users/authentication') {
+            if (req.path === '/users/authentication' || req.path === '/healthcheck') {
                 return next();
             }
             authenticator(req, res, next);

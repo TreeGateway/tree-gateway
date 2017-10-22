@@ -38,8 +38,7 @@
                 "jwtSecret": "secret"
             },
             "apiDocs": {
-                "path": "api-docs",
-                "host": "localhost"
+                "path": "api-docs"
             },
             "cors" : {
                 "origin": {
@@ -99,6 +98,7 @@
                     }
                 }            
             }
-        ]
+        ],
+        "healthcheck": "/healthcheck"
     } 
 }

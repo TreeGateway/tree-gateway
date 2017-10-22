@@ -6,11 +6,9 @@ import { GatewayConfig } from '../config/gateway';
 export function getSwaggerHost(gateway: GatewayConfig, isTest?: boolean) {
     let host;
     if (gateway.admin.apiDocs.host) {
-        host = `${gateway.admin.apiDocs.host}:${(gateway.admin.protocol.https ? gateway.admin.protocol.https.listenPort : gateway.admin.protocol.http.listenPort)}`;
+        host = gateway.admin.apiDocs.host;
     } else {
-        host = (gateway.admin.protocol.https ?
-            `${isTest ? 'localhost' : os.hostname()}:${gateway.admin.protocol.https.listenPort}` :
-            `${isTest ? 'localhost' : os.hostname()}:${gateway.admin.protocol.http.listenPort}`);
+        host = isTest ? 'localhost' : os.hostname();
     }
     return host;
 }
