@@ -408,7 +408,7 @@ export class Gateway {
                 AccessLogger.configureAccessLoger(this.config.gateway.accessLogger,
                     this.config.rootPath, this.app, './logs');
             }
-
+            this.configureHealthcheck();
             this.configService.installAllMiddlewares()
                 .then(() => this.serviceDiscovery.loadServiceDiscoveryProviders(this.config.gateway))
                 .then(() => {
@@ -418,6 +418,15 @@ export class Gateway {
                 .then(resolve)
                 .catch(reject);
         });
+    }
+
+    private configureHealthcheck() {
+        if (this.config.gateway.healthcheck) {
+            this.app.get(this.config.gateway.healthcheck, (req: express.Request, res: express.Response) => {
+                res.write('OK');
+                res.end();
+            });
+        }
     }
 
     private configureAdminServer() {

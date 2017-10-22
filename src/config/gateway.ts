@@ -102,6 +102,11 @@ export interface GatewayConfig {
      * Configuration for service discovery.
      */
     serviceDiscovery?: ServiceDiscoveryConfig;
+    /**
+     * Configure an healthcheck endpoint for the gateway. Provide here the path where the
+     * healthcheck service will respond.
+     */
+    healthcheck?: string;
 }
 
 export interface MonitorConfig {
@@ -125,6 +130,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     admin: adminConfigValidatorSchema,
     cors: corsConfigSchema,
     filter: Joi.array().items(middlewareConfigValidatorSchema),
+    healthcheck: Joi.string(),
     logger: loggerConfigSchema,
     monitor: Joi.array().items(monitorConfigSchema),
     protocol: protocolConfigSchema,

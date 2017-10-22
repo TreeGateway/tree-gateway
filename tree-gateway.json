@@ -99,6 +99,7 @@
                     }
                 }            
             }
-        ]
+        ],
+        "healthcheck": "/healthcheck"
     } 
 }
