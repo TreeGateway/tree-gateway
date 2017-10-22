@@ -478,7 +478,9 @@ export class Gateway {
                 './dist/admin/api/swagger.json' :
                 path.join(__dirname, './admin/api/swagger.json');
 
-            Server.swagger(this.adminApp, swaggerFile, this.config.gateway.admin.apiDocs.path, null, schemes);
+            const apiPath = this.config.gateway.admin.apiDocs.path;
+            const apiHost = this.config.gateway.admin.apiDocs.host;
+            Server.swagger(this.adminApp, swaggerFile, apiPath, apiHost, schemes);
         }
     }
 

@@ -27,7 +27,6 @@ gateway:
             jwtSecret: secret
         apiDocs:
             path: api-docs
-            host: localhost
     logger:
         level: info
         console:
