@@ -102,7 +102,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
     proxy: proxyValidatorSchema.required(),
     throttling: Joi.array().items(throttlingConfigValidatorSchema),
-    version: Joi.string().regex(/^(\d+\.)?(\d+\.)?(\d+)$/).required()
+    version: Joi.string().required()
 });
 
 export function validateApiConfig(apiConfig: ApiConfig) {
