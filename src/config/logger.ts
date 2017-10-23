@@ -80,7 +80,7 @@ export interface LogConsoleConfig {
     showLevel?: boolean;
     /**
      * Array of strings containing the levels to log to stderr instead of stdout, for example
-     * ['error', 'debug', 'info']. (default ['error', 'debug'])
+     * ['error', 'warn', 'debug', 'info']. (default ['error', 'debug'])
      */
     stderrLevels?: Array<string>;
 }
@@ -162,7 +162,7 @@ export interface LogFileConfig {
 }
 
 export enum LogLevel {
-    error, info, debug
+    error, warn, info, debug
 }
 
 const logConsoleConfigSchema = Joi.object().keys({
@@ -170,11 +170,11 @@ const logConsoleConfigSchema = Joi.object().keys({
     depth: Joi.number().positive(),
     humanReadableUnhandledException: Joi.boolean(),
     json: Joi.boolean(),
-    level: Joi.string().valid('error', 'info', 'debug'),
+    level: Joi.string().valid('error', 'warn', 'info', 'debug'),
     prettyPrint: Joi.boolean(),
     showLevel: Joi.boolean(),
     silent: Joi.boolean(),
-    stderrLevels: Joi.array().items(Joi.string().valid('error', 'info', 'debug')),
+    stderrLevels: Joi.array().items(Joi.string().valid('error', 'warn', 'info', 'debug')),
     stringify: Joi.boolean(),
     timestamp: Joi.boolean()
 });
@@ -184,7 +184,7 @@ const logFileConfigSchema = Joi.object().keys({
     depth: Joi.number().positive(),
     eol: Joi.string(),
     json: Joi.boolean(),
-    level: Joi.string().valid('error', 'info', 'debug'),
+    level: Joi.string().valid('error', 'warn', 'info', 'debug'),
     logstash: Joi.boolean(),
     maxFiles: Joi.number().positive(),
     maxRetries: Joi.number().positive(),
@@ -201,7 +201,7 @@ const logFileConfigSchema = Joi.object().keys({
 export let loggerConfigSchema = Joi.object().keys({
     console: logConsoleConfigSchema,
     file: logFileConfigSchema,
-    level: Joi.string().valid('error', 'info', 'debug')
+    level: Joi.string().valid('error', 'warn', 'info', 'debug')
 });
 
 export let accessLoggerConfigSchema = Joi.object().keys({

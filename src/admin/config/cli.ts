@@ -17,8 +17,10 @@ try {
             }).catch((err: any) => {
                 if (err && err.response && err.response.body && err.response.body.error) {
                     console.error(`Error: ${err.response.body.error}`);
-                } else {
+                } else if (err && typeof err !== 'string') {
                     console.error(`${JSON.stringify(err)}`);
+                } else {
+                    console.error(`${err}`);
                 }
                 database.disconnect();
                 process.exit(1);

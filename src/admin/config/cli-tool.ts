@@ -97,8 +97,24 @@ export class Cli {
 
     private processUsersUpdate(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.loadConfigObject(this.args.file)
-                .then((user: UserData) => this.sdk.users.updateUser(user.login, user))
+            const user: any = {
+                login: this.args.login,
+                name: this.args.name,
+                roles: []
+            };
+            if (this.args.email) {
+                user.email = this.args.email;
+            }
+            if (this.args.roles) {
+                this.args.roles.forEach((role: string) => {
+                    if (role === 'config' || role === 'admin') {
+                        user.roles.push(role);
+                    } else {
+                        console.info(`Invalid role ${role}. Ignoring it...`);
+                    }
+                });
+            }
+            this.sdk.users.updateUser(user.login, user)
                 .then(() => {
                     console.info(`User updated`);
                     resolve();

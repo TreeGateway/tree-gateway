@@ -59,6 +59,10 @@ export class Logger {
         return this.level >= LogLevel.info;
     }
 
+    isWarnEnabled(): boolean {
+        return this.level >= LogLevel.warn;
+    }
+
     isErrorEnabled(): boolean {
         return this.level >= LogLevel.error;
     }
@@ -69,6 +73,10 @@ export class Logger {
 
     info(...args: any[]) {
         this.winston.info.apply(this, arguments);
+    }
+
+    warn(...args: any[]) {
+        this.winston.warn.apply(this, arguments);
     }
 
     error(...args: any[]) {

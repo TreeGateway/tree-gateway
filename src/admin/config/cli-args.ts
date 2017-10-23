@@ -142,9 +142,30 @@ const usersUpdateCommand = usersCommands.addParser('update', {
     help: 'Update a user.'
 });
 usersUpdateCommand.addArgument(
-    ['-f', '--file'], {
-        help: 'Inform the path to the user config file (JSON or YAML format) to be updated',
+    ['-l', '--login'],
+    {
+        help: 'Inform the user login',
         required: true
+    }
+);
+usersUpdateCommand.addArgument(
+    ['-n', '--name'],
+    {
+        help: 'Inform the user name',
+        required: true
+    }
+);
+usersUpdateCommand.addArgument(
+    ['-e', '--email'],
+    {
+        help: 'Inform the user email'
+    }
+);
+usersUpdateCommand.addArgument(
+    ['-r', '--roles'],
+    {
+        help: 'Assign roles to the user. Available roles are: config and admin. Ex: users add --roles admin config',
+        nargs: '*'
     }
 );
 
