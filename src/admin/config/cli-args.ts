@@ -252,6 +252,7 @@ filterCommand.addArgument(
 filterCommand.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the filter file (JS format) to be added. Ex: -a filter1 ./filters/filter1.js',
+        nargs: 2
     }
 );
 
@@ -289,6 +290,7 @@ requestInterceptor.addArgument(
 requestInterceptor.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Request Interceptor file (JS format) to be added. Ex: -a interceptor1 ./interceptors/interceptor1.js',
+        nargs: 2
     }
 );
 
@@ -326,6 +328,7 @@ responseInterceptor.addArgument(
 responseInterceptor.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Response Interceptor file (JS format) to be added. Ex: -a interceptor1 ./interceptors/interceptor1.js',
+        nargs: 2
     }
 );
 
@@ -363,6 +366,7 @@ authStrategy.addArgument(
 authStrategy.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Auth Strategy file (JS format) to be added. Ex: -a strategy1 ./strategies/stragety1.js',
+        nargs: 2
     }
 );
 
@@ -437,6 +441,7 @@ throttlingKeyGenerator.addArgument(
 throttlingKeyGenerator.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Throttling Key Generator file (JS format) to be added. Ex: -a keyGen1 ./throttling/keyGen1.js',
+        nargs: 2
     }
 );
 
@@ -474,6 +479,7 @@ throttlingHandler.addArgument(
 throttlingHandler.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Throttling Handler file (JS format) to be added. Ex: -a handler1 ./throttling/handler1.js',
+        nargs: 2
     }
 );
 
@@ -511,6 +517,7 @@ throttlingSkip.addArgument(
 throttlingSkip.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Throttling Skip file (JS format) to be added. Ex: -a skip1 ./throttling/skip1.js',
+        nargs: 2
     }
 );
 
@@ -548,6 +555,7 @@ circuitbreaker.addArgument(
 circuitbreaker.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Circuitbreaker file (JS format) to be added. Ex: -a breaker1 ./circuitbreaker/breaker1.js',
+        nargs: 2
     }
 );
 
@@ -585,6 +593,7 @@ cors.addArgument(
 cors.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Cors file (JS format) to be added. Ex: -a handler1 ./cors/handler1.js',
+        nargs: 2
     }
 );
 
@@ -622,6 +631,7 @@ proxyRouter.addArgument(
 proxyRouter.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Proxy Router file (JS format) to be added. Ex: -a handler1 ./proxy/router/handler1.js',
+        nargs: 2
     }
 );
 
@@ -659,6 +669,7 @@ serviceDiscovery.addArgument(
 serviceDiscovery.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Service Discovery file (JS format) to be added. Ex: -a handler1 ./servicediscovery/handler1.js',
+        nargs: 2
     }
 );
 
@@ -695,6 +706,7 @@ serviceDiscoveryProvider.addArgument(
 serviceDiscoveryProvider.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Service Discovery Provider file (JS format) to be added. Ex: -a handler1 ./servicediscovery/provider/handler1.js',
+        nargs: 2
     }
 );
 
