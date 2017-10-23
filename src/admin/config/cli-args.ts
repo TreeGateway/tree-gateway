@@ -6,7 +6,7 @@ import { Configuration } from '../../configuration';
 const parser = new ArgumentParser({
     addHelp: true,
     description: 'Tree-Gateway Admin',
-    version: '1.1.8'
+    version: '1.1.10'
 });
 
 parser.addArgument(
@@ -404,6 +404,7 @@ authVerify.addArgument(
 authVerify.addArgument(
     ['-a', '--add'], {
         help: 'Inform the name and path to the Auth Verify file (JS format) to be added. Ex: -a verify1 ./verifiers/verify1.js',
+        nargs: 2
     }
 );
 
