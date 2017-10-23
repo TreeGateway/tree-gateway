@@ -24,7 +24,7 @@ export class ApisClient implements Apis {
                     if (response.status === 200) {
                         return resolve(response.body);
                     }
-                    reject(response.text);
+                    reject(new Error(response.text));
                 })
                 .catch(reject);
         });
@@ -37,7 +37,7 @@ export class ApisClient implements Apis {
                     if (response.status === 201) {
                         return resolve(response.headers['location'].substring(5));
                     }
-                    reject(response.text);
+                    reject(new Error(response.text));
                 })
                 .catch(reject);
         });
@@ -45,13 +45,16 @@ export class ApisClient implements Apis {
 
     updateApi(id: string, api: ApiConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            if (!id) {
+                return reject(new Error('Invalid API id. To update an API, you must provide a valid ID field'));
+            }
             api.id = id;
             this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
                     }
-                    reject(response.text);
+                    reject(new Error(response.text));
                 })
                 .catch(reject);
         });
@@ -59,12 +62,15 @@ export class ApisClient implements Apis {
 
     removeApi(id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            if (!id) {
+                return reject(new Error('Invalid API id. To remove an API, you must provide a valid ID'));
+            }
             this.swaggerClient.apis.APIs.APIRestRemoveApi({ id })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
                     }
-                    reject(response.text);
+                    reject(new Error(response.text));
                 })
                 .catch(reject);
         });
@@ -72,12 +78,15 @@ export class ApisClient implements Apis {
 
     getApi(id: string): Promise<ApiConfig> {
         return new Promise<ApiConfig>((resolve, reject) => {
+            if (!id) {
+                return reject(new Error('Invalid API id. To retrieve an API, you must provide a valid ID'));
+            }
             this.swaggerClient.apis.APIs.APIRestGetApi({ id })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
                     }
-                    reject(response.text);
+                    reject(new Error(response.text));
                 })
                 .catch(reject);
         });
