@@ -16,8 +16,7 @@ try {
                 database.disconnect();
             }).catch((err: any) => {
                 if (err && err.response && err.response.body && err.response.body.error) {
-                    const error: any = JSON.parse(err.response.body.error);
-                    console.error(`Error: ${error.entity.error}`);
+                    console.error(`Error: ${err.response.body.error}`);
                 } else {
                     console.error(`${JSON.stringify(err)}`);
                 }

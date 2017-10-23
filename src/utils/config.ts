@@ -8,7 +8,9 @@ export function getSwaggerHost(gateway: GatewayConfig, isTest?: boolean) {
     if (gateway.admin.apiDocs.host) {
         host = gateway.admin.apiDocs.host;
     } else {
-        host = isTest ? 'localhost' : os.hostname();
+        host = (gateway.admin.protocol.https ?
+            `${isTest ? 'localhost' : os.hostname()}:${gateway.admin.protocol.https.listenPort}` :
+            `${isTest ? 'localhost' : os.hostname()}:${gateway.admin.protocol.http.listenPort}`);
     }
     return host;
 }
