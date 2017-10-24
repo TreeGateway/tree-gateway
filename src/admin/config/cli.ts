@@ -15,13 +15,28 @@ try {
             .then(() => {
                 database.disconnect();
             }).catch((err: any) => {
+                let errorMessage;
                 if (err && err.response && err.response.body && err.response.body.error) {
-                    console.error(`Error: ${err.response.body.error}`);
+                    errorMessage = err.response.body.error;
                 } else if (err && err.message) {
-                    console.error(err.message);
+                    errorMessage = err.message;
+                } else if (err && err.entity) {
+                    errorMessage = err.entity;
                 } else {
-                    console.error(`${err}`);
+                    errorMessage = err;
                 }
+                try {
+                    errorMessage = JSON.parse(errorMessage);
+                    if (errorMessage.entity) {
+                        errorMessage = errorMessage.entity;
+                    } else if (errorMessage.message) {
+                        errorMessage = errorMessage.message;
+                    }
+                } catch(e) {
+                    // IGNORE
+                }
+
+                console.error(errorMessage);
                 database.disconnect();
                 process.exit(1);
             });
