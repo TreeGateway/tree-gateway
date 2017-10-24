@@ -99,13 +99,15 @@ export class Cli {
         return new Promise<void>((resolve, reject) => {
             const user: any = {
                 login: this.args.login,
-                name: this.args.name,
-                roles: []
             };
+            if (this.args.name) {
+                user.name = this.args.name;
+            }
             if (this.args.email) {
                 user.email = this.args.email;
             }
             if (this.args.roles) {
+                user.roles = [];
                 this.args.roles.forEach((role: string) => {
                     if (role === 'config' || role === 'admin') {
                         user.roles.push(role);
