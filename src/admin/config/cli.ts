@@ -17,8 +17,8 @@ try {
             }).catch((err: any) => {
                 if (err && err.response && err.response.body && err.response.body.error) {
                     console.error(`Error: ${err.response.body.error}`);
-                } else if (err && typeof err !== 'string') {
-                    console.error(`${JSON.stringify(err)}`);
+                } else if (err && err.message) {
+                    console.error(err.message);
                 } else {
                     console.error(`${err}`);
                 }
