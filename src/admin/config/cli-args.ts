@@ -152,7 +152,6 @@ usersUpdateCommand.addArgument(
     ['-n', '--name'],
     {
         help: 'Inform the user name',
-        required: true
     }
 );
 usersUpdateCommand.addArgument(

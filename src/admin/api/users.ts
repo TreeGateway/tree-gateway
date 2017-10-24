@@ -55,9 +55,17 @@ export class UsersRest {
     updateUser(@PathParam('login') login: string, user: UserData): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             user.login = login;
-            validateUser(user)
-                .then((validUser: UserData) => this.service.update(validUser))
-                .then(() => resolve())
+            this.service.get(login)
+                .then(dbUser => {
+                    if (!dbUser) {
+                        return reject(new Errors.NotFoundError(`Not Found: ${login}`));
+                    }
+                    user = _.defaultsDeep(user, dbUser);
+                    validateUser(user)
+                        .then((validUser: UserData) => this.service.update(validUser))
+                        .then(() => resolve())
+                        .catch(reject);
+                    })
                 .catch(reject);
         });
     }
