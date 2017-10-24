@@ -107,7 +107,6 @@ export class RedisApiService implements ApiService {
 
     remove(id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            // TODO: remove children
             this.database.redisClient.multi()
                 .hdel(`${Constants.APIS_PREFIX}`, id)
                 .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: Constants.ADMIN_API }))
