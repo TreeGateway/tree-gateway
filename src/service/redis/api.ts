@@ -62,7 +62,9 @@ export class RedisApiService implements ApiService {
 
     create(api: ApiConfig): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            api.id = uuid();
+            if (!api.id) {
+                api.id = uuid();
+            }
             this.ensureAPIConstraints(api)
                 .then(() =>
                     this.database.redisClient.multi()
@@ -87,7 +89,7 @@ export class RedisApiService implements ApiService {
             this.database.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists: number) => {
                     if (exists) {
-                        return reject(`Api ${api.id} already exists`);
+                        return reject(`Api ID ${api.id} already exists`);
                     }
                     return this.database.redisClient.hgetall(Constants.APIS_PREFIX);
                 }).then((apis: any) => {
