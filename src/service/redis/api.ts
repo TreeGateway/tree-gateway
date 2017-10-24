@@ -65,7 +65,7 @@ export class RedisApiService implements ApiService {
             if (!api.id) {
                 api.id = uuid();
             }
-            this.ensureAPIConstraints(api)
+            this.ensureAPICreateConstraints(api)
                 .then(() =>
                     this.database.redisClient.multi()
                         .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
@@ -84,7 +84,47 @@ export class RedisApiService implements ApiService {
         });
     }
 
-    private ensureAPIConstraints(api: ApiConfig): Promise<void> {
+    update(api: ApiConfig): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.ensureAPIUpdateConstraints(api)
+                .then(() =>
+                    this.database.redisClient.multi()
+                        .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
+                        .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: api.id }))
+                        .exec()
+                )
+                .then(() => {
+                    resolve();
+                })
+                .catch(error => {
+                    if (typeof error === 'string') {
+                        error = new ValidationError(error);
+                    }
+                    reject(error);
+                });
+        });
+    }
+
+    remove(id: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            // TODO: remove children
+            this.database.redisClient.multi()
+                .hdel(`${Constants.APIS_PREFIX}`, id)
+                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: Constants.ADMIN_API }))
+                .exec()
+                .then((count: number) => {
+                    // FIXME: multi() does not return count.
+                    if (count === 0) {
+                        throw new NotFoundError('Api not found.');
+                    }
+
+                    resolve();
+                })
+                .catch(reject);
+        });
+    }
+
+    private ensureAPICreateConstraints(api: ApiConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.database.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists: number) => {
@@ -107,42 +147,27 @@ export class RedisApiService implements ApiService {
         });
     }
 
-    update(api: ApiConfig): Promise<void> {
+    private ensureAPIUpdateConstraints(api: ApiConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.database.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists: number) => {
                     if (!exists) {
-                        throw new NotFoundError('Api not found.');
+                        throw new NotFoundError(`Api not found: ${api.id}.`);
                     }
-
-                    return this.database.redisClient.multi()
-                        .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                        .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: api.id }))
-                        .exec();
-                })
-                .then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
-    }
-
-    remove(id: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            // TODO: remove children
-            this.database.redisClient.multi()
-                .hdel(`${Constants.APIS_PREFIX}`, id)
-                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: Constants.ADMIN_API }))
-                .exec()
-                .then((count: number) => {
-                    // FIXME: multi() does not return count.
-                    if (count === 0) {
-                        throw new NotFoundError('Api not found.');
+                    return this.database.redisClient.hgetall(Constants.APIS_PREFIX);
+                }).then((apis: any) => {
+                    apis = Object.keys(apis).map((key: any) => JSON.parse(apis[key]));
+                    let existingApi = apis.find((a: ApiConfig) =>
+                        (a.name === api.name && a.version === api.version) && a.id !== api.id);
+                    if (existingApi) {
+                        return reject(`Can not update this api to ${api.name}:${api.version}. This name conflicts with another existing API`);
                     }
-
+                    existingApi = apis.find((a: ApiConfig) => a.path === api.path && a.id !== api.id);
+                    if (existingApi) {
+                        return reject(`Can not update this api. Path ${api.path} conflicts with another existing API`);
+                    }
                     resolve();
-                })
-                .catch(reject);
+                }).catch(reject);
         });
     }
 }

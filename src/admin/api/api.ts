@@ -1,6 +1,6 @@
 'use strict';
 
-import { Path, GET, POST, DELETE, PUT, PathParam, QueryParam, Errors, Return } from 'typescript-rest';
+import { Path, GET, POST, DELETE, PUT, PathParam, QueryParam, Return } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from '../../config/api';
 import { ApiService } from '../../service/api';
 import { Inject } from 'typescript-ioc';
@@ -26,9 +26,7 @@ export class APIRest {
             validateApiConfig(api)
                 .then(() => this.service.create(api))
                 .then((apiId) => resolve(new Return.NewResource<void>(`apis/${apiId}`)))
-                .catch(err => {
-                    reject(new Errors.ForbidenError(JSON.stringify(err)));
-                });
+                .catch(reject);
         });
     }
 
@@ -41,9 +39,7 @@ export class APIRest {
             validateApiConfig(api)
                 .then(() => this.service.update(api))
                 .then(() => resolve())
-                .catch(err => {
-                    reject(new Errors.ForbidenError(JSON.stringify(err)));
-                });
+                .catch(reject);
         });
     }
 
