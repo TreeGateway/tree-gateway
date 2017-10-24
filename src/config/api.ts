@@ -25,7 +25,7 @@ export interface ApiConfig {
     /**
      * The API version. More than one version can be published for the same API.
      */
-    version: string;
+    version: string | number;
     /**
      * An optional description for API.
      */
@@ -102,7 +102,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     path: Joi.string().regex(/^[a-z\-\/]+$/i).required(),
     proxy: proxyValidatorSchema.required(),
     throttling: Joi.array().items(throttlingConfigValidatorSchema),
-    version: Joi.string().required()
+    version: Joi.alternatives(Joi.string(), Joi.number()).required()
 });
 
 export function validateApiConfig(apiConfig: ApiConfig) {
