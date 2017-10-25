@@ -908,12 +908,24 @@ export class Cli {
                     })
                     .catch(reject);
             } else if (this.args.add) {
+                let savedApi: ApiConfig;
                 this.loadConfigObject(this.args.add)
-                    .then((api: ApiConfig) => this.sdk.apis.addApi(api))
+                    .then((api: ApiConfig) => {
+                        savedApi = api;
+                        return this.sdk.apis.addApi(api);
+                    })
                     .then(apiId => {
                         console.info(`API created. ID: ${apiId}`);
-                        resolve();
+                        if (savedApi.id !== apiId) {
+                            savedApi.id = apiId;
+                            this.updateApiConfig(this.args.add, savedApi)
+                                .then(resolve)
+                                .catch(reject);
+                        } else {
+                            resolve();
+                        }
                     })
+                    .then(resolve)
                     .catch(reject);
             } else if (this.args.update) {
                 this.loadConfigObject(this.args.update)
@@ -986,6 +998,17 @@ export class Cli {
                 resolve(YAML.load(fileName));
             } else {
                 fs.readJSONAsync(fileName).then(resolve).catch(reject);
+            }
+        });
+    }
+
+    private updateApiConfig(fileName: string, api: ApiConfig): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            const nameLowerCase = fileName.toLowerCase();
+            if (nameLowerCase.endsWith('.yml') || nameLowerCase.endsWith('.yaml')) {
+                fs.writeFileAsync(fileName, YAML.stringify(api, 15)).then(resolve).catch(reject);
+            } else {
+                fs.writeJSONAsync(fileName, api).then(resolve).catch(reject);
             }
         });
     }
