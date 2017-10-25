@@ -107,7 +107,7 @@
     "@types/ioredis": "0.0.25",
     "@types/joi": "^9.0.32",
     "@types/jsonwebtoken": "^7.2.0",
-    "@types/lodash": "^4.14.78",
+    "@types/lodash": "4.14.78",
     "@types/mocha": "^2.2.41",
     "@types/multer": "0.0.32",
     "@types/on-headers": "^2.1.29",
