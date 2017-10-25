@@ -67,6 +67,9 @@ export class ServerCache {
         result.push(`var send = ${res}.send.bind(${res});`);
         result.push(`${res}.send = function (body) {`);
         result.push(`var ret = send(body);`);
+        result.push(`if ( !body ) {`);
+        result.push(`body = '';`);
+        result.push(`}`);
         if (serverCache.binary) {
             result.push(`body = new Buffer(body).toString("base64");`);
         }
@@ -74,7 +77,7 @@ export class ServerCache {
         result.push(`return ret;`);
         result.push(`}`);
 
-        result.push(`if ( ${res}.statusCode >= 200 && ${res}.statusCode < 300) {`);
+        result.push(`if ((${res}.statusCode >= 200 && ${res}.statusCode < 300) || (${res}.statusCode === 304)){`);
         const cacheTime = getMilisecondsInterval(serverCache.cacheTime);
         result.push(`ServerCache.cacheStore.set(${req}.originalUrl, {`);
         result.push(`content: body,`);
