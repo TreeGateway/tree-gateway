@@ -28,12 +28,12 @@ export interface Member {
 
 const memberValidatorSchema = Joi.object().keys({
     method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')),
-    path: Joi.array().items(Joi.string().regex(/^[a-z\-\/]+$/i)),
-    protocol: Joi.array().items(Joi.string().alphanum())
+    path: Joi.array().items(Joi.string().regex(/^[A-Za-z\-\/0-9_\.]+$/i)),
+    protocol: Joi.array().items(Joi.string())
 }).min(1);
 
 export const groupValidatorSchema = Joi.object().keys({
     description: Joi.string(),
-    id: Joi.string().alphanum().min(3).max(30).required(),
+    id: Joi.string().min(1).required(),
     member: Joi.array().items(memberValidatorSchema).required()
 });
