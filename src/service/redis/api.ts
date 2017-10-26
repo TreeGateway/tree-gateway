@@ -84,9 +84,12 @@ export class RedisApiService implements ApiService {
         });
     }
 
-    update(api: ApiConfig): Promise<void> {
+    update(api: ApiConfig, upsert?: boolean): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.ensureAPIUpdateConstraints(api)
+            if (upsert && !api.id) {
+                api.id = uuid();
+            }
+            this.ensureAPIUpdateConstraints(api, upsert)
                 .then(() =>
                     this.database.redisClient.multi()
                         .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
@@ -146,11 +149,11 @@ export class RedisApiService implements ApiService {
         });
     }
 
-    private ensureAPIUpdateConstraints(api: ApiConfig): Promise<void> {
+    private ensureAPIUpdateConstraints(api: ApiConfig, upsert?: boolean): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.database.redisClient.hexists(`${Constants.APIS_PREFIX}`, api.id)
                 .then((exists: number) => {
-                    if (!exists) {
+                    if (!upsert && !exists) {
                         throw new NotFoundError(`Api not found: ${api.id}.`);
                     }
                     return this.database.redisClient.hgetall(Constants.APIS_PREFIX);
