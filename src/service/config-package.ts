@@ -47,8 +47,14 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
             const result: ConfigPackage = {};
             Promise.all([this.apiService.list(), this.gatewayService.get()])
                 .then(data => {
-                    result.apis = data[0];
-                    result.gateway = data[1];
+                    if (data && data.length) {
+                        if (data[0]) {
+                            result.apis = data[0];
+                        }
+                        if (data.length > 1 && data[1]) {
+                            result.gateway = data[1];
+                        }
+                    }
                     return resolve(result);
                 })
                 .catch(reject);
