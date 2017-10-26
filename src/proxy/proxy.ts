@@ -188,12 +188,16 @@ export class ApiProxy {
                                     this.logger.error();
                                 }
                                 delete res['__data'];
-                                res.send(body);
+                                if (!res.finished) {
+                                    res.send(body);
+                                }
                             });
                     } else {
                         const body = res.__data.toBuffer();
                         delete res['__data'];
-                        res.send(body);
+                        if (!res.finished) {
+                            res.send(body);
+                        }
                     }
                 }
             });
