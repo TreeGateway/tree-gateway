@@ -82,7 +82,27 @@ gatewayCommand.addArgument(
     ['-g', '--get'], {
         constant: true,
         defaultValue: false,
-        help: 'Retrieve the api config file (YAML format, by default). Pass the return format optionally. Ex gateway -g json',
+        help: 'Retrieve the gateway config file (YAML format, by default). Pass the return format optionally. Ex gateway -g json',
+        nargs: '?'
+    }
+);
+
+const configCommand = commands.addParser('config', {
+    addHelp: true,
+    help: 'Package all Gateway configurations'
+});
+
+configCommand.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the path to the gateway package config file (JSON or YAML format) to be updated',
+    }
+);
+
+configCommand.addArgument(
+    ['-g', '--get'], {
+        constant: true,
+        defaultValue: false,
+        help: 'Export all Gateway config file (YAML format, by default). Pass the return format optionally. Ex gateway -g json',
         nargs: '?'
     }
 );

@@ -4,6 +4,7 @@ import { SDK } from './sdk';
 import { ApiConfig } from '../../config/api';
 import { UserData } from '../../config/users';
 import { GatewayConfig } from '../../config/gateway';
+import { ConfigPackage } from '../../config/config-package';
 import { Configuration } from '../../configuration';
 import { Inject } from 'typescript-ioc';
 import * as fs from 'fs-extra-promise';
@@ -37,6 +38,8 @@ export class Cli {
                 return this.processApis();
             case 'gateway':
                 return this.processGateway();
+            case 'config':
+                return this.processConfig();
             case 'users':
                 return this.processUsers();
             case 'middleware':
@@ -263,6 +266,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -315,6 +320,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -367,6 +374,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -419,6 +428,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -471,6 +482,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -523,6 +536,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -575,6 +590,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -627,6 +644,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -679,6 +698,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -731,6 +752,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -783,6 +806,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -835,6 +860,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -887,6 +914,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -955,6 +984,8 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
@@ -987,6 +1018,35 @@ export class Cli {
                         resolve();
                     })
                     .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
+            }
+        });
+    }
+
+    private processConfig(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.args.update) {
+                this.loadConfigObject(this.args.update)
+                    .then((config: ConfigPackage) => this.sdk.config.set(config))
+                    .then(() => {
+                        console.info(`Gateway configurations imported`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.get) {
+                this.sdk.config.get()
+                    .then(config => {
+                        if (this.args.get === 'json') {
+                            console.info(JSON.stringify(config, null, 4));
+                        } else {
+                            console.info(YAML.stringify(config, 15));
+                        }
+                        resolve();
+                    })
+                    .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
             }
         });
     }
