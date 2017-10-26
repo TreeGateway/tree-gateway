@@ -45,21 +45,19 @@ export class RedisStats extends StatsHandler {
      * Record a hit for the specified stats key
      */
     registerOccurrence(key: string, increment: number, ...extra: string[]) {
-        setTimeout(() => {
+        setImmediate(() => {
             const keyTimestamp = this.getRoundedTime(this.ttl);
             const tmpKey = this.getKey(key, keyTimestamp, extra);
             const hitTimestamp = this.getRoundedTime(this.duration);
+            const syncObj = { key: tmpKey, duration: this.duration, ttl: this.ttl };
 
-            this.database.redisClient.multi()
-                .hincrby(tmpKey, hitTimestamp, increment)
-                .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
-                .sadd(Constants.STATS_SYNC, JSON.stringify({ key: tmpKey, duration: this.duration, ttl: this.ttl }))
-                .exec((err, res) => {
-                    if (err) {
-                        this.logger.error(`Error on stats recording: ${err}`);
-                    }
-                });
-        }, 0);
+            this.database.redisClient.sadd(Constants.STATS_SYNC, JSON.stringify(syncObj))
+                .then(() => this.database.redisClient.multi()
+                                .hincrby(tmpKey, hitTimestamp, increment)
+                                .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
+                                .exec())
+                .catch((err: Error) => this.logger.error(`Error on stats recording: ${err}`));
+        });
     }
 
     /**
