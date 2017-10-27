@@ -22,6 +22,7 @@ import { StatsHandler } from './stats/stats';
 export class Configuration extends EventEmitter {
     static gatewayConfigFile: string;
     static resetBeforeStart: boolean;
+    static instances: number;
 
     private config: ServerConfig;
     private isLoaded: boolean;

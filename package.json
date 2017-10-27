@@ -18,8 +18,8 @@
   "typings": "./dist/tree-gateway.d.ts",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/app.js",
-    "start:cluster": "node dist/app-cluster.js",
+    "start": "node dist/index.js",
+    "start:cluster": "node dist/index.js -i 0",
     "build": "npm run clean && tsc && npm run swagger && copyfiles -u 1 src/*.yaml dist",
     "clean": "rimraf dist",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
@@ -140,7 +140,7 @@
     "url": "https://github.com/Leanty/tree-gateway"
   },
   "bin": {
-    "treeGateway": "dist/app-cluster.js",
+    "treeGateway": "dist/index.js",
     "treeGatewayConfig": "dist/admin/config/cli.js"
   },
   "bugs": {
