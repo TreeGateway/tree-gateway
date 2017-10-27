@@ -52,11 +52,7 @@ export class ServerCache {
                 result.push(`${res}.set('${header}', entry.header['${header}']);`);
             });
         }
-        if (serverCache.binary) {
-            result.push(`${res}.send(new Buffer(entry.content, "base64"));`);
-        } else {
-            result.push(`${res}.send(entry.content);`);
-        }
+        result.push(`${res}.send(new Buffer(entry.content, "base64"));`);
         result.push(`}`);
         result.push(`else {`);
         // cache miss
@@ -70,9 +66,7 @@ export class ServerCache {
         result.push(`if ( !body ) {`);
         result.push(`body = '';`);
         result.push(`}`);
-        if (serverCache.binary) {
-            result.push(`body = new Buffer(body).toString("base64");`);
-        }
+        result.push(`body = new Buffer(body).toString("base64");`);
         result.push(`if ( typeof body !== "string" ) {`);
         result.push(`return ret;`);
         result.push(`}`);

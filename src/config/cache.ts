@@ -66,10 +66,6 @@ export interface ServerCacheConfig {
      */
     cacheTime: string | number;
     /**
-     * Should be true if the cache content is file or a binary content.
-     */
-    binary?: boolean;
-    /**
      * A list of response received headers that also need to be saved by cache system, to reproduce them
      * to clients.
      */
@@ -93,7 +89,7 @@ const clientCacheValidatorSchema = Joi.object().keys({
 });
 
 const serverCacheValidatorSchema = Joi.object().keys({
-    binary: Joi.boolean(),
+    binary: Joi.boolean(),// TODO remove on next major release
     cacheTime: Joi.alternatives([Joi.string(), Joi.number().positive()]).required(),
     disableStats: Joi.boolean(),
     preserveHeaders: Joi.array().items(Joi.string()),

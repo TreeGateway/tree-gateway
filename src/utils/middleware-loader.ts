@@ -19,6 +19,7 @@ export class MiddlewareLoader {
             'ipFilter': '../filter/filters/ipFilter'
         },
         'interceptor/request': {
+            'mustache': '../proxy/interceptors/mustache',
             'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer'
         },
         'interceptor/response': {

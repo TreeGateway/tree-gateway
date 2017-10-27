@@ -108,9 +108,15 @@ export interface Proxy {
     limit?: string;
     /**
      * Allows you to control when to parse the request body. Just enable it if you need to access the ```request.body```
+     * inside a proxy middleware, like a ```filter``` or ```interceptor```. You can inform the expected
+     * types of body you are expecting. [json, urlencoded, raw]
+     */
+    parseReqBody?: string | Array<string> | boolean;
+    /**
+     * Allows you to control when to parse the cookies. Just enable it if you need to access the ```request.cookies```
      * inside a proxy middleware, like a ```filter``` or ```interceptor```.
      */
-    parseReqBody?: boolean;
+    parseCookies?: boolean;
 }
 
 /**
@@ -311,7 +317,8 @@ export const proxyValidatorSchema = Joi.object().keys({
     httpAgent: httpAgentSchema,
     interceptor: interceptorsSchema,
     limit: Joi.string(),
-    parseReqBody: Joi.boolean(),
+    parseCookies: Joi.boolean(),
+    parseReqBody: Joi.alternatives([Joi.string().valid('json', 'urlencoded', 'raw'), Joi.array().items(Joi.string().valid('json', 'urlencoded', 'raw')), Joi.boolean()]),
     preserveHostHdr: Joi.boolean(),
     statsConfig: statsConfigValidatorSchema,
     supressViaHeader: Joi.boolean(),
