@@ -17,11 +17,26 @@ export interface ConfigPackage {
      * Configurations for apis.
      */
     apis?: Array<ApiConfig>;
+    /**
+     * Configurations for middlewares.
+     */
+    middlewares?: Array<MiddlewareConfig>;
+}
+
+export interface MiddlewareConfig {
+    middleware: string;
+    name: string;
+    content: string;
 }
 
 export let configPackageValidatorSchema = Joi.object().keys({
     apis: Joi.array().items(apiConfigValidatorSchema),
-    gateway: gatewayConfigValidatorSchema
+    gateway: gatewayConfigValidatorSchema,
+    middlewares: Joi.array().items(Joi.object().keys({
+        content: Joi.string().required(),
+        middleware: Joi.string().required(),
+        name: Joi.string().required()
+    }))
 });
 
 export function validateConfigPackage(configPackage: ConfigPackage) {

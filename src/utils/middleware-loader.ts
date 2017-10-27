@@ -19,11 +19,13 @@ export class MiddlewareLoader {
             'ipFilter': '../filter/filters/ipFilter'
         },
         'interceptor/request': {
-            'mustache': '../proxy/interceptors/mustache',
-            'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer'
+            'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer',
+            'requestHeaders': '../proxy/interceptors/requestHeaders',
+            'requestMustache': '../proxy/interceptors/requestMustache'
         },
         'interceptor/response': {
-            'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer'
+            'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer',
+            'responseHeaders': '../proxy/interceptors/responseHeaders'
         },
         'proxy/router': {
             'header': '../proxy/routers/header',
