@@ -17,6 +17,15 @@ parser.addArgument(
 );
 
 parser.addArgument(
+    ['-i', '--instances'],
+    {
+        defaultValue: 1,
+        type: 'int',
+        help: 'The number of instances to start (0 = all cpus cores)'
+    }
+);
+
+parser.addArgument(
     ['-r', '--reset'],
     {
         constant: true,
@@ -30,3 +39,4 @@ const parameters = parser.parseArgs();
 
 Configuration.gatewayConfigFile = parameters.config;
 Configuration.resetBeforeStart = parameters.reset;
+Configuration.instances = parameters.instances;
