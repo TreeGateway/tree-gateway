@@ -24,8 +24,8 @@ function validateResponseHeadersConfig(config: ResponseHeadersConfig) {
 
 module.exports = function(config: ResponseHeadersConfig) {
     validateResponseHeadersConfig(config);
-    return (req: any) => {
-        const result: any = {};
+    return (body: any, headers: any, request: any) => {
+        const result: any =  {body: body };
         if (config.removeHeaders && config.removeHeaders.length) {
             result.removeHeaders = config.removeHeaders;
         }

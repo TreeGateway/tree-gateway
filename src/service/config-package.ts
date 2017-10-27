@@ -28,11 +28,11 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
             if (config.middlewares) {
                 Promise.all(config.middlewares.map(mid =>
                     this.middlewareService.save(mid.middleware, mid.name, new Buffer(mid.content))))
-                    .then(() => this.setApisAngGateway(config))
+                    .then(() => this.setApisAndGateway(config))
                     .then(resolve)
                     .catch(reject);
             } else {
-                this.setApisAngGateway(config)
+                this.setApisAndGateway(config)
                 .then(resolve)
                 .catch(reject);
             }
@@ -124,7 +124,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
         });
     }
 
-    private setApisAngGateway(config: ConfigPackage): Promise<void> {
+    private setApisAndGateway(config: ConfigPackage): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             let promises: Array<Promise<void>>;
             if (config.apis) {
