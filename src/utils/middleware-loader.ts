@@ -21,11 +21,13 @@ export class MiddlewareLoader {
         'interceptor/request': {
             'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer',
             'requestHeaders': '../proxy/interceptors/requestHeaders',
-            'requestMustache': '../proxy/interceptors/requestMustache'
+            'requestMustache': '../proxy/interceptors/requestMustache',
+            'requestXml': '../proxy/interceptors/requestXml'
         },
         'interceptor/response': {
             'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer',
-            'responseHeaders': '../proxy/interceptors/responseHeaders'
+            'responseHeaders': '../proxy/interceptors/responseHeaders',
+            'responseXml': '../proxy/interceptors/responseXml'
         },
         'proxy/router': {
             'header': '../proxy/routers/header',

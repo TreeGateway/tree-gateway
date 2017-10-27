@@ -9,7 +9,10 @@ module.exports = function(config: JSONAtaExpression) {
     return (req: any) => {
         const result: any = {};
         try {
-            const body = JSON.parse(req.body);
+            let body = req.body;
+            if (typeof body === 'string') {
+                body = JSON.parse(body);
+            }
             result.body = expression.evaluate(body);
         } catch (e) {
             result.body = '';

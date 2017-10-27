@@ -207,7 +207,7 @@ export class ApiProxy {
                             },
                             (err: any, body: any) => {
                                 if (err) {
-                                    this.logger.error();
+                                    this.logger.error(err);
                                 }
                                 delete res['__data'];
                                 if (!res.finished) {

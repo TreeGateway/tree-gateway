@@ -9,7 +9,10 @@ module.exports = function(config: JSONAtaExpression) {
     return (body: any, headers: any, request: any) => {
         return new Promise<ResponseInterceptorResult>((resolve, reject) => {
             try {
-                const bodyData = JSON.parse(body);
+                let bodyData = body;
+                if (typeof bodyData === 'string') {
+                    bodyData = JSON.parse(bodyData);
+                }
                 const result = expression.evaluate(bodyData);
                 resolve({ body: result });
             } catch (e) {
