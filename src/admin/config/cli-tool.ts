@@ -291,7 +291,7 @@ export class Cli {
             } else if (this.args.remove) {
                 this.sdk.middleware.removeRequestInterceptor(this.args.remove)
                     .then(() => {
-                        console.info(`Filter removed`);
+                        console.info(`Interceptor removed`);
                         resolve();
                     })
                     .catch(reject);
@@ -300,7 +300,7 @@ export class Cli {
                 const fileName = this.args.update[1];
                 this.sdk.middleware.updateRequestInterceptor(name, fileName)
                     .then(() => {
-                        console.info(`Filter updated`);
+                        console.info(`Interceptor updated`);
                         resolve();
                     })
                     .catch(reject);
@@ -309,7 +309,7 @@ export class Cli {
                 const fileName = this.args.add[1];
                 this.sdk.middleware.addRequestInterceptor(name, fileName)
                     .then(() => {
-                        console.info(`Filter added`);
+                        console.info(`Interceptor added`);
                         resolve();
                     })
                     .catch(reject);
