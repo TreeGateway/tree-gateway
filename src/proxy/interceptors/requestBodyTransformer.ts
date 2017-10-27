@@ -10,8 +10,8 @@ module.exports = function(config: JSONAtaExpression) {
         const result: any = {};
         try {
             let body = req.body;
-            if (typeof body === 'string') {
-                body = JSON.parse(body);
+            if (typeof body === 'string' || Buffer.isBuffer(req.body)) {
+                body = JSON.parse(body.toString());
             }
             result.body = expression.evaluate(body);
         } catch (e) {

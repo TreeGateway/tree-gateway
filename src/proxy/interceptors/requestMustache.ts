@@ -28,8 +28,8 @@ module.exports = function(config: MustacheConfig) {
         const result: any = {};
         try {
             let body = req.body;
-            if (req.body && typeof req.body === 'string') {
-                body = JSON.parse(req.body);
+            if (req.body && (typeof req.body === 'string') || Buffer.isBuffer(req.body)) {
+                body = JSON.parse(req.body.toString());
             }
             result.body = mustache.render(template, body || {});
         } catch (e) {
