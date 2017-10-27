@@ -12,6 +12,8 @@ import * as _ from 'lodash';
 import * as getRawBody from 'raw-body';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import { ServiceDiscovery } from '../servicediscovery/service-discovery';
+import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../lib/http-proxy');
@@ -32,8 +34,11 @@ export class ApiProxy {
      * Configure a proxy for a given API
      */
     proxy(apiRouter: express.Router, api: ApiConfig) {
+        if (api.proxy.parseCookies) {
+            apiRouter.use(cookieParser());
+        }
         if (api.proxy.parseReqBody) {
-            apiRouter.use(this.configureBodyParser(api));
+            this.configureBodyParser(api, apiRouter);
         }
         this.buildRouterMiddleware(apiRouter, api);
         this.buildServiceDiscoveryMiddleware(apiRouter, api);
@@ -92,16 +97,33 @@ export class ApiProxy {
         return new agentKeepAlive(agentOptions);
     }
 
-    private configureBodyParser(api: ApiConfig) {
+    private configureBodyParser(api: ApiConfig, apiRouter: express.Router) {
         const limit = api.proxy.limit || '1mb';
-        return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            this.maybeParseBody(req, limit)
-                .then((buf: any) => {
-                    req.body = buf;
-                    next();
-                })
-                .catch((err: any) => next(err));
-        };
+        let parsers: Array<string>;
+        if (Array.isArray(api.proxy.parseReqBody)) {
+            parsers = <Array<string>>api.proxy.parseReqBody;
+        } else {
+            parsers = [`${api.proxy.parseReqBody}`];
+        }
+        parsers.forEach((parser: string) => {
+            if (parser === 'json') {
+                apiRouter.use(bodyParser.json({limit: limit}));
+            } else if (parser === 'urlencoded') {
+                apiRouter.use(bodyParser.urlencoded({
+                    extended: true,
+                    limit: limit
+                }));
+            } else {
+                apiRouter.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+                    this.maybeParseRawBody(req, limit)
+                        .then((buf: any) => {
+                            req.body = buf;
+                            next();
+                        })
+                        .catch((err: any) => next(err));
+                });
+            }
+        });
     }
 
     private configureProxy(api: ApiConfig) {
@@ -203,7 +225,7 @@ export class ApiProxy {
             });
     }
 
-    private maybeParseBody(req: express.Request, limit: string) {
+    private maybeParseRawBody(req: express.Request, limit: string) {
         if (req.body) {
             return Promise.resolve(req.body);
         } else {
