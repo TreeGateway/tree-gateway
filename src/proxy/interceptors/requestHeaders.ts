@@ -1,14 +1,17 @@
 'use strict';
 
 import * as Joi from 'joi';
+import * as _ from 'lodash';
 import { ValidationError } from '../../error/errors';
 
 interface RequestHeadersConfig {
-    headers: any;
+    headers?: any;
+    removeHeaders?: Array<string>;
 }
 
 const requestHeadersSchema = Joi.object().keys({
-    headers: Joi.object().unknown(true)
+    headers: Joi.object().unknown(true),
+    removeHeaders: Joi.array().items(Joi.string())
 });
 
 function validateRequestHeadersConfig(config: RequestHeadersConfig) {
@@ -22,9 +25,17 @@ function validateRequestHeadersConfig(config: RequestHeadersConfig) {
 
 module.exports = function(config: RequestHeadersConfig) {
     validateRequestHeadersConfig(config);
-    const headers = config.headers;
-    return (req: any) => {
-        const h = Object.assign(req.headers, headers);
+    if (config.removeHeaders) {
+        config.removeHeaders = config.removeHeaders.map(header => header.toLowerCase());
+    }
+return (req: any) => {
+        let h = req.headers;
+        if (config.headers) {
+            h = Object.assign(h, config.headers);
+        }
+        if (config.removeHeaders) {
+            h = _.omit(h, ...config.removeHeaders);
+        }
         return { headers: h };
     };
 };
