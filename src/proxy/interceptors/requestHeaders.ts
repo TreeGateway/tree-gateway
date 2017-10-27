@@ -36,8 +36,6 @@ return (req: any) => {
         if (config.removeHeaders) {
             h = _.omit(h, ...config.removeHeaders);
         }
-        // tslint:disable-next-line:no-console
-        console.log({ headers: h });
         return { headers: h };
     };
 };
