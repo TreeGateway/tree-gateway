@@ -316,7 +316,6 @@ describe('Gateway Admin Tasks', () => {
     describe('gateway SDK', () => {
         it('should be able to set configuration for gateway', () => {
             const newConfig = fs.readJSONSync(path.join(process.cwd(), 'test/data/tree-gateway.json')).gateway;
-            newConfig.logger.level = 'debug';
             return new Promise((resolve, reject) => {
                 sdk.gateway.updateConfig(newConfig)
                     .then(() => {

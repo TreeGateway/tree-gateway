@@ -90,7 +90,7 @@ export class Configuration extends EventEmitter {
             }
         }
         if (!config) {
-            config = this.loadDefaultConfig();
+            config = this.loadDefaultServerConfig();
         }
         let serverConfig: ServerConfig = validateServerConfig(config);
         serverConfig = _.defaults(serverConfig, {
@@ -116,20 +116,22 @@ export class Configuration extends EventEmitter {
         this.config = serverConfig;
         this.loadContainerConfigurations();
         return new Promise<void>((resolve, reject) => {
-            if (this.config.gateway && this.config.gateway.protocol) {
-                if (this.config.gateway.protocol.https) {
-                    if (_.startsWith(this.config.gateway.protocol.https.privateKey, '.')) {
-                        this.config.gateway.protocol.https.privateKey =
-                            path.join(this.config.rootPath, this.config.gateway.protocol.https.privateKey);
-                    }
-                    if (_.startsWith(this.config.gateway.protocol.https.certificate, '.')) {
-                        this.config.gateway.protocol.https.certificate =
-                            path.join(this.config.rootPath, this.config.gateway.protocol.https.certificate);
-                    }
-                }
-            }
             this.loadDatabaseConfig()
-                .then(resolve)
+                .then(() => {
+                    if (this.config.gateway && this.config.gateway.protocol) {
+                        if (this.config.gateway.protocol.https) {
+                            if (_.startsWith(this.config.gateway.protocol.https.privateKey, '.')) {
+                                this.config.gateway.protocol.https.privateKey =
+                                    path.join(this.config.rootPath, this.config.gateway.protocol.https.privateKey);
+                            }
+                            if (_.startsWith(this.config.gateway.protocol.https.certificate, '.')) {
+                                this.config.gateway.protocol.https.certificate =
+                                    path.join(this.config.rootPath, this.config.gateway.protocol.https.certificate);
+                            }
+                        }
+                    }
+                    resolve();
+                })
                 .catch(reject);
         });
     }
@@ -194,8 +196,14 @@ export class Configuration extends EventEmitter {
                         } catch (e) {
                             return reject(e);
                         }
+                    } else if (!this.config.gateway) {
+                        this.config.gateway = this.loadDefaultGatewayConfig();
+                        gatewayService.save(this.config.gateway)
+                            .then(resolve)
+                            .catch(reject);
+                    } else {
+                        resolve();
                     }
-                    resolve();
                 })
                 .catch(reject);
         });
@@ -221,12 +229,18 @@ export class Configuration extends EventEmitter {
         return fileName;
     }
 
-    private loadDefaultConfig() {
+    private loadDefaultServerConfig(): ServerConfig {
         const filePath = path.join(process.cwd(), 'tree-gateway.yaml');
-        console.info(`No gateway configuration file was found. Using default configuration and saving it on '${filePath}'`);
-        const config = YAML.load(require.resolve('./tree-gateway-default.yaml'));
-        config.gateway.admin.userService.jwtSecret = uuid();
+        console.info(`No server configuration file was found. Using default configuration and saving it on '${filePath}'`);
+        const config: ServerConfig = YAML.load(require.resolve('./tree-gateway-server-default.yaml'));
         fs.writeFileSync(filePath, YAML.stringify(config, 15));
         return config;
+    }
+
+    private loadDefaultGatewayConfig(): GatewayConfig {
+        const gateway: GatewayConfig = YAML.load(require.resolve('./tree-gateway-default.yaml'));
+        console.info(`No configuration for gateway was found. Using default configuration and saving it on database.`);
+        gateway.admin.userService.jwtSecret = uuid();
+        return gateway;
     }
 }
