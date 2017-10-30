@@ -2,11 +2,12 @@
 
 import { ArgumentParser } from 'argparse';
 import { Configuration } from '../../configuration';
+const packageJson = require('../../../package.json');
 
 const parser = new ArgumentParser({
     addHelp: true,
     description: 'Tree-Gateway Admin',
-    version: '1.1.12'
+    version: packageJson.version
 });
 
 parser.addArgument(

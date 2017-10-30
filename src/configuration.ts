@@ -4,6 +4,7 @@ import * as fs from 'fs-extra-promise';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as YAML from 'yamljs';
+import * as uuid from 'uuid';
 import { EventEmitter } from 'events';
 import { ServerConfig, GatewayConfig, validateServerConfig, validateGatewayConfig } from './config/gateway';
 import { DatabaseConfig } from './config/database';
@@ -224,6 +225,7 @@ export class Configuration extends EventEmitter {
         const filePath = path.join(process.cwd(), 'tree-gateway.yaml');
         console.info(`No gateway configuration file was found. Using default configuration and saving it on '${filePath}'`);
         const config = YAML.load(require.resolve('./tree-gateway-default.yaml'));
+        config.gateway.admin.userService.jwtSecret = uuid();
         fs.writeFileSync(filePath, YAML.stringify(config, 15));
         return config;
     }
