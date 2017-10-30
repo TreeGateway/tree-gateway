@@ -193,6 +193,7 @@ export class Configuration extends EventEmitter {
                             if (!this.config.gateway.protocol) {
                                 return reject(new Error('GatewayConfig protocol is required.'));
                             }
+                            resolve();
                         } catch (e) {
                             return reject(e);
                         }
