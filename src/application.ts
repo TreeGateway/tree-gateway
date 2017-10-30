@@ -24,7 +24,7 @@ export class Application {
             });
     }
 
-    cluster(instances: number){
+    cluster(instances: number) {
         // tslint:disable:no-console
         if (cluster.isMaster) {
             const n = instances < 1 ? os.cpus().length : instances;
@@ -59,31 +59,41 @@ export class Application {
         });
     }
 
-    private startGateway() : Promise<void> {
+    private startGateway(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const config: Configuration = Container.get(Configuration);
-            config.on('load', () => {
-                const gateway: Gateway = Container.get(Gateway);
-                const database: Database = Container.get(Database);
-                if (gateway.running) {
-                    return resolve();
-                }
-                gateway.start()
-                    .then(() => gateway.startAdmin())
-                    .then(resolve)
-                    .catch(reject);
+            if (config.loaded) {
+                this.runGateway().then(resolve).catch(reject);
+            } else {
+                config.on('load', () => {
+                    this.runGateway().then(resolve).catch(reject);
+                });
+            }
+        });
+    }
 
-                function graceful() {
-                    gateway.stopAdmin()
-                        .then(() => gateway.stop())
-                        .then(() => database.disconnect())
-                        .then(() => process.exit(0));
-                }
+    private runGateway() {
+        return new Promise<void>((resolve, reject) => {
+            const gateway: Gateway = Container.get(Gateway);
+            const database: Database = Container.get(Database);
+            if (gateway.running) {
+                return resolve();
+            }
+            gateway.start()
+                .then(() => gateway.startAdmin())
+                .then(resolve)
+                .catch(reject);
 
-                // Stop graceful
-                process.on('SIGTERM', graceful);
-                process.on('SIGINT', graceful);
-            });
+            function graceful() {
+                gateway.stopAdmin()
+                    .then(() => gateway.stop())
+                    .then(() => database.disconnect())
+                    .then(() => process.exit(0));
+            }
+
+            // Stop graceful
+            process.on('SIGTERM', graceful);
+            process.on('SIGINT', graceful);
         });
     }
 }
