@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "1.1.12",
+  "version": "1.1.13",
   "homepage": "http://treegateway.org",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
@@ -90,7 +90,7 @@
     "swagger-client": "^3.3.0",
     "typescript-ioc": "^1.0.2",
     "typescript-rest": "^1.1.2",
-    "typescript-rest-swagger": "0.0.8",
+    "typescript-rest-swagger": "0.0.12",
     "url": "^0.11.0",
     "uuid": "^3.1.0",
     "weighted": "^0.3.0",
