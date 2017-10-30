@@ -16,6 +16,18 @@ gateway:
         protocol:
             http:
                 listenPort: 8011
+        accessLogger:
+            msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
+            console:
+                timestamp: true
+                colorize: true
+            file:
+                timestamp: true
+                json: false
+                prettyPrint: true
+                outputDir: ./logs
+        userService:
+            jwtSecret: secret
         filter:
             - name: ipFilter 
               options: 
@@ -25,10 +37,28 @@ gateway:
                 statusCode: 403
                 message: IP Filtered
         apiDocs:
+            path: api-docs
             host: localhost:8011
 
     logger:
-        level: 'info'
+        level: info
+        console:
+            colorize: true
+        file:
+            timestamp: true
+            outputDir: ./logs
+            json: false
+            prettyPrint: true
+    accessLogger:
+        msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
+        console:
+            timestamp: true
+            colorize: true
+        file:
+            timestamp: true
+            json: false
+            prettyPrint: true
+            outputDir: ./logs
     filter:
         - name: ipFilter 
           options: 
@@ -48,3 +78,19 @@ gateway:
                 port: 8500
                 defaults: 
                     wait: 3 minutes
+    statsConfig:
+        granularity:
+            duration: '1 hour'
+            ttl: '1 day'
+    monitor:
+        - name: cpu
+          statsConfig:
+            granularity:
+                duration: 1 hour
+                ttl: 1 day
+        - name: mem
+          statsConfig:
+            granularity:
+                duration: 1 hour
+                ttl: 1 day
+    healthcheck: /healthcheck
