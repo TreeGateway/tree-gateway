@@ -1,0 +1,6 @@
+rootPath: .
+database:
+    redis:
+        standalone:
+            host: localhost
+            port: 6379

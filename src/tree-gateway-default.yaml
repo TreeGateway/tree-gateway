@@ -1,41 +1,11 @@
-rootPath: .
-database:
-    redis:
-        standalone:
-            host: localhost
-            port: 6379
-gateway:
-    underProxy: false
+underProxy: false
+protocol:
+    http:
+        listenPort: 8000
+admin:
     protocol:
         http:
-            listenPort: 8000
-    admin:
-        protocol:
-            http:
-                listenPort: 8001
-        accessLogger:
-            msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
-            console:
-                timestamp: true
-                colorize: true
-            file:
-                timestamp: true
-                json: false
-                prettyPrint: true
-                outputDir: ./logs
-        userService:
-            jwtSecret: secret
-        apiDocs:
-            path: api-docs
-    logger:
-        level: info
-        console:
-            colorize: true
-        file:
-            timestamp: true
-            outputDir: ./logs
-            json: false
-            prettyPrint: true
+            listenPort: 8001
     accessLogger:
         msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
         console:
@@ -46,8 +16,42 @@ gateway:
             json: false
             prettyPrint: true
             outputDir: ./logs
-    statsConfig:
+    userService:
+        jwtSecret: secret
+    apiDocs:
+        path: api-docs
+logger:
+    level: info
+    console:
+        colorize: true
+    file:
+        timestamp: true
+        outputDir: ./logs
+        json: false
+        prettyPrint: true
+accessLogger:
+    msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
+    console:
+        timestamp: true
+        colorize: true
+    file:
+        timestamp: true
+        json: false
+        prettyPrint: true
+        outputDir: ./logs
+statsConfig:
+    granularity:
+        duration: '1 hour'
+        ttl: '1 day'
+monitor:
+    - name: cpu
+      statsConfig:
         granularity:
-            duration: '1 hour'
-            ttl: '1 day'
-    healthcheck: /healthcheck
+            duration: 1 hour
+            ttl: 1 day
+    - name: mem
+      statsConfig:
+        granularity:
+            duration: 1 hour
+            ttl: 1 day
+healthcheck: /healthcheck
