@@ -1,1 +1,7 @@
-node_modules/bcrypt*
+*
+!README.md
+!package.json
+!rest.config
+!tree-gateway.json
+!lib
+!dist
