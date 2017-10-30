@@ -4,11 +4,13 @@ import * as Joi from 'joi';
 import { ValidationError } from '../../error/errors';
 
 interface ResponseHeadersConfig {
+    headers?: any;
     removeHeaders?: Array<string>;
     updateHeaders?: any;
 }
 
 const responseHeadersSchema = Joi.object().keys({
+    headers: Joi.object().unknown(true),
     removeHeaders: Joi.array().items(Joi.string()),
     updateHeaders: Joi.object().unknown(true)
 });
@@ -24,13 +26,14 @@ function validateResponseHeadersConfig(config: ResponseHeadersConfig) {
 
 module.exports = function(config: ResponseHeadersConfig) {
     validateResponseHeadersConfig(config);
+    const updateHeaders = config.updateHeaders || config.headers;
     return (body: any, headers: any, request: any) => {
         const result: any =  {body: body };
         if (config.removeHeaders && config.removeHeaders.length) {
             result.removeHeaders = config.removeHeaders;
         }
-        if (config.updateHeaders) {
-            result.updateHeaders = config.updateHeaders;
+        if (updateHeaders) {
+            result.updateHeaders = updateHeaders;
         }
         return result;
     };
