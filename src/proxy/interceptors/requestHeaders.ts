@@ -6,12 +6,14 @@ import { ValidationError } from '../../error/errors';
 
 interface RequestHeadersConfig {
     headers?: any;
+    updateHeaders?: any;
     removeHeaders?: Array<string>;
 }
 
 const requestHeadersSchema = Joi.object().keys({
     headers: Joi.object().unknown(true),
-    removeHeaders: Joi.array().items(Joi.string())
+    removeHeaders: Joi.array().items(Joi.string()),
+    updateHeaders: Joi.object().unknown(true)
 });
 
 function validateRequestHeadersConfig(config: RequestHeadersConfig) {
@@ -28,10 +30,11 @@ module.exports = function(config: RequestHeadersConfig) {
     if (config.removeHeaders) {
         config.removeHeaders = config.removeHeaders.map(header => header.toLowerCase());
     }
+    const updateHeaders = config.updateHeaders || config.headers;
 return (req: any) => {
         let h = req.headers;
-        if (config.headers) {
-            h = Object.assign(h, config.headers);
+        if (updateHeaders) {
+            h = Object.assign(h, updateHeaders);
         }
         if (config.removeHeaders) {
             h = _.omit(h, ...config.removeHeaders);
