@@ -66,8 +66,10 @@ function getBlacklistFilter(config: IpFilterConfig) {
             pluginsDataService.stopWatchingConfigurationItems(watcher);
             pluginsDataService.removeAllListeners('changed');
             gateway.removeListener('stop', stop);
+            gateway.removeListener('api-reload', stop);
         };
         gateway.on('stop', stop);
+        gateway.on('api-reload', stop);
     }
     return (req: express.Request, res: express.Response) => {
         if (!blocked || !blocked.length) {
@@ -106,8 +108,10 @@ function getWhitelistFilter(config: IpFilterConfig) {
             pluginsDataService.stopWatchingConfigurationItems(watcher);
             pluginsDataService.removeAllListeners('changed');
             gateway.removeListener('stop', stop);
+            gateway.removeListener('api-reload', stop);
         };
         gateway.on('stop', stop);
+        gateway.on('api-reload', stop);
     }
     return (req: express.Request, res: express.Response) => {
         if (!unblocked) {

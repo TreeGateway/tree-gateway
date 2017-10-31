@@ -3,7 +3,7 @@
 import * as Joi from 'joi';
 import * as _ from 'lodash';
 import * as chooser from 'weighted';
-import { ValidationError } from '../../error/errors';
+import { ValidationError, UnavailableError } from '../../error/errors';
 import { Container } from 'typescript-ioc';
 import { Gateway } from '../../gateway';
 import { Logger } from '../../logger';
@@ -12,17 +12,24 @@ import { PluginsDataService } from '../../service/plugin-data';
 import { HealthCheck } from '../../utils/health-check';
 
 interface LoadBalancerConfig {
-    destinations: Array<Destination>;
+    destinations?: Array<Destination>;
     database?: LoadBalancerDatabaseConfig;
     /**
      * The Load Balancer strategy used to choose one between the available service nodes. Defaults to random.
      */
     strategy?: string;
+    healthCheckOptions?: HealthCheckOptions;
 }
 
 interface LoadBalancerDatabaseConfig {
     key?: string;
     checkInterval?: string | number;
+}
+
+interface HealthCheckOptions {
+    checkInterval?: string | number;
+    failCount?: number;
+    waitTimeout?: string | number;
 }
 
 interface Destination {
@@ -41,7 +48,12 @@ const loadBalancerConfigSchema = Joi.object().keys({
         healthCheck: Joi.string(),
         target: Joi.string().required(),
         weight: Joi.number()
-    })).min(1).required(),
+    })),
+    healthCheckOptions: Joi.object().keys({
+        checkInterval: Joi.alternatives([Joi.string(), Joi.number().positive()]),
+        failCount: Joi.number(),
+        waitTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()])
+    }),
     strategy: Joi.string().valid('random', 'round-robin', 'weight')
 });
 
@@ -62,8 +74,8 @@ abstract class Balancer {
     protected previousDBData: Array<string>;
 
     constructor(config: LoadBalancerConfig) {
-        this.fixedServiceInstances = config.destinations;
-        this.updateInstances(this.fixedServiceInstances);
+        this.fixedServiceInstances = config.destinations || [];
+        this.updateInstances(this.fixedServiceInstances, config.healthCheckOptions);
         this.observeDatabase(config);
     }
 
@@ -82,9 +94,9 @@ abstract class Balancer {
                     this.previousDBData = data;
                     if (data && data.length) {
                         const dbConfig: Array<Destination> = data.map(item => JSON.parse(item));
-                        this.updateInstances(this.mergeInstances(dbConfig));
+                        this.updateInstances(this.mergeInstances(dbConfig), config.healthCheckOptions);
                     } else {
-                        this.updateInstances(this.mergeInstances(null));
+                        this.updateInstances(this.mergeInstances(null), config.healthCheckOptions);
                     }
                 }
             });
@@ -92,13 +104,15 @@ abstract class Balancer {
                                         getMilisecondsInterval(config.database.checkInterval, 30000));
             const stop = () => {
                 if (logger.isDebugEnabled()) {
-                    logger.debug('Gateway stopped. Removing database monitors for loadBalancer.');
+                    logger.debug('API stopped. Removing database monitors for loadBalancer.');
                 }
                 pluginsDataService.stopWatchingConfigurationItems(watcher);
                 pluginsDataService.removeAllListeners('changed');
                 gateway.removeListener('stop', stop);
+                gateway.removeListener('api-reload', stop);
             };
             gateway.on('stop', stop);
+            gateway.on('api-reload', stop);
         }
     }
 
@@ -109,12 +123,12 @@ abstract class Balancer {
         return this.fixedServiceInstances;
     }
 
-    protected updateInstances(data: Array<Destination>) {
+    protected updateInstances(data: Array<Destination>, healthCheckOptions?: HealthCheckOptions) {
         this.serviceInstances = data;
-        this.checkInstances(data);
+        this.checkInstances(data, healthCheckOptions);
     }
 
-    protected checkInstances(data: Array<Destination>) {
+    protected checkInstances(data: Array<Destination>, healthCheckOptions?: HealthCheckOptions) {
         const monitoredInstances = data.filter(destination => destination.healthCheck);
         if (monitoredInstances && monitoredInstances.length) {
             const gateway: Gateway = Container.get(Gateway);
@@ -126,18 +140,20 @@ abstract class Balancer {
             } else {
                 const stop = () => {
                     if (logger.isDebugEnabled()) {
-                        logger.debug('Gateway stopped. Removing health checkers for loadBalancer.');
+                        logger.debug('API stopped. Removing health checkers for loadBalancer.');
                     }
                     this.healthChecker.stop();
                     this.healthChecker.removeAllListeners();
                     this.healthChecker = null;
                     gateway.removeListener('stop', stop);
+                    gateway.removeListener('api-reload', stop);
                 };
                 gateway.on('stop', stop);
+                gateway.on('api-reload', stop);
             }
-            this.healthChecker = new HealthCheck({
-                servers: monitoredInstances.map(server => server.healthCheck)
-            });
+            const options: any = healthCheckOptions || {};
+            options.servers =  monitoredInstances.map(server => server.healthCheck);
+            this.healthChecker = new HealthCheck(options);
             this.healthChecker.on('change', (servers: any) => {
                 Object.keys(servers).forEach(server => {
                     const index = _.findIndex(this.serviceInstances, (instance) => instance.healthCheck === server);
@@ -161,7 +177,10 @@ class RandomBalancer extends Balancer {
     }
 
     balance(): string {
-        return this.verifiedInstances[Math.floor(Math.random() * this.verifiedInstances.length)].target;
+        if (this.verifiedInstances.length) {
+            return this.verifiedInstances[Math.floor(Math.random() * this.verifiedInstances.length)].target;
+        }
+        throw new UnavailableError(`No instance available.`);
     }
 }
 
@@ -170,11 +189,14 @@ class RoundRobinBalancer extends Balancer {
         super(config);
     }
     balance(): string {
-        let next = (<any>this.verifiedInstances).next || 0;
-        const index = next % this.verifiedInstances.length;
-        next++;
-        (<any>this.verifiedInstances).next = next;
-        return this.verifiedInstances[index].target;
+        if (this.verifiedInstances.length) {
+            let next = (<any>this.verifiedInstances).next || 0;
+            const index = next % this.verifiedInstances.length;
+            next++;
+            (<any>this.verifiedInstances).next = next;
+            return this.verifiedInstances[index].target;
+        }
+        throw new UnavailableError(`No instance available.`);
     }
 }
 
@@ -186,14 +208,17 @@ class WeightedBalancer extends Balancer {
         super(config);
     }
 
-    protected updateInstances(data: Array<Destination>) {
-        super.updateInstances(data);
+    protected updateInstances(data: Array<Destination>, healthCheckOptions?: HealthCheckOptions) {
+        super.updateInstances(data, healthCheckOptions);
         this.instances = this.verifiedInstances.map(item => item.target);
         this.weights = this.verifiedInstances.map(item => item.weight);
     }
 
     balance(): string {
-        return chooser.select(this.instances, this.weights);
+        if (this.instances.length) {
+            return chooser.select(this.instances, this.weights);
+        }
+        throw new UnavailableError(`No instance available.`);
     }
 }
 
