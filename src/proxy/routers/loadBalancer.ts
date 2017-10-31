@@ -5,6 +5,8 @@ import * as _ from 'lodash';
 import * as chooser from 'weighted';
 import { ValidationError } from '../../error/errors';
 import { Container } from 'typescript-ioc';
+import { Gateway } from '../../gateway';
+import { Logger } from '../../logger';
 import { getMilisecondsInterval } from '../../utils/time-intervals';
 import { PluginsDataService } from '../../service/plugin-data';
 import { HealthCheck } from '../../utils/health-check';
@@ -68,8 +70,15 @@ abstract class Balancer {
     protected observeDatabase(config: LoadBalancerConfig) {
         if (config.database) {
             const pluginsDataService: PluginsDataService = Container.get(PluginsDataService);
+            const gateway: Gateway = Container.get(Gateway);
+            const logger: Logger = Container.get(Logger);
+
             pluginsDataService.on('changed', (configKey: string, data: Array<string>) => {
                 if (!_.isEqual(this.previousDBData, data)) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug('New configuration for loadBalancer found on database');
+                        logger.debug(data);
+                    }
                     this.previousDBData = data;
                     if (data && data.length) {
                         const dbConfig: Array<Destination> = data.map(item => JSON.parse(item));
@@ -79,8 +88,17 @@ abstract class Balancer {
                     }
                 }
             });
-            pluginsDataService.watchConfigurationItems(config.database.key || 'loadBalancer:instances',
+            const watcher = pluginsDataService.watchConfigurationItems(config.database.key || 'loadBalancer:instances',
                                         getMilisecondsInterval(config.database.checkInterval, 30000));
+            const stop = () => {
+                if (logger.isDebugEnabled()) {
+                    logger.debug('Gateway stopped. Removing database monitors for loadBalancer.');
+                }
+                pluginsDataService.stopWatchingConfigurationItems(watcher);
+                pluginsDataService.removeAllListeners('changed');
+                gateway.removeListener('stop', stop);
+            };
+            gateway.on('stop', stop);
         }
     }
 
@@ -99,9 +117,23 @@ abstract class Balancer {
     protected checkInstances(data: Array<Destination>) {
         const monitoredInstances = data.filter(destination => destination.healthCheck);
         if (monitoredInstances && monitoredInstances.length) {
+            const gateway: Gateway = Container.get(Gateway);
+            const logger: Logger = Container.get(Logger);
+
             if (this.healthChecker) {
                 this.healthChecker.stop();
                 this.healthChecker.removeAllListeners();
+            } else {
+                const stop = () => {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug('Gateway stopped. Removing health checkers for loadBalancer.');
+                    }
+                    this.healthChecker.stop();
+                    this.healthChecker.removeAllListeners();
+                    this.healthChecker = null;
+                    gateway.removeListener('stop', stop);
+                };
+                gateway.on('stop', stop);
             }
             this.healthChecker = new HealthCheck({
                 servers: monitoredInstances.map(server => server.healthCheck)

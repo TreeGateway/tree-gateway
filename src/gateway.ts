@@ -30,6 +30,7 @@ import * as path from 'path';
 import * as cors from 'cors';
 import { getMilisecondsInterval } from './utils/time-intervals';
 import { ServiceDiscovery } from './servicediscovery/service-discovery';
+import { EventEmitter } from 'events';
 
 class StatsController {
     requestStats: Stats;
@@ -38,7 +39,7 @@ class StatsController {
 
 @Singleton
 @AutoWired
-export class Gateway {
+export class Gateway extends EventEmitter {
     @Inject private config: Configuration;
     @Inject private apiProxy: ApiProxy;
     @Inject private apiRateLimit: ApiRateLimit;
@@ -97,6 +98,7 @@ export class Gateway {
                             started++;
                             if (started === expected) {
                                 this.serverRunning = true;
+                                this.emit('start', this);
                                 resolve();
                             }
                         }));
@@ -109,6 +111,7 @@ export class Gateway {
                             started++;
                             if (started === expected) {
                                 this.serverRunning = true;
+                                this.emit('start', this);
                                 resolve();
                             }
                         }));
@@ -137,6 +140,7 @@ export class Gateway {
                         this.logger.info(`Gateway Admin Server listenning HTTP on port ${this.config.gateway.admin.protocol.http.listenPort}`);
                         started++;
                         if (started === expected) {
+                            this.emit('admin-start', this);
                             resolve();
                         }
                     }));
@@ -149,6 +153,7 @@ export class Gateway {
                         this.logger.info(`Gateway Admin Server listenning HTTPS on port ${this.config.gateway.admin.protocol.https.listenPort}`);
                         started++;
                         if (started === expected) {
+                            this.emit('admin-start', this);
                             resolve();
                         }
                     }));
@@ -167,6 +172,7 @@ export class Gateway {
                 if (toClose === 0) {
                     this.serverRunning = false;
                     this.apiRoutes.clear();
+                    this.emit('stop', this);
                     return resolve();
                 }
                 this.apiServer.forEach(server => {
@@ -176,6 +182,7 @@ export class Gateway {
                             this.logger.info('Gateway server stopped');
                             this.serverRunning = false;
                             this.apiRoutes.clear();
+                            this.emit('stop', this);
                             resolve();
                         }
                     });
@@ -184,6 +191,7 @@ export class Gateway {
             } else {
                 this.serverRunning = false;
                 this.apiRoutes.clear();
+                this.emit('stop', this);
                 resolve();
             }
         });
@@ -194,6 +202,7 @@ export class Gateway {
             if (this.adminServer) {
                 let toClose = this.adminServer.size;
                 if (toClose === 0) {
+                    this.emit('admin-stop', this);
                     return resolve();
                 }
                 this.adminServer.forEach(server => {
@@ -201,6 +210,7 @@ export class Gateway {
                         toClose--;
                         if (toClose === 0) {
                             this.logger.info('Gateway Admin server stopped');
+                            this.emit('admin-stop', this);
                             resolve();
                         }
                     });

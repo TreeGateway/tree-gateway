@@ -14,7 +14,7 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
 
     listConfigurationItems(configKey: string): Promise<Array<string>> {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug(`Checking configuration items for plugin config key:${configKey} `);
+            this.logger.debug(`Checking configuration items for plugin config key: ${RedisPluginsDataService.PREFIX}:${configKey} `);
         }
         return this.database.redisClient.smembers(`${RedisPluginsDataService.PREFIX}:${configKey}`);
     }
@@ -29,14 +29,19 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
         });
     }
 
-    watchConfigurationItems(configKey: string, interval: number): void {
-        setInterval(() => {
+    watchConfigurationItems(configKey: string, interval: number): NodeJS.Timer {
+        const result = setInterval(() => {
             this.checkConfigurationItens(configKey);
         }, interval);
 
         process.nextTick(() => {
             this.checkConfigurationItens(configKey);
         });
+        return result;
+    }
+
+    stopWatchingConfigurationItems(watcherKey: NodeJS.Timer): void {
+        clearInterval(watcherKey);
     }
 
     private checkConfigurationItens(configKey: string) {
