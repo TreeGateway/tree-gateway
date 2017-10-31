@@ -18,4 +18,8 @@ proxy:
           database:
             checkInterval: 5 minutes
           strategy: weight
+          healthCheckOptions:
+            checkInterval: 5 seconds
+            failCount: 3
+            waitTimeout: 5 seconds
   timeout: 5000
