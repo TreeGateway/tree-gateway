@@ -5,6 +5,8 @@ import * as _ from 'lodash';
 import * as express from 'express';
 import { ValidationError } from '../../error/errors';
 import { Container } from 'typescript-ioc';
+import { Gateway } from '../../gateway';
+import { Logger } from '../../logger';
 import { getMilisecondsInterval } from '../../utils/time-intervals';
 import { PluginsDataService } from '../../service/plugin-data';
 
@@ -45,6 +47,9 @@ function validateIpFilterConfig(config: IpFilterConfig) {
 }
 
 function getBlacklistFilter(config: IpFilterConfig) {
+    const gateway: Gateway = Container.get(Gateway);
+    const logger: Logger = Container.get(Logger);
+
     config.blacklist = config.blacklist || [];
     let blocked: Array<string> = config.blacklist;
     if (config.database) {
@@ -52,8 +57,17 @@ function getBlacklistFilter(config: IpFilterConfig) {
         pluginsDataService.on('changed', (configKey: string, data: Array<string>) => {
             blocked = _.union(config.blacklist, data || []);
         });
-        pluginsDataService.watchConfigurationItems(config.database.key || 'ipFilter:blacklist',
+        const watcher = pluginsDataService.watchConfigurationItems(config.database.key || 'ipFilter:blacklist',
                                     getMilisecondsInterval(config.database.checkInterval, 30000));
+        const stop = () => {
+            if (logger.isDebugEnabled()) {
+                logger.debug('Gateway stopped. Removing database monitors for ipFilter.');
+            }
+            pluginsDataService.stopWatchingConfigurationItems(watcher);
+            pluginsDataService.removeAllListeners('changed');
+            gateway.removeListener('stop', stop);
+        };
+        gateway.on('stop', stop);
     }
     return (req: express.Request, res: express.Response) => {
         if (!blocked || !blocked.length) {
@@ -73,6 +87,9 @@ function getBlacklistFilter(config: IpFilterConfig) {
 }
 
 function getWhitelistFilter(config: IpFilterConfig) {
+    const gateway: Gateway = Container.get(Gateway);
+    const logger: Logger = Container.get(Logger);
+
     config.whitelist = config.whitelist || [];
     let unblocked: Array<string> = config.whitelist;
     if (config.database) {
@@ -80,8 +97,17 @@ function getWhitelistFilter(config: IpFilterConfig) {
         pluginsDataService.on('changed', (configKey: string, data: Array<string>) => {
             unblocked = _.union(config.whitelist, data || []);
         });
-        pluginsDataService.watchConfigurationItems(config.database.key || '{ipFilter}:whitelist',
+        const watcher = pluginsDataService.watchConfigurationItems(config.database.key || '{ipFilter}:whitelist',
                                     getMilisecondsInterval(config.database.checkInterval, 30000));
+        const stop = () => {
+            if (logger.isDebugEnabled()) {
+                logger.debug('Gateway stopped. Removing database monitors for ipFilter.');
+            }
+            pluginsDataService.stopWatchingConfigurationItems(watcher);
+            pluginsDataService.removeAllListeners('changed');
+            gateway.removeListener('stop', stop);
+        };
+        gateway.on('stop', stop);
     }
     return (req: express.Request, res: express.Response) => {
         if (!unblocked) {
