@@ -10,15 +10,15 @@ import { Logger } from '../logger';
 import { Inject } from 'typescript-ioc';
 
 export interface HealthCheckOptions {
-    delay?: string | number;
-    failcount?: number;
+    checkInterval?: string | number;
+    failCount?: number;
     servers: Array<string>;
-    timeout?: string | number;
+    waitTimeout?: string | number;
 }
 
 export interface CheckServer {
     down: boolean;
-    failcount: number;
+    failCount: number;
     lastStatus: string;
 }
 
@@ -34,16 +34,16 @@ export class HealthCheck extends EventEmitter {
     constructor(options: HealthCheckOptions) {
         super();
         this.options = _.defaults(options, {
-            delay: 30000,
-            failcount: 2,
-            timeout: 2000
+            checkInterval: 30000,
+            failCount: 2,
+            waitTimeout: 2000
         });
 
         if (options && options.servers && options.servers.length > 0) {
             options.servers.forEach((s) => {
                 this.checks[s] = {
                     down: false,
-                    failcount: 0,
+                    failCount: 0,
                     lastStatus: ''
                 };
             });
@@ -56,7 +56,7 @@ export class HealthCheck extends EventEmitter {
             this.check();
             this.interval = setInterval(() => {
                 this.check();
-            }, getMilisecondsInterval(this.options.delay, 30000));
+            }, getMilisecondsInterval(this.options.checkInterval, 30000));
         }
     }
 
@@ -130,14 +130,14 @@ export class HealthCheck extends EventEmitter {
                             return null;
                         }
                         config.lastStatus = 'OK';
-                        config.failcount = 0;
+                        config.failCount = 0;
                         config.down = false;
                         resolve(config);
                     });
                 } else {
                     config.lastStatus = 'Non 200 HTTP status code';
-                    config.failcount += 1;
-                    if (config.failcount >= this.options.failcount) {
+                    config.failCount += 1;
+                    if (config.failCount >= this.options.failCount) {
                         config.down = true;
                         resolve(config);
                     }
@@ -145,13 +145,13 @@ export class HealthCheck extends EventEmitter {
             });
 
             request.on('socket', (socket: any) => {
-                socket.setTimeout(getMilisecondsInterval(this.options.timeout, 2000));
+                socket.setTimeout(getMilisecondsInterval(this.options.waitTimeout, 2000));
                 socket.on('timeout', () => {
                     ended = true;
                     request.abort();
                     config.lastStatus = 'Healthcheck timed out';
-                    config.failcount += 1;
-                    if (config.failcount >= this.options.failcount) {
+                    config.failCount += 1;
+                    if (config.failCount >= this.options.failCount) {
                         config.down = true;
                     }
                     resolve(config);
@@ -161,8 +161,8 @@ export class HealthCheck extends EventEmitter {
             request.on('error', (error: any) => {
                 ended = true;
                 config.lastStatus = error.message;
-                config.failcount += 1;
-                if (config.failcount >= this.options.failcount) {
+                config.failCount += 1;
+                if (config.failCount >= this.options.failCount) {
                     config.down = true;
                 }
                 resolve(config);

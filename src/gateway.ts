@@ -363,6 +363,7 @@ export class Gateway extends EventEmitter {
                     this.logger.inspectObject(error);
                 });
         } else {
+            this.emit('api-reload', this);
             this.apiCircuitBreaker.removeAllBreakers();
             this.configService.installAllMiddlewares()
                 .then(() => this.loadApis())
