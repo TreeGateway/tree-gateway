@@ -473,7 +473,7 @@ export class Gateway extends EventEmitter {
                         return next(err);
                     }
                     res.status(err.statusCode);
-                    res.json({error : err.message, code: err.statusCode});
+                    res.json({ error: err.message, code: err.statusCode });
                 } else {
                     next(err);
                 }

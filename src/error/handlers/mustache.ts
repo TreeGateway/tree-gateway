@@ -1,26 +1,46 @@
 'use strict';
 
 import * as express from 'express';
-import { JSONAtaExpression, validateJsonAtaExpression } from '../../config/proxy';
 import { Logger } from '../../logger';
 import { Container } from 'typescript-ioc';
+import * as mustache from 'mustache';
+import * as Joi from 'joi';
+import { ValidationError } from '../../error/errors';
 
-const jsonata = require('jsonata');
-module.exports = function(config: JSONAtaExpression) {
-    validateJsonAtaExpression(config);
+interface MustacheConfig {
+    template: string;
+    contentType?: string;
+}
+
+const mustacheConfigSchema = Joi.object().keys({
+    contentType: Joi.string(),
+    template: Joi.string().required()
+});
+
+function validateMustacheConfig(config: MustacheConfig) {
+    const result = Joi.validate(config, mustacheConfigSchema);
+    if (result.error) {
+        throw new ValidationError(result.error);
+    } else {
+        return result.value;
+    }
+}
+
+module.exports = function(config: MustacheConfig) {
+    validateMustacheConfig(config);
+    const template = config.template;
     const logger: Logger = Container.get(Logger);
-    const expression = jsonata(config.expression);
     return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
         if (err && err.message) {
             if (res.headersSent) { // important to allow default error handler to close connection if headers already sent
                 return next(err);
             }
-            res.set('Content-Type', 'application/json');
+            res.set('Content-Type', config.contentType || 'text/html');
             res.status(err.statusCode || err.status || 500);
 
             let body;
             try {
-                body = expression.evaluate({
+                body = mustache.render(template, {
                     error: err,
                     req: req,
                     res: res
@@ -28,7 +48,7 @@ module.exports = function(config: JSONAtaExpression) {
             } catch (e) {
                 body = { error: err.message };
             }
-            res.json(body);
+            res.send(body);
             if (logger.isWarnEnabled()) {
                 logger.warn(`Error on API pipeline processing: ${err.message}`);
             }

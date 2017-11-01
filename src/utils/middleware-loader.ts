@@ -15,7 +15,7 @@ export class MiddlewareLoader {
             'jwt': '../authentication/strategies/jwt',
             'local': '../authentication/strategies/local'
         },
-        'error/handler': {
+        'errorhandler': {
             'json': '../error/handlers/json',
             'mustache': '../error/handlers/mustache'
         },

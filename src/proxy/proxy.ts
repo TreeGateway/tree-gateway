@@ -107,7 +107,7 @@ export class ApiProxy {
         }
         parsers.forEach((parser: string) => {
             if (parser === 'json') {
-                apiRouter.use(bodyParser.json({limit: limit}));
+                apiRouter.use(bodyParser.json({ limit: limit }));
             } else if (parser === 'urlencoded') {
                 apiRouter.use(bodyParser.urlencoded({
                     extended: true,
@@ -183,46 +183,46 @@ export class ApiProxy {
     }
 
     private handleResponseInterceptor(api: ApiConfig, proxy: any, responseInterceptor: ResponseInterceptors) {
-            proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
-                if (res.__data) {
-                    if (responseInterceptor) {
-                        responseInterceptor.middelware(res.__data.toBuffer(), proxyRes, req, res, res.__ignore,
-                            (newHeaders: any, removeHeaders: string[]) => {
-                                if (newHeaders) {
-                                    Object.keys(newHeaders).forEach(name => {
-                                        proxyRes.headers[name.toLowerCase()] = newHeaders[name];
-                                        res.set(name.toLowerCase(), newHeaders[name]);
-                                    });
-                                }
-                                if (removeHeaders) {
-                                    removeHeaders.forEach(name => {
-                                        delete proxyRes.headers[name];
-                                        res.removeHeader(name);
-                                        if (name !== name.toLowerCase()) {
-                                            delete proxyRes.headers[name.toLowerCase()];
-                                            res.removeHeader(name.toLowerCase());
-                                        }
-                                    });
-                                }
-                            },
-                            (err: any, body: any) => {
-                                if (err) {
-                                    this.logger.error(err);
-                                }
-                                delete res['__data'];
-                                if (!res.finished) {
-                                    res.send(body);
-                                }
-                            });
-                    } else {
-                        const body = res.__data.toBuffer();
-                        delete res['__data'];
-                        if (!res.finished) {
-                            res.send(body);
-                        }
+        proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
+            if (res.__data) {
+                if (responseInterceptor) {
+                    responseInterceptor.middelware(res.__data.toBuffer(), proxyRes, req, res, res.__ignore,
+                        (newHeaders: any, removeHeaders: string[]) => {
+                            if (newHeaders) {
+                                Object.keys(newHeaders).forEach(name => {
+                                    proxyRes.headers[name.toLowerCase()] = newHeaders[name];
+                                    res.set(name.toLowerCase(), newHeaders[name]);
+                                });
+                            }
+                            if (removeHeaders) {
+                                removeHeaders.forEach(name => {
+                                    delete proxyRes.headers[name];
+                                    res.removeHeader(name);
+                                    if (name !== name.toLowerCase()) {
+                                        delete proxyRes.headers[name.toLowerCase()];
+                                        res.removeHeader(name.toLowerCase());
+                                    }
+                                });
+                            }
+                        },
+                        (err: any, body: any) => {
+                            if (err) {
+                                this.logger.error(err);
+                            }
+                            delete res['__data'];
+                            if (!res.finished) {
+                                res.send(body);
+                            }
+                        });
+                } else {
+                    const body = res.__data.toBuffer();
+                    delete res['__data'];
+                    if (!res.finished) {
+                        res.send(body);
                     }
                 }
-            });
+            }
+        });
     }
 
     private maybeParseRawBody(req: express.Request, limit: string) {

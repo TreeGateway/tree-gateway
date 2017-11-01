@@ -101,7 +101,7 @@ abstract class Balancer {
                 }
             });
             const watcher = pluginsDataService.watchConfigurationItems(config.database.key || 'loadBalancer:instances',
-                                        getMilisecondsInterval(config.database.checkInterval, 30000));
+                getMilisecondsInterval(config.database.checkInterval, 30000));
             const stop = () => {
                 if (logger.isDebugEnabled()) {
                     logger.debug('API stopped. Removing database monitors for loadBalancer.');
@@ -152,7 +152,7 @@ abstract class Balancer {
                 gateway.on('api-reload', stop);
             }
             const options: any = healthCheckOptions || {};
-            options.servers =  monitoredInstances.map(server => server.healthCheck);
+            options.servers = monitoredInstances.map(server => server.healthCheck);
             this.healthChecker = new HealthCheck(options);
             this.healthChecker.on('change', (servers: any) => {
                 Object.keys(servers).forEach(server => {
@@ -225,7 +225,7 @@ class WeightedBalancer extends Balancer {
 module.exports = function(config: LoadBalancerConfig) {
     validateLoadBalancerConfig(config);
     let balancer: Balancer;
-    switch(config.strategy) {
+    switch (config.strategy) {
         case 'round-robin':
             balancer = new RoundRobinBalancer(config);
             break;

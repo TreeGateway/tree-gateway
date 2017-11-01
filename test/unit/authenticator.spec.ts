@@ -24,6 +24,9 @@ describe('The Gateway Authenticator', () => {
     it('should be able deny request without authentication', (done) => {
         gatewayRequest('/secure/get?arg=1', (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(401);
+            const contentType = response.headers['content-type'];
+            expect(contentType).to.equal('text/html; charset=utf-8');
+            expect(body).to.equal('<html><head></head><body>Error: Unauthorized</body></html>');
             done();
         });
     });

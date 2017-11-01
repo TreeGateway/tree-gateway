@@ -26,23 +26,23 @@ export class ApiErrorHandler {
 
     private configureErrorHandler(errorHandler: MiddlewareConfig) {
         if (errorHandler) {
-            return this.middlewareLoader.loadMiddleware('error/handler', errorHandler);
+            return this.middlewareLoader.loadMiddleware('errorhandler', errorHandler);
         } else {
             return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
                 if (err && err.message) {
-                  if (res.headersSent) { // important to allow default error handler to close connection if headers already sent
-                    return next(err);
-                  }
-                  res.set('Content-Type', 'application/json');
-                  res.status(err.statusCode || err.status || 500);
-                  res.json({error : err.message});
-                  if (this.logger.isWarnEnabled()) {
-                      this.logger.warn(`Error on API pipeline processing: ${err.message}`);
-                  }
+                    if (res.headersSent) { // important to allow default error handler to close connection if headers already sent
+                        return next(err);
+                    }
+                    res.set('Content-Type', 'application/json');
+                    res.status(err.statusCode || err.status || 500);
+                    res.json({ error: err.message });
+                    if (this.logger.isWarnEnabled()) {
+                        this.logger.warn(`Error on API pipeline processing: ${err.message}`);
+                    }
                 } else {
-                  next(err);
+                    next(err);
                 }
-              };
+            };
         }
     }
 }

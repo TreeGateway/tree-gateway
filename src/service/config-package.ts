@@ -33,8 +33,8 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
                     .catch(reject);
             } else {
                 this.setApisAndGateway(config)
-                .then(resolve)
-                .catch(reject);
+                    .then(resolve)
+                    .catch(reject);
             }
         });
     }
@@ -114,7 +114,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
             if (names && names.length) {
                 const promises = names.map(name => new Promise<MiddlewareConfig>((res, rej) => {
                     this.middlewareService.read(middleware, name)
-                        .then(content => res({middleware: middleware, name: name, content: content.toString()}))
+                        .then(content => res({ middleware: middleware, name: name, content: content.toString() }))
                         .catch(rej);
                 }));
                 Promise.all(promises).then(resolve).catch(reject);
