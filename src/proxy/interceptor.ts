@@ -8,8 +8,7 @@ import { Inject } from 'typescript-ioc';
 import { Logger } from '../logger';
 import { createFunction } from '../utils/functions';
 import { MiddlewareLoader } from '../utils/middleware-loader';
-
-const pathToRegexp = require('path-to-regexp');
+import * as mm from 'minimatch';
 
 export interface ResponseInterceptors {
     middelware: Function;
@@ -129,7 +128,7 @@ export class ProxyInterceptor {
         });
         result.middelware = createFunction({
             interceptors: interceptors,
-            pathToRegexp: pathToRegexp
+            mm: mm
         }, 'body', 'proxyRes', 'request', 'response', 'ignore', 'headersHandler', 'callback', body.join(''));
         return result;
     }
