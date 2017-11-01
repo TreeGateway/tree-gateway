@@ -28,7 +28,7 @@ export interface Member {
 
 const memberValidatorSchema = Joi.object().keys({
     method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')),
-    path: Joi.array().items(Joi.string().regex(/^[A-Za-z\-\/0-9_\.]+$/i)),
+    path: Joi.array().items(Joi.string().regex(/^[A-Za-z\-\/0-9_\.\*]+$/i)),
     protocol: Joi.array().items(Joi.string())
 }).min(1);
 
