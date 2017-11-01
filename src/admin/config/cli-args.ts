@@ -757,5 +757,42 @@ serviceDiscoveryProvider.addArgument(
         help: 'Inform the name of the Service Discovery Provider to be retrieved',
     }
 );
+const errorHandler = middlewareCommands.addParser('errorHandler', {
+    addHelp: true,
+    help: 'Error Handler configurations'
+});
+
+errorHandler.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Error Handler listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+errorHandler.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Error Handler name to be removed',
+    }
+);
+
+errorHandler.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Error Handler file (JS format) to be updated. Ex: -u handler1 ./errorhandler/handler1.js',
+        nargs: 2
+    }
+);
+
+errorHandler.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Error Handler file (JS format) to be added. Ex: -a handler1 ./errorhandler/handler1.js',
+        nargs: 2
+    }
+);
+
+errorHandler.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Error Handler to be retrieved',
+    }
+);
 export let configArgs = parser.parseArgs();
 Configuration.gatewayConfigFile = configArgs.config;

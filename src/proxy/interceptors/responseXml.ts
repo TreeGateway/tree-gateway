@@ -11,7 +11,7 @@ module.exports = function(config: any) {
                 if (err) {
                     return reject(err);
                 }
-                resolve({body: data});
+                resolve({ body: data });
             });
         });
     };

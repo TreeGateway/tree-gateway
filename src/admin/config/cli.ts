@@ -32,7 +32,7 @@ try {
                     } else if (errorMessage.message) {
                         errorMessage = errorMessage.message;
                     }
-                } catch(e) {
+                } catch (e) {
                     // IGNORE
                 }
 

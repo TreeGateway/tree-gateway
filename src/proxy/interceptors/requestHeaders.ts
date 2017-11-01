@@ -31,7 +31,7 @@ module.exports = function(config: RequestHeadersConfig) {
         config.removeHeaders = config.removeHeaders.map(header => header.toLowerCase());
     }
     const updateHeaders = config.updateHeaders || config.headers;
-return (req: any) => {
+    return (req: any) => {
         let h = req.headers;
         if (updateHeaders) {
             h = Object.assign(h, updateHeaders);

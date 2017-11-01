@@ -53,9 +53,9 @@ export class RedisStats extends StatsHandler {
 
             this.database.redisClient.sadd(Constants.STATS_SYNC, JSON.stringify(syncObj))
                 .then(() => this.database.redisClient.multi()
-                                .hincrby(tmpKey, hitTimestamp, increment)
-                                .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
-                                .exec())
+                    .hincrby(tmpKey, hitTimestamp, increment)
+                    .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
+                    .exec())
                 .catch((err: Error) => this.logger.error(`Error on stats recording: ${err}`));
         });
     }

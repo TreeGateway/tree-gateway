@@ -46,11 +46,11 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
 
     private checkConfigurationItens(configKey: string) {
         this.listConfigurationItems(configKey)
-        .then((data: Array<string>) => {
-            this.emit('changed', configKey, data);
-        }).catch((err: any) => {
-            this.logger.error(`Error retrieving configuration items from redis database.`);
-            this.logger.inspectObject(err);
-        });
+            .then((data: Array<string>) => {
+                this.emit('changed', configKey, data);
+            }).catch((err: any) => {
+                this.logger.error(`Error retrieving configuration items from redis database.`);
+                this.logger.inspectObject(err);
+            });
     }
 }

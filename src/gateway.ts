@@ -31,6 +31,7 @@ import * as cors from 'cors';
 import { getMilisecondsInterval } from './utils/time-intervals';
 import { ServiceDiscovery } from './servicediscovery/service-discovery';
 import { EventEmitter } from 'events';
+import { ApiErrorHandler } from './error/error-handler';
 
 class StatsController {
     requestStats: Stats;
@@ -42,6 +43,7 @@ class StatsController {
 export class Gateway extends EventEmitter {
     @Inject private config: Configuration;
     @Inject private apiProxy: ApiProxy;
+    @Inject private apiErrorHandler: ApiErrorHandler;
     @Inject private apiRateLimit: ApiRateLimit;
     @Inject private apiCors: ApiCors;
     @Inject private apiCircuitBreaker: ApiCircuitBreaker;
@@ -61,6 +63,11 @@ export class Gateway extends EventEmitter {
     private apiRoutes: Map<string, express.Router> = new Map<string, express.Router>();
     private installedApis: Map<string, ApiConfig>;
     private serverRunning: boolean = false;
+
+    constructor() {
+        super();
+        this.setMaxListeners(150);
+    }
 
     get server(): express.Application {
         return this.app;
@@ -329,6 +336,7 @@ export class Gateway extends EventEmitter {
         }
 
         this.apiProxy.proxy(apiRouter, api);
+        this.apiErrorHandler.handle(apiRouter, api);
 
         const initializeRouter = !this.apiRoutes.has(api.id);
         this.apiRoutes.set(api.id, apiRouter);
@@ -465,7 +473,7 @@ export class Gateway extends EventEmitter {
                         return next(err);
                     }
                     res.status(err.statusCode);
-                    res.json({error : err.message, code: err.statusCode});
+                    res.json({ error: err.message, code: err.statusCode });
                 } else {
                     next(err);
                 }

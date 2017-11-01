@@ -1,5 +1,6 @@
 'use strict';
 
+import * as Joi from 'joi';
 import { AuthenticationConfig, authenticationValidatorSchema } from './authentication';
 import { ApiCorsConfig, apiCorsConfigSchema } from './cors';
 import { ThrottlingConfig, throttlingConfigValidatorSchema } from './throttling';
@@ -8,8 +9,9 @@ import { Proxy, proxyValidatorSchema } from './proxy';
 import { Group, groupValidatorSchema } from './group';
 import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
 import { Filter, filterSchema } from './filter';
-import * as Joi from 'joi';
 import { ValidationError } from '../error/errors';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+
 /**
  * The API config descriptor.
  */
@@ -87,6 +89,10 @@ export interface ApiConfig {
      * ```
      */
     filter?: Array<Filter>;
+    /**
+     * Configure how to handle errors during API pipeline.
+     */
+    errorHandler?: MiddlewareConfig;
 }
 
 export let apiConfigValidatorSchema = Joi.object().keys({
@@ -95,6 +101,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     circuitBreaker: Joi.array().items(circuitBreakerConfigValidatorSchema),
     cors: Joi.array().items(apiCorsConfigSchema),
     description: Joi.string(),
+    errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.array().items(filterSchema),
     group: Joi.array().items(groupValidatorSchema),
     id: Joi.string(),

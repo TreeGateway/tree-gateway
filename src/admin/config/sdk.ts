@@ -32,10 +32,10 @@ export class SDK {
             const token: string = SDK.generateSecurityToken(gateway);
             const swaggerUrl = SDK.getSwaggerUrl(gateway);
             swagger(swaggerUrl, {
-                    authorizations: {
-                        Bearer: `JWT ${token}`
-                    }
-                })
+                authorizations: {
+                    Bearer: `JWT ${token}`
+                }
+            })
                 .then((swaggerClient: any) => {
                     resolve(new SDK(swaggerClient, token, gateway));
                 })

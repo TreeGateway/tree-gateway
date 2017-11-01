@@ -58,7 +58,7 @@ function getBlacklistFilter(config: IpFilterConfig) {
             blocked = _.union(config.blacklist, data || []);
         });
         const watcher = pluginsDataService.watchConfigurationItems(config.database.key || 'ipFilter:blacklist',
-                                    getMilisecondsInterval(config.database.checkInterval, 30000));
+            getMilisecondsInterval(config.database.checkInterval, 30000));
         const stop = () => {
             if (logger.isDebugEnabled()) {
                 logger.debug('Gateway stopped. Removing database monitors for ipFilter.');
@@ -100,7 +100,7 @@ function getWhitelistFilter(config: IpFilterConfig) {
             unblocked = _.union(config.whitelist, data || []);
         });
         const watcher = pluginsDataService.watchConfigurationItems(config.database.key || '{ipFilter}:whitelist',
-                                    getMilisecondsInterval(config.database.checkInterval, 30000));
+            getMilisecondsInterval(config.database.checkInterval, 30000));
         const stop = () => {
             if (logger.isDebugEnabled()) {
                 logger.debug('Gateway stopped. Removing database monitors for ipFilter.');

@@ -107,6 +107,10 @@ export interface GatewayConfig {
      * healthcheck service will respond.
      */
     healthcheck?: string;
+    /**
+     * Configure how to handle errors during API pipeline.
+     */
+    errorHandler?: MiddlewareConfig;
 }
 
 export interface MonitorConfig {
@@ -129,6 +133,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
     cors: corsConfigSchema,
+    errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.array().items(middlewareConfigValidatorSchema),
     healthcheck: Joi.string(),
     logger: loggerConfigSchema,
