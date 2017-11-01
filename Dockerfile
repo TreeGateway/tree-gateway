@@ -1,4 +1,4 @@
-FROM node:7-alpine
+FROM node:8-alpine
 
 ENV NODE_ENV production
 # Create app directory

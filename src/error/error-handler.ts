@@ -33,9 +33,25 @@ export class ApiErrorHandler {
                     if (res.headersSent) { // important to allow default error handler to close connection if headers already sent
                         return next(err);
                     }
-                    res.set('Content-Type', 'application/json');
+                    const mime = req.accepts('json', 'xml', 'html', 'text');
                     res.status(err.statusCode || err.status || 500);
-                    res.json({ error: err.message });
+                    switch (mime) {
+                        case 'json':
+                            res.set('Content-Type', 'application/json');
+                            res.json({ error: err.message });
+                            break;
+                        case 'xml':
+                            res.set('Content-Type', 'application/xml');
+                            res.send(`<error>${err.message}</error>`);
+                            break;
+                        case 'html':
+                            res.set('Content-Type', 'text/html');
+                            res.send(`<html><head></head><body>${err.message}</body></html>`);
+                            break;
+                        default:
+                            res.set('Content-Type', 'text/plain');
+                            res.send(err.message);
+                    }
                     if (this.logger.isWarnEnabled()) {
                         this.logger.warn(`Error on API pipeline processing: ${err.message}`);
                     }
