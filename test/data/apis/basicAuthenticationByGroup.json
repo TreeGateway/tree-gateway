@@ -8,7 +8,7 @@
             "description": "Endpoints Group One",
             "member": [
                 {
-                    "path": ["get/", "/user-agent"],
+                    "path": ["get/", "/user-agent/**"],
                     "method": ["GET"],
                     "protocol": ["http"]
                 }
