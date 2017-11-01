@@ -5,8 +5,7 @@ import * as express from 'express';
 import { Group } from './config/group';
 import * as Utils from './proxy/utils';
 import { createFunction } from './utils/functions';
-
-const pathToRegexp = require('path-to-regexp');
+import * as mm from 'minimatch';
 
 export function filter(groups: Array<Group>, groupIds: Array<string>) {
     const filtered = _.filter(groups, (g: Group) => {
@@ -17,7 +16,7 @@ export function filter(groups: Array<Group>, groupIds: Array<string>) {
 
 export function buildGroupAllowFilter(groups: Array<Group>, groupIds: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupAllowTest('req', groups, groupIds)};`;
-    return <(req: express.Request, res: express.Response) => boolean>createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body);
+    return <(req: express.Request, res: express.Response) => boolean>createFunction({ mm: mm }, 'req', 'res', body);
 }
 
 export function buildGroupAllowTest(request: string, groups: Array<Group>, groupIds: Array<string>) {
@@ -69,7 +68,7 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
                     if (i > 0) {
                         func.push(`||`);
                     }
-                    func.push(`(pathToRegexp('${Utils.normalizePath(path)}').test(${request}.path))`);
+                    func.push(`(mm(${request}.path, '${Utils.normalizePath(path)}'))`);
                 });
                 func.push(`)`);
             }
@@ -83,7 +82,7 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
 
 export function buildGroupDenyFilter(groups: Array<Group>, names: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupDenyTest('req', groups, names)}`;
-    return <(req: express.Request, res: express.Response) => boolean>createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body);
+    return <(req: express.Request, res: express.Response) => boolean>createFunction({ mm: mm }, 'req', 'res', body);
 }
 
 export function buildGroupDenyTest(request: string, groups: Array<Group>, names: Array<string>) {
@@ -135,7 +134,7 @@ export function buildGroupDenyTest(request: string, groups: Array<Group>, names:
                     if (i > 0) {
                         func.push(`&&`);
                     }
-                    func.push(`!(pathToRegexp('${Utils.normalizePath(path)}').test(${request}.path))`);
+                    func.push(`!(mm(${request}.path, '${Utils.normalizePath(path)}'))`);
                 });
                 func.push(`)`);
             }
@@ -149,7 +148,7 @@ export function buildGroupDenyTest(request: string, groups: Array<Group>, names:
 
 export function buildGroupNotAllowFilter(groups: Array<Group>, groupIds: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupNotAllowTest('req', groups, groupIds)};`;
-    return <(req: express.Request, res: express.Response) => boolean>createFunction({ pathToRegexp: pathToRegexp }, 'req', 'res', body);
+    return <(req: express.Request, res: express.Response) => boolean>createFunction({ mm: mm }, 'req', 'res', body);
 }
 
 export function buildGroupNotAllowTest(request: string, groups: Array<Group>, names: Array<string>) {
@@ -202,7 +201,7 @@ export function buildGroupNotAllowTest(request: string, groups: Array<Group>, na
                     if (mIndex > 0) {
                         func.push(`&&`);
                     }
-                    func.push(`!(pathToRegexp('${Utils.normalizePath(path)}').test(${request}.path))`);
+                    func.push(`!(mm(${request}.path, '${Utils.normalizePath(path)}'))`);
                 });
                 func.push(`)`);
             }
