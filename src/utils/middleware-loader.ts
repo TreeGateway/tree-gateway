@@ -15,6 +15,10 @@ export class MiddlewareLoader {
             'jwt': '../authentication/strategies/jwt',
             'local': '../authentication/strategies/local'
         },
+        'error/handler': {
+            'json': '../error/handlers/json',
+            'mustache': '../error/handlers/mustache'
+        },
         'filter': {
             'ipFilter': '../filter/filters/ipFilter'
         },

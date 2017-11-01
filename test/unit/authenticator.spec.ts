@@ -68,6 +68,8 @@ describe('The Gateway Authenticator', () => {
             url:'/secureBasic-by-group/get?arg=1'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(401);
+            const result = JSON.parse(body);
+            expect(result.Err).to.equal('Unauthorized');
             done();
         });
     });

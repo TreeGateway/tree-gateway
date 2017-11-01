@@ -21,6 +21,7 @@ export interface Middleware {
     proxyRouter(name?: string): Promise<Array<string>>;
     serviceDiscovery(name?: string): Promise<Array<string>>;
     serviceDiscoveryProvider(name?: string): Promise<Array<string>>;
+    errorHandler(name?: string): Promise<Array<string>>;
     removeFilter(name: string): Promise<void>;
     removeRequestInterceptor(name: string): Promise<void>;
     removeResponseInterceptor(name: string): Promise<void>;
@@ -34,6 +35,7 @@ export interface Middleware {
     removeProxyRouter(name: string): Promise<void>;
     removeServiceDiscovery(name: string): Promise<void>;
     removeServiceDiscoveryProvider(name: string): Promise<void>;
+    removeErrorHandler(name: string): Promise<void>;
     updateFilter(name: string, fileName: string): Promise<void>;
     updateRequestInterceptor(name: string, fileName: string): Promise<void>;
     updateResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -47,6 +49,7 @@ export interface Middleware {
     updateProxyRouter(name: string, fileName: string): Promise<void>;
     updateServiceDiscovery(name: string, fileName: string): Promise<void>;
     updateServiceDiscoveryProvider(name: string, fileName: string): Promise<void>;
+    updateErrorHandler(name: string, fileName: string): Promise<void>;
     addFilter(name: string, fileName: string): Promise<void>;
     addRequestInterceptor(name: string, fileName: string): Promise<void>;
     addResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -60,6 +63,7 @@ export interface Middleware {
     addProxyRouter(name: string, fileName: string): Promise<void>;
     addServiceDiscovery(name: string, fileName: string): Promise<void>;
     addServiceDiscoveryProvider(name: string, fileName: string): Promise<void>;
+    addErrorHandler(name: string, fileName: string): Promise<void>;
     getFilter(name: string): Promise<Buffer>;
     getRequestInterceptor(name: string): Promise<Buffer>;
     getResponseInterceptor(name: string): Promise<Buffer>;
@@ -73,6 +77,7 @@ export interface Middleware {
     getProxyRouterMiddleware(name: string): Promise<Buffer>;
     getServiceDiscoveryMiddleware(name: string): Promise<Buffer>;
     getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer>;
+    getErrorHandlerMiddleware(name: string): Promise<Buffer>;
 }
 
 export class MiddlewareClient implements Middleware {
@@ -263,6 +268,19 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
+    errorHandler(name?: string): Promise<Array<string>> {
+        return new Promise<Array<string>>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestErrorHandler({ name })
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
     removeFilter(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name })
@@ -432,6 +450,19 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
+    removeErrorHandler(name: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveErrorHandler({ name })
+                .then((response: any) => {
+                    if (response.status === 204) {
+                        return resolve();
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
     updateFilter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('filters', fileName, true);
     }
@@ -484,6 +515,10 @@ export class MiddlewareClient implements Middleware {
         return this.installMiddleware('servicediscovery/provider', fileName, true);
     }
 
+    updateErrorHandler(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('errorhandler', fileName, true);
+    }
+
     addFilter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('filters', fileName);
     }
@@ -534,6 +569,10 @@ export class MiddlewareClient implements Middleware {
 
     addServiceDiscoveryProvider(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('servicediscovery/provider', fileName);
+    }
+
+    addErrorHandler(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('errorhandler', fileName);
     }
 
     getFilter(name: string): Promise<Buffer> {
@@ -695,6 +734,19 @@ export class MiddlewareClient implements Middleware {
     getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
             this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({ name })
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
+    getErrorHandlerMiddleware(name: string): Promise<Buffer> {
+        return new Promise<Buffer>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetErrorHandlerMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
