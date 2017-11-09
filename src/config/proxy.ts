@@ -83,7 +83,7 @@ export interface Proxy {
      */
     interceptor?: Interceptors;
     /**
-     * If true, the gateway will copy the host HTTP header to the proxied express server.
+     * If true, the gateway will copy the host HTTP header to the proxied server.
      */
     preserveHostHdr?: boolean;
     /**
