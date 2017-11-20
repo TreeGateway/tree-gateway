@@ -1,6 +1,6 @@
 'use strict';
 
-import * as uuid from 'uuid';
+import { ObjectID } from 'bson';
 import { ApiService } from '../api';
 import { NotFoundError, ValidationError } from '../../error/errors';
 import { ApiConfig } from '../../config/api';
@@ -63,7 +63,7 @@ export class RedisApiService implements ApiService {
     create(api: ApiConfig): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             if (!api.id) {
-                api.id = uuid();
+                api.id = new ObjectID().toString();
             }
             this.ensureAPICreateConstraints(api)
                 .then(() =>
@@ -87,7 +87,7 @@ export class RedisApiService implements ApiService {
     update(api: ApiConfig, upsert?: boolean): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             if (upsert && !api.id) {
-                api.id = uuid();
+                api.id = new ObjectID().toString();
             }
             this.ensureAPIUpdateConstraints(api, upsert)
                 .then(() =>
