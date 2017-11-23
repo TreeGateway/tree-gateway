@@ -44,6 +44,11 @@ It provides:
     - Very low resources footprint.
   - Everything can be extended or customized **using only Javascript**. All plugins can be written in pure Javascript.
   
+## Watch the Quickstart video
+
+<a href="https://www.youtube.com/watch?v=FkAeEmt2wro"><img src="https://img.youtube.com/vi/FkAeEmt2wro/1.jpg"/></a>
+
+
 ## Try Tree Gateway
 
 Take a better look into Tree Gateway by checking out the project and working with it guided by our [Docs](https://github.com/Leanty/tree-gateway/wiki).
