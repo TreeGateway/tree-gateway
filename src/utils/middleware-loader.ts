@@ -51,11 +51,12 @@ export class MiddlewareLoader {
 
     loadMiddleware(type: string, middlewareConfig: MiddlewareConfig) {
         let p: string;
+        const middlewareId = this.getId(middlewareConfig);
         if ((_.has(MiddlewareLoader.providedMiddlewares, type)) &&
-            (_.has(MiddlewareLoader.providedMiddlewares[type], middlewareConfig.name))) {
-            p = MiddlewareLoader.providedMiddlewares[type][middlewareConfig.name];
+            (_.has(MiddlewareLoader.providedMiddlewares[type], middlewareId))) {
+            p = MiddlewareLoader.providedMiddlewares[type][middlewareId];
         } else {
-            p = path.join(this.config.middlewarePath, type, middlewareConfig.name);
+            p = path.join(this.config.middlewarePath, type, middlewareId);
         }
 
         let middleware = require(p);
@@ -63,5 +64,9 @@ export class MiddlewareLoader {
             middleware = middleware(middlewareConfig.options);
         }
         return middleware;
+    }
+
+    getId(middlewareConfig: MiddlewareConfig) {
+        return middlewareConfig.id || middlewareConfig.name;
     }
 }

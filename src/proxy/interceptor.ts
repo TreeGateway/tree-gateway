@@ -102,7 +102,8 @@ export class ProxyInterceptor {
         body.push(`var continueChain = function(body, headers, request){ return {body: body}; };`);
         proxy.interceptor.response.forEach((interceptor, index) => {
             const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/response', interceptor.middleware);
-            interceptors[interceptor.middleware.name] = interceptorMiddleware;
+            const middlewareId = this.middlewareLoader.getId(interceptor.middleware);
+            interceptors[middlewareId] = interceptorMiddleware;
             if (interceptor.group) {
                 result.validators.push(Groups.buildGroupNotAllowFilter(api.group, interceptor.group));
             } else {
@@ -111,7 +112,7 @@ export class ProxyInterceptor {
             body.push(`var f${index};`);
             body.push(`if (ignore[${index}])`);
             body.push(`f${index} = continueChain;`);
-            body.push(`else f${index} = interceptors['${interceptor.middleware.name}'];`);
+            body.push(`else f${index} = interceptors['${middlewareId}'];`);
             body.push(`Promise.resolve(f${index}(body, proxyRes.headers, request)).catch((error) => { \
                    callback(error); \
                    return; \

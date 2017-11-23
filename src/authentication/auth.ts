@@ -40,11 +40,11 @@ export class ApiAuth {
                 }
 
                 if (this.logger.isDebugEnabled) {
-                    this.logger.debug(`Authentication Strategy [${authentication.strategy.name}] configured for path [${path}]`);
+                    this.logger.debug(`Authentication Strategy [${this.middlewareLoader.getId(authentication.strategy)}] configured for path [${path}]`);
                 }
             }
         } catch (e) {
-            this.logger.error(`Error configuring Authentication Strategy [${authentication.strategy.name}] for path [${path}]`, e);
+            this.logger.error(`Error configuring Authentication Strategy [${this.middlewareLoader.getId(authentication.strategy)}] for path [${path}]`, e);
         }
     }
 
