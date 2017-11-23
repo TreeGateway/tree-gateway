@@ -27,7 +27,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
         return new Promise<void>((resolve, reject) => {
             if (config.middlewares) {
                 Promise.all(config.middlewares.map(mid =>
-                    this.middlewareService.save(mid.middleware, mid.name, new Buffer(mid.content))))
+                    this.middlewareService.save(mid.middleware, mid.id || mid.name, new Buffer(mid.content))))
                     .then(() => this.setApisAndGateway(config))
                     .then(resolve)
                     .catch(reject);
@@ -114,7 +114,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
             if (names && names.length) {
                 const promises = names.map(name => new Promise<MiddlewareConfig>((res, rej) => {
                     this.middlewareService.read(middleware, name)
-                        .then(content => res({ middleware: middleware, name: name, content: content.toString() }))
+                        .then(content => res({ middleware: middleware, id: name, content: content.toString() }))
                         .catch(rej);
                 }));
                 Promise.all(promises).then(resolve).catch(reject);

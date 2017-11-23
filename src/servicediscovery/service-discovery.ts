@@ -19,16 +19,21 @@ export class ServiceDiscovery {
         }
         const promises = gatewayConfig.serviceDiscovery.provider.map(provider => {
             return new Promise<void>((resolve, reject) => {
-                const middleware = this.middlewareLoader.loadMiddleware('servicediscovery/provider', provider);
-                Promise.resolve(middleware())
-                    .then((serviceDiscovery: any) => {
-                        this.loadedClients.set(provider.name, serviceDiscovery);
-                        this.logger.info(`Service Discovery provider ${provider.name} initialized.`);
-                        resolve();
-                    })
-                    .catch(error => {
-                        reject(new Error(`Error loading service discovery provider ${provider.name}. Error: ${error.message}`));
-                    });
+                const middlewareId = this.middlewareLoader.getId(provider);
+                try {
+                    const middleware = this.middlewareLoader.loadMiddleware('servicediscovery/provider', provider);
+                    Promise.resolve(middleware())
+                        .then((serviceDiscovery: any) => {
+                            this.loadedClients.set(middlewareId, serviceDiscovery);
+                            this.logger.info(`Service Discovery provider ${middlewareId} initialized.`);
+                            resolve();
+                        })
+                        .catch(error => {
+                            reject(new Error(`Error loading service discovery provider ${middlewareId}. Error: ${error.message}`));
+                        });
+                } catch (error) {
+                    reject(new Error(`Error loading service discovery provider ${middlewareId}. Error: ${error.message}`));
+                }
             });
         });
         return new Promise<void>((resolve, reject) => {
@@ -37,7 +42,7 @@ export class ServiceDiscovery {
     }
 
     loadServiceDiscovery(middlewareConfig: MiddlewareConfig, ssl?: boolean) {
-        const provider = middlewareConfig.name;
+        const provider = this.middlewareLoader.getId(middlewareConfig);
         const serviceDiscovery = this.loadedClients.get(provider);
         if (serviceDiscovery) {
             if (this.logger.isDebugEnabled()) {

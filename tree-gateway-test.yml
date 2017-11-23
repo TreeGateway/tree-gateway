@@ -83,7 +83,7 @@ gateway:
             duration: '1 hour'
             ttl: '1 day'
     monitor:
-        - name: cpu
+        - id: cpu
           statsConfig:
             granularity:
                 duration: 1 hour

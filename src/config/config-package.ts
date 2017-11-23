@@ -24,8 +24,9 @@ export interface ConfigPackage {
 }
 
 export interface MiddlewareConfig {
+    id?: string;
     middleware: string;
-    name: string;
+    name?: string;
     content: string;
 }
 
@@ -34,9 +35,10 @@ export let configPackageValidatorSchema = Joi.object().keys({
     gateway: gatewayConfigValidatorSchema,
     middlewares: Joi.array().items(Joi.object().keys({
         content: Joi.string().required(),
+        id: Joi.string(),
         middleware: Joi.string().required(),
-        name: Joi.string().required()
-    }))
+        name: Joi.string()
+    }).xor('id', 'name'))
 });
 
 export function validateConfigPackage(configPackage: ConfigPackage) {

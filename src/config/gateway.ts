@@ -115,9 +115,13 @@ export interface GatewayConfig {
 
 export interface MonitorConfig {
     /**
+     * Alternative do MonitorConfig.id
+     */
+    id?: string;
+    /**
      * The name of the monitor
      */
-    name: string;
+    name?: string;
     /**
      * Configure how statistical data will be collected
      */
@@ -125,9 +129,10 @@ export interface MonitorConfig {
 }
 
 const monitorConfigSchema = Joi.object().keys({
-    name: Joi.string().valid('cpu', 'mem').required(),
+    id: Joi.string().valid('cpu', 'mem'),
+    name: Joi.string().valid('cpu', 'mem'),
     statsConfig: statsConfigValidatorSchema.required()
-});
+}).xor('id', 'name');
 
 export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,

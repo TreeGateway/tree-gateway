@@ -10,7 +10,7 @@
     },
     "authentication": {
         "strategy": {
-            "name": "myJwtStrategy",
+            "id": "myJwtStrategy",
             "options": {
                 "secret": "secret"
             }

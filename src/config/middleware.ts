@@ -9,6 +9,10 @@ export interface MiddlewareConfig {
     /**
      * The name of the middleware
      */
+    id: string;
+    /**
+     * An alias for the middleware ID. It cause the same effect then configure id property
+     */
     name: string;
     /**
      * Options to be passed to middleware initialization
@@ -17,6 +21,7 @@ export interface MiddlewareConfig {
 }
 
 export let middlewareConfigValidatorSchema = Joi.object().keys({
-    name: Joi.string().required(),
+    id: Joi.string(),
+    name: Joi.string(),
     options: Joi.object().unknown(true)
-});
+}).xor('id', 'name');

@@ -20,7 +20,7 @@ export abstract class Monitor {
 
     constructor(config: MonitorConfig) {
         this.config = config;
-        this.stats = this.createStats(this.config.name);
+        this.stats = this.createStats(this.config.id || this.config.name);
         this.machineId = Monitor.getMachineId();
     }
 
@@ -29,7 +29,8 @@ export abstract class Monitor {
         const self = this;
         this.interval = setInterval(() => {
             this.run(this.period).then(value => self.registerStats(value)).catch(err => {
-                this.logger.error(`Error on monitor [${this.config.name}]: ${err}`);
+                const monitorName = this.config.id || this.config.name;
+                this.logger.error(`Error on monitor [${monitorName}]: ${err}`);
                 this.stop();
             });
         }, this.period);
@@ -38,7 +39,8 @@ export abstract class Monitor {
     stop() {
         if (this.interval) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Stopping monitor [${this.config.name}]`);
+                const monitorName = this.config.id || this.config.name;
+                this.logger.debug(`Stopping monitor [${monitorName}]`);
             }
             clearInterval(this.interval);
             this.interval = null;

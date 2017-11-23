@@ -1,6 +1,7 @@
 'use strict';
 
 import 'mocha';
+import * as chai from 'chai';
 
 import * as fs from 'fs-extra-promise';
 import * as path from 'path';
@@ -11,6 +12,7 @@ import {Database} from '../../src/database';
 import {SDK} from '../../src/admin/config/sdk';
 import * as YAML from 'yamljs';
 
+const expect = chai.expect;
 // tslint:disable:no-unused-expression
 // tslint:disable:no-console
 
@@ -84,6 +86,17 @@ describe('Gateway APIs install', () => {
                     setTimeout(resolve, 1000);
                 })
                 .catch(reject);
+        });
+    });
+
+    it('should be able to export Gateway Configuration', () => {
+        return new Promise<void>((resolve, reject) => {
+            sdk.config.get()
+                .then(conf => {
+                    expect(conf.middlewares.length).to.eq(13);
+                    console.info(conf.middlewares);
+                    resolve();
+                }).catch(reject);
         });
     });
 

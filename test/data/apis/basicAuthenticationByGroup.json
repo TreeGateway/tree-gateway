@@ -23,7 +23,7 @@
     },
     "authentication": {
         "strategy": {
-            "name": "basic",
+            "id": "basic",
             "options": {
                 "verify": {
                     "name": "verifyBasicUser"

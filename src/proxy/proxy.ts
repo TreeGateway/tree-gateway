@@ -14,10 +14,9 @@ import { MiddlewareLoader } from '../utils/middleware-loader';
 import { ServiceDiscovery } from '../servicediscovery/service-discovery';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-
+import { WritableStreamBuffer } from 'stream-buffers';
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../lib/http-proxy');
-const memoryStream = require('memory-streams').WritableStream;
 
 /**
  * The API Proxy system. It uses [[http-proxy]](https://github.com/nodejitsu/node-http-proxy)
@@ -171,7 +170,7 @@ export class ApiProxy {
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
             if (validateInterceptors(req, res) || (<any>req).parseRespBody) {
                 const options: any = (<any>req).proxyOptions || {};
-                (<any>res).__data = new memoryStream();
+                (<any>res).__data = new WritableStreamBuffer();
                 options.destPipe = { stream: (<any>res).__data };
                 proxy.web(req, res, options);
             } else if ((<any>req).proxyOptions) {
@@ -186,7 +185,7 @@ export class ApiProxy {
         proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
             if (res.__data) {
                 if (responseInterceptor) {
-                    responseInterceptor.middelware(res.__data.toBuffer(), proxyRes, req, res, res.__ignore,
+                    responseInterceptor.middelware(res.__data.getContents(), proxyRes, req, res, res.__ignore,
                         (newHeaders: any, removeHeaders: string[]) => {
                             if (newHeaders) {
                                 Object.keys(newHeaders).forEach(name => {
@@ -215,7 +214,7 @@ export class ApiProxy {
                             }
                         });
                 } else {
-                    const body = res.__data.toBuffer();
+                    const body = res.__data.getContents();
                     delete res['__data'];
                     if (!res.finished) {
                         res.send(body);
