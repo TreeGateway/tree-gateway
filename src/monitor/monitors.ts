@@ -31,12 +31,13 @@ export class Monitors {
             }
             this.config.gateway.monitor.forEach(monitorConfig => {
                 let monitor = null;
-                if (monitorConfig.name === 'cpu') {
+                const monitorName = monitorConfig.id || monitorConfig.name;
+                if (monitorName === 'cpu') {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug(`Starting a CPU monitor.`);
                     }
                     monitor = new CpuMonitor(monitorConfig);
-                } else if (monitorConfig.name === 'mem') {
+                } else if (monitorName === 'mem') {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug(`Starting a Memory monitor.`);
                     }
