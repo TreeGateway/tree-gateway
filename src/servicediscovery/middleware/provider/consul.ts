@@ -3,11 +3,10 @@
 import * as Joi from 'joi';
 import * as consul from 'consul';
 import { ValidationError } from '../../../error/errors';
-import { checkEnvVariable } from '../../../utils/env';
 import { getMilisecondsInterval } from '../../../utils/time-intervals';
 import * as fs from 'fs-extra-promise';
 
-interface ConsultConfig {
+interface ConsulConfig {
     /**
      * Agent address. Default: 127.0.0.1. It is not recommended to access
      * consul agent remotely. [see this](https://github.com/hashicorp/consul/issues/1916)
@@ -80,7 +79,7 @@ const consulConfigSchema = Joi.object().keys({
     secure: Joi.boolean()
 });
 
-function validateConsulConfig(config: ConsultConfig) {
+function validateConsulConfig(config: ConsulConfig) {
     const result = Joi.validate(config, consulConfigSchema);
     if (result.error) {
         throw new ValidationError(result.error);
@@ -89,16 +88,16 @@ function validateConsulConfig(config: ConsultConfig) {
     }
 }
 
-module.exports = function(config: ConsultConfig) {
+module.exports = function(config: ConsulConfig) {
     validateConsulConfig(config);
 
     const consulConfig: consul.ConsulOptions = {};
 
     if (config.host) {
-        consulConfig.host = <string>checkEnvVariable(config.host);
+        consulConfig.host = config.host;
     }
     if (config.port) {
-        consulConfig.port = <string>checkEnvVariable(config.port);
+        consulConfig.port = `${config.port}`;
     }
     if (config.secure) {
         consulConfig.secure = config.secure;

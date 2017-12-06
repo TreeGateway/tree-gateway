@@ -5,7 +5,6 @@ import { RedisConfig } from './config/database';
 import * as _ from 'lodash';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { Configuration } from './configuration';
-import { checkEnvVariable } from './utils/env';
 
 @Singleton
 @AutoWired
@@ -41,8 +40,8 @@ export class Database {
 
         if (config.cluster) {
             config.cluster.forEach(node => {
-                node.port = <number>checkEnvVariable(node.port, true);
-                node.host = <string>checkEnvVariable(node.host);
+                node.port = _.toSafeInteger(node.port);
+                node.host = node.host;
             });
             client = new Redis.Cluster(<any>config.cluster, {
                 redisOptions: config.options,
@@ -54,8 +53,8 @@ export class Database {
                 sentinels: config.sentinel.nodes
             });
             config.sentinel.nodes.forEach(node => {
-                node.port = <number>checkEnvVariable(node.port, true);
-                node.host = <string>checkEnvVariable(node.host);
+                node.port = _.toSafeInteger(node.port);
+                node.host = node.host;
             });
             client = new Redis(params);
         } else {
@@ -68,8 +67,8 @@ export class Database {
                 config.options.password = config.standalone.password;
             }
 
-            client = new Redis(<number>checkEnvVariable(config.standalone.port, true),
-                <string>checkEnvVariable(config.standalone.host), config.options);
+            client = new Redis(_.toSafeInteger(config.standalone.port),
+                config.standalone.host, config.options);
         }
 
         return client;

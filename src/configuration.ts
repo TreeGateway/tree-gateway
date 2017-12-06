@@ -18,6 +18,8 @@ import { GatewayService } from './service/gateway';
 import { PluginsDataService } from './service/plugin-data';
 import { StatsHandler } from './stats/stats';
 
+_.mixin(require('lodash-deep'));
+
 @Singleton
 @AutoWired
 export class Configuration extends EventEmitter {
@@ -97,8 +99,6 @@ export class Configuration extends EventEmitter {
             rootPath: path.dirname(configFileName),
         });
 
-        serverConfig.rootPath = <string>checkEnvVariable(serverConfig.rootPath);
-
         if (_.startsWith(serverConfig.rootPath, '.')) {
             serverConfig.rootPath = path.join(path.dirname(configFileName), serverConfig.rootPath);
         }
@@ -107,11 +107,13 @@ export class Configuration extends EventEmitter {
             middlewarePath: path.join(serverConfig.rootPath, 'middleware')
         });
 
-        serverConfig.middlewarePath = <string>checkEnvVariable(serverConfig.middlewarePath);
-
         if (_.startsWith(serverConfig.middlewarePath, '.')) {
             serverConfig.middlewarePath = path.join(serverConfig.rootPath, serverConfig.middlewarePath);
         }
+
+        serverConfig = this.config = (<any>_).deepMapValues(serverConfig, (value: string) => {
+            return checkEnvVariable(value);
+        });
 
         this.config = serverConfig;
         this.loadContainerConfigurations();
