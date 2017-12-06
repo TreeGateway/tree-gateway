@@ -94,7 +94,6 @@ describe('Gateway APIs install', () => {
             sdk.config.get()
                 .then(conf => {
                     expect(conf.middlewares.length).to.eq(13);
-                    console.info(conf.middlewares);
                     resolve();
                 }).catch(reject);
         });
