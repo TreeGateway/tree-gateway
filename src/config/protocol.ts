@@ -11,14 +11,14 @@ export interface HttpConfig {
     /**
      * The listen port
      */
-    listenPort: number;
+    listenPort: string | number;
 }
 
 export interface HttpsConfig {
     /**
      * The listn port
      */
-    listenPort: number;
+    listenPort: string | number;
     /**
      * Path to the private key file.
      */
@@ -30,12 +30,12 @@ export interface HttpsConfig {
 }
 
 const httpConfigSchema = Joi.object().keys({
-    listenPort: Joi.number().positive().required()
+    listenPort: Joi.alternatives([Joi.number().positive(), Joi.string()]).required(),
 });
 
 const httpsConfigSchema = Joi.object().keys({
     certificate: Joi.string().required(),
-    listenPort: Joi.number().positive().required(),
+    listenPort: Joi.alternatives([Joi.number().positive(), Joi.string()]).required(),
     privateKey: Joi.string().required()
 
 });
