@@ -55,7 +55,7 @@ describe('Gateway APIs install', () => {
              .then(() => sdk.middleware.addResponseInterceptor('removeHeaderResponseInterceptor', path.join(base, '/interceptor/response', 'removeHeaderResponseInterceptor.js')))
              .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
              .then(() => sdk.middleware.addCors('corsOrigin', path.join(base, '/cors/origin', 'corsOrigin.js')))
-             .then(() => sdk.middleware.addErrorHandler('errorHandler', path.join(base, '/errorhandler', 'errorhandler.js')))
+             .then(() => sdk.middleware.addErrorHandler('errorHandler', path.join(base, '/errorhandler', 'errorHandler.js')))
              .then(() => {
                  setTimeout(resolve, 1500);
              })
