@@ -1,5 +1,6 @@
 'use strict';
 
+import * as _ from 'lodash';
 import * as http from 'http';
 import * as compression from 'compression';
 import * as express from 'express';
@@ -100,7 +101,7 @@ export class Gateway extends EventEmitter {
                         expected++;
                         const httpServer = http.createServer(this.app);
 
-                        this.apiServer.set('http', <http.Server>httpServer.listen(this.config.gateway.protocol.http.listenPort, () => {
+                        this.apiServer.set('http', <http.Server>httpServer.listen(_.toSafeInteger(this.config.gateway.protocol.http.listenPort), () => {
                             this.logger.info(`Gateway listenning HTTP on port ${this.config.gateway.protocol.http.listenPort}`);
                             started++;
                             if (started === expected) {
@@ -113,7 +114,7 @@ export class Gateway extends EventEmitter {
                     if (this.config.gateway.protocol.https) {
                         expected++;
                         const httpsServer = this.createHttpsServer(this.app);
-                        this.apiServer.set('https', httpsServer.listen(this.config.gateway.protocol.https.listenPort, () => {
+                        this.apiServer.set('https', httpsServer.listen(_.toSafeInteger(this.config.gateway.protocol.https.listenPort), () => {
                             this.logger.info(`Gateway listenning HTTPS on port ${this.config.gateway.protocol.https.listenPort}`);
                             started++;
                             if (started === expected) {
@@ -143,7 +144,7 @@ export class Gateway extends EventEmitter {
                     expected++;
                     const httpServer = http.createServer(this.adminApp);
                     httpServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
-                    this.adminServer.set('http', <http.Server>httpServer.listen(this.config.gateway.admin.protocol.http.listenPort, () => {
+                    this.adminServer.set('http', <http.Server>httpServer.listen(_.toSafeInteger(this.config.gateway.admin.protocol.http.listenPort), () => {
                         this.logger.info(`Gateway Admin Server listenning HTTP on port ${this.config.gateway.admin.protocol.http.listenPort}`);
                         started++;
                         if (started === expected) {
@@ -156,7 +157,7 @@ export class Gateway extends EventEmitter {
                     expected++;
                     const httpsServer = this.createHttpsServer(this.adminApp);
                     httpsServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
-                    this.adminServer.set('https', httpsServer.listen(this.config.gateway.admin.protocol.https.listenPort, () => {
+                    this.adminServer.set('https', httpsServer.listen(_.toSafeInteger(this.config.gateway.admin.protocol.https.listenPort), () => {
                         this.logger.info(`Gateway Admin Server listenning HTTPS on port ${this.config.gateway.admin.protocol.https.listenPort}`);
                         started++;
                         if (started === expected) {
