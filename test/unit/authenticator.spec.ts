@@ -107,4 +107,13 @@ describe('The Gateway Authenticator', () => {
             done();
         });
     });
+
+    it('should be able to verify a custom authentication on requests to API', (done) => {
+        gatewayRequest.get({
+            url:'/secureCustom/get'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(401);
+            done();
+        });
+    });
 });

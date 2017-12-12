@@ -54,6 +54,7 @@ export class ApiErrorHandler {
                     }
                     if (this.logger.isWarnEnabled()) {
                         this.logger.warn(`Error on API pipeline processing: ${err.message}`);
+                        this.logger.warn(err);
                     }
                 } else {
                     next(err);

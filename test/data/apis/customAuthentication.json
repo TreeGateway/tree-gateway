@@ -15,5 +15,9 @@
                 "secret": "secret"
             }
         }
+    },
+    "errorHandler": {
+        "name": "errorHandler",
+        "options": {}
     }
 }

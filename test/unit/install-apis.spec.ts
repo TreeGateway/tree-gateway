@@ -55,6 +55,7 @@ describe('Gateway APIs install', () => {
              .then(() => sdk.middleware.addResponseInterceptor('removeHeaderResponseInterceptor', path.join(base, '/interceptor/response', 'removeHeaderResponseInterceptor.js')))
              .then(() => sdk.middleware.addCircuitBreaker('myOpenHandler', path.join(base, '/circuitbreaker', 'myOpenHandler.js')))
              .then(() => sdk.middleware.addCors('corsOrigin', path.join(base, '/cors/origin', 'corsOrigin.js')))
+             .then(() => sdk.middleware.addErrorHandler('errorHandler', path.join(base, '/errorhandler', 'errorhandler.js')))
              .then(() => {
                  setTimeout(resolve, 1500);
              })
@@ -103,14 +104,15 @@ describe('Gateway APIs install', () => {
         return new Promise<void>((resolve, reject) => {
             database = Container.get(Database);
             gateway = Container.get(Gateway);
-            gateway.start()
+            database.redisClient.flushdb()
+            .then(() => gateway.start())
             .then(() => gateway.startAdmin())
             .then(() => {
                 gateway.server.set('env', 'test');
-                return database.redisClient.flushdb();
+                return ;
             })
             .then(() => SDK.initialize(config.gateway))
-            .then((s) => {
+            .then((s: SDK) => {
                 sdk = s;
                 resolve();
             })
