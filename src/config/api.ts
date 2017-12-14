@@ -11,6 +11,7 @@ import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './cir
 import { Filter, filterSchema } from './filter';
 import { ValidationError } from '../error/errors';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+import { ObjectID } from 'bson';
 
 /**
  * The API config descriptor.
@@ -112,13 +113,19 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     version: Joi.alternatives(Joi.string(), Joi.number()).required()
 });
 
-export function validateApiConfig(apiConfig: ApiConfig) {
+export function validateApiConfig(apiConfig: ApiConfig, disableApiIdValidation: boolean) {
     return new Promise((resolve, reject) => {
         Joi.validate(apiConfig, apiConfigValidatorSchema, (err, value) => {
             if (err) {
                 reject(new ValidationError(err));
             } else {
-                resolve(value);
+                if (disableApiIdValidation) {
+                    return resolve(value);
+                }
+                if (value.id && !ObjectID.isValid(value.id)) {
+                    return reject(new ValidationError(`Invalid API Id ${value.id}. The Id must be a valid ObjectID. To skip this validation, configure the 'disableApiIdValidation' property on tree-gateway.yml config file.`));
+                }
+                return resolve(value);
             }
         });
     });

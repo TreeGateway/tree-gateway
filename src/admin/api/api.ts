@@ -5,12 +5,14 @@ import { ApiConfig, validateApiConfig } from '../../config/api';
 import { ApiService } from '../../service/api';
 import { Inject } from 'typescript-ioc';
 import * as swagger from 'typescript-rest-swagger';
+import { Configuration } from '../../configuration';
 
 @Path('apis')
 @swagger.Tags('APIs')
 @swagger.Security('Bearer')
 export class APIRest {
     @Inject private service: ApiService;
+    @Inject private config: Configuration;
 
     @GET
     list( @QueryParam('name') name?: string,
@@ -23,7 +25,7 @@ export class APIRest {
     @POST
     addApi(api: ApiConfig): Promise<Return.NewResource<void>> {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            validateApiConfig(api)
+            validateApiConfig(api, this.config.gateway.disableApiIdValidation)
                 .then(() => this.service.create(api))
                 .then((apiId) => resolve(new Return.NewResource<void>(`apis/${apiId}`)))
                 .catch(reject);
@@ -36,7 +38,7 @@ export class APIRest {
         return new Promise<void>((resolve, reject) => {
             api.id = id;
 
-            validateApiConfig(api)
+            validateApiConfig(api, this.config.gateway.disableApiIdValidation)
                 .then(() => this.service.update(api))
                 .then(() => resolve())
                 .catch(reject);

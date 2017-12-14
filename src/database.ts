@@ -9,6 +9,8 @@ import { Configuration } from './configuration';
 @Singleton
 @AutoWired
 export class Database {
+    static GATEWAY_VERSION_KEY: string = '{config}:treegateway:version';
+
     @Inject private config: Configuration;
     private client: Redis.Redis;
     private events: Redis.Redis;
@@ -29,6 +31,18 @@ export class Database {
     disconnect() {
         this.redisClient.disconnect();
         this.redisEvents.disconnect();
+    }
+
+    registerGatewayVersion(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const packageJson = require('../package.json');
+            this.redisClient.set(Database.GATEWAY_VERSION_KEY, `${packageJson.version}`)
+                .then(() => {
+                    return resolve();
+                }).catch((err: any) => {
+                    reject(new Error('It was not possible to register the Tree Gateway version.'));
+                });
+        });
     }
 
     private initializeRedis(config: RedisConfig) {

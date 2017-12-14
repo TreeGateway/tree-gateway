@@ -13,7 +13,7 @@ const parser = new ArgumentParser({
 parser.addArgument(
     ['-c', '--config'],
     {
-        help: 'The Tree-Gateway config file (tree-gateway.json).'
+        help: 'The Tree-Gateway config file (tree-gateway.yml).'
     }
 );
 
