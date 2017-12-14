@@ -25,10 +25,9 @@ export class Application {
     }
 
     cluster(instances: number) {
-        // tslint:disable:no-console
         if (cluster.isMaster) {
             const n = instances < 1 ? os.cpus().length : instances;
-            console.log(`Starting child processes...`);
+            console.info(`Starting child processes...`);
 
             for (let i = 0; i < n; i++) {
                 const env = { processNumber: i + 1 };
@@ -37,11 +36,11 @@ export class Application {
             }
 
             cluster.on('online', function(worker) {
-                console.log(`Child process running PID: ${worker.process.pid} PROCESS_NUMBER: ${(<any>worker).process['env'].processNumber}`);
+                console.info(`Child process running PID: ${worker.process.pid} PROCESS_NUMBER: ${(<any>worker).process['env'].processNumber}`);
             });
 
             cluster.on('exit', function(worker, code, signal) {
-                console.log(`PID ${worker.process.pid}  code: ${code}  signal: ${signal}`);
+                console.info(`PID ${worker.process.pid}  code: ${code}  signal: ${signal}`);
                 const env = (<any>worker).process['env'];
                 const newWorker = cluster.fork(env);
                 (<any>newWorker).process['env'] = env;
@@ -55,7 +54,7 @@ export class Application {
         }
 
         process.on('uncaughtException', function(err: any) {
-            console.log(err);
+            console.error(err);
         });
     }
 
@@ -81,6 +80,7 @@ export class Application {
             }
             gateway.start()
                 .then(() => gateway.startAdmin())
+                .then(() => database.registerGatewayVersion())
                 .then(resolve)
                 .catch(reject);
 

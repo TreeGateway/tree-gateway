@@ -13,7 +13,7 @@ const parser = new ArgumentParser({
 parser.addArgument(
     ['-c', '--config'],
     {
-        help: 'The Tree-Gateway config file (tree-gateway.json).'
+        help: 'The Tree-Gateway config file (tree-gateway.yaml).'
     }
 );
 
@@ -21,8 +21,8 @@ parser.addArgument(
     ['-i', '--instances'],
     {
         defaultValue: 1,
-        type: 'int',
-        help: 'The number of instances to start (0 = all cpus cores)'
+        help: 'The number of instances to start (0 = all cpus cores)',
+        type: 'int'
     }
 );
 
