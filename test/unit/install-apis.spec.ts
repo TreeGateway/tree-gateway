@@ -90,6 +90,29 @@ describe('Gateway APIs install', () => {
         });
     });
 
+    it('should be able to reject APIs with invalid IDs', () => {
+        return new Promise<void>((resolve, reject) => {
+            sdk.apis.addApi({
+                id: 'INVALID_ID',
+                name: 'Invalid API',
+                path: '/invalid',
+                proxy: {
+                    target: {
+                        host: 'http://httpbin.org'
+                    }
+                },
+                version: '1.0.0'
+            })
+               .then((apiId) => {
+                   reject('API could not be created with invalid ID');
+               })
+               .catch(err => {
+                   expect(err.statusCode).to.eq(403);
+                   resolve();
+               });
+       });
+   });
+
     it('should be able to export Gateway Configuration', () => {
         return new Promise<void>((resolve, reject) => {
             sdk.config.get()

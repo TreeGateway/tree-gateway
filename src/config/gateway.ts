@@ -46,6 +46,11 @@ export interface GatewayConfig {
      */
     underProxy?: boolean;
     /**
+     * Force the validation of any API Id. If the id is not validated, the data could not be synchronizable
+     * to Leanty dashboard.
+     */
+    disableApiIdValidation?: boolean;
+    /**
      * Configurations for gateway logger.
      */
     logger?: LoggerConfig;
@@ -138,6 +143,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
     cors: corsConfigSchema,
+    disableApiIdValidation: Joi.boolean(),
     errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.array().items(middlewareConfigValidatorSchema),
     healthcheck: Joi.string(),

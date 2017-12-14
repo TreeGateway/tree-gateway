@@ -272,7 +272,7 @@ export class Gateway extends EventEmitter {
 
     private loadApi(api: ApiConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            validateApiConfig(api)
+            validateApiConfig(api, this.config.gateway.disableApiIdValidation)
                 .then((value: ApiConfig) => {
                     this.loadValidateApi(value);
                     resolve();
