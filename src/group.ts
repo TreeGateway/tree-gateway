@@ -3,7 +3,7 @@
 import * as _ from 'lodash';
 import * as express from 'express';
 import { Group } from './config/group';
-import * as Utils from './proxy/utils';
+import { normalizePath } from './utils/path';
 import { createFunction } from './utils/functions';
 import * as mm from 'minimatch';
 
@@ -68,7 +68,7 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
                     if (i > 0) {
                         func.push(`||`);
                     }
-                    func.push(`(mm(${request}.path, '${Utils.normalizePath(path)}'))`);
+                    func.push(`(mm(${request}.path, '${normalizePath(path)}'))`);
                 });
                 func.push(`)`);
             }
@@ -134,7 +134,7 @@ export function buildGroupDenyTest(request: string, groups: Array<Group>, names:
                     if (i > 0) {
                         func.push(`&&`);
                     }
-                    func.push(`!(mm(${request}.path, '${Utils.normalizePath(path)}'))`);
+                    func.push(`!(mm(${request}.path, '${normalizePath(path)}'))`);
                 });
                 func.push(`)`);
             }
@@ -201,7 +201,7 @@ export function buildGroupNotAllowTest(request: string, groups: Array<Group>, na
                     if (mIndex > 0) {
                         func.push(`&&`);
                     }
-                    func.push(`!(mm(${request}.path, '${Utils.normalizePath(path)}'))`);
+                    func.push(`!(mm(${request}.path, '${normalizePath(path)}'))`);
                 });
                 func.push(`)`);
             }

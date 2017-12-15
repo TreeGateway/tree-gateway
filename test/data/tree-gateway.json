@@ -81,7 +81,7 @@
         }, 
         "monitor": [
             {
-                "name": "cpu",
+                "id": "cpu",
                 "statsConfig": {
                     "granularity": {
                         "duration": "1 minute",
