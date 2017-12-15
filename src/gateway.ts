@@ -10,7 +10,7 @@ import { Server, HttpError } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from './config/api';
 import { StatsConfig } from './config/stats';
 import { ApiProxy } from './proxy/proxy';
-import * as Utils from './proxy/utils';
+import { normalizePath } from './utils/path';
 import { ApiRateLimit } from './throttling/throttling';
 import { ApiCors } from './cors/cors';
 import { ApiCircuitBreaker } from './circuitbreaker/circuit-breaker';
@@ -291,7 +291,7 @@ export class Gateway extends EventEmitter {
         }
 
         this.installedApis.set(api.id, api);
-        api.path = Utils.normalizePath(api.path);
+        api.path = normalizePath(api.path);
 
         const apiRouter = express.Router();
         if (!api.proxy.disableStats) {

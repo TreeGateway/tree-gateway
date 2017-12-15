@@ -1,6 +1,7 @@
 'use strict';
 
 import { StatsConfig } from '../config/stats';
+import { normalizePath } from '../utils/path';
 
 export class Stats {
     private statsHandler: StatsHandler;
@@ -8,8 +9,8 @@ export class Stats {
         this.statsHandler = statsHandler;
     }
 
-    registerOccurrence(value: string, increment: number, ...extra: string[]) {
-        return this.statsHandler.registerOccurrence(value, increment, ...extra);
+    registerOccurrence(path: string, increment: number, ...extra: string[]) {
+        return this.statsHandler.registerOccurrence(normalizePath(path), increment, ...extra);
     }
 
     getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
