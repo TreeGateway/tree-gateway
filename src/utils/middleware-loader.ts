@@ -44,6 +44,9 @@ export class MiddlewareLoader {
         },
         'servicediscovery/provider': {
             'consul': '../servicediscovery/middleware/provider/consul'
+        },
+        'stats/request/mapper': {
+            'path': '../stats/request-mappers/path'
         }
     };
 

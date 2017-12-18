@@ -1,6 +1,7 @@
 'use strict';
 
 import * as Joi from 'joi';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 export interface StatsConfig {
     /**
@@ -11,6 +12,10 @@ export interface StatsConfig {
      * A prefix for the timeseries keys on database ()
      */
     prefix?: string;
+    /**
+     * Middleware to map request to statistics log entries
+     */
+    requestMapper?: MiddlewareConfig;
 }
 
 export interface GranularityConfig {
@@ -31,5 +36,6 @@ const granularityValidatorSchema = Joi.object().keys({
 
 export const statsConfigValidatorSchema = Joi.object().keys({
     granularity: granularityValidatorSchema.required(),
-    prefix: Joi.string()
+    prefix: Joi.string(),
+    requestMapper: middlewareConfigValidatorSchema
 });

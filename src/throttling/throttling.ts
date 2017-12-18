@@ -75,12 +75,12 @@ export class ApiRateLimit {
             if (throttling.handler) {
                 const customHandler = this.middlewareLoader.loadMiddleware('throttling/handler', throttling.handler);
                 rateConfig.handler = function(req: express.Request, res: express.Response, next: express.NextFunction) {
-                    stats.registerOccurrence(req.path, 1);
+                    stats.registerOccurrence(req, 1);
                     customHandler(req, res, next);
                 };
             } else {
                 rateConfig.handler = function(req: express.Request, res: express.Response) {
-                    stats.registerOccurrence(req.path, 1);
+                    stats.registerOccurrence(req, 1);
                     res.format({
                         html: function() {
                             res.status(rateConfig.statusCode).end(rateConfig.message);

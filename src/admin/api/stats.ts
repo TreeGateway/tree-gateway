@@ -5,6 +5,7 @@ import { Stats } from '../../stats/stats';
 import { Monitors } from '../../monitor/monitors';
 import { Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../../stats/stats-recorder';
+import { normalizePath } from '../../utils/path';
 import * as swagger from 'typescript-rest-swagger';
 
 @Path('stats')
@@ -129,7 +130,7 @@ export class StatsRest {
         return new Promise<Array<Array<number>>>((resolve, reject) => {
             if (path) {
                 const stats = this.statsRecorder.createStats(Stats.getStatsKey(prefix, apiId, key));
-                stats.getLastOccurrences(count || 24, path, ...extra)
+                stats.getLastOccurrences(count || 24, normalizePath(path), ...extra)
                     .then(resolve)
                     .catch(reject);
             } else {

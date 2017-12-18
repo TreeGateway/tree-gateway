@@ -50,19 +50,19 @@ export class CircuitBreaker extends EventEmitter {
         return this.options.stateHandler.isClosed();
     }
 
-    forceOpen() {
+    forceOpen(req: express.Request) {
         if (!this.options.stateHandler.forceOpen()) {
             return;
         }
 
-        this.emit('open');
+        this.emit('open', req);
     }
 
-    forceClosed() {
+    forceClosed(req: express.Request) {
         if (!this.options.stateHandler.forceClose()) {
             return;
         }
-        this.emit('close');
+        this.emit('close', req);
     }
 
     forceHalfOpen() {
@@ -100,7 +100,7 @@ export class CircuitBreaker extends EventEmitter {
         let operationTimeout = false;
         const timeoutID = setTimeout(() => {
             operationTimeout = true;
-            self.handleTimeout(res);
+            self.handleTimeout(req, res);
         }, self.options.timeout);
         const end = res.end;
         res.end = function(...args: any[]) {
@@ -108,9 +108,9 @@ export class CircuitBreaker extends EventEmitter {
                 clearTimeout(timeoutID);
                 if (res.statusCode >= 500) {
                     self.options.stateHandler.halfOpenCallPending = false;
-                    self.handleFailure(new Error('Circuit breaker API call failure'));// TODO pegar mensagem e status do response
+                    self.handleFailure(req, new Error('Circuit breaker API call failure'));// TODO pegar mensagem e status do response
                 } else {
-                    self.handleSuccess();
+                    self.handleSuccess(req);
                 }
             }
             res.end = end;
@@ -127,25 +127,25 @@ export class CircuitBreaker extends EventEmitter {
         this.emit('rejected', err);
     }
 
-    private handleTimeout(res: express.Response) {
+    private handleTimeout(req: express.Request, res: express.Response) {
         const err = new Error(this.options.timeoutMessage);
-        this.handleFailure(err);
+        this.handleFailure(req, err);
         res.status(this.options.timeoutStatusCode);
         res.end(err.message);
         // this.emit('timeout', (Date.now() - startTime));
     }
 
-    private handleSuccess() {
-        this.forceClosed();
+    private handleSuccess(req: express.Request) {
+        this.forceClosed(req);
 
         // this.emit('success');
     }
 
-    private handleFailure(err: Error) {
+    private handleFailure(req: express.Request, err: Error) {
         this.options.stateHandler.incrementFailures()
             .then(numFailures => {
                 if (this.isHalfOpen() || numFailures >= this.options.maxFailures) {
-                    this.forceOpen();
+                    this.forceOpen(req);
                 }
             });
 

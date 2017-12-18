@@ -56,10 +56,10 @@ export class ApiAuth {
             apiRouter.use((req, res, next) => {
                 authenticator(req, res, (err) => {
                     if (err) {
-                        stats.failStats.registerOccurrence(req.path, 1);
+                        stats.failStats.registerOccurrence(req, 1);
                         next(err);
                     } else {
-                        stats.successStats.registerOccurrence(req.path, 1);
+                        stats.successStats.registerOccurrence(req, 1);
                         next();
                     }
                 });
@@ -83,10 +83,10 @@ export class ApiAuth {
                 if (f(req, res)) {
                     authenticator(req, res, (err) => {
                         if (err) {
-                            stats.failStats.registerOccurrence(req.path, 1);
+                            stats.failStats.registerOccurrence(req, 1);
                             next(err);
                         } else {
-                            stats.successStats.registerOccurrence(req.path, 1);
+                            stats.successStats.registerOccurrence(req, 1);
                             next();
                         }
                     });

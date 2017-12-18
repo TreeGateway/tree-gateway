@@ -86,14 +86,14 @@ export class ApiCircuitBreaker {
     private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: CircuitBreakerConfig, apiId: string) {
         const stats = this.createCircuitBreakerStats(apiId, config);
         if (stats) {
-            breakerInfo.circuitBreaker.on('open', () => {
-                stats.open.registerOccurrence('total', 1);
+            breakerInfo.circuitBreaker.on('open', (req: express.Request) => {
+                stats.open.registerOccurrence(req, 1);
             });
-            breakerInfo.circuitBreaker.on('close', () => {
-                stats.close.registerOccurrence('total', 1);
+            breakerInfo.circuitBreaker.on('close', (req: express.Request) => {
+                stats.close.registerOccurrence(req, 1);
             });
-            breakerInfo.circuitBreaker.on('rejected', () => {
-                stats.rejected.registerOccurrence('total', 1);
+            breakerInfo.circuitBreaker.on('rejected', (req: express.Request) => {
+                stats.rejected.registerOccurrence(req, 1);
             });
         }
         if (config.onOpen) {

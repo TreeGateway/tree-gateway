@@ -1,16 +1,32 @@
 'use strict';
 
 import { StatsConfig } from '../config/stats';
-import { normalizePath } from '../utils/path';
+import { Request } from 'express';
+
+export interface StatsRequestMapper {
+    map(request: Request): string;
+}
 
 export class Stats {
     private statsHandler: StatsHandler;
-    constructor(statsHandler: StatsHandler) {
+    private requestMapper: StatsRequestMapper;
+
+    constructor(statsHandler: StatsHandler, requestMapper: StatsRequestMapper) {
         this.statsHandler = statsHandler;
+        this.requestMapper = requestMapper;
     }
 
-    registerOccurrence(path: string, increment: number, ...extra: string[]) {
-        return this.statsHandler.registerOccurrence(normalizePath(path), increment, ...extra);
+    registerOccurrence(req: Request, increment: number, ...extra: string[]) {
+        setImmediate(() => {
+            const key = this.requestMapper.map(req);
+            this.statsHandler.registerOccurrence(key, increment, ...extra);
+        });
+    }
+
+    registerMonitorOccurrence(key: string, increment: number, ...extra: string[]) {
+        setImmediate(() => {
+            this.statsHandler.registerOccurrence(key, increment, ...extra);
+        });
     }
 
     getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>> {
@@ -21,10 +37,10 @@ export class Stats {
         return this.statsHandler.getLastOccurrences(count, key, ...extra);
     }
 
-    static getStatsKey(prefix: string, path: string, key: string, ...opt: Array<string>) {
+    static getStatsKey(prefix: string, apiId: string, key: string, ...opt: Array<string>) {
         let result: Array<string> = [];
         result.push(prefix);
-        result.push(path);
+        result.push(apiId);
         result.push(key);
 
         if (opt) {
