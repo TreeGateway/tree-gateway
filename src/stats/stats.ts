@@ -4,7 +4,7 @@ import { StatsConfig } from '../config/stats';
 import { Request } from 'express';
 
 export interface StatsRequestMapper {
-    map(request: Request): string;
+    (request: Request): string;
 }
 
 export class Stats {
@@ -18,7 +18,7 @@ export class Stats {
 
     registerOccurrence(req: Request, increment: number, ...extra: string[]) {
         setImmediate(() => {
-            const key = this.requestMapper.map(req);
+            const key = this.requestMapper(req);
             this.statsHandler.registerOccurrence(key, increment, ...extra);
         });
     }
