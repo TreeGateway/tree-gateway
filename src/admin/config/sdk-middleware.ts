@@ -531,7 +531,7 @@ export class MiddlewareClient implements Middleware {
     }
 
     updateCors(name: string, fileName: string): Promise<void> {
-        return this.installMiddleware('cors', fileName, true);
+        return this.installMiddleware('cors/origin', fileName, true);
     }
 
     updateProxyRouter(name: string, fileName: string): Promise<void> {
@@ -591,7 +591,7 @@ export class MiddlewareClient implements Middleware {
     }
 
     addCors(name: string, fileName: string): Promise<void> {
-        return this.installMiddleware('cors', fileName);
+        return this.installMiddleware('cors/origin', fileName);
     }
 
     addProxyRouter(name: string, fileName: string): Promise<void> {

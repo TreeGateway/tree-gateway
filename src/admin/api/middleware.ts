@@ -67,7 +67,7 @@ export class MiddlewareRest {
     }
 
     @GET
-    @Path('cors')
+    @Path('cors/origin')
     corsOrigin( @QueryParam('name') name?: string): Promise<Array<string>> {
         return this.service.list('cors/origin', name);
     }
@@ -157,7 +157,7 @@ export class MiddlewareRest {
     }
 
     @DELETE
-    @Path('cors/:name')
+    @Path('cors/origin/:name')
     removeCors( @PathParam('name') name: string): Promise<void> {
         return this.service.remove('cors/origin', name);
     }
@@ -247,7 +247,7 @@ export class MiddlewareRest {
     }
 
     @PUT
-    @Path('cors/:name')
+    @Path('cors/origin/:name')
     updateCors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('cors/origin', name, file.buffer);
     }
@@ -410,7 +410,7 @@ export class MiddlewareRest {
     }
 
     @GET
-    @Path('cors/:name')
+    @Path('cors/origin/:name')
     getCorsMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('cors/origin', name)
@@ -629,13 +629,13 @@ export class MiddlewareRest {
     }
 
     @POST
-    @Path('cors')
+    @Path('cors/origin')
     addCors( @FileParam('file') file: Express.Multer.File,
         @FormParam('name') name: string) {
         return new Promise<Return.NewResource<void>>((resolve, reject) => {
             this.service.add('cors/origin', name, file.buffer)
                 .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('cors', name)));
+                    resolve(new Return.NewResource<void>(path.join('cors/origin', name)));
                 })
                 .catch(err => {
                     reject(new Errors.InternalServerError('Error saving handler.'));

@@ -117,7 +117,7 @@ describe('Gateway APIs install', () => {
         return new Promise<void>((resolve, reject) => {
             sdk.config.get()
                 .then(conf => {
-                    expect(conf.middlewares.length).to.eq(13);
+                    expect(conf.middlewares.length).to.eq(15);
                     resolve();
                 }).catch(reject);
         });
