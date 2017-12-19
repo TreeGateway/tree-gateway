@@ -80,7 +80,9 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
                 this.middlewareService.list('cors'),
                 this.middlewareService.list('proxy/router'),
                 this.middlewareService.list('servicediscovery'),
-                this.middlewareService.list('servicediscovery/provider')
+                this.middlewareService.list('servicediscovery/provider'),
+                this.middlewareService.list('errorhandler'),
+                this.middlewareService.list('stats/request/mapper')
             ]).then(allMiddlewares => {
                 return Promise.all([
                     this.getMiddlewaresByType('filter', allMiddlewares[0]),
@@ -95,7 +97,9 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
                     this.getMiddlewaresByType('cors', allMiddlewares[9]),
                     this.getMiddlewaresByType('proxy/router', allMiddlewares[10]),
                     this.getMiddlewaresByType('servicediscovery', allMiddlewares[11]),
-                    this.getMiddlewaresByType('servicediscovery/provider', allMiddlewares[12])
+                    this.getMiddlewaresByType('servicediscovery/provider', allMiddlewares[12]),
+                    this.getMiddlewaresByType('errorhandler', allMiddlewares[13]),
+                    this.getMiddlewaresByType('stats/request/mapper', allMiddlewares[14])
                 ]);
             }).then((all) => {
                 const result: Array<MiddlewareConfig> = [];

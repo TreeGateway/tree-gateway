@@ -794,5 +794,43 @@ errorHandler.addArgument(
         help: 'Inform the name of the Error Handler to be retrieved',
     }
 );
+
+const statsRequestMapper = middlewareCommands.addParser('statsRequestMapper', {
+    addHelp: true,
+    help: 'Stats Request Mapper configurations'
+});
+
+statsRequestMapper.addArgument(
+    ['-l', '--list'], {
+        help: 'Inform the search params for Stats Request Mapper listing. Ex: --list name:test',
+        nargs: '*'
+    }
+);
+
+statsRequestMapper.addArgument(
+    ['-r', '--remove'], {
+        help: 'Inform the Stats Request Mapper name to be removed',
+    }
+);
+
+statsRequestMapper.addArgument(
+    ['-u', '--update'], {
+        help: 'Inform the name and path to the Stats Request Mapper file (JS format) to be updated. Ex: -u handler1 ./stats/request/mapper/handler1.js',
+        nargs: 2
+    }
+);
+
+statsRequestMapper.addArgument(
+    ['-a', '--add'], {
+        help: 'Inform the name and path to the Stats Request Mapper file (JS format) to be added. Ex: -a handler1 ./stats/request/mapper/handler1.js',
+        nargs: 2
+    }
+);
+
+statsRequestMapper.addArgument(
+    ['-g', '--get'], {
+        help: 'Inform the name of the Stats Request Mapper to be retrieved',
+    }
+);
 export let configArgs = parser.parseArgs();
 Configuration.gatewayConfigFile = configArgs.config;

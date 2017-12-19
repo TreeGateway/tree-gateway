@@ -96,6 +96,12 @@ export class MiddlewareRest {
         return this.service.list('errorhandler', name);
     }
 
+    @GET
+    @Path('stats/request/mapper')
+    statsRequestMapper( @QueryParam('name') name?: string): Promise<Array<string>> {
+        return this.service.list('stats/request/mapper', name);
+    }
+
     @DELETE
     @Path('filters/:name')
     removeFilter( @PathParam('name') name: string): Promise<void> {
@@ -180,6 +186,12 @@ export class MiddlewareRest {
         return this.service.remove('errorhandler', name);
     }
 
+    @DELETE
+    @Path('stats/request/mapper/:name')
+    removeStatsRequestMapper( @PathParam('name') name: string): Promise<void> {
+        return this.service.remove('stats/request/mapper', name);
+    }
+
     @PUT
     @Path('filters/:name')
     updateFilter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
@@ -262,6 +274,12 @@ export class MiddlewareRest {
     @Path('errorhandler/:name')
     updateErrorHandler( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
         return this.service.save('errorhandler', name, file.buffer);
+    }
+
+    @PUT
+    @Path('stats/request/mapper/:name')
+    updateStatsRequestMapper( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
+        return this.service.save('stats/request/mapper', name, file.buffer);
     }
 
     @GET
@@ -452,6 +470,20 @@ export class MiddlewareRest {
     getErrorHandlerMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             this.service.read('errorhandler', name)
+                .then(value => {
+                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
+                })
+                .catch(err => {
+                    reject(new Errors.NotFoundError());
+                });
+        });
+    }
+
+    @GET
+    @Path('stats/request/mapper/:name')
+    getStatsRequestMapperMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
+        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
+            this.service.read('stats/request/mapper', name)
                 .then(value => {
                     resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
                 })
@@ -664,6 +696,21 @@ export class MiddlewareRest {
             this.service.add('errorhandler', name, file.buffer)
                 .then(value => {
                     resolve(new Return.NewResource<void>(path.join('errorhandler', name)));
+                })
+                .catch(err => {
+                    reject(new Errors.InternalServerError('Error saving handler.'));
+                });
+        });
+    }
+
+    @POST
+    @Path('stats/request/mapper')
+    addStatsRequestMapper( @FileParam('file') file: Express.Multer.File,
+        @FormParam('name') name: string) {
+        return new Promise<Return.NewResource<void>>((resolve, reject) => {
+            this.service.add('stats/request/mapper', name, file.buffer)
+                .then(value => {
+                    resolve(new Return.NewResource<void>(path.join('stats/request/mapper', name)));
                 })
                 .catch(err => {
                     reject(new Errors.InternalServerError('Error saving handler.'));
