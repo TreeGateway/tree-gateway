@@ -6,7 +6,16 @@
         "target": {
             "host": "http://httpbin.org"
         },
-        "timeout": 5000
+        "timeout": 5000,
+        "statsConfig": {
+            "requestMapper": {
+                "id": "operation"
+            },
+            "granularity": {
+                "duration": "1 hour",
+                "ttl": "2 days"
+            }
+        }
     },
     "throttling": [
         {
