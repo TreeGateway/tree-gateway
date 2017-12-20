@@ -22,6 +22,7 @@ export interface Middleware {
     serviceDiscovery(name?: string): Promise<Array<string>>;
     serviceDiscoveryProvider(name?: string): Promise<Array<string>>;
     errorHandler(name?: string): Promise<Array<string>>;
+    statsRequestMapper(name?: string): Promise<Array<string>>;
     removeFilter(name: string): Promise<void>;
     removeRequestInterceptor(name: string): Promise<void>;
     removeResponseInterceptor(name: string): Promise<void>;
@@ -36,6 +37,7 @@ export interface Middleware {
     removeServiceDiscovery(name: string): Promise<void>;
     removeServiceDiscoveryProvider(name: string): Promise<void>;
     removeErrorHandler(name: string): Promise<void>;
+    removeStatsRequestMapper(name: string): Promise<void>;
     updateFilter(name: string, fileName: string): Promise<void>;
     updateRequestInterceptor(name: string, fileName: string): Promise<void>;
     updateResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -50,6 +52,7 @@ export interface Middleware {
     updateServiceDiscovery(name: string, fileName: string): Promise<void>;
     updateServiceDiscoveryProvider(name: string, fileName: string): Promise<void>;
     updateErrorHandler(name: string, fileName: string): Promise<void>;
+    updateStatsRequestMapper(name: string, fileName: string): Promise<void>;
     addFilter(name: string, fileName: string): Promise<void>;
     addRequestInterceptor(name: string, fileName: string): Promise<void>;
     addResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -64,6 +67,7 @@ export interface Middleware {
     addServiceDiscovery(name: string, fileName: string): Promise<void>;
     addServiceDiscoveryProvider(name: string, fileName: string): Promise<void>;
     addErrorHandler(name: string, fileName: string): Promise<void>;
+    addStatsRequestMapper(name: string, fileName: string): Promise<void>;
     getFilter(name: string): Promise<Buffer>;
     getRequestInterceptor(name: string): Promise<Buffer>;
     getResponseInterceptor(name: string): Promise<Buffer>;
@@ -78,6 +82,7 @@ export interface Middleware {
     getServiceDiscoveryMiddleware(name: string): Promise<Buffer>;
     getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer>;
     getErrorHandlerMiddleware(name: string): Promise<Buffer>;
+    getStatsRequestMapperMiddleware(name: string): Promise<Buffer>;
 }
 
 export class MiddlewareClient implements Middleware {
@@ -281,6 +286,19 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
+    statsRequestMapper(name?: string): Promise<Array<string>> {
+        return new Promise<Array<string>>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestStatsRequestMapper({ name })
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
     removeFilter(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name })
@@ -463,6 +481,19 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
+    removeStatsRequestMapper(name: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveStatsRequestMapper({ name })
+                .then((response: any) => {
+                    if (response.status === 204) {
+                        return resolve();
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
     updateFilter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('filters', fileName, true);
     }
@@ -500,7 +531,7 @@ export class MiddlewareClient implements Middleware {
     }
 
     updateCors(name: string, fileName: string): Promise<void> {
-        return this.installMiddleware('cors', fileName, true);
+        return this.installMiddleware('cors/origin', fileName, true);
     }
 
     updateProxyRouter(name: string, fileName: string): Promise<void> {
@@ -517,6 +548,10 @@ export class MiddlewareClient implements Middleware {
 
     updateErrorHandler(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('errorhandler', fileName, true);
+    }
+
+    updateStatsRequestMapper(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('stats/request/mapper', fileName, true);
     }
 
     addFilter(name: string, fileName: string): Promise<void> {
@@ -556,7 +591,7 @@ export class MiddlewareClient implements Middleware {
     }
 
     addCors(name: string, fileName: string): Promise<void> {
-        return this.installMiddleware('cors', fileName);
+        return this.installMiddleware('cors/origin', fileName);
     }
 
     addProxyRouter(name: string, fileName: string): Promise<void> {
@@ -573,6 +608,10 @@ export class MiddlewareClient implements Middleware {
 
     addErrorHandler(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('errorhandler', fileName);
+    }
+
+    addStatsRequestMapper(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('stats/request/mapper', fileName);
     }
 
     getFilter(name: string): Promise<Buffer> {
@@ -747,6 +786,19 @@ export class MiddlewareClient implements Middleware {
     getErrorHandlerMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
             this.swaggerClient.apis.Middleware.MiddlewareRestGetErrorHandlerMiddleware({ name })
+                .then((response: any) => {
+                    if (response.status === 200) {
+                        return resolve(response.body);
+                    }
+                    reject(response.text);
+                })
+                .catch(reject);
+        });
+    }
+
+    getStatsRequestMapperMiddleware(name: string): Promise<Buffer> {
+        return new Promise<Buffer>((resolve, reject) => {
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetStatsRequestMapperMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);

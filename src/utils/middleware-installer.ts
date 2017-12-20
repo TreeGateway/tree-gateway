@@ -14,7 +14,9 @@ export class MiddlewareInstaller {
     private types = ['filter', 'interceptor/request', 'interceptor/response',
         'authentication/strategy', 'authentication/verify',
         'throttling/keyGenerator', 'throttling/handler',
-        'throttling/skip', 'circuitbreaker', 'cors/origin', 'errorhandler'];
+        'throttling/skip', 'circuitbreaker', 'cors/origin', 'proxy/router',
+        'servicediscovery', 'servicediscovery/provider', 'errorhandler',
+        'stats/request/mapper'];
 
     @Inject private service: MiddlewareService;
     @Inject private logger: Logger;

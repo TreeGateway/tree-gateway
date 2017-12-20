@@ -515,11 +515,10 @@ export class Gateway extends EventEmitter {
         const stats = this.createStatsController(key, statsConfig);
         if (stats) {
             const handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-                const p = req.path;
-                stats.requestStats.registerOccurrence(p, 1);
+                stats.requestStats.registerOccurrence(req, 1);
                 const end = res.end;
                 res.end = function(...args: any[]) {
-                    stats.statusCodeStats.registerOccurrence(p, 1, '' + res.statusCode);
+                    stats.statusCodeStats.registerOccurrence(req, 1, '' + res.statusCode);
                     res.end = end;
                     res.end.apply(res, arguments);
                 };

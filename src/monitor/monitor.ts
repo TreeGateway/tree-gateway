@@ -48,7 +48,7 @@ export abstract class Monitor {
     }
 
     private registerStats(value: number) {
-        this.stats.registerOccurrence(this.machineId, value);
+        this.stats.registerMonitorOccurrence(this.machineId, value);
     }
 
     private createStats(id: string) {

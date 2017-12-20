@@ -9,11 +9,11 @@ export interface MiddlewareConfig {
     /**
      * The name of the middleware
      */
-    id: string;
+    id?: string;
     /**
      * An alias for the middleware ID. It cause the same effect then configure id property
      */
-    name: string;
+    name?: string;
     /**
      * Options to be passed to middleware initialization
      */

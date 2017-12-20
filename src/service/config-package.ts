@@ -77,10 +77,12 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
                 this.middlewareService.list('throttling/handlers'),
                 this.middlewareService.list('throttling/skip'),
                 this.middlewareService.list('circuitbreaker'),
-                this.middlewareService.list('cors'),
+                this.middlewareService.list('cors/origin'),
                 this.middlewareService.list('proxy/router'),
                 this.middlewareService.list('servicediscovery'),
-                this.middlewareService.list('servicediscovery/provider')
+                this.middlewareService.list('servicediscovery/provider'),
+                this.middlewareService.list('errorhandler'),
+                this.middlewareService.list('stats/request/mapper')
             ]).then(allMiddlewares => {
                 return Promise.all([
                     this.getMiddlewaresByType('filter', allMiddlewares[0]),
@@ -92,10 +94,12 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
                     this.getMiddlewaresByType('throttling/handlers', allMiddlewares[6]),
                     this.getMiddlewaresByType('throttling/skip', allMiddlewares[7]),
                     this.getMiddlewaresByType('circuitbreaker', allMiddlewares[8]),
-                    this.getMiddlewaresByType('cors', allMiddlewares[9]),
+                    this.getMiddlewaresByType('cors/origin', allMiddlewares[9]),
                     this.getMiddlewaresByType('proxy/router', allMiddlewares[10]),
                     this.getMiddlewaresByType('servicediscovery', allMiddlewares[11]),
-                    this.getMiddlewaresByType('servicediscovery/provider', allMiddlewares[12])
+                    this.getMiddlewaresByType('servicediscovery/provider', allMiddlewares[12]),
+                    this.getMiddlewaresByType('errorhandler', allMiddlewares[13]),
+                    this.getMiddlewaresByType('stats/request/mapper', allMiddlewares[14])
                 ]);
             }).then((all) => {
                 const result: Array<MiddlewareConfig> = [];
