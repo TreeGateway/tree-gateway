@@ -42,7 +42,7 @@ export class RedisStats extends StatsHandler {
     }
 
     /**
-     * Record a hit for the specified stats key
+     * Record a hit for the specified stats key, increment current value
      */
     registerOccurrence(key: string, increment: number, ...extra: string[]) {
         const keyTimestamp = this.getRoundedTime(this.ttl);
@@ -53,6 +53,23 @@ export class RedisStats extends StatsHandler {
         this.database.redisClient.sadd(Constants.STATS_SYNC, JSON.stringify(syncObj))
             .then(() => this.database.redisClient.multi()
                 .hincrby(tmpKey, hitTimestamp, increment)
+                .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
+                .exec())
+            .catch((err: Error) => this.logger.error(`Error on stats recording: ${err}`));
+    }
+
+    /**
+     * Record a hit for the specified stats key
+     */
+    registerValue(key: string, value: number, ...extra: string[]) {
+        const keyTimestamp = this.getRoundedTime(this.ttl);
+        const tmpKey = this.getKey(key, keyTimestamp, extra);
+        const hitTimestamp = this.getRoundedTime(this.duration);
+        const syncObj = { key: tmpKey, duration: this.duration, ttl: this.ttl };
+
+        this.database.redisClient.sadd(Constants.STATS_SYNC, JSON.stringify(syncObj))
+            .then(() => this.database.redisClient.multi()
+                .hset(tmpKey, hitTimestamp, `${value}`)
                 .expireat(tmpKey, keyTimestamp + 2 * this.ttl)
                 .exec())
             .catch((err: Error) => this.logger.error(`Error on stats recording: ${err}`));

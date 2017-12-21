@@ -13,23 +13,25 @@ export abstract class Monitor {
     @Inject private logger: Logger;
     @Inject private statsRecorder: StatsRecorder;
     private interval: NodeJS.Timer;
-    private stats: Stats;
     private config: MonitorConfig;
-    private machineId: string;
     private period: number;
+    protected machineId: string;
 
     constructor(config: MonitorConfig) {
         this.config = config;
-        this.stats = this.createStats(this.config.id || this.config.name);
         this.machineId = Monitor.getMachineId();
     }
 
     start() {
+        const monitorName = this.config.id || this.config.name;
+        this.init();
         this.period = getMilisecondsInterval(this.config.statsConfig.granularity.duration);
-        const self = this;
         this.interval = setInterval(() => {
-            this.run(this.period).then(value => self.registerStats(value)).catch(err => {
-                const monitorName = this.config.id || this.config.name;
+            this.run().then(() => {
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(`Monitor [${monitorName}] executed`);
+                }
+            }).catch(err => {
                 this.logger.error(`Error on monitor [${monitorName}]: ${err}`);
                 this.stop();
             });
@@ -45,17 +47,17 @@ export abstract class Monitor {
             clearInterval(this.interval);
             this.interval = null;
         }
+        this.finish();
     }
 
-    private registerStats(value: number) {
-        this.stats.registerMonitorOccurrence(this.machineId, value);
-    }
-
-    private createStats(id: string) {
+    protected createStats(id: string): Stats {
         return this.statsRecorder.createStats(id, this.config.statsConfig);
     }
 
-    abstract run(period: number): Promise<number>;
+    abstract run(): Promise<void>;
+
+    abstract init(): void;
+    abstract finish(): void;
 
     static getMachineId() {
         return (process.env.processNumber ? `${os.hostname()}:${process.env.processNumber}` : `${os.hostname()}`);

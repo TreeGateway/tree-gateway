@@ -86,11 +86,22 @@ gateway:
         - id: cpu
           statsConfig:
             granularity:
-                duration: 1 hour
+                duration: 10 seconds
                 ttl: 1 day
         - name: mem
           statsConfig:
             granularity:
-                duration: 1 hour
+                duration: 10 seconds
                 ttl: 1 day
+        - id: gc
+          statsConfig:
+            granularity:
+                duration: 10 seconds
+                ttl: 1 day
+        - name: event-loop
+          statsConfig:
+            granularity:
+                duration: 10 seconds
+                ttl: 1 day
+                
     healthcheck: /healthcheck

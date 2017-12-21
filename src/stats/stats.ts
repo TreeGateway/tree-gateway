@@ -23,9 +23,9 @@ export class Stats {
         });
     }
 
-    registerMonitorOccurrence(key: string, increment: number, ...extra: string[]) {
+    registerMonitorOccurrence(key: string, value: number, ...extra: string[]) {
         setImmediate(() => {
-            this.statsHandler.registerOccurrence(key, increment, ...extra);
+            this.statsHandler.registerValue(key, value, ...extra);
         });
     }
 
@@ -53,6 +53,7 @@ export class Stats {
 export abstract class StatsHandler {
     abstract initialize(id: string, config: StatsConfig): void;
     abstract registerOccurrence(value: string, increment: number, ...extra: string[]): void;
+    abstract registerValue(value: string, increment: number, ...extra: string[]): void;
     abstract getOccurrences(time: number, key: string, ...extra: string[]): Promise<Array<Array<number>>>;
     abstract getLastOccurrences(count: number, key: string, ...extra: string[]): Promise<Array<Array<number>>>;
 }

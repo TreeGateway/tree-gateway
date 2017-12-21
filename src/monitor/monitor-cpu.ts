@@ -2,48 +2,56 @@
 
 import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
-import * as os from 'os';
+import { Metrics } from '../metrics';
+import { Stats } from '../stats/stats';
 
 export class CpuMonitor extends Monitor {
-    private startMeasure = this.cpuAverage();
+    private metricListener: (data: any) => void;
+    private statsProcess: Stats;
+    private statsSystem: Stats;
+    private samples = 0;
+    private totalSystem = 0;
+    private totalProcess = 0;
+
     constructor(config: MonitorConfig) {
         super(config);
+        this.statsProcess = this.createStats(`cpu:process`);
+        this.statsSystem = this.createStats(`cpu:system`);
     }
 
-    run(period: number): Promise<number> {
-        return new Promise<number>((resolve, reject) => {
-            // Grab second Measure
-            const endMeasure = this.cpuAverage();
+    init() {
+        this.metricListener = (cpu: any) => {
+            this.samples++;
+            this.totalSystem += cpu.system;
+            this.totalProcess += cpu.process;
+        };
+        this.reset();
+        Metrics.on('cpu', this.metricListener);
+    }
 
-            // Calculate the difference in idle and total time between the measures
-            const idleDifference = endMeasure.idle - this.startMeasure.idle;
-            const totalDifference = endMeasure.total - this.startMeasure.total;
+    finish() {
+        Metrics.removeListener('cpu', this.metricListener);
+        this.reset();
+    }
 
-            // Calculate the average percentage CPU usage
-            const percentageCPU = 100 - ~~(100 * idleDifference / totalDifference);
-
-            this.startMeasure = endMeasure;
-            resolve(percentageCPU);
+    run(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            try {
+                const system = (this.samples > 0) ? this.totalSystem / this.samples : 0;
+                const process = (this.samples > 0) ? this.totalProcess / this.samples : 0;
+                this.reset();
+                this.statsSystem.registerMonitorOccurrence(this.machineId, system);
+                this.statsProcess.registerMonitorOccurrence(this.machineId, process);
+                resolve();
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 
-    private cpuAverage() {
-        // Initialise sum of idle and time of cores and fetch CPU info
-        let totalIdle = 0, totalTick = 0;
-        const cpus = os.cpus();
-
-        for (let i = 0, len = cpus.length; i < len; i++) {
-            const cpu: any = cpus[i];
-
-            // Total up the time in the cores tick
-            for (const type in cpu.times) {
-                totalTick += cpu.times[type];
-            }
-
-            totalIdle += cpu.times.idle;
-        }
-
-        // Return the average Idle and Tick times
-        return { idle: totalIdle / cpus.length, total: totalTick / cpus.length };
+    private reset() {
+        this.totalSystem = 0;
+        this.totalProcess = 0;
+        this.samples = 0;
     }
 }
