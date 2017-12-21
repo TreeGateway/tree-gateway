@@ -2,8 +2,6 @@
 
 import * as express from 'express';
 
-module.exports = function(config: any) {
-    return (req: express.Request): string => {
-        return 'total';
-    };
+module.exports = function(req: express.Request) {
+    return 'total';
 };
