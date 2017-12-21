@@ -134,8 +134,8 @@ export interface MonitorConfig {
 }
 
 const monitorConfigSchema = Joi.object().keys({
-    id: Joi.string().valid('cpu', 'mem'),
-    name: Joi.string().valid('cpu', 'mem'),
+    id: Joi.string().valid('cpu', 'mem', 'gc', 'event-loop'),
+    name: Joi.string().valid('cpu', 'mem', 'gc', 'event-loop'),
     statsConfig: statsConfigValidatorSchema.required()
 }).xor('id', 'name');
 
