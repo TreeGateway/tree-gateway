@@ -3,8 +3,6 @@
 import * as express from 'express';
 import { normalizePath } from '../../utils/path';
 
-module.exports = function(config: any) {
-    return (req: express.Request): string => {
-        return normalizePath(req.path);
-    };
+module.exports = function(req: express.Request) {
+    return normalizePath(req.path);
 };
