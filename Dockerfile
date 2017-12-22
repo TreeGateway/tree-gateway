@@ -1,19 +1,14 @@
-FROM node:8-alpine
+FROM node:8
 
 ENV NODE_ENV production
 # Create app directory
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# Install dependencies
-RUN apk --no-cache add --virtual builds-deps build-base python && \
-    npm install pm2 -g
-
 # Install app dependencies
 COPY ./package.json /usr/src/app/
 
-RUN npm install && npm rebuild bcrypt --build-from-source && \
-    apk --no-cache del builds-deps build-base python
+RUN npm install
 
 # Install app
 COPY README.md tree-gateway.json rest.config /usr/src/app/
@@ -24,4 +19,4 @@ EXPOSE 8000 8001
 
 VOLUME ["/usr/src/app/logs"]
 
-CMD ["pm2-docker", "./dist/index.js", "-i", "0"]
+CMD ["node", "./dist/index.js", "-m", "-i", "0"]
