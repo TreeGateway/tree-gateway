@@ -17,8 +17,9 @@ export class Stats {
     }
 
     registerOccurrence(req: Request, increment: number, ...extra: string[]) {
+        const key = (<any>req)._tg_req_key_ || this.requestMapper(req); // request can not be finished before key is extracted
+        (<any>req)._tg_req_key_ = key;
         setImmediate(() => {
-            const key = this.requestMapper(req);
             this.statsHandler.registerOccurrence(key, increment, ...extra);
         });
     }
