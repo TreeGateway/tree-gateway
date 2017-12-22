@@ -8,7 +8,6 @@ import { Logger } from '../logger';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { Configuration } from '../configuration';
 import { Database } from '../database';
-import { Metrics } from '../metrics';
 import { GcMonitor } from './monitor-gc';
 import { EventLoopMonitor } from './monitor-event-loop';
 
@@ -29,42 +28,38 @@ export class Monitors {
 
     startMonitors() {
         if (this.config.gateway.monitor && this.config.gateway.monitor.length) {
-            if (Metrics.enabled) {
-                if (this.logger.isInfoEnabled()) {
-                    this.logger.info(`Starting system monitors.`);
-                }
-                this.config.gateway.monitor.forEach(monitorConfig => {
-                    let monitor = null;
-                    const monitorName = monitorConfig.id || monitorConfig.name;
-                    if (monitorName === 'cpu') {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug(`Starting a CPU monitor.`);
-                        }
-                        monitor = new CpuMonitor(monitorConfig);
-                    } else if (monitorName === 'mem') {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug(`Starting a Memory monitor.`);
-                        }
-                        monitor = new MemMonitor(monitorConfig);
-                    } else if (monitorName === 'gc') {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug(`Starting a Garbage Collector monitor.`);
-                        }
-                        monitor = new GcMonitor(monitorConfig);
-                    } else if (monitorName === 'event-loop') {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug(`Starting a Event Loop Latency monitor.`);
-                        }
-                        monitor = new EventLoopMonitor(monitorConfig);
-                    }
-                    if (monitor) {
-                        monitor.start();
-                        this.activeMonitors.push(monitor);
-                    }
-                });
-            } else {
-                this.logger.warn('To use monitors, you must run treeGateway passing the metrics parameter (treeGateway -m). All Gateway monitors will be disabled.');
+            if (this.logger.isInfoEnabled()) {
+                this.logger.info(`Starting system monitors.`);
             }
+            this.config.gateway.monitor.forEach(monitorConfig => {
+                let monitor = null;
+                const monitorName = monitorConfig.id || monitorConfig.name;
+                if (monitorName === 'cpu') {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Starting a CPU monitor.`);
+                    }
+                    monitor = new CpuMonitor(monitorConfig);
+                } else if (monitorName === 'mem') {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Starting a Memory monitor.`);
+                    }
+                    monitor = new MemMonitor(monitorConfig);
+                } else if (monitorName === 'gc') {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Starting a Garbage Collector monitor.`);
+                    }
+                    monitor = new GcMonitor(monitorConfig);
+                } else if (monitorName === 'event-loop') {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(`Starting a Event Loop Latency monitor.`);
+                    }
+                    monitor = new EventLoopMonitor(monitorConfig);
+                }
+                if (monitor) {
+                    monitor.start();
+                    this.activeMonitors.push(monitor);
+                }
+            });
         }
         this.registerMachine();
     }

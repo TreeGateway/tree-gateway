@@ -56,8 +56,13 @@ export abstract class Monitor {
 
     abstract run(): Promise<void>;
 
-    abstract init(): void;
-    abstract finish(): void;
+    protected init(): void {
+        // overwrite if you need
+    }
+
+    protected finish() {
+        // overwrite if you need
+    }
 
     static getMachineId() {
         return (process.env.processNumber ? `${os.hostname()}:${process.env.processNumber}` : `${os.hostname()}`);

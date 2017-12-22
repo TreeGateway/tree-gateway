@@ -2,16 +2,13 @@
 
 import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
-import { Metrics } from '../metrics';
 import { Stats } from '../stats/stats';
 
 export class CpuMonitor extends Monitor {
-    private metricListener: (data: any) => void;
     private statsProcess: Stats;
     private statsSystem: Stats;
-    private samples = 0;
-    private totalSystem = 0;
-    private totalProcess = 0;
+    private startTime: [number,number];
+    private startUsage: NodeJS.CpuUsage;
 
     constructor(config: MonitorConfig) {
         super(config);
@@ -20,28 +17,23 @@ export class CpuMonitor extends Monitor {
     }
 
     init() {
-        this.metricListener = (cpu: any) => {
-            this.samples++;
-            this.totalSystem += cpu.system;
-            this.totalProcess += cpu.process;
-        };
-        this.reset();
-        Metrics.on('cpu', this.metricListener);
-    }
-
-    finish() {
-        Metrics.removeListener('cpu', this.metricListener);
-        this.reset();
+        this.startTime  = process.hrtime();
+        this.startUsage = process.cpuUsage();
     }
 
     run(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             try {
-                const system = (this.samples > 0) ? this.totalSystem / this.samples : 0;
-                const process = (this.samples > 0) ? this.totalProcess / this.samples : 0;
-                this.reset();
-                this.statsSystem.registerMonitorOccurrence(this.machineId, system);
-                this.statsProcess.registerMonitorOccurrence(this.machineId, process);
+                const elapTime = process.hrtime(this.startTime);
+                const elapUsage = process.cpuUsage(this.startUsage);
+
+                const elapTimeMS = this.secNSec2ms(elapTime);
+                const elapUserMS = elapUsage.user / 1000;
+                const elapSystMS = elapUsage.system / 1000;
+                const userPercent = Math.round(1000 * elapUserMS / elapTimeMS)/10;
+                const systemPercent = Math.round(1000 * elapSystMS / elapTimeMS)/10;
+                this.statsSystem.registerMonitorOccurrence(this.machineId, systemPercent);
+                this.statsProcess.registerMonitorOccurrence(this.machineId, userPercent);
                 resolve();
             } catch (err) {
                 reject(err);
@@ -49,9 +41,7 @@ export class CpuMonitor extends Monitor {
         });
     }
 
-    private reset() {
-        this.totalSystem = 0;
-        this.totalProcess = 0;
-        this.samples = 0;
+    secNSec2ms (secNSec: [number,number]) {
+        return secNSec[0] * 1000 + secNSec[1] / 1000000;
     }
 }

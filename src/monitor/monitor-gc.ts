@@ -2,11 +2,13 @@
 
 import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
-import { Metrics } from '../metrics';
 import { Stats } from '../stats/stats';
+
+const gcMonitor = require('gc-stats');
 
 export class GcMonitor extends Monitor {
     private metricListener: (data: any) => void;
+    private monitor: any;
     private statsSize: Stats;
     private statsUsed: Stats;
     private statsDuration: Stats;
@@ -23,18 +25,19 @@ export class GcMonitor extends Monitor {
     }
 
     init() {
+        this.monitor = gcMonitor();
         this.metricListener = (gc: any) => {
             this.samples++;
-            this.totalSize += gc.size;
-            this.totalUsed += gc.used;
-            this.totalDuration += gc.duration;
+            this.totalSize += gc.diff.totalHeapSize;
+            this.totalUsed += (-1*gc.diff.usedHeapSize);
+            this.totalDuration += gc.pauseMS;
         };
         this.reset();
-        Metrics.on('gc', this.metricListener);
+        this.monitor.on('stats', this.metricListener);
     }
 
     finish() {
-        Metrics.removeListener('gc', this.metricListener);
+        this.monitor.removeListener('stats', this.metricListener);
         this.reset();
     }
 

@@ -2,11 +2,12 @@
 
 import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
-import { Metrics } from '../metrics';
 import { Stats } from '../stats/stats';
 
+const eventLoopMonitor = require('eventloop-latency');
+
 export class EventLoopMonitor extends Monitor {
-    private metricListener: (data: any) => void;
+    private monitor: any;
     private statsLatency: Stats;
     private samples = 0;
     private totalLatency = 0;
@@ -17,16 +18,20 @@ export class EventLoopMonitor extends Monitor {
     }
 
     init() {
-        this.metricListener = (eventloop: any) => {
+        const interval = 1000;
+        const hrInterval = 10;
+        this.monitor = new eventLoopMonitor(interval, hrInterval);
+        this.monitor.on('data', (eventloop: Array<number>) => {
             this.samples++;
-            this.totalLatency += eventloop.latency.avg;
-        };
+            const average = (eventloop && eventloop.length) ? eventloop.reduce((total, val) => total + val) / eventloop.length : 0;
+            this.totalLatency += average > 0 ? average / 1000 : 0;
+        });
+        this.monitor.start(true);
         this.reset();
-        Metrics.on('eventloop', this.metricListener);
     }
 
     finish() {
-        Metrics.removeListener('eventloop', this.metricListener);
+        this.monitor.stop();
         this.reset();
     }
 
