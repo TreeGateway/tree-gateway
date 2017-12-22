@@ -4,8 +4,6 @@ import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
 import { Stats } from '../stats/stats';
 
-const gcMonitor = require('gc-stats');
-
 export class GcMonitor extends Monitor {
     private metricListener: (data: any) => void;
     private monitor: any;
@@ -25,6 +23,7 @@ export class GcMonitor extends Monitor {
     }
 
     init() {
+        const gcMonitor = require('gc-stats');
         this.monitor = gcMonitor();
         this.metricListener = (gc: any) => {
             this.samples++;

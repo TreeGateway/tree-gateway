@@ -4,8 +4,6 @@ import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
 import { Stats } from '../stats/stats';
 
-const eventLoopMonitor = require('eventloop-latency');
-
 export class EventLoopMonitor extends Monitor {
     private monitor: any;
     private statsLatency: Stats;
@@ -18,6 +16,7 @@ export class EventLoopMonitor extends Monitor {
     }
 
     init() {
+        const eventLoopMonitor = require('eventloop-latency');
         const interval = 1000;
         const hrInterval = 10;
         this.monitor = new eventLoopMonitor(interval, hrInterval);
