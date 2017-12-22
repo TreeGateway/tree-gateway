@@ -2,52 +2,51 @@
 
 import { Monitor } from './monitor';
 import { MonitorConfig } from '../config/gateway';
-import { Metrics } from '../metrics';
 import { Stats } from '../stats/stats';
 
 export class MemMonitor extends Monitor {
-    private metricListener: (data: any) => void;
-    private statsProcess: Stats;
-    private statsFree: Stats;
-    private statsVirtual: Stats;
+    private monitorInterval: NodeJS.Timer;
+    private statsHeapTotal: Stats;
+    private statsHeapUsed: Stats;
+    private statsRss: Stats;
     private samples = 0;
-    private totalApp = 0;
-    private totalFree = 0;
-    private totalVirtual = 0;
+    private totalHeap = 0;
+    private totalUsed = 0;
+    private totalRss = 0;
 
     constructor(config: MonitorConfig) {
         super(config);
-        this.statsProcess = this.createStats(`mem:process`);
-        this.statsFree = this.createStats(`mem:free`);
-        this.statsVirtual = this.createStats(`mem:virtual`);
+        this.statsHeapTotal = this.createStats(`mem:heap-total`);
+        this.statsHeapUsed = this.createStats(`mem:heap-used`);
+        this.statsRss = this.createStats(`mem:rss`);
     }
 
     init() {
-        this.metricListener = (mem: any) => {
+        this.monitorInterval = setInterval(() => {
+            const memUsage = process.memoryUsage();
             this.samples++;
-            this.totalApp += mem.physical;
-            this.totalFree += mem.physical_free;
-            this.totalVirtual += mem.virtual;
-        };
+            this.totalHeap += memUsage.heapTotal;
+            this.totalUsed += memUsage.heapUsed;
+            this.totalRss += memUsage.rss;
+        }, 1000);
         this.reset();
-        Metrics.on('memory', this.metricListener);
     }
 
     finish() {
-        Metrics.removeListener('memory', this.metricListener);
+        clearInterval(this.monitorInterval);
         this.reset();
     }
 
     run(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             try {
-                const appMem = (this.samples > 0) ? this.totalApp / this.samples : 0;
-                const free = (this.samples > 0) ? this.totalFree / this.samples : 0;
-                const appVirtual = (this.samples > 0) ? this.totalVirtual / this.samples : 0;
+                const heap = (this.samples > 0) ? this.totalHeap / this.samples : 0;
+                const used = (this.samples > 0) ? this.totalUsed / this.samples : 0;
+                const rss = (this.samples > 0) ? this.totalRss / this.samples : 0;
                 this.reset();
-                this.statsProcess.registerMonitorOccurrence(this.machineId, appMem);
-                this.statsFree.registerMonitorOccurrence(this.machineId, free);
-                this.statsVirtual.registerMonitorOccurrence(this.machineId, appVirtual);
+                this.statsHeapTotal.registerMonitorOccurrence(this.machineId, heap);
+                this.statsHeapUsed.registerMonitorOccurrence(this.machineId, used);
+                this.statsRss.registerMonitorOccurrence(this.machineId, rss);
                 resolve();
             } catch (err) {
                 reject(err);
@@ -56,9 +55,9 @@ export class MemMonitor extends Monitor {
     }
 
     private reset() {
-        this.totalApp = 0;
-        this.totalFree = 0;
-        this.totalVirtual = 0;
+        this.totalHeap = 0;
+        this.totalUsed = 0;
+        this.totalRss = 0;
         this.samples = 0;
     }
 }
