@@ -68,9 +68,9 @@
                     <li class="page-scroll">
                         <a href="#portfolio">Features</a>
                     </li>
-                    <!-- <li class="page-scroll">
+                    <li class="page-scroll">
                         <a href="#dashboard">Dashboard</a>
-                    </li> -->
+                    </li>
                     <li class="page-scroll">
                         <a href="#contact">Contact</a>
                     </li>
@@ -281,29 +281,40 @@
         </div>
     </section>
 
+    <style>
+    @media (min-width: 768px) {
+        .dashboardimg {
+            width: 300px !important;
+        }
+    }
+    #dashboard {
+        background: blue !important;
+    }
+    .dashboardtext {
+        color: white !important;
+    }
+    .dashboardimg {
+        width: 500px !important;
+    }
+    </style>
     <!-- Dashboard Section -->
-    <!--
     <section id="dashboard">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center" id="main-dashboard-text">
-                    <h1>Meet the Dashboard</h1>
+                    <h1 class="dashboardtext">Meet the Dashboard</h1>
                     <br/>
                     <center>
-                        <a href="http://dashboard.leanty.com/"><img src="img/dashboard.png" style="
-                            width: 800px !important;
-                            box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;
-                          " alt="Dashboard"></img></a>
+                        <a href="http://dashboard.leanty.com/"><img class="dashboardimg" src="img/newdashboard.png" alt="Dashboard"></img></a>
                     </center>
                     <br/>
                     <br/>
-                    <h3> The space to easily manage and monitor your APIs </h3>
-                    <h3> Built exclusively for you </h3>
+                    <h3 class="dashboardtext"> The space to easily manage and monitor your APIs </h3>
+                    <h3 class="dashboardtext"> Built exclusively for you </h3>
                 </div>
             </div>
         </div>
     </section>
-    -->
 
     <!-- Contact Section -->
     <section class="success" id="contact">
