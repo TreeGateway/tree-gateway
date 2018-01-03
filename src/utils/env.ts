@@ -9,12 +9,12 @@ export function checkEnvVariable(value: string | number, asNumber?: boolean) {
     if (_.startsWith(value, '{') && _.endsWith(value, '}')) {
         const envVariable = value.substring(1, value.length - 1);
         if (asNumber) {
-            return parseInt(process.env[envVariable], 10);
+            return Number(process.env[envVariable]);
         }
         return process.env[envVariable];
     }
     if (asNumber) {
-        return parseInt(value, 10);
+        return Number(value);
     }
     return value;
 }

@@ -116,7 +116,7 @@ export class RedisStats extends StatsHandler {
                 .then((results: any) => {
                     const data = [];
                     for (let ts = from, i = 0; ts <= to; ts += this.duration, i += 1) {
-                        data.push([ts, results[i] ? parseInt(results[i], 10) : 0]);
+                        data.push([ts, results[i] ? Number(results[i]) : 0]);
                     }
 
                     if (this.logger.isDebugEnabled()) {
