@@ -37,6 +37,81 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="js/background-video.js"></script>
+
+  <!-- SlidesJS Optional: If you'd like to use this design -->
+  <style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      font: normal 15px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #232525;
+      padding-top:50px;
+    }
+
+    #slides {
+      display: none
+    }
+
+    #slides .slidesjs-navigation {
+      margin-top:3px;
+    }
+
+    #slides .slidesjs-previous {
+      margin-right: 5px;
+      float: left;
+    }
+
+    #slides .slidesjs-next {
+      margin-right: 5px;
+      float: left;
+    }
+
+    .slidesjs-pagination {
+      margin: 6px 0 0;
+      float: right;
+      list-style: none;
+    }
+
+    .slidesjs-pagination li {
+      float: left;
+      margin: 0 1px;
+    }
+
+    .slidesjs-pagination li a {
+      display: block;
+      width: 13px;
+      height: 0;
+      padding-top: 13px;
+      background-image: url(img/slide/pagination.png);
+      background-position: 0 0;
+      float: left;
+      overflow: hidden;
+    }
+
+    .slidesjs-pagination li a.active,
+    .slidesjs-pagination li a:hover.active {
+      background-position: 0 -13px
+    }
+
+    .slidesjs-pagination li a:hover {
+      background-position: 0 -26px
+    }
+
+    #slides a:link,
+    #slides a:visited {
+      color: #333
+    }
+
+    #slides a:hover,
+    #slides a:active {
+      color: #9e2020
+    }
+
+    .navbar {
+      overflow: hidden
+    }
+  </style>
+  <!-- End SlidesJS Optional-->
+
 </head>
 
 <body id="page-top" class="index">    
@@ -286,15 +361,27 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center" id="main-dashboard-text">
-                    <a href="http://dashboard.leanty.com/"><h1 class="dashboardtext">Click and meet the Dashboard</h1></a>
+                    <div style="text-align: center">
+                        <h1><a style="color: white;" href="http://dashboard.leanty.com/">Meet the Dashboard</a></h1>
+                    </div>
                     <br/>
-                    <center>
-                        <a href="http://dashboard.leanty.com/"><img id="dashboardimg" src="img/newdashboard.png" alt="Dashboard"></img></a>
-                    </center>
-                    <br/>
-                    <br/>
-                    <h3 class="dashboardtext"> The space to easily manage and monitor your APIs </h3>
-                    <h3 class="dashboardtext"> Built exclusively for you </h3>
+                    <!-- SlidesJS Required: Start Slides -->
+                    <!-- The container is used to define the width of the slideshow -->
+                    <div class="container">
+                        <div id="slides">
+                            <img src="img/slide/example-slide-1.png">
+                            <img src="img/slide/example-slide-2.png">
+                            <img src="img/slide/example-slide-3.png">
+                            <img src="img/slide/example-slide-4.png">
+                            <!-- <img src="img/slide/example-slide-5.png"> -->
+                            <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="icon-chevron-left icon-large"></i></a>
+                            <a href="#" class="slidesjs-next slidesjs-navigation"><i class="icon-chevron-right icon-large"></i></a>
+                        </div>
+                    </div>
+                    <!-- End SlidesJS Required: Start Slides -->
+                </div>
+                <div style="text-align: center">
+                    <h1><a style="color: white;" href="http://dashboard.leanty.com/">More...</a></h1>
                 </div>
             </div>
         </div>
@@ -652,7 +739,40 @@
       ga('create', 'UA-102232560-1', 'auto');
       ga('send', 'pageview');
 
-    </script>    
+    </script>
+
+    <!-- SlidesJS Required: Link to jquery.slides.js -->
+    <script src="js/jquery.slides.min.js"></script>
+    <!-- End SlidesJS Required -->
+
+    <!-- SlidesJS Required: Initialize SlidesJS with a jQuery doc ready -->
+    <script>
+        $(function() {
+        $('#slides').slidesjs({
+            width: 940,
+            height: 528,
+            navigation: false,
+            play: {
+                active: false,
+                    // [boolean] Generate the play and stop buttons.
+                    // You cannot use your own buttons. Sorry.
+                effect: "slide",
+                    // [string] Can be either "slide" or "fade".
+                interval: 4000,
+                    // [number] Time spent on each slide in milliseconds.
+                auto: true,
+                    // [boolean] Start playing the slideshow on load.
+                swap: true,
+                    // [boolean] show/hide stop and play buttons
+                pauseOnHover: false,
+                    // [boolean] pause a playing slideshow on hover
+                restartDelay: 2500
+                    // [number] restart delay on inactive slideshow
+                }
+        });
+        });
+    </script>
+    <!-- End SlidesJS Required -->
     
 </body>
 
