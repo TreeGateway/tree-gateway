@@ -56,5 +56,5 @@ Take a better look into Tree Gateway by checking out the project and working wit
 ## Also meet the Dashboard!
 
 <p align="center">
-  <img src="http://treegateway.org/img/slide/example-slide-1.png" />
+  <a href="http://dashboard.leanty.com/"><img src="http://treegateway.org/img/slide/example-slide-1.png" /><a/>
 </p>
