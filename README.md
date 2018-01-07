@@ -53,11 +53,8 @@ It provides:
 
 Take a better look into Tree Gateway by checking out the project and working with it guided by our [Docs](https://github.com/Leanty/tree-gateway/wiki).
 
+## Also meet the Dashboard!
+
 <p align="center">
-  <div>
-    Also meet the Dashboard!
-  </div>
-  <div>
-    <img src="http://treegateway.org/img/slide/example-slide-1.png" />
-  </div>
+  <img src="http://treegateway.org/img/slide/example-slide-1.png" />
 </p>
