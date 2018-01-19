@@ -46,6 +46,10 @@ export interface GatewayConfig {
      */
     underProxy?: boolean;
     /**
+     * By default, all responses are compressed by the gateway. If you want to disable it set this property to true.
+     */
+    disableCompression?: boolean;
+    /**
      * Force the validation of any API Id. If the id is not validated, the data could not be synchronizable
      * to Leanty dashboard.
      */
@@ -144,6 +148,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     admin: adminConfigValidatorSchema,
     cors: corsConfigSchema,
     disableApiIdValidation: Joi.boolean(),
+    disableCompression: Joi.boolean(),
     errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.array().items(middlewareConfigValidatorSchema),
     healthcheck: Joi.string(),

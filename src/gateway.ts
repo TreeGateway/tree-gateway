@@ -420,7 +420,9 @@ export class Gateway extends EventEmitter {
     private configureServer(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.app.disable('x-powered-by');
-            this.app.use(compression());
+            if (!this.config.gateway.disableCompression) {
+                this.app.use(compression());
+            }
             if (this.config.gateway.underProxy) {
                 this.app.enable('trust proxy');
             }
@@ -453,7 +455,9 @@ export class Gateway extends EventEmitter {
         if (this.config.gateway.admin) {
             this.adminApp = express();
             this.adminApp.disable('x-powered-by');
-            this.adminApp.use(compression());
+            if (!this.config.gateway.disableCompression) {
+                this.adminApp.use(compression());
+            }
             if (this.config.gateway.admin.accessLogger) {
                 if (!this.config.gateway.admin.disableStats) {
                     this.configureStatsMiddleware(this.adminApp, 'admin', this.config.gateway.admin.statsConfig);
