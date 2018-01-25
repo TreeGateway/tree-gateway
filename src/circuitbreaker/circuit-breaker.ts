@@ -45,7 +45,9 @@ export class ApiCircuitBreaker {
                 maxFailures: (cbConfig.maxFailures || 10),
                 rejectMessage: (cbConfig.rejectMessage || 'Service unavailable'),
                 rejectStatusCode: (cbConfig.rejectStatusCode || 503),
-                stateHandler: new RedisStateHandler(cbStateID, getMilisecondsInterval(cbConfig.resetTimeout, 120000)),
+                stateHandler: new RedisStateHandler(cbStateID,
+                                    getMilisecondsInterval(cbConfig.resetTimeout, 120000),
+                                    getMilisecondsInterval(cbConfig.timeWindow)),
                 timeout: getMilisecondsInterval(cbConfig.timeout, 30000),
                 timeoutMessage: (cbConfig.timeoutMessage || 'Operation timeout'),
                 timeoutStatusCode: (cbConfig.timeoutStatusCode || 504)
