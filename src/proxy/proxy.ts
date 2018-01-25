@@ -146,7 +146,9 @@ export class ApiProxy {
             const errReference = 'https://nodejs.org/api/errors.html#errors_common_system_errors'; // link to Node Common Systems Errors page
 
             this.logger.error('[Tree-Gateway] Error occurred while trying to proxy request %s from %s to %s (%s) (%s)', req.url, hostname, target, err.code, errReference);
-            res.status(502).send('Bad Gateway');
+            if (!res.headersSent) {
+                res.status(502).send('Bad Gateway');
+            }
         });
 
         const maybeWrapResponse = this.interceptor.hasResponseInterceptor(api.proxy);
