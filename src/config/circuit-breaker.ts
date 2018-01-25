@@ -23,6 +23,11 @@ export interface CircuitBreakerConfig {
      */
     resetTimeout?: string | number;
     /**
+     * Define a time window to count the api failures. If defined, the gateway will reset the total failures count
+     * by each period of time defined here.
+     */
+    timeWindow?: string | number;
+    /**
      * When the failure counter reaches a maxFailures count, the breaker is tripped into Open state.
      */
     maxFailures?: number;
@@ -121,6 +126,7 @@ export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     rejectStatusCode: Joi.number(),
     resetTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     statsConfig: statsConfigValidatorSchema,
+    timeWindow: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     timeoutMessage: Joi.string(),
     timeoutStatusCode: Joi.number()

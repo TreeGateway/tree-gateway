@@ -52,13 +52,4 @@ describe('The Gateway Limit Controller', () => {
             });
         });
     });
-    it('should be able to break the circuit to slow apis', (done) => {
-        gatewayRequest('/circuitbreaker/get', (error: any, response: any, body: any) => {
-            expect(response.statusCode).to.equal(504);
-            gatewayRequest('/circuitbreaker/get', (err: any, resp: any, bod: any) => {
-                expect(resp.statusCode).to.equal(503);
-                done();
-            });
-        });
-    });
 });

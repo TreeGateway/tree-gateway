@@ -20,14 +20,16 @@ export class RedisStateHandler implements StateHandler {
     private state: State;
     halfOpenCallPending: boolean;
     private resetTimeout: number;
+    private timeWindow: number;
 
-    constructor(id: string, resetTimeout: number) {
+    constructor(id: string, resetTimeout: number, timeWindow?: number) {
         this.id = id;
         this.resetTimeout = resetTimeout;
+        this.timeWindow = timeWindow;
     }
 
     initialState() {
-        this.database.redisClient.hget(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id)
+        this.database.redisClient.get(this.getRedisStateKey())
             .then((state: any) => {
                 if (state === 'open') {
                     this.openState();
@@ -73,11 +75,34 @@ export class RedisStateHandler implements StateHandler {
         }
 
         this.state = State.HALF_OPEN;
+        this.halfOpenCallPending = false;
         return true;
     }
 
     incrementFailures(): Promise<number> {
-        return this.database.redisClient.hincrby(CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES, this.id, 1);
+        const rdskey = this.getRedisFailuresKey();
+        if (this.timeWindow) {
+            return new Promise<number>((resolve, reject) => {
+                this.database.redisClient.multi()
+                .incr(rdskey)
+                .ttl(rdskey)
+                .exec((err, replies) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    // if this is new or has no expire
+                    if (replies[0][1] === 1 || replies[1][1] === -1) {
+                        // then expire it after the timeout
+                        this.database.redisClient.expire(rdskey, this.timeWindow);
+                    }
+
+                    resolve(replies[0][1]);
+                });
+            });
+        } else {
+            return this.database.redisClient.incr(rdskey);
+        }
     }
 
     onStateChanged(state: string) {
@@ -97,6 +122,14 @@ export class RedisStateHandler implements StateHandler {
             default:
             // Ignore
         }
+    }
+
+    private getRedisFailuresKey() {
+        return `${CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES}:${this.id}`;
+    }
+
+    private getRedisStateKey() {
+        return `${CircuitBreakerKeys.CIRCUIT_BREAKER_STATE}:${this.id}`;
     }
 
     private openState(): boolean {
@@ -128,7 +161,7 @@ export class RedisStateHandler implements StateHandler {
             this.logger.debug(`Notifying cluster that circuit for API ${this.id} is open`);
         }
         return this.database.redisClient.multi()
-            .hset(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id, 'open')
+            .set(this.getRedisStateKey(), 'open')
             .publish(ConfigTopics.CIRCUIT_CHANGED, JSON.stringify({ state: 'open', id: this.id }))
             .exec();
     }
@@ -139,8 +172,8 @@ export class RedisStateHandler implements StateHandler {
         }
 
         return this.database.redisClient.multi()
-            .hset(CircuitBreakerKeys.CIRCUIT_BREAKER_STATE, this.id, 'close')
-            .hdel(CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES, this.id)
+            .set(this.getRedisStateKey(), 'close')
+            .del(this.getRedisFailuresKey(), this.id)
             .publish(ConfigTopics.CIRCUIT_CHANGED, JSON.stringify({ state: 'close', id: this.id }))
             .exec();
     }
