@@ -1,7 +1,7 @@
 {
-    "name": "TestCircuitBreakerAPI",
+    "name": "TestCircuitBreakerTimeAPI",
     "version": "1.0.0",
-    "path": "circuitbreaker/",
+    "path": "circuitbreakerTime/",
     "proxy": {
         "target": {
             "host": "http://httpbin.org"
@@ -10,6 +10,7 @@
     "circuitBreaker": [{
         "timeout": 1,
         "resetTimeout": "3 seconds",
+        "timeWindow": "2 seconds",
         "maxFailures": 1,
         "onOpen": {
             "name": "myOpenHandler"

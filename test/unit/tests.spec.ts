@@ -8,6 +8,7 @@ import * as cors from './cors.spec';
 import * as proxy from './proxy.spec';
 import * as servicediscovery from './service-discovery.spec';
 import * as throttling from './throttling.spec';
+import * as circuitbreaker from './circuitbreaker.spec';
 import * as uninstall from './uninstall-apis.spec';
 
-export default [install, admin, auth, cache, cors, proxy, servicediscovery, throttling, uninstall];
+export default [install, admin, auth, cache, cors, proxy, servicediscovery, throttling, circuitbreaker, uninstall];
