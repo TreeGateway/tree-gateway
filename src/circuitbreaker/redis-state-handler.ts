@@ -25,7 +25,9 @@ export class RedisStateHandler implements StateHandler {
     constructor(id: string, resetTimeout: number, timeWindow?: number) {
         this.id = id;
         this.resetTimeout = resetTimeout;
-        this.timeWindow = timeWindow;
+        if (timeWindow) {
+            this.timeWindow = timeWindow / 1000;
+        }
     }
 
     initialState() {
