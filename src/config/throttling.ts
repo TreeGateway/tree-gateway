@@ -114,7 +114,7 @@ export let throttlingConfigValidatorSchema = Joi.object().keys({
     delay: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     delayAfter: Joi.number(),
     disableStats: Joi.boolean(),
-    group: Joi.array().items(Joi.string()),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     handler: middlewareConfigValidatorSchema,
     headers: Joi.boolean(),
     keyGenerator: middlewareConfigValidatorSchema,

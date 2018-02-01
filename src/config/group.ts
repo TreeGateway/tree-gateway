@@ -26,14 +26,16 @@ export interface Member {
     protocol?: Array<string>;
 }
 
+const methodValidator = Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
+const pathString = Joi.string().regex(/^[A-Za-z\-\/0-9_\.\*]+$/i);
 const memberValidatorSchema = Joi.object().keys({
-    method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD')),
-    path: Joi.array().items(Joi.string().regex(/^[A-Za-z\-\/0-9_\.\*]+$/i)),
-    protocol: Joi.array().items(Joi.string())
+    method: Joi.alternatives([Joi.array().items(methodValidator), methodValidator]),
+    path: Joi.alternatives([Joi.array().items(pathString),pathString]),
+    protocol: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
 }).min(1);
 
 export const groupValidatorSchema = Joi.object().keys({
     description: Joi.string(),
     id: Joi.string().min(1).required(),
-    member: Joi.array().items(memberValidatorSchema).required()
+    member: Joi.alternatives([Joi.array().items(memberValidatorSchema), memberValidatorSchema]).required()
 });

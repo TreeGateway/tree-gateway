@@ -6,6 +6,7 @@ import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
 import { NotFoundError } from '../../error/errors';
 import { GatewayService } from '../gateway';
+import { castArray } from '../../utils/config';
 
 export class RedisGatewayService implements GatewayService {
     private static GATEWAY_CONFIG_KEY = '{config}:gateway';
@@ -27,10 +28,11 @@ export class RedisGatewayService implements GatewayService {
         });
     }
 
-    save(content: GatewayConfig): Promise<void> {
+    save(config: GatewayConfig): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            this.castArrays(config);
             this.database.redisClient.multi()
-                .set(RedisGatewayService.GATEWAY_CONFIG_KEY, JSON.stringify(content))
+                .set(RedisGatewayService.GATEWAY_CONFIG_KEY, JSON.stringify(config))
                 .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
                 .exec()
                 .then(() => {
@@ -62,5 +64,19 @@ export class RedisGatewayService implements GatewayService {
                     resolve(JSON.parse(config));
                 }).catch(reject);
         });
+    }
+
+    /**
+     * This function cast all array properties inside gateway configuration to array.
+     * It is used to allow user to configure array properties as a single item too.
+     * @param gateway Gateway configuration
+     */
+    private castArrays(gateway: GatewayConfig) {
+        castArray(gateway, 'filter');
+        castArray(gateway, 'monitor');
+        castArray(gateway, 'admin.filter');
+        castArray(gateway, 'serviceDiscovery.provider');
+        castArray(gateway, 'logger.console.stderrLevels');
+        castArray(gateway, 'accessLogger.console.stderrLevels');
     }
 }

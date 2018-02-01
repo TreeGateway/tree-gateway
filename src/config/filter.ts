@@ -22,6 +22,6 @@ export interface Filter {
 }
 
 export const filterSchema = Joi.object().keys({
-    group: Joi.array().items(Joi.string()),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     middleware: middlewareConfigValidatorSchema.required()
 });

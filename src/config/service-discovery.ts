@@ -11,5 +11,5 @@ export interface ServiceDiscoveryConfig {
 }
 
 export let serviceDiscoveryConfigValidatorSchema = Joi.object().keys({
-    provider: Joi.array().items(middlewareConfigValidatorSchema).required()
+    provider: Joi.alternatives([Joi.array().items(middlewareConfigValidatorSchema), middlewareConfigValidatorSchema]).required()
 });

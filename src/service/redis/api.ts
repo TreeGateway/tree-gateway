@@ -7,6 +7,8 @@ import { ApiConfig } from '../../config/api';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { Database } from '../../database';
 import { ConfigTopics } from '../../config/events';
+import { castArray } from '../../utils/config';
+import * as _ from 'lodash';
 
 class Constants {
     static APIS_PREFIX = '{config}:apis';
@@ -65,6 +67,7 @@ export class RedisApiService implements ApiService {
             if (!api.id) {
                 api.id = new ObjectID().toString();
             }
+            this.castArrays(api);
             this.ensureAPICreateConstraints(api)
                 .then(() =>
                     this.database.redisClient.multi()
@@ -89,6 +92,7 @@ export class RedisApiService implements ApiService {
             if (upsert && !api.id) {
                 api.id = new ObjectID().toString();
             }
+            this.castArrays(api);
             this.ensureAPIUpdateConstraints(api, upsert)
                 .then(() =>
                     this.database.redisClient.multi()
@@ -171,5 +175,63 @@ export class RedisApiService implements ApiService {
                     resolve();
                 }).catch(reject);
         });
+    }
+
+    /**
+     * This function cast all array properties inside api configuration to array.
+     * It is used to allow user to configure array properties as a single item too.
+     * @param api API configuration
+     */
+    private castArrays(api: ApiConfig) {
+        if (_.has(api, 'group')) {
+            castArray(api, 'group');
+            api.group.forEach(config => {
+                castArray(config, 'member');
+                config.member.forEach(member => {
+                    castArray(member, 'method');
+                    castArray(member, 'path');
+                    castArray(member, 'protocol');
+                });
+            });
+        }
+        castArray(api, 'authentication.group'); // TODO aceitar array de autenticators
+        castArray(api, 'proxy.target.allow');
+        castArray(api, 'proxy.target.deny');
+        if (_.has(api, 'cache')) {
+            castArray(api, 'cache');
+            api.cache.forEach(config => {
+                castArray(config, 'group');
+                castArray(config, 'server.preserveHeaders');
+            });
+        }
+        if (_.has(api, 'throttling')) {
+            castArray(api, 'throttling');
+            api.throttling.forEach(config => castArray(config, 'group'));
+        }
+        if (_.has(api, 'circuitBreaker')) {
+            castArray(api, 'circuitBreaker');
+            api.circuitBreaker.forEach(config => castArray(config, 'group'));
+        }
+        if (_.has(api, 'cors')) {
+            castArray(api, 'cors');
+            api.cors.forEach(config => {
+                castArray(config, 'allowedHeaders');
+                castArray(config, 'exposedHeaders');
+                castArray(config, 'method');
+                castArray(config, 'group');
+            });
+        }
+        if (_.has(api, 'filter')) {
+            castArray(api, 'filter');
+            api.filter.forEach(config => castArray(config, 'group'));
+        }
+        if (_.has(api, 'proxy.interceptor.request')) {
+            castArray(api, 'proxy.interceptor.request');
+            api.proxy.interceptor.request.forEach(interceptor => castArray(interceptor, 'group'));
+        }
+        if (_.has(api, 'proxy.interceptor.response')) {
+            castArray(api, 'proxy.interceptor.response');
+            api.proxy.interceptor.response.forEach(interceptor => castArray(interceptor, 'group'));
+        }
     }
 }

@@ -117,7 +117,7 @@ export interface CircuitBreakerConfig {
 
 export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
-    group: Joi.array().items(Joi.string()),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     maxFailures: Joi.number(),
     onClose: middlewareConfigValidatorSchema,
     onOpen: middlewareConfigValidatorSchema,

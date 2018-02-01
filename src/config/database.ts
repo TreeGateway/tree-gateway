@@ -80,7 +80,7 @@ const redisNodeSchema = Joi.object().keys({
 });
 
 export const redisConfigSchema = Joi.object().keys({
-    cluster: Joi.array().items(redisNodeSchema),
+    cluster: Joi.alternatives([Joi.array().items(redisNodeSchema), redisNodeSchema]),
     options: Joi.object().keys({
         connectionName: Joi.string(),
         db: Joi.number().positive(),
@@ -89,7 +89,7 @@ export const redisConfigSchema = Joi.object().keys({
     }),
     sentinel: Joi.object().keys({
         name: Joi.string().required(),
-        nodes: Joi.array().items(redisNodeSchema).required()
+        nodes: Joi.alternatives([Joi.array().items(redisNodeSchema), redisNodeSchema]).required()
     }),
     standalone: redisNodeSchema
 }).xor('standalone', 'sentinel', 'cluster');

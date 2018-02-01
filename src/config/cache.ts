@@ -92,12 +92,12 @@ const serverCacheValidatorSchema = Joi.object().keys({
     binary: Joi.boolean(),// TODO remove on next major release
     cacheTime: Joi.alternatives([Joi.string(), Joi.number().positive()]).required(),
     disableStats: Joi.boolean(),
-    preserveHeaders: Joi.array().items(Joi.string()),
+    preserveHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     statsConfig: statsConfigValidatorSchema
 });
 
 export let cacheConfigValidatorSchema = Joi.object().keys({
     client: clientCacheValidatorSchema,
-    group: Joi.array().items(Joi.string()),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     server: serverCacheValidatorSchema
 });

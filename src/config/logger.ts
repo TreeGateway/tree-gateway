@@ -164,7 +164,7 @@ export interface LogFileConfig {
 export enum LogLevel {
     error, warn, info, debug
 }
-
+const validLevels = Joi.string().valid('error', 'warn', 'info', 'debug');
 const logConsoleConfigSchema = Joi.object().keys({
     colorize: Joi.boolean(),
     depth: Joi.number().positive(),
@@ -174,7 +174,7 @@ const logConsoleConfigSchema = Joi.object().keys({
     prettyPrint: Joi.boolean(),
     showLevel: Joi.boolean(),
     silent: Joi.boolean(),
-    stderrLevels: Joi.array().items(Joi.string().valid('error', 'warn', 'info', 'debug')),
+    stderrLevels: Joi.alternatives([Joi.array().items(validLevels), validLevels]),
     stringify: Joi.boolean(),
     timestamp: Joi.boolean()
 });

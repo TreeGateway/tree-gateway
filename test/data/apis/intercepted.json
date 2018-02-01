@@ -28,7 +28,7 @@
                     "middleware": {
                         "id":"myRequestInterceptor"
                     }, 
-                    "group": ["Group1"]
+                    "group": "Group1"
                 },
                 {
                     "middleware": {"name":"mySecondRequestInterceptor"}
@@ -42,7 +42,7 @@
                     "middleware": {
                         "name":"SecondInterceptor"
                     },
-                    "group": ["Group1"]
+                    "group": "Group1"
                 }
             ] 
         }

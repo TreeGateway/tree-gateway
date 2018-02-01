@@ -98,18 +98,18 @@ export interface ApiConfig {
 
 export let apiConfigValidatorSchema = Joi.object().keys({
     authentication: authenticationValidatorSchema,
-    cache: Joi.array().items(cacheConfigValidatorSchema),
-    circuitBreaker: Joi.array().items(circuitBreakerConfigValidatorSchema),
-    cors: Joi.array().items(apiCorsConfigSchema),
+    cache: Joi.alternatives([Joi.array().items(cacheConfigValidatorSchema), cacheConfigValidatorSchema]),
+    circuitBreaker: Joi.alternatives([Joi.array().items(circuitBreakerConfigValidatorSchema), circuitBreakerConfigValidatorSchema]),
+    cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),
     description: Joi.string(),
     errorHandler: middlewareConfigValidatorSchema,
-    filter: Joi.array().items(filterSchema),
-    group: Joi.array().items(groupValidatorSchema),
+    filter: Joi.alternatives([Joi.array().items(filterSchema), filterSchema]),
+    group: Joi.alternatives([Joi.array().items(groupValidatorSchema), groupValidatorSchema]),
     id: Joi.string(),
     name: Joi.string().min(3).required(),
     path: Joi.string().regex(/^[A-Za-z\-\/0-9_\.]+$/i).required(),
     proxy: proxyValidatorSchema.required(),
-    throttling: Joi.array().items(throttlingConfigValidatorSchema),
+    throttling: Joi.alternatives([Joi.array().items(throttlingConfigValidatorSchema), throttlingConfigValidatorSchema]),
     version: Joi.alternatives(Joi.string(), Joi.number()).required()
 });
 

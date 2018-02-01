@@ -283,8 +283,8 @@ const routerConfigValidatorSchema = Joi.object().keys({
 }).or('middleware', 'serviceDiscovery');
 
 const targetSchema = Joi.object().keys({
-    allow: Joi.array().items(Joi.string()),
-    deny: Joi.array().items(Joi.string()),
+    allow: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    deny: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     host: Joi.string().uri(),
     router: routerConfigValidatorSchema
 }).xor('host', 'router');
@@ -299,13 +299,13 @@ const httpAgentSchema = Joi.object().keys({
 });
 
 const interceptorSchema = Joi.object().keys({
-    group: Joi.array().items(Joi.string()),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     middleware: middlewareConfigValidatorSchema.required()
 });
 
 const interceptorsSchema = Joi.object().keys({
-    request: Joi.array().items(interceptorSchema),
-    response: Joi.array().items(interceptorSchema)
+    request: Joi.alternatives([Joi.array().items(interceptorSchema), interceptorSchema]),
+    response: Joi.alternatives([Joi.array().items(interceptorSchema), interceptorSchema])
 }).min(1);
 
 const jsonataExpressionSchema = Joi.object().keys({

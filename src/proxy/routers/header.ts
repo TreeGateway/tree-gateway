@@ -2,6 +2,7 @@
 
 import * as Joi from 'joi';
 import { ValidationError } from '../../error/errors';
+import * as _ from 'lodash';
 
 interface HeaderSplitConfig {
     destinations: Array<RouterDestination>;
@@ -14,12 +15,14 @@ interface RouterDestination {
     value: string;
 }
 
+const destinationConfig = Joi.object().keys({
+    target: Joi.string().required(),
+    value: Joi.string().required()
+});
+
 const headerSplitConfigSchema = Joi.object().keys({
     defaultTarget: Joi.string().required(),
-    destinations: Joi.array().items(Joi.object().keys({
-        target: Joi.string().required(),
-        value: Joi.string().required()
-    })).min(1).required(),
+    destinations: Joi.alternatives([Joi.array().items(destinationConfig).min(1), destinationConfig]).required(),
     name: Joi.string().required()
 });
 
@@ -35,6 +38,7 @@ function validateHeaderSplitConfig(config: HeaderSplitConfig) {
 module.exports = function(config: HeaderSplitConfig) {
     validateHeaderSplitConfig(config);
     const targets = new Map<string, string>();
+    config.destinations = _.castArray(config.destinations || []);
     config.destinations.forEach(destination => {
         targets.set(destination.value, destination.target);
     });

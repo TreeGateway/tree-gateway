@@ -72,8 +72,8 @@ gateway:
 
     serviceDiscovery:
         provider:
-            - name: consul
-              options:
+            name: consul
+            options:
                 host: localhost
                 port: 8500
                 defaults: 

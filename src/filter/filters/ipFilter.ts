@@ -27,14 +27,14 @@ interface IpFilterDatabaseConfig {
 }
 
 const ipFilterConfigSchema = Joi.object().keys({
-    blacklist: Joi.array().items(Joi.string()),
+    blacklist: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     database: Joi.object().keys({
         checkInterval: Joi.alternatives([Joi.string(), Joi.number().positive()]),
         key: Joi.string()
     }),
     message: Joi.string(),
     statusCode: Joi.number(),
-    whitelist: Joi.array().items(Joi.string())
+    whitelist: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
 }).xor('blacklist', 'whitelist');
 
 function validateIpFilterConfig(config: IpFilterConfig) {
@@ -50,7 +50,7 @@ function getBlacklistFilter(config: IpFilterConfig) {
     const gateway: Gateway = Container.get(Gateway);
     const logger: Logger = Container.get(Logger);
 
-    config.blacklist = config.blacklist || [];
+    config.blacklist = _.castArray(config.blacklist || []);
     let blocked: Array<string> = config.blacklist;
     if (config.database) {
         const pluginsDataService: PluginsDataService = Container.get(PluginsDataService);
@@ -92,7 +92,7 @@ function getWhitelistFilter(config: IpFilterConfig) {
     const gateway: Gateway = Container.get(Gateway);
     const logger: Logger = Container.get(Logger);
 
-    config.whitelist = config.whitelist || [];
+    config.whitelist = _.castArray(config.whitelist || []);
     let unblocked: Array<string> = config.whitelist;
     if (config.database) {
         const pluginsDataService: PluginsDataService = Container.get(PluginsDataService);

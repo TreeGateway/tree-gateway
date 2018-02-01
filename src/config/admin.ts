@@ -85,7 +85,7 @@ export const adminConfigValidatorSchema = Joi.object().keys({
     }),
     cors: corsConfigSchema,
     disableStats: Joi.boolean(),
-    filter: Joi.array().items(middlewareConfigValidatorSchema),
+    filter: Joi.alternatives([Joi.array().items(middlewareConfigValidatorSchema), middlewareConfigValidatorSchema]),
     protocol: protocolConfigSchema.required(),
     statsConfig: statsConfigValidatorSchema,
     userService: usersConfigValidatorSchema.required()
