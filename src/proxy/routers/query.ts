@@ -1,6 +1,7 @@
 'use strict';
 
 import * as Joi from 'joi';
+import * as _ from 'lodash';
 import { ValidationError } from '../../error/errors';
 
 interface QuerySplitConfig {
@@ -13,13 +14,13 @@ interface RouterDestination {
     target: string;
     value: string;
 }
-
+const destinationConfig = Joi.object().keys({
+    target: Joi.string().required(),
+    value: Joi.string().required()
+});
 const querySplitConfigSchema = Joi.object().keys({
     defaultTarget: Joi.string().required(),
-    destinations: Joi.array().items(Joi.object().keys({
-        target: Joi.string().required(),
-        value: Joi.string().required()
-    })).min(1).required(),
+    destinations: Joi.alternatives([Joi.array().items(destinationConfig).min(1), destinationConfig]).required(),
     param: Joi.string().required()
 });
 
@@ -35,6 +36,7 @@ function validateQuerySplitConfig(config: QuerySplitConfig) {
 module.exports = function(config: QuerySplitConfig) {
     validateQuerySplitConfig(config);
     const targets = new Map<string, string>();
+    config.destinations = _.castArray(config.destinations || []);
     config.destinations.forEach(destination => {
         targets.set(destination.value, destination.target);
     });

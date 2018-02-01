@@ -103,23 +103,24 @@ const corsOriginSchema = Joi.object().keys({
     middleware: middlewareConfigValidatorSchema
 }).min(1).max(1);
 
+const methodValidator = Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD');
 export let apiCorsConfigSchema = Joi.object().keys({
-    allowedHeaders: Joi.array().items(Joi.string()),
+    allowedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     credentials: Joi.boolean(),
-    exposedHeaders: Joi.array().items(Joi.string()),
-    group: Joi.array().items(Joi.string()),
+    exposedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     maxAge: Joi.string(),
-    method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD')),
+    method: Joi.alternatives([Joi.array().items(methodValidator),methodValidator]),
     origin: corsOriginSchema.required(),
     preflightContinue: Joi.boolean()
 });
 
 export let corsConfigSchema = Joi.object().keys({
-    allowedHeaders: Joi.array().items(Joi.string()),
+    allowedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     credentials: Joi.boolean(),
-    exposedHeaders: Joi.array().items(Joi.string()),
+    exposedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     maxAge: Joi.string(),
-    method: Joi.array().items(Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD')),
+    method: Joi.alternatives([Joi.array().items(methodValidator),methodValidator]),
     origin: corsOriginSchema.required(),
     preflightContinue: Joi.boolean()
 });

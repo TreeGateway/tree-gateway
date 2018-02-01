@@ -39,16 +39,17 @@ interface Destination {
     isDown?: boolean;
 }
 
+const destinationConfig = Joi.object().keys({
+    healthCheck: Joi.string(),
+    target: Joi.string().required(),
+    weight: Joi.number()
+});
 const loadBalancerConfigSchema = Joi.object().keys({
     database: Joi.object().keys({
         checkInterval: Joi.alternatives([Joi.string(), Joi.number().positive()]),
         key: Joi.string()
     }),
-    destinations: Joi.array().items(Joi.object().keys({
-        healthCheck: Joi.string(),
-        target: Joi.string().required(),
-        weight: Joi.number()
-    })),
+    destinations: Joi.alternatives([Joi.array().items(destinationConfig), destinationConfig]),
     healthCheckOptions: Joi.object().keys({
         checkInterval: Joi.alternatives([Joi.string(), Joi.number().positive()]),
         failCount: Joi.number(),
@@ -74,7 +75,7 @@ abstract class Balancer {
     protected previousDBData: Array<string>;
 
     constructor(config: LoadBalancerConfig) {
-        this.fixedServiceInstances = config.destinations || [];
+        this.fixedServiceInstances = _.castArray(config.destinations || []);
         this.updateInstances(this.fixedServiceInstances, config.healthCheckOptions);
         this.observeDatabase(config);
     }

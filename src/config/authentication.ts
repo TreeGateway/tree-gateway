@@ -130,7 +130,7 @@ const localAuthenticationSchema = Joi.object().keys({
 
 export let authenticationValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
-    group: Joi.array().items(Joi.string()),
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     statsConfig: statsConfigValidatorSchema,
     strategy: middlewareConfigValidatorSchema.required()
 });

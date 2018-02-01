@@ -22,10 +22,10 @@
             "description": "Endpoints Group Two",
             "member": [
                 {
-                    "path": ["user-agent"] 
+                    "path": "user-agent"
                 }, 
                 {
-                    "method": ["POST"]
+                    "method": "POST"
                 }
             ] 
         }
@@ -34,7 +34,7 @@
         "target": {
             "host": "http://httpbin.org",
             "allow": ["Group1"],
-            "deny": ["Group2"]
+            "deny": "Group2"
         },
         "timeout": 5000
     },

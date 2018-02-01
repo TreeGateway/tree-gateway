@@ -5,6 +5,7 @@ import * as consul from 'consul';
 import { ValidationError } from '../../../error/errors';
 import { getMilisecondsInterval } from '../../../utils/time-intervals';
 import * as fs from 'fs-extra-promise';
+import * as _ from 'lodash';
 
 interface ConsulConfig {
     /**
@@ -72,7 +73,7 @@ const defaultsConsulConfigSchema = Joi.object().keys({
 });
 
 const consulConfigSchema = Joi.object().keys({
-    ca: Joi.array().items(Joi.string()),
+    ca: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     defaults: defaultsConsulConfigSchema,
     host: Joi.string(),
     port: Joi.alternatives([Joi.string(), Joi.number().positive()]),
@@ -109,6 +110,7 @@ module.exports = function(config: ConsulConfig) {
         consulConfig.defaults = <any>config.defaults;
     }
     if (config.ca) {
+        config.ca = _.castArray(config.ca);
         consulConfig.ca = <any[]>config.ca.map(ca => fs.readFileSync(ca));
     }
     return () => {

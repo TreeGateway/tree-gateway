@@ -17,6 +17,7 @@ import { ConfigService } from './service/config';
 import { GatewayService } from './service/gateway';
 import { PluginsDataService } from './service/plugin-data';
 import { StatsHandler } from './stats/stats';
+import { castArray } from './utils/config';
 
 _.mixin(require('lodash-deep'));
 
@@ -116,6 +117,7 @@ export class Configuration extends EventEmitter {
         });
 
         this.config = serverConfig;
+        this.castArrays(this.config);
         this.loadContainerConfigurations();
         return new Promise<void>((resolve, reject) => {
             this.loadDatabaseConfig()
@@ -245,5 +247,22 @@ export class Configuration extends EventEmitter {
         console.info(`No configuration for gateway was found. Using default configuration and saving it on database.`);
         gateway.admin.userService.jwtSecret = uuid();
         return gateway;
+    }
+
+    /**
+     * This function cast all array properties inside server configuration to array.
+     * It is used to allow user to configure array properties as a single item too.
+     * @param server Server configuration
+     */
+    private castArrays(server: ServerConfig) {
+        castArray(server, 'database.redis.cluster');
+        castArray(server, 'database.redis.sentinel.nodes');
+        castArray(server, 'gateway.filter');
+        castArray(server, 'gateway.monitor');
+        castArray(server, 'gateway.admin.filter');
+        castArray(server, 'gateway.serviceDiscovery.provider');
+        castArray(server, 'gateway.logger.console.stderrLevels');
+        castArray(server, 'gateway.accessLogger.console.stderrLevels');
+
     }
 }
