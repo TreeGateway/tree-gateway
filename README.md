@@ -1,6 +1,7 @@
 [![npm version](https://badge.fury.io/js/tree-gateway.svg)](https://badge.fury.io/js/tree-gateway)
 [![Build Status](https://travis-ci.org/Leanty/tree-gateway.svg?branch=master)](https://travis-ci.org/Leanty/tree-gateway)
 [![Coverage Status](https://coveralls.io/repos/github/Leanty/tree-gateway/badge.svg?branch=master)](https://coveralls.io/github/Leanty/tree-gateway?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/github/leanty/tree-gateway/badge.svg?targetFile=package.json)](https://snyk.io/test/github/leanty/tree-gateway?targetFile=package.json)
 
 <p align="center">
 <a href="http://treegateway.org"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAwjAAAAJGFlNWE2MDI1LTM0OGItNDc2NC1hYmU5LTM2NmNkMDlmZjkxNQ.png"/></a>
