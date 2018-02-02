@@ -8,8 +8,6 @@
         }
     },
     "cors" : [{
-        "origin": {
-            "enableAll": true
-        }
+        "use": "my-cors"
     }]
 }

@@ -1,6 +1,7 @@
 'use strict';
 
-import { CircuitBreakerConfig } from '../config/circuit-breaker';
+import { ApiFeaturesConfig } from '../config/gateway';
+import { ApiCircuitBreakerConfig } from '../config/circuit-breaker';
 import { ApiConfig } from '../config/api';
 import { Stats } from '../stats/stats';
 import * as express from 'express';
@@ -33,11 +34,12 @@ export class ApiCircuitBreaker {
 
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
-    circuitBreaker(apiRouter: express.Router, api: ApiConfig) {
+    circuitBreaker(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const breakerInfos: Array<BreakerInfo> = new Array<BreakerInfo>();
         const sortedBreakers = this.sortBreakers(api.circuitBreaker, api.path);
         const breakersSize = sortedBreakers.length;
-        sortedBreakers.forEach((cbConfig: CircuitBreakerConfig, index: number) => {
+        sortedBreakers.forEach((cbConfig: ApiCircuitBreakerConfig, index: number) => {
+            cbConfig = this.resolveReferences(cbConfig, gatewayFeatures);
             const breakerInfo: BreakerInfo = {};
             const cbStateID = (breakersSize > 1 ? `${api.path}:${index}` : api.path);
             const cbOptions: any = {
@@ -85,7 +87,18 @@ export class ApiCircuitBreaker {
         this.activeBreakers.clear();
     }
 
-    private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: CircuitBreakerConfig, apiId: string) {
+    private resolveReferences(circuitBreaker: ApiCircuitBreakerConfig, features: ApiFeaturesConfig) {
+        if (circuitBreaker.use && features.circuitBreaker) {
+            if (features.circuitBreaker[circuitBreaker.use]) {
+                circuitBreaker = _.defaults(circuitBreaker, features.circuitBreaker[circuitBreaker.use]);
+            } else {
+                throw new Error(`Invalid reference ${circuitBreaker.use}. There is no configuration for this id.`);
+            }
+        }
+        return circuitBreaker;
+    }
+
+    private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: ApiCircuitBreakerConfig, apiId: string) {
         const stats = this.createCircuitBreakerStats(apiId, config);
         if (stats) {
             breakerInfo.circuitBreaker.on('open', (req: express.Request) => {
@@ -141,7 +154,7 @@ export class ApiCircuitBreaker {
         };
     }
 
-    private sortBreakers(breakers: Array<CircuitBreakerConfig>, path: string): Array<CircuitBreakerConfig> {
+    private sortBreakers(breakers: Array<ApiCircuitBreakerConfig>, path: string): Array<ApiCircuitBreakerConfig> {
         const generalBreakers = _.filter(breakers, (value) => {
             if (value.group) {
                 return true;
@@ -164,7 +177,7 @@ export class ApiCircuitBreaker {
         return breakers;
     }
 
-    private createCircuitBreakerStats(apiId: string, config: CircuitBreakerConfig): StatsController {
+    private createCircuitBreakerStats(apiId: string, config: ApiCircuitBreakerConfig): StatsController {
         if (!config.disableStats) {
             const stats: StatsController = new StatsController();
             stats.close = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'close'), config.statsConfig);

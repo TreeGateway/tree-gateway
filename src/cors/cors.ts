@@ -2,7 +2,8 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
-import { ApiCorsConfig, CorsConfig } from '../config/cors';
+import { ApiCorsConfig } from '../config/cors';
+import { ApiFeaturesConfig } from '../config/gateway';
 import * as _ from 'lodash';
 import * as Groups from '../group';
 import * as corsLib from 'cors';
@@ -22,12 +23,13 @@ export class ApiCors {
     @Inject private logger: Logger;
     @Inject private middlewareLoader: MiddlewareLoader;
 
-    cors(apiRouter: express.Router, api: ApiConfig) {
+    cors(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
         const configusrations: Array<ApiCorsConfig> = this.sortMiddlewares(api.cors, path);
         const corsInfos: Array<CorsInfo> = new Array<CorsInfo>();
 
         configusrations.forEach((cors: ApiCorsConfig) => {
+            cors = this.resolveReferences(cors, gatewayFeatures);
             const corsInfo: CorsInfo = {};
             const corsOptions: corsLib.CorsOptions = this.configureCorsOptions(cors);
             corsInfo.corsMiddleware = corsLib(corsOptions);
@@ -48,7 +50,7 @@ export class ApiCors {
         this.setupMiddlewares(apiRouter, corsInfos);
     }
 
-    configureCorsOptions(cors: CorsConfig): corsLib.CorsOptions {
+    configureCorsOptions(cors: ApiCorsConfig): corsLib.CorsOptions {
         const corsOptions: corsLib.CorsOptions = <any>_.omit(cors, 'id', 'origin', 'maxAge', 'group');
         if (cors.maxAge) {
             corsOptions.maxAge = getMilisecondsInterval(cors.maxAge);
@@ -81,6 +83,17 @@ export class ApiCors {
             };
         }
         return corsOptions;
+    }
+
+    private resolveReferences(cors: ApiCorsConfig, features: ApiFeaturesConfig) {
+        if (cors.use && features.cors) {
+            if (features.cors[cors.use]) {
+                cors = _.defaults(cors, features.cors[cors.use]);
+            } else {
+                throw new Error(`Invalid reference ${cors.use}. There is no configuration for this id.`);
+            }
+        }
+        return cors;
     }
 
     private setupMiddlewares(apiRouter: express.Router, corsInfos: Array<CorsInfo>) {

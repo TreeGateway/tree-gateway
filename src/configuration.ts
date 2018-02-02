@@ -263,6 +263,17 @@ export class Configuration extends EventEmitter {
         castArray(server, 'gateway.serviceDiscovery.provider');
         castArray(server, 'gateway.logger.console.stderrLevels');
         castArray(server, 'gateway.accessLogger.console.stderrLevels');
-
+        if (_.has(server, 'gateway.config.cache')) {
+            _.keys(server.gateway.config.cache).forEach(cacheKey => {
+                castArray(server.gateway.config.cache[cacheKey], 'server.preserveHeaders');
+            });
+        }
+        if (_.has(server, 'gateway.config.cors')) {
+            _.keys(server.gateway.config.cors).forEach(corsKey => {
+                castArray(server.gateway.config.cors[corsKey], 'allowedHeaders');
+                castArray(server.gateway.config.cors[corsKey], 'exposedHeaders');
+                castArray(server.gateway.config.cors[corsKey], 'method');
+            });
+        }
     }
 }

@@ -2,17 +2,19 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
+import { ApiFeaturesConfig } from '../config/gateway';
 import { MiddlewareConfig } from '../config/middleware';
 import * as Groups from '../group';
 import { Logger } from '../logger';
 import { Inject } from 'typescript-ioc';
 import { MiddlewareLoader } from '../utils/middleware-loader';
+import { ApiFilter as Filter } from '../config/filter';
 
 export class ApiFilter {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private logger: Logger;
 
-    buildApiFilters(apiRouter: express.Router, api: ApiConfig) {
+    buildApiFilters(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         if (api.proxy.target.allow) {
             this.buildAllowFilter(apiRouter, api);
         }
@@ -20,7 +22,7 @@ export class ApiFilter {
             this.buildDenyFilter(apiRouter, api);
         }
         if (this.hasCustomFilter(api)) {
-            this.buildCustomFilters(apiRouter, api);
+            this.buildCustomFilters(apiRouter, api, gatewayFeatures);
         }
     }
 
@@ -47,12 +49,13 @@ export class ApiFilter {
         }
     }
 
-    private buildCustomFilters(apiRouter: express.Router, api: ApiConfig) {
+    private buildCustomFilters(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Configuring custom filters for Proxy target [${api.path}]. Filters [${JSON.stringify(api.filter)}]`);
         }
 
         api.filter.forEach((filter) => {
+            filter = this.resolveReferences(filter, gatewayFeatures);
             const filterMiddleware = this.middlewareLoader.loadMiddleware('filter', filter.middleware);
             if (filter.group) {
                 const groupValidator = Groups.buildGroupAllowFilter(api.group, filter.group);
@@ -87,6 +90,17 @@ export class ApiFilter {
                 });
             }
         });
+    }
+
+    private resolveReferences(filter: Filter, features: ApiFeaturesConfig) {
+        if (filter.use && features.filter) {
+            if (features.filter[filter.use]) {
+                filter.middleware = features.filter[filter.use];
+            } else {
+                throw new Error(`Invalid reference ${filter.use}. There is no configuration for this id.`);
+            }
+        }
+        return filter;
     }
 
     private buildAllowFilter(apiRouter: express.Router, api: ApiConfig) {

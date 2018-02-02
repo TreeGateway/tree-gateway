@@ -14,12 +14,6 @@ export interface AuthenticationConfig {
      */
     strategy: MiddlewareConfig;
     /**
-     * A list of groups that should be handled by this authenticator. If not provided, everything
-     * will be handled.
-     * Defaults to *.
-     */
-    group?: Array<string>;
-    /**
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
@@ -27,6 +21,19 @@ export interface AuthenticationConfig {
      * Configurations for authentication stats.
      */
     statsConfig?: StatsConfig;
+}
+
+export interface ApiAuthenticationConfig extends AuthenticationConfig {
+    /**
+     * A list of groups that should be handled by this authenticator. If not provided, everything
+     * will be handled.
+     * Defaults to *.
+     */
+    group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
 }
 
 export interface BasicAuthentication {
@@ -130,10 +137,15 @@ const localAuthenticationSchema = Joi.object().keys({
 
 export let authenticationValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
-    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     statsConfig: statsConfigValidatorSchema,
     strategy: middlewareConfigValidatorSchema.required()
 });
+
+export let apiAuthenticationValidatorSchema = authenticationValidatorSchema.keys({
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    strategy: middlewareConfigValidatorSchema,
+    use: Joi.string()
+}).xor('strategy', 'use');
 
 export function validateLocalAuthConfig(config: LocalAuthentication) {
     const result = Joi.validate(config, localAuthenticationSchema);

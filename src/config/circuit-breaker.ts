@@ -32,12 +32,6 @@ export interface CircuitBreakerConfig {
      */
     maxFailures?: number;
     /**
-     * A list of groups that should be handled by this limiter. If not provided, everything
-     * will be handled.
-     * Defaults to *.
-     */
-    group?: Array<string>;
-    /**
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
@@ -115,9 +109,21 @@ export interface CircuitBreakerConfig {
     rejectStatusCode?: number;
 }
 
+export interface ApiCircuitBreakerConfig extends CircuitBreakerConfig {
+    /**
+     * A list of groups that should be handled by this limiter. If not provided, everything
+     * will be handled.
+     * Defaults to *.
+     */
+    group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
+}
+
 export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     disableStats: Joi.boolean(),
-    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     maxFailures: Joi.number(),
     onClose: middlewareConfigValidatorSchema,
     onOpen: middlewareConfigValidatorSchema,
@@ -130,4 +136,9 @@ export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     timeoutMessage: Joi.string(),
     timeoutStatusCode: Joi.number()
+});
+
+export let apiCircuitBreakerConfigValidatorSchema = circuitBreakerConfigValidatorSchema.keys({
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    use: Joi.string()
 });

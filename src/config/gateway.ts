@@ -9,6 +9,10 @@ import { CorsConfig, corsConfigSchema } from './cors';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './service-discovery';
 import { DatabaseConfig, databaseSchema } from './database';
+import { AuthenticationConfig, authenticationValidatorSchema } from './authentication';
+import { CacheConfig, cacheConfigValidatorSchema } from './cache';
+import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
+import { ThrottlingConfig, throttlingConfigValidatorSchema } from './throttling';
 import { ValidationError } from '../error/errors';
 
 /**
@@ -120,6 +124,37 @@ export interface GatewayConfig {
      * Configure how to handle errors during API pipeline.
      */
     errorHandler?: MiddlewareConfig;
+    /**
+     * Configure features globally, to be imported by api configureations
+     */
+    config?: ApiFeaturesConfig;
+}
+
+export interface ApiFeaturesConfig {
+    /**
+     * Authentication configuration
+     */
+    authentication?: { [index: string]: AuthenticationConfig };
+    /**
+     * Cache configuration
+     */
+    cache?: { [index: string]: CacheConfig };
+    /**
+     * CircuitBreaker configuration
+     */
+    circuitBreaker?: { [index: string]: CircuitBreakerConfig };
+    /**
+     * Cors configuration
+     */
+    cors?: { [index: string]: CorsConfig };
+    /**
+     * Filter configuration
+     */
+    filter?: { [index: string]: MiddlewareConfig };
+    /**
+     * Throttling configuration
+     */
+    throttling?: { [index: string]: ThrottlingConfig };
 }
 
 export interface MonitorConfig {
@@ -143,9 +178,19 @@ const monitorConfigSchema = Joi.object().keys({
     statsConfig: statsConfigValidatorSchema.required()
 }).xor('id', 'name');
 
+const apiFeaturesConfigSchema = Joi.object().keys({
+    authentication: Joi.object().pattern(/\w+/, authenticationValidatorSchema),
+    cache: Joi.object().pattern(/\w+/, cacheConfigValidatorSchema),
+    circuitBreaker: Joi.object().pattern(/\w+/, circuitBreakerConfigValidatorSchema),
+    cors: Joi.object().pattern(/\w+/, corsConfigSchema),
+    filter: Joi.object().pattern(/\w+/, middlewareConfigValidatorSchema),
+    throttling: Joi.object().pattern(/\w+/, throttlingConfigValidatorSchema)
+});
+
 export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
+    config: apiFeaturesConfigSchema,
     cors: corsConfigSchema,
     disableApiIdValidation: Joi.boolean(),
     disableCompression: Joi.boolean(),

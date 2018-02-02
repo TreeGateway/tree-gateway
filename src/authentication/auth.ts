@@ -1,7 +1,8 @@
 'use strict';
 
 import { ApiConfig } from '../config/api';
-import { AuthenticationConfig } from '../config/authentication';
+import { ApiFeaturesConfig } from '../config/gateway';
+import { ApiAuthenticationConfig } from '../config/authentication';
 import * as auth from 'passport';
 import { Stats } from '../stats/stats';
 import * as Groups from '../group';
@@ -10,6 +11,7 @@ import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
 import { MiddlewareLoader } from '../utils/middleware-loader';
+import * as _ from 'lodash';
 
 class StatsController {
     failStats: Stats;
@@ -22,10 +24,11 @@ export class ApiAuth {
     @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
 
-    authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig) {
+    authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
-        const authentication: AuthenticationConfig = api.authentication;
+        let authentication: ApiAuthenticationConfig = api.authentication;
         try {
+            authentication = this.resolveReferences(authentication, gatewayFeatures);
             const authStrategy: auth.Strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', authentication.strategy);
             if (!authStrategy) {
                 this.logger.error('Error configuring authenticator. Invalid Strategy');
@@ -48,7 +51,18 @@ export class ApiAuth {
         }
     }
 
-    private createAuthenticator(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig,
+    private resolveReferences(authentication: ApiAuthenticationConfig, features: ApiFeaturesConfig) {
+        if (authentication.use && features.authentication) {
+            if (features.authentication[authentication.use]) {
+                authentication = _.defaults(authentication, features.authentication[authentication.use]);
+            } else {
+                throw new Error(`Invalid reference ${authentication.use}. There is no configuration for this id.`);
+            }
+        }
+        return authentication;
+    }
+
+    private createAuthenticator(apiRouter: express.Router, api: ApiConfig, authentication: ApiAuthenticationConfig,
         authenticator: express.RequestHandler) {
         const apiId: string = api.id;
         const stats = this.createAuthStats(apiId, authentication);
@@ -69,7 +83,7 @@ export class ApiAuth {
         }
     }
 
-    private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: AuthenticationConfig,
+    private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: ApiAuthenticationConfig,
         authenticator: express.RequestHandler) {
         const apiId: string = api.id;
         if (this.logger.isDebugEnabled()) {
@@ -105,7 +119,7 @@ export class ApiAuth {
         }
     }
 
-    private createAuthStats(apiId: string, authentication: AuthenticationConfig): StatsController {
+    private createAuthStats(apiId: string, authentication: ApiAuthenticationConfig): StatsController {
         if (!authentication.disableStats) {
             const stats: StatsController = new StatsController();
             stats.failStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'fail'), authentication.statsConfig);
