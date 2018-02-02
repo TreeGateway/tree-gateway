@@ -52,6 +52,10 @@ export interface ApiCorsConfig extends CorsConfig {
      * A list of groups that will use this cors cofiguration
      */
     group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
 }
 
 /**
@@ -104,16 +108,6 @@ const corsOriginSchema = Joi.object().keys({
 }).min(1).max(1);
 
 const methodValidator = Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD');
-export let apiCorsConfigSchema = Joi.object().keys({
-    allowedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
-    credentials: Joi.boolean(),
-    exposedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
-    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
-    maxAge: Joi.string(),
-    method: Joi.alternatives([Joi.array().items(methodValidator),methodValidator]),
-    origin: corsOriginSchema.required(),
-    preflightContinue: Joi.boolean()
-});
 
 export let corsConfigSchema = Joi.object().keys({
     allowedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
@@ -124,3 +118,9 @@ export let corsConfigSchema = Joi.object().keys({
     origin: corsOriginSchema.required(),
     preflightContinue: Joi.boolean()
 });
+
+export let apiCorsConfigSchema = corsConfigSchema.keys({
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    origin: corsOriginSchema,
+    use: Joi.string()
+}).xor('origin', 'use');

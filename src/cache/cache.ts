@@ -2,7 +2,8 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
-import { CacheConfig, ServerCacheConfig } from '../config/cache';
+import { ApiFeaturesConfig } from '../config/gateway';
+import { ApiCacheConfig, ServerCacheConfig } from '../config/cache';
 import { ServerCache } from './server-cache';
 import { ClientCache } from './client-cache';
 import * as Groups from '../group';
@@ -28,17 +29,18 @@ export class ApiCache {
     @Inject
     private statsRecorder: StatsRecorder;
 
-    cache(apiRouter: express.Router, api: ApiConfig) {
+    cache(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         if (this.useCache(api)) {
-            this.configureCache(apiRouter, api);
+            this.configureCache(apiRouter, api, gatewayFeatures);
         }
     }
 
-    private configureCache(apiRouter: express.Router, api: ApiConfig) {
+    private configureCache(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
-        const cacheConfigs: Array<CacheConfig> = this.sortCaches(api.cache, path);
+        const cacheConfigs: Array<ApiCacheConfig> = this.sortCaches(api.cache, path);
 
-        cacheConfigs.forEach((cache: CacheConfig) => {
+        cacheConfigs.forEach((cache: ApiCacheConfig) => {
+            cache = this.resolveReferences(cache, gatewayFeatures);
             let validateGroupFunction: Function;
             if (cache.group) {
                 if (this.logger.isDebugEnabled()) {
@@ -56,7 +58,18 @@ export class ApiCache {
         });
     }
 
-    private buildCacheMiddleware(validateGroupFunction: Function, cache: CacheConfig, path: string, apiId: string): express.RequestHandler {
+    private resolveReferences(cache: ApiCacheConfig, features: ApiFeaturesConfig) {
+        if (cache.use && features.cache) {
+            if (features.cache[cache.use]) {
+                cache = _.defaults(cache, features.cache[cache.use]);
+            } else {
+                throw new Error(`Invalid reference ${cache.use}. There is no configuration for this id.`);
+            }
+        }
+        return cache;
+    }
+
+    private buildCacheMiddleware(validateGroupFunction: Function, cache: ApiCacheConfig, path: string, apiId: string): express.RequestHandler {
         const body = new Array<string>();
         const stats = this.createCacheStats(apiId, cache.server);
         if (validateGroupFunction) {
@@ -96,7 +109,7 @@ export class ApiCache {
         return false;
     }
 
-    private sortCaches(caches: Array<CacheConfig>, path: string): Array<CacheConfig> {
+    private sortCaches(caches: Array<ApiCacheConfig>, path: string): Array<ApiCacheConfig> {
         const generalCaches = _.filter(caches, (value) => {
             if (value.group) {
                 return true;

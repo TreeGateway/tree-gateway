@@ -21,14 +21,20 @@ export interface CacheConfig {
      * Configuration for a server side cache (in a Redis store)
      */
     server?: ServerCacheConfig;
+}
+
+export interface ApiCacheConfig extends CacheConfig {
     /**
      * A list of groups that should be handled by this configuration. If not provided, everything
      * will be handled.
      * Defaults to *.
      */
     group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
 }
-
 /**
  * Configure HTTP response headers to make the client browsers keep a cache for configured resources.
  */
@@ -98,6 +104,10 @@ const serverCacheValidatorSchema = Joi.object().keys({
 
 export let cacheConfigValidatorSchema = Joi.object().keys({
     client: clientCacheValidatorSchema,
-    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     server: serverCacheValidatorSchema
+});
+
+export let apiCacheConfigValidatorSchema = cacheConfigValidatorSchema.keys({
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    use: Joi.string()
 });

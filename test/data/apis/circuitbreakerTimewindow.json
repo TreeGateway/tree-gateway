@@ -8,12 +8,6 @@
         }
     },
     "circuitBreaker": [{
-        "timeout": 1,
-        "resetTimeout": "3 seconds",
-        "timeWindow": "2 seconds",
-        "maxFailures": 1,
-        "onOpen": {
-            "name": "myOpenHandler"
-        }
+        "use": "my-circuit-breaker"
     }]
 }

@@ -22,14 +22,7 @@
         "timeout": 5000
     },
     "authentication": {
-        "strategy": {
-            "id": "basic",
-            "options": {
-                "verify": {
-                    "name": "verifyBasicUser"
-                }
-            }
-        },
+        "use": "my-basic-validator",
         "group": ["Group1"]        
     },
     "errorHandler": {

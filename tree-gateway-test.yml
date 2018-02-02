@@ -105,3 +105,41 @@ gateway:
                 ttl: 1 day
                 
     healthcheck: /healthcheck
+    config:
+        authentication:
+            my-basic-validator:
+                strategy:
+                    id: basic
+                    options:
+                        verify:
+                            name: verifyBasicUser
+        cache:
+            my-cache:
+                client:
+                    cacheTime: 1 minute
+                    cacheControl: public
+                    mustRevalidate: false
+                    noTransform: false
+                    proxyRevalidate: false
+                server:
+                    cacheTime: 10 minutes
+                    binary: true
+                    preserveHeaders: access-control-allow-credentials
+        circuitBreaker:
+            my-circuit-breaker:
+                timeout: 1
+                resetTimeout: 3 seconds
+                timeWindow: 2 seconds
+                maxFailures: 1
+                onOpen:
+                    name: myOpenHandler
+        throttling:
+            my-rate-limit:
+                timeWindow: one minute
+                delay: 1 second
+                max: 1
+        cors:
+            my-cors:
+                origin:
+                    enableAll: true
+        

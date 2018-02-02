@@ -303,13 +303,13 @@ export class Gateway extends EventEmitter {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug('Configuring API Rate Limits');
             }
-            this.apiRateLimit.throttling(apiRouter, api);
+            this.apiRateLimit.throttling(apiRouter, api, this.config.gateway.config);
         }
         if (api.cors) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug('Configuring API Cors support');
             }
-            this.apiCors.cors(apiRouter, api);
+            this.apiCors.cors(apiRouter, api, this.config.gateway.config);
         } else {
             this.configureDefaultCors(apiRouter);
         }
@@ -317,20 +317,20 @@ export class Gateway extends EventEmitter {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug('Configuring API Circuit Breaker');
             }
-            this.apiCircuitBreaker.circuitBreaker(apiRouter, api);
+            this.apiCircuitBreaker.circuitBreaker(apiRouter, api, this.config.gateway.config);
         }
         if (api.authentication) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug('Configuring API Authentication');
             }
-            this.apiAuth.authentication(apiRouter, api.id, api);
+            this.apiAuth.authentication(apiRouter, api.id, api, this.config.gateway.config);
         }
         this.apiProxy.configureProxyHeader(apiRouter, api);
         if (api.cache) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug('Configuring API Cache');
             }
-            this.apiCache.cache(apiRouter, api);
+            this.apiCache.cache(apiRouter, api, this.config.gateway.config);
         }
         if (this.logger.isDebugEnabled()) {
             this.logger.debug('Configuring API Proxy');

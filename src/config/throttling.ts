@@ -95,12 +95,6 @@ export interface ThrottlingConfig {
      */
     handler?: MiddlewareConfig;
     /**
-     * A list of groups that should be handled by this limiter. If not provided, everything
-     * will be handled.
-     * Defaults to *.
-     */
-    group?: Array<string>;
-    /**
      * If true, disabled the statistical data recording.
      */
     disableStats?: boolean;
@@ -110,11 +104,23 @@ export interface ThrottlingConfig {
     statsConfig?: StatsConfig;
 }
 
+export interface ApiThrottlingConfig extends ThrottlingConfig {
+    /**
+     * A list of groups that should be handled by this limiter. If not provided, everything
+     * will be handled.
+     * Defaults to *.
+     */
+    group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
+}
+
 export let throttlingConfigValidatorSchema = Joi.object().keys({
     delay: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     delayAfter: Joi.number(),
     disableStats: Joi.boolean(),
-    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     handler: middlewareConfigValidatorSchema,
     headers: Joi.boolean(),
     keyGenerator: middlewareConfigValidatorSchema,
@@ -124,4 +130,9 @@ export let throttlingConfigValidatorSchema = Joi.object().keys({
     statsConfig: statsConfigValidatorSchema,
     statusCode: Joi.number(),
     timeWindow: Joi.alternatives([Joi.string(), Joi.number().positive()])
+});
+
+export let apiThrottlingConfigValidatorSchema = throttlingConfigValidatorSchema.keys({
+    group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
+    use: Joi.string()
 });

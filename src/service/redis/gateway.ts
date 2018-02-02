@@ -7,6 +7,7 @@ import { Database } from '../../database';
 import { NotFoundError } from '../../error/errors';
 import { GatewayService } from '../gateway';
 import { castArray } from '../../utils/config';
+import * as _ from 'lodash';
 
 export class RedisGatewayService implements GatewayService {
     private static GATEWAY_CONFIG_KEY = '{config}:gateway';
@@ -78,5 +79,17 @@ export class RedisGatewayService implements GatewayService {
         castArray(gateway, 'serviceDiscovery.provider');
         castArray(gateway, 'logger.console.stderrLevels');
         castArray(gateway, 'accessLogger.console.stderrLevels');
+        if (_.has(gateway, 'config.cache')) {
+            _.keys(gateway.config.cache).forEach(cacheKey => {
+                castArray(gateway.config.cache[cacheKey], 'server.preserveHeaders');
+            });
+        }
+        if (_.has(gateway, 'config.cors')) {
+            _.keys(gateway.config.cors).forEach(corsKey => {
+                castArray(gateway.config.cors[corsKey], 'allowedHeaders');
+                castArray(gateway.config.cors[corsKey], 'exposedHeaders');
+                castArray(gateway.config.cors[corsKey], 'method');
+            });
+        }
     }
 }

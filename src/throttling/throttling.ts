@@ -2,7 +2,8 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
-import { ThrottlingConfig } from '../config/throttling';
+import { ApiThrottlingConfig } from '../config/throttling';
+import { ApiFeaturesConfig } from '../config/gateway';
 import * as _ from 'lodash';
 import * as Groups from '../group';
 import { RedisStore } from './redis-store';
@@ -24,13 +25,14 @@ export class ApiRateLimit {
     @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
 
-    throttling(apiRouter: express.Router, api: ApiConfig) {
+    throttling(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
-        const throttlings: Array<ThrottlingConfig> = this.sortLimiters(api.throttling, path);
+        const throttlings: Array<ApiThrottlingConfig> = this.sortLimiters(api.throttling, path);
         const rateLimit = require('express-rate-limit');
         const throttlingInfos: Array<ThrottlingInfo> = new Array<ThrottlingInfo>();
 
-        throttlings.forEach((throttling: ThrottlingConfig) => {
+        throttlings.forEach((throttling: ApiThrottlingConfig) => {
+            throttling = this.resolveReferences(throttling, gatewayFeatures);
             const throttlingInfo: ThrottlingInfo = {};
             const rateConfig: any = _.defaults(_.omit(throttling, 'store', 'keyGenerator', 'handler', 'group', 'timeWindow', 'delay'), {
                 message: 'Too many requests, please try again later.',
@@ -69,7 +71,18 @@ export class ApiRateLimit {
         this.setupMiddlewares(apiRouter, throttlingInfos);
     }
 
-    private configureThrottlingHandlerFunction(path: string, throttling: ThrottlingConfig, rateConfig: any, apiId: string) {
+    private resolveReferences(throttling: ApiThrottlingConfig, features: ApiFeaturesConfig) {
+        if (throttling.use && features.throttling) {
+            if (features.throttling[throttling.use]) {
+                throttling = _.defaults(throttling, features.throttling[throttling.use]);
+            } else {
+                throw new Error(`Invalid reference ${throttling.use}. There is no configuration for this id.`);
+            }
+        }
+        return throttling;
+    }
+
+    private configureThrottlingHandlerFunction(path: string, throttling: ApiThrottlingConfig, rateConfig: any, apiId: string) {
         const stats = this.createStats(apiId, throttling);
         if (stats) {
             if (throttling.handler) {
@@ -116,7 +129,7 @@ export class ApiRateLimit {
         };
     }
 
-    private sortLimiters(throttlings: Array<ThrottlingConfig>, path: string): Array<ThrottlingConfig> {
+    private sortLimiters(throttlings: Array<ApiThrottlingConfig>, path: string): Array<ApiThrottlingConfig> {
         const generalThrottlings = _.filter(throttlings, (value) => {
             if (value.group) {
                 return true;
@@ -139,7 +152,7 @@ export class ApiRateLimit {
         return throttlings;
     }
 
-    private createStats(apiId: string, throttling: ThrottlingConfig): Stats {
+    private createStats(apiId: string, throttling: ApiThrottlingConfig): Stats {
         if (!throttling.disableStats) {
             return this.statsRecorder.createStats(Stats.getStatsKey('throt', apiId, 'exceeded'), throttling.statsConfig);
         }

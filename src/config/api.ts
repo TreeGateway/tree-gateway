@@ -1,13 +1,13 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { AuthenticationConfig, authenticationValidatorSchema } from './authentication';
+import { ApiAuthenticationConfig, apiAuthenticationValidatorSchema } from './authentication';
 import { ApiCorsConfig, apiCorsConfigSchema } from './cors';
-import { ThrottlingConfig, throttlingConfigValidatorSchema } from './throttling';
-import { CacheConfig, cacheConfigValidatorSchema } from './cache';
+import { ApiThrottlingConfig, apiThrottlingConfigValidatorSchema } from './throttling';
+import { ApiCacheConfig, apiCacheConfigValidatorSchema } from './cache';
 import { Proxy, proxyValidatorSchema } from './proxy';
 import { Group, groupValidatorSchema } from './group';
-import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
+import { ApiCircuitBreakerConfig, apiCircuitBreakerConfigValidatorSchema } from './circuit-breaker';
 import { Filter, filterSchema } from './filter';
 import { ValidationError } from '../error/errors';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
@@ -49,20 +49,20 @@ export interface ApiConfig {
     /**
      * Configuration for the rate limit engine.
      */
-    throttling?: Array<ThrottlingConfig>;
+    throttling?: Array<ApiThrottlingConfig>;
     /**
      * Configuration for API authentication.
      */
-    authentication?: AuthenticationConfig;
+    authentication?: ApiAuthenticationConfig;
     /**
      * Configuration for API cache.
      */
-    cache?: Array<CacheConfig>;
+    cache?: Array<ApiCacheConfig>;
     /**
      * Configuration for api circuit breaker, following the pattern
      * [Circuit Breaker](http://doc.akka.io/docs/akka/snapshot/common/circuitbreaker.html).
      */
-    circuitBreaker?: Array<CircuitBreakerConfig>;
+    circuitBreaker?: Array<ApiCircuitBreakerConfig>;
     /**
      * Configure cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
      */
@@ -97,9 +97,9 @@ export interface ApiConfig {
 }
 
 export let apiConfigValidatorSchema = Joi.object().keys({
-    authentication: authenticationValidatorSchema,
-    cache: Joi.alternatives([Joi.array().items(cacheConfigValidatorSchema), cacheConfigValidatorSchema]),
-    circuitBreaker: Joi.alternatives([Joi.array().items(circuitBreakerConfigValidatorSchema), circuitBreakerConfigValidatorSchema]),
+    authentication: apiAuthenticationValidatorSchema,
+    cache: Joi.alternatives([Joi.array().items(apiCacheConfigValidatorSchema), apiCacheConfigValidatorSchema]),
+    circuitBreaker: Joi.alternatives([Joi.array().items(apiCircuitBreakerConfigValidatorSchema), apiCircuitBreakerConfigValidatorSchema]),
     cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),
     description: Joi.string(),
     errorHandler: middlewareConfigValidatorSchema,
@@ -109,7 +109,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     name: Joi.string().min(3).required(),
     path: Joi.string().regex(/^[A-Za-z\-\/0-9_\.]+$/i).required(),
     proxy: proxyValidatorSchema.required(),
-    throttling: Joi.alternatives([Joi.array().items(throttlingConfigValidatorSchema), throttlingConfigValidatorSchema]),
+    throttling: Joi.alternatives([Joi.array().items(apiThrottlingConfigValidatorSchema), apiThrottlingConfigValidatorSchema]),
     version: Joi.alternatives(Joi.string(), Joi.number()).required()
 });
 
