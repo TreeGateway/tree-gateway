@@ -34,14 +34,7 @@
     },
     "filter": [
         {
-            "middleware": {
-                "name": "ipFilter", 
-                "options": {
-                    "blacklist": ["127.0.0.1", "::1"],
-                    "statusCode": 403,
-                    "message": "IP Filtered"
-                }
-            },
+            "use": "my-ip-filter",
             "group": ["Group2"]
         },
         {

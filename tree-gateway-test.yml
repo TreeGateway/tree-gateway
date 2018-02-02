@@ -142,4 +142,12 @@ gateway:
             my-cors:
                 origin:
                     enableAll: true
-        
+        filter:
+            my-ip-filter:
+                name: ipFilter
+                options:
+                    blacklist:
+                        - "127.0.0.1"
+                        - "::1"
+                    statusCode: 403
+                    message: IP Filtered

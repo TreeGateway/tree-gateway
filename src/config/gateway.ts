@@ -148,6 +148,10 @@ export interface ApiFeaturesConfig {
      */
     cors?: { [index: string]: CorsConfig };
     /**
+     * Filter configuration
+     */
+    filter?: { [index: string]: MiddlewareConfig };
+    /**
      * Throttling configuration
      */
     throttling?: { [index: string]: ThrottlingConfig };
@@ -179,6 +183,7 @@ const apiFeaturesConfigSchema = Joi.object().keys({
     cache: Joi.object().pattern(/\w+/, cacheConfigValidatorSchema),
     circuitBreaker: Joi.object().pattern(/\w+/, circuitBreakerConfigValidatorSchema),
     cors: Joi.object().pattern(/\w+/, corsConfigSchema),
+    filter: Joi.object().pattern(/\w+/, middlewareConfigValidatorSchema),
     throttling: Joi.object().pattern(/\w+/, throttlingConfigValidatorSchema)
 });
 

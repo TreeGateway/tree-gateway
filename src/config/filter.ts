@@ -8,7 +8,7 @@ import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware'
  * the request and the response object and must return a boolean value to inform
  * it the given request should target the destination API or if it should be ignored.
  */
-export interface Filter {
+export interface ApiFilter {
     /**
      * The filter to be used.
      */
@@ -19,9 +19,14 @@ export interface Filter {
      * Defaults to *.
      */
     group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
 }
 
-export const filterSchema = Joi.object().keys({
+export const apiFilterSchema = Joi.object().keys({
     group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
-    middleware: middlewareConfigValidatorSchema.required()
-});
+    middleware: middlewareConfigValidatorSchema,
+    use: Joi.string()
+}).xor('middleware', 'use');

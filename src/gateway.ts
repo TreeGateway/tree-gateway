@@ -297,7 +297,7 @@ export class Gateway extends EventEmitter {
         if (!api.proxy.disableStats) {
             this.configureStatsMiddleware(apiRouter, api.id, api.proxy.statsConfig);
         }
-        this.apiFilter.buildApiFilters(apiRouter, api);
+        this.apiFilter.buildApiFilters(apiRouter, api, this.config.gateway.config);
 
         if (api.throttling) {
             if (this.logger.isDebugEnabled()) {

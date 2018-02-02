@@ -8,7 +8,7 @@ import { ApiCacheConfig, apiCacheConfigValidatorSchema } from './cache';
 import { Proxy, proxyValidatorSchema } from './proxy';
 import { Group, groupValidatorSchema } from './group';
 import { ApiCircuitBreakerConfig, apiCircuitBreakerConfigValidatorSchema } from './circuit-breaker';
-import { Filter, filterSchema } from './filter';
+import { ApiFilter, apiFilterSchema } from './filter';
 import { ValidationError } from '../error/errors';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ObjectID } from 'bson';
@@ -89,7 +89,7 @@ export interface ApiConfig {
      * ]
      * ```
      */
-    filter?: Array<Filter>;
+    filter?: Array<ApiFilter>;
     /**
      * Configure how to handle errors during API pipeline.
      */
@@ -103,7 +103,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),
     description: Joi.string(),
     errorHandler: middlewareConfigValidatorSchema,
-    filter: Joi.alternatives([Joi.array().items(filterSchema), filterSchema]),
+    filter: Joi.alternatives([Joi.array().items(apiFilterSchema), apiFilterSchema]),
     group: Joi.alternatives([Joi.array().items(groupValidatorSchema), groupValidatorSchema]),
     id: Joi.string(),
     name: Joi.string().min(3).required(),
