@@ -32,3 +32,4 @@ module.exports = function erroHandler(opts) {
         }
     };
 }
+module.exports.factory = true;

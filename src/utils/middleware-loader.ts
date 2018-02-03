@@ -31,7 +31,9 @@ export class MiddlewareLoader {
         'interceptor/response': {
             'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer',
             'responseHeaders': '../proxy/interceptors/responseHeaders',
-            'responseXml': '../proxy/interceptors/responseXml'
+            'responseMustache': '../proxy/interceptors/responseMustache',
+            'responseXml': '../proxy/interceptors/responseXml',
+            'webSecurity': '../proxy/interceptors/webSecurity'
         },
         'proxy/router': {
             'header': '../proxy/routers/header',
@@ -65,8 +67,8 @@ export class MiddlewareLoader {
         }
 
         let middleware = require(p);
-        if (middlewareConfig.options) {
-            middleware = middleware(middlewareConfig.options);
+        if (middleware.factory) {
+            middleware = middleware(middlewareConfig.options || {});
         }
         return middleware;
     }

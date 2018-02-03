@@ -42,3 +42,4 @@ module.exports = function(config: RequestHeadersConfig) {
         return { headers: h };
     };
 };
+module.exports.factory = true;

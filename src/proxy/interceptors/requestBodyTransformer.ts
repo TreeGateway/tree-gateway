@@ -20,3 +20,4 @@ module.exports = function(config: JSONAtaExpression) {
         return result;
     };
 };
+module.exports.factory = true;

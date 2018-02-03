@@ -54,3 +54,4 @@ function getExtractor(extractor: string, param: string) {
             return ExtractJwt.fromAuthHeader();
     }
 }
+module.exports.factory = true;

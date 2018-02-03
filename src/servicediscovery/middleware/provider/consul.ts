@@ -117,3 +117,4 @@ module.exports = function(config: ConsulConfig) {
         return consul(consulConfig);
     };
 };
+module.exports.factory = true;

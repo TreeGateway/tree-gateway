@@ -11,3 +11,4 @@ module.exports = function(authConfig: BasicAuthentication) {
     const verifyFunction = middlewareLoader.loadMiddleware('authentication/verify', authConfig.verify);
     return new BasicStrategy(verifyFunction);
 };
+module.exports.factory = true;

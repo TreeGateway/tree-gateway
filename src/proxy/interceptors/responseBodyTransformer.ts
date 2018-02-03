@@ -21,3 +21,4 @@ module.exports = function(config: JSONAtaExpression) {
         });
     };
 };
+module.exports.factory = true;

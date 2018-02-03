@@ -49,3 +49,4 @@ module.exports = function(config: QuerySplitConfig) {
         return target;
     };
 };
+module.exports.factory = true;

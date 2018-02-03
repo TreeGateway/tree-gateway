@@ -22,7 +22,7 @@ An API gateway provides a single, unified entry point across one or more interna
 
 Tree Gateway is a free and open source solution writen in Node JS that has a complete and customizable pipeline to handle your requests.
 It provides:
-  - **Authentication**: More than 300 strategies available through an easy [passportjs](http://passportjs.org/) integration, including support to JWT tokens, Oauth, Basic and many others.
+  - **Authentication**: More than 480 strategies available through an easy [passportjs](http://passportjs.org/) integration, including support to JWT tokens, Oauth, Basic and many others.
   - A flexible and robust **Routing system** that allows any kind of customized request pipeline.
   - **Rate limits** - To control quotas for your customers and to define actions to be taken when any quota is exceeded.
   - **Caching system** - Allow you to easily inject and control caching behavior for your APIs. Tree Gateway provides two kinds of cache:

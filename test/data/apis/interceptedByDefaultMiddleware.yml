@@ -18,16 +18,18 @@ proxy:
   parseReqBody: true
   interceptor:
     response:
-      middleware:
-        name: responseBodyTransformer
-        options:
-          expression: >
-            {
-              'argumentNames': $sort($keys(args), function($l, $r) {
-                  $l < $r
+      - middleware:
+          name: responseBodyTransformer
+          options:
+            expression: >
+              {
+                'argumentNames': $sort($keys(args), function($l, $r) {
+                   $l < $r
                  })
-            }
-      group: Group1
+              }
+        group: Group1
+      - middleware:
+          name: webSecurity
     request:
       middleware:
         name: requestBodyTransformer

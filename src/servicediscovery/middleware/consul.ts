@@ -130,3 +130,4 @@ module.exports = function(config: ConsulConfig) {
         });
     };
 };
+module.exports.factory = true;

@@ -137,3 +137,4 @@ module.exports = function(config: IpFilterConfig) {
     }
     return getBlacklistFilter(config);
 };
+module.exports.factory = true;
