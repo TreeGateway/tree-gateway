@@ -27,7 +27,8 @@ describe('The Gateway Limit Controller', () => {
             expect(result.args.arg).to.equal('1');
             gatewayRequest('/limited/get?arg=1', (err: any, resp: any, bod: any) => {
                 expect(resp.statusCode).to.equal(429);
-                expect(bod).to.equal('Too many requests, please try again later.');
+                const b = JSON.parse(bod);
+                expect(b.error).to.equal('Too many requests, please try again later.');
                 done();
             });
         });
@@ -38,7 +39,8 @@ describe('The Gateway Limit Controller', () => {
             expect(result.args.arg).to.equal('1');
             gatewayRequest('/limited-by-group/get?arg=1', (err: any, resp: any, bod: any) => {
                 expect(resp.statusCode).to.equal(429);
-                expect(bod).to.equal('Too many requests, please try again later.');
+                const b = JSON.parse(bod);
+                expect(b.error).to.equal('Too many requests, please try again later.');
                 done();
             });
         });

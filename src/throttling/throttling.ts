@@ -13,6 +13,7 @@ import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
 import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
+import { ProxyError } from '../error/errors';
 
 interface ThrottlingInfo {
     limiter?: express.RequestHandler;
@@ -92,16 +93,9 @@ export class ApiRateLimit {
                     customHandler(req, res, next);
                 };
             } else {
-                rateConfig.handler = function(req: express.Request, res: express.Response) {
+                rateConfig.handler = function(req: express.Request, res: express.Response, next: express.NextFunction) {
                     stats.registerOccurrence(req, 1);
-                    res.format({
-                        html: function() {
-                            res.status(rateConfig.statusCode).end(rateConfig.message);
-                        },
-                        json: function() {
-                            res.status(rateConfig.statusCode).json({ message: rateConfig.message });
-                        }
-                    });
+                    next(new ProxyError(rateConfig.message, rateConfig.statusCode));
                 };
             }
         } else if (throttling.handler) {
