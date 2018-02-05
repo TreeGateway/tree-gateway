@@ -114,19 +114,19 @@ export class ApiCircuitBreaker {
         if (config.onOpen) {
             const openHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onOpen);
             breakerInfo.circuitBreaker.on('open', () => {
-                openHandler(path, 'open');
+                openHandler(path, 'open', apiId);
             });
         }
         if (config.onClose) {
             const closeHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onClose);
             breakerInfo.circuitBreaker.on('close', () => {
-                closeHandler(path, 'close');
+                closeHandler(path, 'close', apiId);
             });
         }
         if (config.onRejected) {
             const rejectedHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onRejected);
             breakerInfo.circuitBreaker.on('rejected', () => {
-                rejectedHandler(path, 'rejected');
+                rejectedHandler(path, 'rejected', apiId);
             });
         }
     }
