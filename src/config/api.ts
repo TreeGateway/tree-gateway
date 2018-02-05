@@ -53,7 +53,7 @@ export interface ApiConfig {
     /**
      * Configuration for API authentication.
      */
-    authentication?: ApiAuthenticationConfig;
+    authentication?: Array<ApiAuthenticationConfig>;
     /**
      * Configuration for API cache.
      */
@@ -97,7 +97,7 @@ export interface ApiConfig {
 }
 
 export let apiConfigValidatorSchema = Joi.object().keys({
-    authentication: apiAuthenticationValidatorSchema,
+    authentication: Joi.alternatives([Joi.array().items(apiAuthenticationValidatorSchema), apiAuthenticationValidatorSchema]),
     cache: Joi.alternatives([Joi.array().items(apiCacheConfigValidatorSchema), apiCacheConfigValidatorSchema]),
     circuitBreaker: Joi.alternatives([Joi.array().items(apiCircuitBreakerConfigValidatorSchema), apiCircuitBreakerConfigValidatorSchema]),
     cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),

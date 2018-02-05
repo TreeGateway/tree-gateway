@@ -26,29 +26,32 @@ export class ApiAuth {
 
     authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
-        let authentication: ApiAuthenticationConfig = api.authentication;
-        try {
-            authentication = this.resolveReferences(authentication, gatewayFeatures);
-            const authStrategy: auth.Strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', authentication.strategy);
-            if (!authStrategy) {
-                this.logger.error('Error configuring authenticator. Invalid Strategy');
-            } else {
-                auth.use(apiKey, authStrategy);
+        const authentications: Array<ApiAuthenticationConfig> = this.sortMiddlewares(api.authentication, path);
 
-                const authenticator = auth.authenticate(apiKey, { session: false, failWithError: true });
-                if (authentication.group) {
-                    this.createAuthenticatorForGroup(apiRouter, api, authentication, authenticator);
+        authentications.forEach((authentication: ApiAuthenticationConfig, index: number) => {
+            try {
+                authentication = this.resolveReferences(authentication, gatewayFeatures);
+                const authStrategy: auth.Strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', authentication.strategy);
+                if (!authStrategy) {
+                    this.logger.error('Error configuring authenticator. Invalid Strategy');
                 } else {
-                    this.createAuthenticator(apiRouter, api, authentication, authenticator);
-                }
+                    auth.use(`${apiKey}_${index}`, authStrategy);
 
-                if (this.logger.isDebugEnabled) {
-                    this.logger.debug(`Authentication Strategy [${this.middlewareLoader.getId(authentication.strategy)}] configured for path [${path}]`);
+                    const authenticator = auth.authenticate(`${apiKey}_${index}`, { session: false, failWithError: true });
+                    if (authentication.group) {
+                        this.createAuthenticatorForGroup(apiRouter, api, authentication, authenticator);
+                    } else {
+                        this.createAuthenticator(apiRouter, api, authentication, authenticator);
+                    }
+
+                    if (this.logger.isDebugEnabled) {
+                        this.logger.debug(`Authentication Strategy [${this.middlewareLoader.getId(authentication.strategy)}] configured for path [${path}]`);
+                    }
                 }
+            } catch (e) {
+                this.logger.error(`Error configuring Authentication Strategy [${this.middlewareLoader.getId(authentication.strategy)}] for path [${path}]`, e);
             }
-        } catch (e) {
-            this.logger.error(`Error configuring Authentication Strategy [${this.middlewareLoader.getId(authentication.strategy)}] for path [${path}]`, e);
-        }
+        });
     }
 
     private resolveReferences(authentication: ApiAuthenticationConfig, features: ApiFeaturesConfig) {
@@ -131,5 +134,28 @@ export class ApiAuth {
         }
 
         return null;
+    }
+
+    private sortMiddlewares(middlewares: Array<ApiAuthenticationConfig>, path: string): Array<ApiAuthenticationConfig> {
+        const generalMiddlewares = _.filter(middlewares, (value) => {
+            if (value.group) {
+                return true;
+            }
+            return false;
+        });
+
+        if (generalMiddlewares.length > 1) {
+            this.logger.error(`Invalid authentication configuration for api [${path}]. Conflicting configurations for default group`);
+            return [];
+        }
+
+        if (generalMiddlewares.length > 0) {
+            const index = middlewares.indexOf(generalMiddlewares[0]);
+            if (index < middlewares.length - 1) {
+                const gen = middlewares.splice(index, 1);
+                middlewares.push(gen[0]);
+            }
+        }
+        return middlewares;
     }
 }
