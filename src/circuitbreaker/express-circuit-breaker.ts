@@ -2,6 +2,7 @@
 
 import { EventEmitter } from 'events';
 import * as express from 'express';
+import { ProxyError } from  '../error/errors';
 
 export enum State { OPEN, CLOSED, HALF_OPEN }
 
@@ -73,16 +74,15 @@ export class CircuitBreaker extends EventEmitter {
     }
 
     middleware(): express.RequestHandler {
-        const self = this;
         return (req, res, next) => {
-            // self.emit('request');
-            if (self.isOpen() || (self.isHalfOpen() && self.options.stateHandler.halfOpenCallPending)) {
-                return self.fastFail(res);
-            } else if (self.isHalfOpen() && !self.options.stateHandler.halfOpenCallPending) {
-                self.options.stateHandler.halfOpenCallPending = true;
-                return self.invokeApi(req, res, next);
+            // this.emit('request');
+            if (this.isOpen() || (this.isHalfOpen() && this.options.stateHandler.halfOpenCallPending)) {
+                return this.fastFail(next);
+            } else if (this.isHalfOpen() && !this.options.stateHandler.halfOpenCallPending) {
+                this.options.stateHandler.halfOpenCallPending = true;
+                return this.invokeApi(req, res, next);
             } else {
-                return self.invokeApi(req, res, next);
+                return this.invokeApi(req, res, next);
             }
         };
     }
@@ -96,13 +96,13 @@ export class CircuitBreaker extends EventEmitter {
     }
 
     private invokeApi(req: express.Request, res: express.Response, next: express.NextFunction) {
-        const self = this;
         let operationTimeout = false;
         const timeoutID = setTimeout(() => {
             operationTimeout = true;
-            self.handleTimeout(req, res);
-        }, self.options.timeout);
+            this.handleTimeout(req, res, next);
+        }, this.options.timeout);
         const end = res.end;
+        const self = this;
         res.end = function(...args: any[]) {
             if (!operationTimeout) {
                 clearTimeout(timeoutID);
@@ -120,18 +120,20 @@ export class CircuitBreaker extends EventEmitter {
         return next();
     }
 
-    private fastFail(res: express.Response) {
-        res.status(this.options.rejectStatusCode);
-        const err = new Error(this.options.rejectMessage);
-        res.end(err.message);
+    private fastFail(next: express.NextFunction) {
+        const err = new ProxyError(this.options.rejectMessage, this.options.rejectStatusCode);
+        next(err);
+        // res.status(this.options.rejectStatusCode);
+        // res.end(err.message);
         this.emit('rejected', err);
     }
 
-    private handleTimeout(req: express.Request, res: express.Response) {
-        const err = new Error(this.options.timeoutMessage);
+    private handleTimeout(req: express.Request, res: express.Response, next: express.NextFunction) {
+        const err = new ProxyError(this.options.timeoutMessage, this.options.timeoutStatusCode);
         this.handleFailure(req, err);
-        res.status(this.options.timeoutStatusCode);
-        res.end(err.message);
+        // res.status(this.options.timeoutStatusCode);
+        // res.end(err.message);
+        next(err);
         // this.emit('timeout', (Date.now() - startTime));
     }
 

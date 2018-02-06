@@ -194,9 +194,12 @@ export class RedisApiService implements ApiService {
                 });
             });
         }
-        castArray(api, 'authentication.group'); // TODO aceitar array de autenticators
         castArray(api, 'proxy.target.allow');
         castArray(api, 'proxy.target.deny');
+        if (_.has(api, 'authentication')) {
+            castArray(api, 'authentication');
+            api.authentication.forEach(config => castArray(config, 'group'));
+        }
         if (_.has(api, 'cache')) {
             castArray(api, 'cache');
             api.cache.forEach(config => {

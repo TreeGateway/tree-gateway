@@ -18,3 +18,4 @@ module.exports = function(config: any) {
         return result;
     };
 };
+module.exports.factory = true;

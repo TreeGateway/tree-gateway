@@ -38,3 +38,4 @@ module.exports = function(config: MustacheConfig) {
         return result;
     };
 };
+module.exports.factory = true;

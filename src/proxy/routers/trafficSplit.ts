@@ -40,3 +40,4 @@ module.exports = function(config: TrafficSplitConfig) {
         return chooser.select(values, weights);
     };
 };
+module.exports.factory = true;

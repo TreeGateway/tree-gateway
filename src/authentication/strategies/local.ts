@@ -14,3 +14,4 @@ module.exports = function(authConfig: LocalAuthentication) {
     const verifyFunction = middlewareLoader.loadMiddleware('authentication/verify', authConfig.verify);
     return new Strategy(opts, verifyFunction);
 };
+module.exports.factory = true;

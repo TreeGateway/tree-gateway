@@ -240,3 +240,4 @@ module.exports = function(config: LoadBalancerConfig) {
         return balancer.balance();
     };
 };
+module.exports.factory = true;

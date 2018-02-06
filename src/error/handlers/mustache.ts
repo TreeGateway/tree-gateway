@@ -57,3 +57,4 @@ module.exports = function(config: MustacheConfig) {
         }
     };
 };
+module.exports.factory = true;

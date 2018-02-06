@@ -40,3 +40,4 @@ module.exports = function(config: ResponseHeadersConfig) {
         return result;
     };
 };
+module.exports.factory = true;

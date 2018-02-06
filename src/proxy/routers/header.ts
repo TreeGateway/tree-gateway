@@ -51,3 +51,4 @@ module.exports = function(config: HeaderSplitConfig) {
         return target;
     };
 };
+module.exports.factory = true;

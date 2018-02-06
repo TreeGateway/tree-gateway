@@ -1,6 +1,6 @@
 'use strict';
 
-import { Errors } from 'typescript-rest';
+import { HttpError, Errors } from 'typescript-rest';
 import * as Joi from 'joi';
 import * as _ from 'lodash';
 
@@ -67,6 +67,13 @@ export class UnavailableError extends Error {
     statusCode: number = 503;
     constructor(message: string) {
         super(message);
+        Object.setPrototypeOf(this, UnavailableError.prototype);
+    }
+}
+
+export class ProxyError extends HttpError {
+    constructor(message: string, statusCode: number) {
+        super('gatewayError', statusCode, message);
         Object.setPrototypeOf(this, UnavailableError.prototype);
     }
 }

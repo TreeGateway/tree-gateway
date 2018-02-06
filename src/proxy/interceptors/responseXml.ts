@@ -16,3 +16,4 @@ module.exports = function(config: any) {
         });
     };
 };
+module.exports.factory = true;

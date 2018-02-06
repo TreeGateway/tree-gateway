@@ -9,6 +9,7 @@ import { Logger } from '../logger';
 import { Inject } from 'typescript-ioc';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import { ApiFilter as Filter } from '../config/filter';
+import { NotFoundError } from '../error/errors';
 
 export class ApiFilter {
     @Inject private middlewareLoader: MiddlewareLoader;
@@ -39,7 +40,8 @@ export class ApiFilter {
                             return next();
                         }
                         if (!res.headersSent) {
-                            res.sendStatus(404);
+                            next(new NotFoundError());
+                            // res.sendStatus(404);
                         }
                     }).catch(err => {
                         next(err);
@@ -66,7 +68,8 @@ export class ApiFilter {
                                 return next();
                             }
                             if (!res.headersSent) {
-                                res.sendStatus(404);
+                                next(new NotFoundError());
+                                // res.sendStatus(404);
                             }
                         }).catch(err => {
                             next(err);
@@ -82,7 +85,8 @@ export class ApiFilter {
                             return next();
                         }
                         if (!res.headersSent) {
-                            res.sendStatus(404);
+                            next(new NotFoundError());
+                            // res.sendStatus(404);
                         }
                     }).catch(err => {
                         next(err);
@@ -113,7 +117,8 @@ export class ApiFilter {
             if (groupValidator(req, res)) {
                 next();
             } else {
-                res.sendStatus(404);
+                next(new NotFoundError());
+                // res.sendStatus(404);
             }
         });
     }
@@ -129,7 +134,8 @@ export class ApiFilter {
             if (groupValidator(req, res)) {
                 next();
             } else {
-                res.sendStatus(404);
+                next(new NotFoundError());
+                // res.sendStatus(404);
             }
         });
     }

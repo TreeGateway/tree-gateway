@@ -11,3 +11,4 @@ module.exports = function (authConfig) {
         done(null,jwt_payload.sub);
     });
 }; 
+module.exports.factory = true;

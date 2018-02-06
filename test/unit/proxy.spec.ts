@@ -193,6 +193,7 @@ describe('The Gateway Proxy', () => {
             expect(result.argumentNames).to.have.length(2);
             expect(result.argumentNames[0]).to.equal('param2');
             expect(result.argumentNames[1]).to.equal('arg1');
+            expect(response.headers['x-xss-protection']).to.equal('1; mode=block');
             done();
         });
     });
