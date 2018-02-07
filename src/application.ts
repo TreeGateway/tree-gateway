@@ -6,6 +6,8 @@ import { Configuration } from './configuration';
 import { Container } from 'typescript-ioc';
 import { Gateway } from './gateway';
 import { Database } from './database';
+import { VersionUpgrades } from './utils/upgrade';
+import chalk from 'chalk';
 
 export class Application {
     start() {
@@ -19,7 +21,7 @@ export class Application {
     standalone() {
         this.startGateway()
             .catch((err: Error) => {
-                console.error(`Error starting gateway: ${err.message}`);
+                console.error(chalk.red(`Error starting gateway: ${err.message}`));
                 process.exit(-1);
             });
     }
@@ -48,7 +50,7 @@ export class Application {
         } else {
             this.startGateway()
                 .catch((err: Error) => {
-                    console.error(`Error starting gateway: ${err.message}`);
+                    console.error(chalk.red(`Error starting gateway: ${err.message}`));
                     process.exit(-1);
                 });
         }
@@ -78,7 +80,9 @@ export class Application {
             if (gateway.running) {
                 return resolve();
             }
-            gateway.start()
+            const versions: VersionUpgrades = Container.get(VersionUpgrades);
+            versions.checkGatewayVersion()
+                .then(() => gateway.start())
                 .then(() => gateway.startAdmin())
                 .then(() => database.registerGatewayVersion())
                 .then(resolve)

@@ -102,8 +102,8 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
         });
     }
 
-    private runAfterMiddlewareInstallations(idMsg: string, callback: () => void): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    private runAfterMiddlewareInstallations(idMsg: string, callback: () => void) {
+        // return new Promise<void>((resolve, reject) => {
             const host = os.hostname();
             let interval: NodeJS.Timer;
             interval = setInterval(() => {
@@ -116,6 +116,6 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                         }
                     });
             }, 100);
-        });
+        // });
     }
 }
