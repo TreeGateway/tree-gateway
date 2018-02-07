@@ -130,6 +130,9 @@ export interface GatewayConfig {
     config?: ApiFeaturesConfig;
 }
 
+/**
+ * Declare common configurations that can be used by different APIs.
+ */
 export interface ApiFeaturesConfig {
     /**
      * Authentication configuration

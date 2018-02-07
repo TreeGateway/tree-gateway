@@ -10,6 +10,7 @@ import { Configuration } from './configuration';
 @AutoWired
 export class Database {
     static GATEWAY_VERSION_KEY: string = '{config}:treegateway:version';
+    static UPDATING = `0.0.0`;
 
     @Inject private config: Configuration;
     private client: Redis.Redis;
@@ -41,6 +42,28 @@ export class Database {
                     return resolve();
                 }).catch((err: any) => {
                     reject(new Error('It was not possible to register the Tree Gateway version.'));
+                });
+        });
+    }
+
+    getGatewayVersion(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            this.redisClient.get(Database.GATEWAY_VERSION_KEY)
+                .then((version: string) => {
+                    return resolve(version);
+                }).catch((err: any) => {
+                    reject(new Error('It was not possible to retrieve the Tree Gateway version.'));
+                });
+        });
+    }
+
+    startGatewayUpdate(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            this.redisClient.getset(Database.GATEWAY_VERSION_KEY, Database.UPDATING)
+                .then((version: string) => {
+                    return resolve(version);
+                }).catch((err: any) => {
+                    reject(new Error('It was not possible to retrieve the Tree Gateway version.'));
                 });
         });
     }
