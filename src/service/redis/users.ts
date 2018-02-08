@@ -23,7 +23,7 @@ export class RedisUserService implements UserService {
         return new Promise((resolve, reject) => {
             this.database.redisClient.hgetall(RedisUserService.USERS_PREFIX)
                 .then((users: any) => {
-                    resolve(_.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password')));
+                    resolve(<UserData[]>_.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password')));
                 })
                 .catch(reject);
         });
