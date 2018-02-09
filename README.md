@@ -48,3 +48,7 @@ It provides:
 ## Try Tree Gateway
 
 Take a better look into Tree Gateway by checking out the project and working with it guided by our [Docs](https://github.com/Leanty/tree-gateway/wiki).
+
+## Migrating from 1.0
+
+Check our [migration guide](https://github.com/Leanty/tree-gateway/wiki/migrationGuide).
