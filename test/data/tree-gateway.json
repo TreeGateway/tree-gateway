@@ -10,6 +10,7 @@
     },
     "gateway": {
         "underProxy": false,
+        "disableStats": true,
         "disableCompression": true,
         "protocol": {
             "http": {

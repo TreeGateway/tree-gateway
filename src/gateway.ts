@@ -516,22 +516,24 @@ export class Gateway extends EventEmitter {
     }
 
     private configureStatsMiddleware(server: express.Router, key: string, statsConfig: StatsConfig) {
-        const stats = this.createStatsController(key, statsConfig);
-        if (stats) {
-            const handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-                stats.requestStats.registerOccurrence(req, 1);
-                const end = res.end;
-                res.end = function(...args: any[]) {
-                    stats.statusCodeStats.registerOccurrence(req, 1, '' + res.statusCode);
-                    res.end = end;
-                    res.end.apply(res, arguments);
+        if (!this.config.gateway.disableStats) {
+            const stats = this.createStatsController(key, statsConfig);
+            if (stats) {
+                const handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+                    stats.requestStats.registerOccurrence(req, 1);
+                    const end = res.end;
+                    res.end = function(...args: any[]) {
+                        stats.statusCodeStats.registerOccurrence(req, 1, '' + res.statusCode);
+                        res.end = end;
+                        res.end.apply(res, arguments);
+                    };
+                    next();
                 };
-                next();
-            };
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Configuring Stats collector for accesses.`);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(`Configuring Stats collector for accesses.`);
+                }
+                server.use(handler);
             }
-            server.use(handler);
         }
     }
 

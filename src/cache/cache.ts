@@ -13,6 +13,7 @@ import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
 import { createFunction } from '../utils/functions';
+import { Configuration } from '../configuration';
 
 const onHeaders = require('on-headers');
 
@@ -24,10 +25,9 @@ class StatsController {
 
 @AutoWired
 export class ApiCache {
-    @Inject
-    private logger: Logger;
-    @Inject
-    private statsRecorder: StatsRecorder;
+    @Inject private logger: Logger;
+    @Inject private statsRecorder: StatsRecorder;
+    @Inject private config: Configuration;
 
     cache(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         if (this.useCache(api)) {
@@ -133,7 +133,7 @@ export class ApiCache {
     }
 
     private createCacheStats(apiId: string, serverCache: ServerCacheConfig): StatsController {
-        if (!serverCache.disableStats) {
+        if (!serverCache.disableStats && !this.config.gateway.disableStats) {
             const stats: StatsController = new StatsController();
             stats.cacheError = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'error'), serverCache.statsConfig);
             stats.cacheHit = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'hit'), serverCache.statsConfig);

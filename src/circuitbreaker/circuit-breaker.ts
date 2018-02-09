@@ -14,6 +14,7 @@ import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
 import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
+import { Configuration } from '../configuration';
 
 class StatsController {
     open: Stats;
@@ -31,6 +32,7 @@ export class ApiCircuitBreaker {
     @Inject private logger: Logger;
     @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private config: Configuration;
 
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
@@ -178,7 +180,7 @@ export class ApiCircuitBreaker {
     }
 
     private createCircuitBreakerStats(apiId: string, config: ApiCircuitBreakerConfig): StatsController {
-        if (!config.disableStats) {
+        if (!config.disableStats && !this.config.gateway.disableStats) {
             const stats: StatsController = new StatsController();
             stats.close = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'close'), config.statsConfig);
             stats.open = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'open'), config.statsConfig);
