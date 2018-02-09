@@ -18,7 +18,6 @@ let config: Configuration;
 let adminRequest: any;
 let adminToken: string;
 let configToken: string;
-let simpleToken: string;
 let sdk: SDK = null;
 
 const adminUser = {
@@ -128,7 +127,6 @@ describe('Gateway Admin Tasks', () => {
                 url:'/users/authentication'
             }, (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(200);
-                simpleToken = body;
                 done();
             });
         });

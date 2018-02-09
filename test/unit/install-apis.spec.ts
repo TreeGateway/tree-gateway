@@ -20,7 +20,6 @@ let config: Configuration;
 let database: Database;
 let gateway: Gateway;
 let sdk: SDK = null;
-let loadedApis: string[];
 
 describe('Gateway APIs install', () => {
     before(() => {
@@ -83,7 +82,6 @@ describe('Gateway APIs install', () => {
                     return Promise.all(promises);
                 })
                 .then((apis) => {
-                    loadedApis = apis;
                     setTimeout(resolve, 1000);
                 })
                 .catch(reject);
