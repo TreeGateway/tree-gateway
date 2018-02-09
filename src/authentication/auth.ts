@@ -12,6 +12,7 @@ import { AutoWired, Inject } from 'typescript-ioc';
 import { StatsRecorder } from '../stats/stats-recorder';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import * as _ from 'lodash';
+import { Configuration } from '../configuration';
 
 class StatsController {
     failStats: Stats;
@@ -23,6 +24,7 @@ export class ApiAuth {
     @Inject private logger: Logger;
     @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private config: Configuration;
 
     authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
@@ -123,7 +125,7 @@ export class ApiAuth {
     }
 
     private createAuthStats(apiId: string, authentication: ApiAuthenticationConfig): StatsController {
-        if (!authentication.disableStats) {
+        if (!authentication.disableStats && !this.config.gateway.disableStats) {
             const stats: StatsController = new StatsController();
             stats.failStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'fail'), authentication.statsConfig);
             stats.successStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'success'), authentication.statsConfig);

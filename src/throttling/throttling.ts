@@ -14,6 +14,7 @@ import { StatsRecorder } from '../stats/stats-recorder';
 import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import { ProxyError } from '../error/errors';
+import { Configuration } from '../configuration';
 
 interface ThrottlingInfo {
     limiter?: express.RequestHandler;
@@ -25,6 +26,7 @@ export class ApiRateLimit {
     @Inject private logger: Logger;
     @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private config: Configuration;
 
     throttling(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
@@ -147,7 +149,7 @@ export class ApiRateLimit {
     }
 
     private createStats(apiId: string, throttling: ApiThrottlingConfig): Stats {
-        if (!throttling.disableStats) {
+        if (!throttling.disableStats && !this.config.gateway.disableStats) {
             return this.statsRecorder.createStats(Stats.getStatsKey('throt', apiId, 'exceeded'), throttling.statsConfig);
         }
 

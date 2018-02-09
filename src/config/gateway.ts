@@ -54,7 +54,7 @@ export interface GatewayConfig {
      */
     disableCompression?: boolean;
     /**
-     * Force the validation of any API Id. If the id is not validated, the data could not be synchronizable
+     * Disable the validation of API Ids. If the id is not validated, the data could not be synchronizable
      * to Leanty dashboard.
      */
     disableApiIdValidation?: boolean;
@@ -128,6 +128,10 @@ export interface GatewayConfig {
      * Configure features globally, to be imported by api configureations
      */
     config?: ApiFeaturesConfig;
+    /**
+     * Disable all stats recording for the gateway
+     */
+    disableStats?: boolean;
 }
 
 /**
@@ -197,6 +201,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     cors: corsConfigSchema,
     disableApiIdValidation: Joi.boolean(),
     disableCompression: Joi.boolean(),
+    disableStats: Joi.boolean(),
     errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.alternatives([Joi.array().items(middlewareConfigValidatorSchema), middlewareConfigValidatorSchema]),
     healthcheck: Joi.string(),
