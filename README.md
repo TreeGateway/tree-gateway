@@ -54,8 +54,12 @@ It provides:
 
 Take a better look into Tree Gateway by checking out the project and working with it guided by our [Docs](https://github.com/Leanty/tree-gateway/wiki).
 
-## Also meet the Dashboard!
+## Check the stats Dashboard!
 
 <p align="center">
   <a href="http://dashboard.leanty.com/"><img src="http://treegateway.org/img/slide/example-slide-1.png" /><a/>
 </p>
+ 
+## Migrating from 1.0
+
+Check our [migration guide](https://github.com/Leanty/tree-gateway/wiki/migrationGuide).
