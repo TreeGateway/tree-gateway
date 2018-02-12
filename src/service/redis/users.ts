@@ -1,7 +1,7 @@
 'use strict';
 
 import { UserData } from '../../config/users';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import * as auth from 'passport';

@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "http://treegateway.org",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
@@ -54,7 +54,7 @@
   "dependencies": {
     "agentkeepalive": "^3.3.0",
     "argparse": "^1.0.9",
-    "bcrypt": "^1.0.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "bson": "^1.0.4",
     "chalk": "^2.3.0",
@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "@types/argparse": "^1.0.33",
-    "@types/bcrypt": "^1.0.0",
+    "@types/bcryptjs": "^2.4.1",
     "@types/body-parser": "^1.16.7",
     "@types/bson": "^1.0.4",
     "@types/chai": "^3.5.1",
