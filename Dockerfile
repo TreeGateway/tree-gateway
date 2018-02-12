@@ -6,14 +6,15 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Install dependencies
-RUN apk --no-cache add --virtual builds-deps build-base python && \
-    npm install pm2 -g
+# RUN apk --no-cache add --virtual builds-deps build-base python && \
+RUN npm install pm2 -g
 
 # Install app dependencies
 COPY ./package.json /usr/src/app/
 
-RUN npm install && npm rebuild bcrypt --build-from-source && \
-    apk --no-cache del builds-deps build-base python
+# RUN npm install && npm rebuild bcrypt --build-from-source && \
+#     apk --no-cache del builds-deps build-base python
+RUN npm install
 
 # Install app
 COPY README.md tree-gateway.json rest.config /usr/src/app/
