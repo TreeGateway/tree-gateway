@@ -7,4 +7,5 @@ export abstract class GatewayService {
     abstract save(content: GatewayConfig): Promise<void>;
     abstract read(): Promise<GatewayConfig>;
     abstract get(): Promise<GatewayConfig>;
+    abstract registerGatewayVersion(): Promise<void>;
 }

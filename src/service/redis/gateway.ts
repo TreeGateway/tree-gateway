@@ -67,6 +67,10 @@ export class RedisGatewayService implements GatewayService {
         });
     }
 
+    registerGatewayVersion() {
+        return this.database.registerGatewayVersion();
+    }
+
     /**
      * This function cast all array properties inside gateway configuration to array.
      * It is used to allow user to configure array properties as a single item too.
