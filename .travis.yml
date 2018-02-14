@@ -6,6 +6,7 @@ env:
   - REDIS_PORT_6379_TCP_PORT=6379
 node_js:
 - '8'
+- '9'
 services:
 - docker
 before_install:
