@@ -204,6 +204,7 @@ export class Configuration extends EventEmitter {
                     } else if (!this.config.gateway) {
                         this.config.gateway = this.loadDefaultGatewayConfig();
                         gatewayService.save(this.config.gateway)
+                            .then(() => gatewayService.registerGatewayVersion())
                             .then(resolve)
                             .catch(reject);
                     } else {
