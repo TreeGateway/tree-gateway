@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Cache</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Cache</h1>
+    
+    <p>In all cache examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p>
+
+    <p>We are assuming in these examples, that our test gateway will be running at 'http://gateway.address.com'.</p>
+
+    <h2>Cache</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Cache Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyCachedAPI
+version: 1.0.0
+path: cached/
+proxy:
+    target:
+        host: http://httpbin.org
+cache:
+    client:
+        cacheTime: 1 minute
+    server:
+        cacheTime: 10 minutes
+        binary: true
+        preserveHeaders: access-control-allow-credentials
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses a cache configuration to the target API. We are configuring here two types
+                of cache:
+                <ul>
+                    <li>Client - A cache to be stored in the API client (the browser). This is configured 
+                        through response headers like 'cache-control'.
+                    </li>
+                    <li>Server - A cache to be stored in memory (using the redis).
+                    </li>
+                </ul>
+            </p>
+            <p>The client cache will have a lifetime of 1 minute and the server cache 10 minutes.
+            </p>
+            <p>
+                The server cache will store a binary content and also the content of the response header 
+                'access-control-allow-credentials'.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+</body>
+
+</html>

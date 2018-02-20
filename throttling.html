@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Throttling</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Throttling</h1>
+    
+    <p>In all throttling examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p>
+
+    <p>We are assuming in these examples, that our test gateway will be running at 'http://gateway.address.com'.</p>
+
+    <h2>Throttling</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Throttling Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyThrottledAPI
+version: 1.0.0
+path: throttled/
+proxy:
+    target:
+        host: http://httpbin.org
+Throttling:
+    timeWindow: 1 minute
+    delay: one second
+    delayAfter: 220
+    max: 250  
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses a throttling configuration to control calls to the target API. </p>
+            <p>The gateway will accept 250 requests per minute coming from the same source 
+                (by default, the source is associated to the origin IP).
+            </p>
+            <p>
+                After 220 requests form the same source, Tree Gateway will start to delay the requests in one second.
+            </p>
+            <p>After the quota is finished (250 requests). Tree Gateway will return a 'Too many requests' error.</p>
+        </leanty-description>
+    </leanty-source-code-example>
+            
+    <h2>Throttling Origin</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Throttling Origin</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyThrottledAPI
+version: 1.0.0
+path: throttled/
+proxy:
+    target:
+        host: http://httpbin.org
+Throttling:
+    timeWindow: 1 minute
+    delay: one second
+    delayAfter: 220
+    max: 250 
+    keyGenerator:
+        name: myKeyGen
+        </leanty-source>
+        <leanty-source label="myKeyGen Middleware" language="javascript">
+"use strict";
+
+module.exports = function (request) {
+    return request.ip;
+};
+        </leanty-source>
+        <leanty-description>
+            <p>This sample is similar to the previous example, but it declare middlewares to be called to 
+                determine the requests origin.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+</body>
+
+</html>
