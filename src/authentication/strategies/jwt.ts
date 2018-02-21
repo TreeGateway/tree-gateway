@@ -39,7 +39,7 @@ module.exports = function(authConfig: JWTAuthentication) {
 
 function getExtractor(extractor: string, param: string) {
     switch (extractor) {
-        case 'header': return ExtractJwt.fromHeader(param);
+        case 'header': return ExtractJwt.fromHeader(param.toLowerCase());
         case 'queryParam': return ExtractJwt.fromUrlQueryParameter(param);
         case 'authHeader': return ExtractJwt.fromAuthHeaderWithScheme(param);
         case 'bodyField': return ExtractJwt.fromBodyField(param);
