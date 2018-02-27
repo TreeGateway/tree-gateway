@@ -828,7 +828,7 @@ this.activeTarget=b,this.clear();var c=this.selector+'[data-target="'+b+'"],'+th
 <pre class="hljs">$ docker run -p <span class="hljs-number">6379</span>:<span class="hljs-number">6379</span> <span class="hljs-operator">-d</span> --name redis redis:<span class="hljs-number">3.0</span>.<span class="hljs-number">7</span>-alpine</pre><h2 id="installation">Installation</h2>
 <pre class="hljs">$ npm install tree-gateway -g</pre><p>After this, you can run the gateway using the following command:</p>
 <pre class="hljs">$ treeGateway</pre><p>Or, for docker users:</p>
-<pre class="hljs">$ docker run --name tree-gateway -p <span class="hljs-number">8000</span>:<span class="hljs-number">8000</span> --link redis:redis <span class="hljs-operator">-d</span> tree-gateway</pre><p>Now, you can go to <a href="#Gateway-Configuration">Configuration</a> step.</p>
+<pre class="hljs">$ docker run --name tree-gateway -p <span class="hljs-number">8000</span>:<span class="hljs-number">8000</span> --link redis:redis <span class="hljs-operator">-d</span> treegateway/tree-gateway:latest</pre><p>Now, you can go to <a href="#Gateway-Configuration">Configuration</a> step.</p>
 <p class="page" id="Gateway-Configuration"></p><h1>Gateway Configuration</h1>
 <p>When tree-gateway starts, it uses the <a href="#tree-gateway-Config-File">tree-gateway Config File</a> to load the initial configuration needed. </p>
 <p>When start the gateway, you can inform the location of this config file:</p>
