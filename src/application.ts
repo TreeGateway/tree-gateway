@@ -69,6 +69,13 @@ export class Application {
                 config.on('load', () => {
                     this.runGateway().then(resolve).catch(reject);
                 });
+                config.on('error', error => {
+                    this.ensureConfigVersionIsUpdated()
+                        .then(() => config.reload())
+                        .then(() => this.runGateway())
+                        .then(resolve)
+                        .catch(() => reject(error));
+                });
             }
         });
     }
@@ -80,8 +87,7 @@ export class Application {
             if (gateway.running) {
                 return resolve();
             }
-            const versions: VersionUpgrades = Container.get(VersionUpgrades);
-            versions.checkGatewayVersion()
+            this.ensureConfigVersionIsUpdated()
                 .then(() => gateway.start())
                 .then(() => gateway.startAdmin())
                 .then(() => database.registerGatewayVersion())
@@ -99,5 +105,10 @@ export class Application {
             process.on('SIGTERM', graceful);
             process.on('SIGINT', graceful);
         });
+    }
+
+    private ensureConfigVersionIsUpdated() {
+        const versions: VersionUpgrades = Container.get(VersionUpgrades);
+        return versions.checkGatewayVersion();
     }
 }
