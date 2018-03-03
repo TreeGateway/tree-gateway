@@ -16,7 +16,6 @@ import { ApiService } from './service/api';
 import { ConfigService } from './service/config';
 import { GatewayService } from './service/gateway';
 import { PluginsDataService } from './service/plugin-data';
-import { StatsHandler } from './stats/stats';
 import { castArray } from './utils/config';
 
 _.mixin(require('lodash-deep'));
@@ -154,7 +153,6 @@ export class Configuration extends EventEmitter {
         const RedisMiddlewareService = require('./service/redis/middleware').RedisMiddlewareService;
         const RedisGatewayService = require('./service/redis/gateway').RedisGatewayService;
         const RedisPluginsDataService = require('./service/redis/plugin-data').RedisPluginsDataService;
-        const RedisStats = require('./stats/redis-stats').RedisStats;
 
         Container.bind(GatewayService).to(RedisGatewayService);
         Container.bind(MiddlewareService).to(RedisMiddlewareService);
@@ -162,7 +160,6 @@ export class Configuration extends EventEmitter {
         Container.bind(ConfigService).to(RedisConfigService);
         Container.bind(UserService).to(RedisUserService);
         Container.bind(PluginsDataService).to(RedisPluginsDataService);
-        Container.bind(StatsHandler).to(RedisStats);
     }
 
     private loadDatabaseConfig(): Promise<void> {
@@ -259,7 +256,6 @@ export class Configuration extends EventEmitter {
         castArray(server, 'database.redis.cluster');
         castArray(server, 'database.redis.sentinel.nodes');
         castArray(server, 'gateway.filter');
-        castArray(server, 'gateway.monitor');
         castArray(server, 'gateway.admin.filter');
         castArray(server, 'gateway.serviceDiscovery.provider');
         castArray(server, 'gateway.logger.console.stderrLevels');

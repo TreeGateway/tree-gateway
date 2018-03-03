@@ -157,7 +157,7 @@ export class RedisUserService implements UserService {
 
     getAuthMiddleware(): express.RequestHandler {
         const opts: any = {
-            jwtFromRequest: ExtractJwt.fromAuthHeader(),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: this.config.gateway.admin.userService.jwtSecret
         };
         const strategy = new Strategy(opts, function(jwtPayload, done) {

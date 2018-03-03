@@ -4,27 +4,19 @@ import { ApiConfig } from '../config/api';
 import { ApiFeaturesConfig } from '../config/gateway';
 import { ApiAuthenticationConfig } from '../config/authentication';
 import * as auth from 'passport';
-import { Stats } from '../stats/stats';
 import * as Groups from '../group';
 import * as express from 'express';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { StatsRecorder } from '../stats/stats-recorder';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import * as _ from 'lodash';
-import { Configuration } from '../configuration';
-
-class StatsController {
-    failStats: Stats;
-    successStats: Stats;
-}
+import { RequestLog, RequestLogger } from '../stats/request';
 
 @AutoWired
 export class ApiAuth {
     @Inject private logger: Logger;
-    @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
-    @Inject private config: Configuration;
+    @Inject private requestLogger: RequestLogger;
 
     authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
@@ -69,16 +61,19 @@ export class ApiAuth {
 
     private createAuthenticator(apiRouter: express.Router, api: ApiConfig, authentication: ApiAuthenticationConfig,
         authenticator: express.RequestHandler) {
-        const apiId: string = api.id;
-        const stats = this.createAuthStats(apiId, authentication);
-        if (stats) {
+        if (this.requestLogger.isRequestLogEnabled(api)) {
             apiRouter.use((req, res, next) => {
                 authenticator(req, res, (err) => {
+                    const requestLog: RequestLog = this.requestLogger.getRequestLog(req);
                     if (err) {
-                        stats.failStats.registerOccurrence(req, 1);
+                        if (requestLog) {
+                            requestLog.authentication = 'fail';
+                        }
                         next(err);
                     } else {
-                        stats.successStats.registerOccurrence(req, 1);
+                        if (requestLog) {
+                            requestLog.authentication = 'success';
+                        }
                         next();
                     }
                 });
@@ -90,22 +85,25 @@ export class ApiAuth {
 
     private createAuthenticatorForGroup(apiRouter: express.Router, api: ApiConfig, authentication: ApiAuthenticationConfig,
         authenticator: express.RequestHandler) {
-        const apiId: string = api.id;
         if (this.logger.isDebugEnabled()) {
             const groups = Groups.filter(api.group, authentication.group);
             this.logger.debug(`Configuring Group filters for Authentication on path [${api.path}]. Groups [${JSON.stringify(groups)}]`);
         }
         const f = Groups.buildGroupAllowFilter(api.group, authentication.group);
-        const stats = this.createAuthStats(apiId, authentication);
-        if (stats) {
+        if (this.requestLogger.isRequestLogEnabled(api)) {
             apiRouter.use((req, res, next) => {
                 if (f(req, res)) {
                     authenticator(req, res, (err) => {
+                        const requestLog: RequestLog = this.requestLogger.getRequestLog(req);
                         if (err) {
-                            stats.failStats.registerOccurrence(req, 1);
+                            if (requestLog) {
+                                requestLog.authentication = 'fail';
+                            }
                             next(err);
                         } else {
-                            stats.successStats.registerOccurrence(req, 1);
+                            if (requestLog) {
+                                requestLog.authentication = 'success';
+                            }
                             next();
                         }
                     });
@@ -122,20 +120,6 @@ export class ApiAuth {
                 }
             });
         }
-    }
-
-    private createAuthStats(apiId: string, authentication: ApiAuthenticationConfig): StatsController {
-        if (!authentication.disableStats && !this.config.gateway.disableStats) {
-            const stats: StatsController = new StatsController();
-            stats.failStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'fail'), authentication.statsConfig);
-            stats.successStats = this.statsRecorder.createStats(Stats.getStatsKey('auth', apiId, 'success'), authentication.statsConfig);
-
-            if (stats.failStats) {
-                return stats;
-            }
-        }
-
-        return null;
     }
 
     private sortMiddlewares(middlewares: Array<ApiAuthenticationConfig>, path: string): Array<ApiAuthenticationConfig> {

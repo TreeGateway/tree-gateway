@@ -17,7 +17,7 @@ gateway:
             http:
                 listenPort: 8011
         accessLogger:
-            msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'
+            msg: 'HTTP {{req.method}} - {{res.statusCode}} - {{req.url}} ({{res.responseTime}}ms)'            
             console:
                 timestamp: true
                 colorize: true
@@ -78,32 +78,6 @@ gateway:
                 port: 8500
                 defaults: 
                     wait: 3 minutes
-    statsConfig:
-        granularity:
-            duration: '1 hour'
-            ttl: '1 day'
-    monitor:
-        - id: cpu
-          statsConfig:
-            granularity:
-                duration: 10 seconds
-                ttl: 1 day
-        - name: mem
-          statsConfig:
-            granularity:
-                duration: 10 seconds
-                ttl: 1 day
-        - id: gc
-          statsConfig:
-            granularity:
-                duration: 10 seconds
-                ttl: 1 day
-        - name: event-loop
-          statsConfig:
-            granularity:
-                duration: 10 seconds
-                ttl: 1 day
-                
     healthcheck: /healthcheck
     config:
         authentication:

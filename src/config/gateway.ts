@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { AdminConfig, adminConfigValidatorSchema } from './admin';
 import { ProtocolConfig, protocolConfigSchema } from './protocol';
 import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfigSchema } from './logger';
@@ -67,14 +66,6 @@ export interface GatewayConfig {
      */
     accessLogger?: AccessLoggerConfig;
     /**
-     * Defaut configurations for gateway stats
-     */
-    statsConfig?: StatsConfig;
-    /**
-     * Create monitors for the gateway health
-     */
-    monitor?: Array<MonitorConfig>;
-    /**
      * If provided, Configure the admin service for the gateway
      */
     admin?: AdminConfig;
@@ -132,6 +123,20 @@ export interface GatewayConfig {
      * Disable all stats recording for the gateway
      */
     disableStats?: boolean;
+    /**
+     * Inform how request analytics should be stored by the gateway
+     */
+    analytics?: RequestAnalyticsConfig;
+}
+
+/**
+ * Inform how request analytics should be stored by the gateway
+ */
+export interface RequestAnalyticsConfig {
+    /**
+     * The logger middleware
+     */
+    logger: MiddlewareConfig;
 }
 
 /**
@@ -164,27 +169,6 @@ export interface ApiFeaturesConfig {
     throttling?: { [index: string]: ThrottlingConfig };
 }
 
-export interface MonitorConfig {
-    /**
-     * Alternative do MonitorConfig.id
-     */
-    id?: string;
-    /**
-     * The name of the monitor
-     */
-    name?: string;
-    /**
-     * Configure how statistical data will be collected
-     */
-    statsConfig: StatsConfig;
-}
-
-const monitorConfigSchema = Joi.object().keys({
-    id: Joi.string().valid('cpu', 'mem', 'gc', 'event-loop'),
-    name: Joi.string().valid('cpu', 'mem', 'gc', 'event-loop'),
-    statsConfig: statsConfigValidatorSchema.required()
-}).xor('id', 'name');
-
 const apiFeaturesConfigSchema = Joi.object().keys({
     authentication: Joi.object().pattern(/\w+/, authenticationValidatorSchema),
     cache: Joi.object().pattern(/\w+/, cacheConfigValidatorSchema),
@@ -194,9 +178,14 @@ const apiFeaturesConfigSchema = Joi.object().keys({
     throttling: Joi.object().pattern(/\w+/, throttlingConfigValidatorSchema)
 });
 
+export const requestAnalyticsConfigSchema = Joi.object().keys({
+    logger: middlewareConfigValidatorSchema.required()
+});
+
 export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
+    analytics: requestAnalyticsConfigSchema,
     config: apiFeaturesConfigSchema,
     cors: corsConfigSchema,
     disableApiIdValidation: Joi.boolean(),
@@ -206,10 +195,8 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     filter: Joi.alternatives([Joi.array().items(middlewareConfigValidatorSchema), middlewareConfigValidatorSchema]),
     healthcheck: Joi.string(),
     logger: loggerConfigSchema,
-    monitor: Joi.alternatives([Joi.array().items(monitorConfigSchema), monitorConfigSchema]),
     protocol: protocolConfigSchema,
     serviceDiscovery: serviceDiscoveryConfigValidatorSchema,
-    statsConfig: statsConfigValidatorSchema,
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     underProxy: Joi.boolean()
 });

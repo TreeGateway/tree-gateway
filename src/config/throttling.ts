@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 export interface ThrottlingConfig {
@@ -94,14 +93,6 @@ export interface ThrottlingConfig {
      * ```
      */
     handler?: MiddlewareConfig;
-    /**
-     * If true, disabled the statistical data recording.
-     */
-    disableStats?: boolean;
-    /**
-     * Configurations for throttling stats.
-     */
-    statsConfig?: StatsConfig;
 }
 
 export interface ApiThrottlingConfig extends ThrottlingConfig {
@@ -120,14 +111,12 @@ export interface ApiThrottlingConfig extends ThrottlingConfig {
 export let throttlingConfigValidatorSchema = Joi.object().keys({
     delay: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     delayAfter: Joi.number(),
-    disableStats: Joi.boolean(),
     handler: middlewareConfigValidatorSchema,
     headers: Joi.boolean(),
     keyGenerator: middlewareConfigValidatorSchema,
     max: Joi.number(),
     message: Joi.string(),
     skip: middlewareConfigValidatorSchema,
-    statsConfig: statsConfigValidatorSchema,
     statusCode: Joi.number(),
     timeWindow: Joi.alternatives([Joi.string(), Joi.number().positive()])
 });

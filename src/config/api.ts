@@ -94,6 +94,10 @@ export interface ApiConfig {
      * Configure how to handle errors during API pipeline.
      */
     errorHandler?: MiddlewareConfig;
+    /**
+     * Disable all stats recording for this API
+     */
+    disableStats?: boolean;
 }
 
 export let apiConfigValidatorSchema = Joi.object().keys({
@@ -102,6 +106,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     circuitBreaker: Joi.alternatives([Joi.array().items(apiCircuitBreakerConfigValidatorSchema), apiCircuitBreakerConfigValidatorSchema]),
     cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),
     description: Joi.string(),
+    disableStats: Joi.boolean(),
     errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.alternatives([Joi.array().items(apiFilterSchema), apiFilterSchema]),
     group: Joi.alternatives([Joi.array().items(groupValidatorSchema), groupValidatorSchema]),

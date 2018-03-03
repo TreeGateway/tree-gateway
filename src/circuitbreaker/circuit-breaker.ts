@@ -3,7 +3,6 @@
 import { ApiFeaturesConfig } from '../config/gateway';
 import { ApiCircuitBreakerConfig } from '../config/circuit-breaker';
 import { ApiConfig } from '../config/api';
-import { Stats } from '../stats/stats';
 import * as express from 'express';
 import * as _ from 'lodash';
 import { CircuitBreaker } from './express-circuit-breaker';
@@ -11,16 +10,9 @@ import * as Groups from '../group';
 import { RedisStateHandler } from './redis-state-handler';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { StatsRecorder } from '../stats/stats-recorder';
+import { RequestLog, RequestLogger } from '../stats/request';
 import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
-import { Configuration } from '../configuration';
-
-class StatsController {
-    open: Stats;
-    close: Stats;
-    rejected: Stats;
-}
 
 interface BreakerInfo {
     circuitBreaker?: CircuitBreaker;
@@ -30,9 +22,8 @@ interface BreakerInfo {
 @AutoWired
 export class ApiCircuitBreaker {
     @Inject private logger: Logger;
-    @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
-    @Inject private config: Configuration;
+    @Inject private requestLogger: RequestLogger;
 
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
@@ -60,7 +51,7 @@ export class ApiCircuitBreaker {
                 this.logger.debug(`Configuring Circuit Breaker for path [${api.path}].`);
             }
             breakerInfo.circuitBreaker = new CircuitBreaker(cbOptions);
-            this.configureCircuitBreakerEventListeners(breakerInfo, api.path, cbConfig, api.id);
+            this.configureCircuitBreakerEventListeners(breakerInfo, api.path, cbConfig, api);
             if (cbConfig.group) {
                 if (this.logger.isDebugEnabled()) {
                     const groups = Groups.filter(api.group, cbConfig.group);
@@ -100,35 +91,43 @@ export class ApiCircuitBreaker {
         return circuitBreaker;
     }
 
-    private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: ApiCircuitBreakerConfig, apiId: string) {
-        const stats = this.createCircuitBreakerStats(apiId, config);
-        if (stats) {
+    private configureCircuitBreakerEventListeners(breakerInfo: BreakerInfo, path: string, config: ApiCircuitBreakerConfig, api: ApiConfig) {
+        if (this.requestLogger.isRequestLogEnabled(api)) {
             breakerInfo.circuitBreaker.on('open', (req: express.Request) => {
-                stats.open.registerOccurrence(req, 1);
+                const requestLog: RequestLog = this.requestLogger.getRequestLog(req);
+                if (requestLog) {
+                    requestLog.circuitbreaker = 'open';
+                }
             });
             breakerInfo.circuitBreaker.on('close', (req: express.Request) => {
-                stats.close.registerOccurrence(req, 1);
+                const requestLog: RequestLog = this.requestLogger.getRequestLog(req);
+                if (requestLog) {
+                    requestLog.circuitbreaker = 'close';
+                }
             });
             breakerInfo.circuitBreaker.on('rejected', (req: express.Request) => {
-                stats.rejected.registerOccurrence(req, 1);
+                const requestLog: RequestLog = this.requestLogger.getRequestLog(req);
+                if (requestLog) {
+                    requestLog.circuitbreaker = 'rejected';
+                }
             });
         }
         if (config.onOpen) {
             const openHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onOpen);
             breakerInfo.circuitBreaker.on('open', () => {
-                openHandler(path, 'open', apiId);
+                openHandler(path, 'open', api.id);
             });
         }
         if (config.onClose) {
             const closeHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onClose);
             breakerInfo.circuitBreaker.on('close', () => {
-                closeHandler(path, 'close', apiId);
+                closeHandler(path, 'close', api.id);
             });
         }
         if (config.onRejected) {
             const rejectedHandler = this.middlewareLoader.loadMiddleware('circuitbreaker', config.onRejected);
             breakerInfo.circuitBreaker.on('rejected', () => {
-                rejectedHandler(path, 'rejected', apiId);
+                rejectedHandler(path, 'rejected', api.id);
             });
         }
     }
@@ -177,20 +176,5 @@ export class ApiCircuitBreaker {
             }
         }
         return breakers;
-    }
-
-    private createCircuitBreakerStats(apiId: string, config: ApiCircuitBreakerConfig): StatsController {
-        if (!config.disableStats && !this.config.gateway.disableStats) {
-            const stats: StatsController = new StatsController();
-            stats.close = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'close'), config.statsConfig);
-            stats.open = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'open'), config.statsConfig);
-            stats.rejected = this.statsRecorder.createStats(Stats.getStatsKey('circuitbreaker', apiId, 'rejected'), config.statsConfig);
-
-            if (stats.open) {
-                return stats;
-            }
-        }
-
-        return null;
     }
 }

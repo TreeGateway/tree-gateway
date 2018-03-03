@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 
 /**
  * Configure cache for API requests.
@@ -76,14 +75,6 @@ export interface ServerCacheConfig {
      * to clients.
      */
     preserveHeaders?: Array<string>;
-    /**
-     * If true, disabled the statistical data recording.
-     */
-    disableStats?: boolean;
-    /**
-     * Configurations for cache stats.
-     */
-    statsConfig?: StatsConfig;
 }
 
 const clientCacheValidatorSchema = Joi.object().keys({
@@ -97,9 +88,7 @@ const clientCacheValidatorSchema = Joi.object().keys({
 const serverCacheValidatorSchema = Joi.object().keys({
     binary: Joi.boolean(),// TODO remove on next major release
     cacheTime: Joi.alternatives([Joi.string(), Joi.number().positive()]).required(),
-    disableStats: Joi.boolean(),
-    preserveHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
-    statsConfig: statsConfigValidatorSchema
+    preserveHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()])
 });
 
 export let cacheConfigValidatorSchema = Joi.object().keys({

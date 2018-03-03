@@ -22,7 +22,7 @@ module.exports = function(authConfig: JWTAuthentication) {
             opts['jwtFromRequest'] = (<any>ExtractJwt).fromExtractors(requestExtractors);
         }
     } else {
-        opts['jwtFromRequest'] = ExtractJwt.fromAuthHeader();
+        opts['jwtFromRequest'] = ExtractJwt.fromAuthHeaderAsBearerToken();
     }
     let verifyFunction;
     if (authConfig.verify) {
@@ -51,7 +51,7 @@ function getExtractor(extractor: string, param: string) {
             return token;
         };
         default:
-            return ExtractJwt.fromAuthHeader();
+            return ExtractJwt.fromAuthHeaderAsBearerToken();
     }
 }
 module.exports.factory = true;

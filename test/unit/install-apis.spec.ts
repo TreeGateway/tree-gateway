@@ -33,6 +33,9 @@ describe('Gateway APIs install', () => {
                             .then(resolve)
                             .catch(reject);
                     });
+                    config.on('error', error => {
+                        reject(error);
+                    });
             });
         }
     });

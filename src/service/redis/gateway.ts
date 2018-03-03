@@ -78,7 +78,6 @@ export class RedisGatewayService implements GatewayService {
      */
     private castArrays(gateway: GatewayConfig) {
         castArray(gateway, 'filter');
-        castArray(gateway, 'monitor');
         castArray(gateway, 'admin.filter');
         castArray(gateway, 'serviceDiscovery.provider');
         castArray(gateway, 'logger.console.stderrLevels');

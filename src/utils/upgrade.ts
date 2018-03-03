@@ -1,10 +1,12 @@
 'use strict';
 
+import * as _ from 'lodash';
 import { Singleton, AutoWired, Inject } from 'typescript-ioc';
 import { Database } from '../database';
 import { ConfigPackageService } from '../service/config-package';
 import chalk from 'chalk';
-import { Logger } from '../logger';
+import { GatewayConfig } from '../config/gateway';
+import { ApiConfig } from '../config/api';
 const compareVersions = require('compare-versions');
 
 @Singleton
@@ -12,7 +14,6 @@ const compareVersions = require('compare-versions');
 export class VersionUpgrades {
     @Inject private database: Database;
     @Inject private service: ConfigPackageService;
-    @Inject private logger: Logger;
 
     checkGatewayVersion(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
@@ -50,10 +51,24 @@ export class VersionUpgrades {
 
     private update(version: string) {
         return new Promise<void>((resolve, reject) => {
-            if (compareVersions(version || '0.0.1', '2.0.0') < 0) {
-                this.logger.info(chalk.magenta('An older configuration was found. Updating it to the newer format. Check tree-gateway migration guide for more info.'));
+            if (compareVersions(version || '0.0.1', '3.0.0') < 0) {
                 this.service.get()
-                    .then(pac => this.service.set(pac))
+                    .then(pac => {
+                        if (pac && pac.gateway) {
+                            console.info(chalk.magenta('An older configuration was found. Updating it to the newer format. '
+                                                            + 'Check tree-gateway migration guide for more info.'));
+                            pac.gateway = <GatewayConfig>_.omit(pac.gateway, 'statsConfig', 'monitor');
+                        }
+                        if (pac.apis) {
+                            pac.apis = pac.apis.map(api => {
+                                if (_.has(api, 'proxy.disableStats')) {
+                                    api.disableStats = _.get(api.proxy, 'disableStats');
+                                }
+                                return <ApiConfig>_.omit(api, 'proxy.statsConfig', 'proxy.disableStats');
+                            });
+                        }
+                        return this.service.set(pac);
+                    })
                     .then(() => this.database.registerGatewayVersion())
                     .then(resolve)
                     .catch(reject);

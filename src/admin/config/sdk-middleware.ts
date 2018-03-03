@@ -22,7 +22,7 @@ export interface Middleware {
     serviceDiscovery(name?: string): Promise<Array<string>>;
     serviceDiscoveryProvider(name?: string): Promise<Array<string>>;
     errorHandler(name?: string): Promise<Array<string>>;
-    statsRequestMapper(name?: string): Promise<Array<string>>;
+    requestLogger(name?: string): Promise<Array<string>>;
     removeFilter(name: string): Promise<void>;
     removeRequestInterceptor(name: string): Promise<void>;
     removeResponseInterceptor(name: string): Promise<void>;
@@ -37,7 +37,7 @@ export interface Middleware {
     removeServiceDiscovery(name: string): Promise<void>;
     removeServiceDiscoveryProvider(name: string): Promise<void>;
     removeErrorHandler(name: string): Promise<void>;
-    removeStatsRequestMapper(name: string): Promise<void>;
+    removeRequestLogger(name: string): Promise<void>;
     updateFilter(name: string, fileName: string): Promise<void>;
     updateRequestInterceptor(name: string, fileName: string): Promise<void>;
     updateResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -52,7 +52,7 @@ export interface Middleware {
     updateServiceDiscovery(name: string, fileName: string): Promise<void>;
     updateServiceDiscoveryProvider(name: string, fileName: string): Promise<void>;
     updateErrorHandler(name: string, fileName: string): Promise<void>;
-    updateStatsRequestMapper(name: string, fileName: string): Promise<void>;
+    updateRequestLogger(name: string, fileName: string): Promise<void>;
     addFilter(name: string, fileName: string): Promise<void>;
     addRequestInterceptor(name: string, fileName: string): Promise<void>;
     addResponseInterceptor(name: string, fileName: string): Promise<void>;
@@ -67,7 +67,7 @@ export interface Middleware {
     addServiceDiscovery(name: string, fileName: string): Promise<void>;
     addServiceDiscoveryProvider(name: string, fileName: string): Promise<void>;
     addErrorHandler(name: string, fileName: string): Promise<void>;
-    addStatsRequestMapper(name: string, fileName: string): Promise<void>;
+    addRequestLogger(name: string, fileName: string): Promise<void>;
     getFilter(name: string): Promise<Buffer>;
     getRequestInterceptor(name: string): Promise<Buffer>;
     getResponseInterceptor(name: string): Promise<Buffer>;
@@ -82,7 +82,7 @@ export interface Middleware {
     getServiceDiscoveryMiddleware(name: string): Promise<Buffer>;
     getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer>;
     getErrorHandlerMiddleware(name: string): Promise<Buffer>;
-    getStatsRequestMapperMiddleware(name: string): Promise<Buffer>;
+    getRequestLoggerMiddleware(name: string): Promise<Buffer>;
 }
 
 export class MiddlewareClient implements Middleware {
@@ -286,9 +286,9 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
-    statsRequestMapper(name?: string): Promise<Array<string>> {
+    requestLogger(name?: string): Promise<Array<string>> {
         return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestStatsRequestMapper({ name })
+            this.swaggerClient.apis.Middleware.MiddlewareRestRequestLogger({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -481,9 +481,9 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
-    removeStatsRequestMapper(name: string): Promise<void> {
+    removeRequestLogger(name: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveStatsRequestMapper({ name })
+            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestLogger({ name })
                 .then((response: any) => {
                     if (response.status === 204) {
                         return resolve();
@@ -550,8 +550,8 @@ export class MiddlewareClient implements Middleware {
         return this.installMiddleware('errorhandler', fileName, true);
     }
 
-    updateStatsRequestMapper(name: string, fileName: string): Promise<void> {
-        return this.installMiddleware('stats/request/mapper', fileName, true);
+    updateRequestLogger(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('request/logger', fileName, true);
     }
 
     addFilter(name: string, fileName: string): Promise<void> {
@@ -610,8 +610,8 @@ export class MiddlewareClient implements Middleware {
         return this.installMiddleware('errorhandler', fileName);
     }
 
-    addStatsRequestMapper(name: string, fileName: string): Promise<void> {
-        return this.installMiddleware('stats/request/mapper', fileName);
+    addRequestLogger(name: string, fileName: string): Promise<void> {
+        return this.installMiddleware('request/logger', fileName);
     }
 
     getFilter(name: string): Promise<Buffer> {
@@ -796,9 +796,9 @@ export class MiddlewareClient implements Middleware {
         });
     }
 
-    getStatsRequestMapperMiddleware(name: string): Promise<Buffer> {
+    getRequestLoggerMiddleware(name: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetStatsRequestMapperMiddleware({ name })
+            this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestLoggerMiddleware({ name })
                 .then((response: any) => {
                     if (response.status === 200) {
                         return resolve(response.body);
@@ -821,7 +821,7 @@ export class MiddlewareClient implements Middleware {
             const stream = this.getStream(filePath);
             const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
             const req = this.middlewareRequest.post('/middleware/' + servicePath, {
-                headers: { 'authorization': `JWT ${this.authToken}` }
+                headers: { 'authorization': `Bearer ${this.authToken}` }
             }, (error: any, response: any, body: any) => {
                 if (error) {
                     return reject(error);
