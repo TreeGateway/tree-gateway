@@ -7,14 +7,12 @@ import { ApiFeaturesConfig } from '../config/gateway';
 import * as _ from 'lodash';
 import * as Groups from '../group';
 import { RedisStore } from './redis-store';
-import { Stats } from '../stats/stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { StatsRecorder } from '../stats/stats-recorder';
 import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import { ProxyError } from '../error/errors';
-import { Configuration } from '../configuration';
+import { RequestLogger } from '../stats/request';
 
 interface ThrottlingInfo {
     limiter?: express.RequestHandler;
@@ -24,9 +22,8 @@ interface ThrottlingInfo {
 @AutoWired
 export class ApiRateLimit {
     @Inject private logger: Logger;
-    @Inject private statsRecorder: StatsRecorder;
     @Inject private middlewareLoader: MiddlewareLoader;
-    @Inject private config: Configuration;
+    @Inject private requestLogger: RequestLogger;
 
     throttling(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         const path: string = api.path;
@@ -55,7 +52,7 @@ export class ApiRateLimit {
             if (throttling.skip) {
                 rateConfig.skip = this.middlewareLoader.loadMiddleware('throttling/skip', throttling.skip);
             }
-            this.configureThrottlingHandlerFunction(path, throttling, rateConfig, api.id);
+            this.configureThrottlingHandlerFunction(path, throttling, rateConfig, api);
             throttlingInfo.limiter = new rateLimit(rateConfig);
 
             if (this.logger.isDebugEnabled()) {
@@ -85,18 +82,23 @@ export class ApiRateLimit {
         return throttling;
     }
 
-    private configureThrottlingHandlerFunction(path: string, throttling: ApiThrottlingConfig, rateConfig: any, apiId: string) {
-        const stats = this.createStats(apiId, throttling);
-        if (stats) {
+    private configureThrottlingHandlerFunction(path: string, throttling: ApiThrottlingConfig, rateConfig: any, api: ApiConfig) {
+        if (this.requestLogger.isRequestLogEnabled(api)) {
             if (throttling.handler) {
                 const customHandler = this.middlewareLoader.loadMiddleware('throttling/handler', throttling.handler);
-                rateConfig.handler = function(req: express.Request, res: express.Response, next: express.NextFunction) {
-                    stats.registerOccurrence(req, 1);
+                rateConfig.handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+                    const requestLog = this.requestLogger.getRequestLog(req);
+                    if (requestLog) {
+                        requestLog.throttling = 'exceeded';
+                    }
                     customHandler(req, res, next);
                 };
             } else {
-                rateConfig.handler = function(req: express.Request, res: express.Response, next: express.NextFunction) {
-                    stats.registerOccurrence(req, 1);
+                rateConfig.handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+                    const requestLog = this.requestLogger.getRequestLog(req);
+                    if (requestLog) {
+                        requestLog.throttling = 'exceeded';
+                    }
                     next(new ProxyError(rateConfig.message, rateConfig.statusCode));
                 };
             }
@@ -146,13 +148,5 @@ export class ApiRateLimit {
             }
         }
         return throttlings;
-    }
-
-    private createStats(apiId: string, throttling: ApiThrottlingConfig): Stats {
-        if (!throttling.disableStats && !this.config.gateway.disableStats) {
-            return this.statsRecorder.createStats(Stats.getStatsKey('throt', apiId, 'exceeded'), throttling.statsConfig);
-        }
-
-        return null;
     }
 }

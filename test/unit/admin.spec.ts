@@ -147,7 +147,7 @@ describe('Gateway Admin Tasks', () => {
         it('should be able to create a new API', (done) => {
             adminRequest.post('/apis', {
                 body: apiMock,
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 json: true
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -171,7 +171,7 @@ describe('Gateway Admin Tasks', () => {
         it('should reject an invalid API', (done) => {
             adminRequest.post('/apis', {
                 body: {},
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 json: true
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -182,7 +182,7 @@ describe('Gateway Admin Tasks', () => {
 
         it('should be able to list all APIs', (done) => {
             adminRequest.get({
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 url:'/apis'
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -196,7 +196,7 @@ describe('Gateway Admin Tasks', () => {
 
             adminRequest.put(`/apis/${apiMock.id}`, {
                 body: apiMock,
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 json: true
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -207,7 +207,7 @@ describe('Gateway Admin Tasks', () => {
 
         it('should be able to get an API', (done) => {
             adminRequest.get({
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 url:`/apis/${apiMock.id}`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -220,7 +220,7 @@ describe('Gateway Admin Tasks', () => {
 
         it('should be able to delete an API', (done) => {
             adminRequest.delete({
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 url:`/apis/${apiMock.id}`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -233,7 +233,7 @@ describe('Gateway Admin Tasks', () => {
     describe('/users', () => {
         it('should reject requests with low privileges', (done) => {
             adminRequest.delete({
-                headers: { 'authorization': `JWT ${configToken}` },
+                headers: { 'authorization': `Bearer ${configToken}` },
                 url:`/users/simple`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
@@ -252,7 +252,7 @@ describe('Gateway Admin Tasks', () => {
 
             adminRequest.post({
                 body: simpleUser2,
-                headers: { 'authorization': `JWT ${adminToken}` },
+                headers: { 'authorization': `Bearer ${adminToken}` },
                 json: true,
                 url:`/users`
             }, (error: any, response: any, body: any) => {

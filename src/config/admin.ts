@@ -5,7 +5,6 @@ import { UsersConfig, usersConfigValidatorSchema } from './users';
 import { AccessLoggerConfig, accessLoggerConfigSchema } from './logger';
 import { ProtocolConfig, protocolConfigSchema } from './protocol';
 import { CorsConfig, corsConfigSchema } from './cors';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 /**
@@ -25,14 +24,6 @@ export interface AdminConfig {
      * Configurations for gateway admin server access logger.
      */
     accessLogger?: AccessLoggerConfig;
-    /**
-     * If true, disabled the statistical data recording for admin tasks.
-     */
-    disableStats?: boolean;
-    /**
-     * Configurations for admin stats.
-     */
-    statsConfig?: StatsConfig;
     /**
      * If provided, the service will publish all api documentation under the informed path.
      */
@@ -84,9 +75,7 @@ export const adminConfigValidatorSchema = Joi.object().keys({
         path: Joi.string().required()
     }),
     cors: corsConfigSchema,
-    disableStats: Joi.boolean(),
     filter: Joi.alternatives([Joi.array().items(middlewareConfigValidatorSchema), middlewareConfigValidatorSchema]),
     protocol: protocolConfigSchema.required(),
-    statsConfig: statsConfigValidatorSchema,
     userService: usersConfigValidatorSchema.required()
 });

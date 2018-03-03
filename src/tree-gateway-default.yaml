@@ -39,19 +39,4 @@ accessLogger:
         json: false
         prettyPrint: true
         outputDir: ./logs
-statsConfig:
-    granularity:
-        duration: '1 hour'
-        ttl: '1 day'
-monitor:
-    - name: cpu
-      statsConfig:
-        granularity:
-            duration: 1 hour
-            ttl: 1 day
-    - name: mem
-      statsConfig:
-        granularity:
-            duration: 1 hour
-            ttl: 1 day
 healthcheck: /healthcheck

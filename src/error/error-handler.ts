@@ -7,6 +7,7 @@ import { AutoWired, Inject } from 'typescript-ioc';
 import { MiddlewareLoader } from '../utils/middleware-loader';
 import { Configuration } from '../configuration';
 import { MiddlewareConfig } from '../config/middleware';
+import { RequestLogger } from '../stats/request';
 
 /**
  * The API Error handler. Called to handle errors in API pipeline processing.
@@ -16,15 +17,34 @@ export class ApiErrorHandler {
     @Inject private config: Configuration;
     @Inject private logger: Logger;
     @Inject private middlewareLoader: MiddlewareLoader;
+    @Inject private requestLogger: RequestLogger;
 
     /**
      * Configure a proxy for a given API
      */
     handle(apiRouter: express.Router, api: ApiConfig) {
-        apiRouter.use(this.configureErrorHandler(api.errorHandler || this.config.gateway.errorHandler));
+        apiRouter.use(this.configureErrorHandler(api));
     }
 
-    private configureErrorHandler(errorHandler: MiddlewareConfig) {
+    private configureErrorHandler(api: ApiConfig) {
+        const errorHandler: MiddlewareConfig = api.errorHandler || this.config.gateway.errorHandler;
+        const appErrorHandler = this.getAppErrorHandler(errorHandler);
+        if (this.requestLogger.isRequestLogEnabled(api)) {
+            return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+                if (err && err.message) {
+                    const requestLog = this.requestLogger.getRequestLog(req);
+                    if (requestLog) {
+                        requestLog.error = err.message;
+                    }
+                }
+                appErrorHandler(err, req, res, next);
+            };
+        } else {
+            return appErrorHandler;
+        }
+    }
+
+    private getAppErrorHandler(errorHandler: MiddlewareConfig) {
         if (errorHandler) {
             return this.middlewareLoader.loadMiddleware('errorhandler', errorHandler);
         } else {

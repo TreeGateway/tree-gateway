@@ -3,31 +3,22 @@
 import * as express from 'express';
 import { ApiConfig } from '../config/api';
 import { ApiFeaturesConfig } from '../config/gateway';
-import { ApiCacheConfig, ServerCacheConfig } from '../config/cache';
+import { ApiCacheConfig } from '../config/cache';
 import { ServerCache } from './server-cache';
 import { ClientCache } from './client-cache';
 import * as Groups from '../group';
 import * as _ from 'lodash';
-import { Stats } from '../stats/stats';
 import { Logger } from '../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { StatsRecorder } from '../stats/stats-recorder';
 import { createFunction } from '../utils/functions';
-import { Configuration } from '../configuration';
+import { RequestLogger } from '../stats/request';
 
 const onHeaders = require('on-headers');
-
-class StatsController {
-    cacheError: Stats;
-    cacheHit: Stats;
-    cacheMiss: Stats;
-}
 
 @AutoWired
 export class ApiCache {
     @Inject private logger: Logger;
-    @Inject private statsRecorder: StatsRecorder;
-    @Inject private config: Configuration;
+    @Inject private requestLogger: RequestLogger;
 
     cache(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
         if (this.useCache(api)) {
@@ -50,7 +41,7 @@ export class ApiCache {
                 validateGroupFunction = Groups.buildGroupAllowFilter(api.group, cache.group);
             }
             try {
-                const cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path, api.id);
+                const cacheMiddleware: express.RequestHandler = this.buildCacheMiddleware(validateGroupFunction, cache, path, api);
                 apiRouter.use(cacheMiddleware);
             } catch (e) {
                 this.logger.error(e);
@@ -69,9 +60,9 @@ export class ApiCache {
         return cache;
     }
 
-    private buildCacheMiddleware(validateGroupFunction: Function, cache: ApiCacheConfig, path: string, apiId: string): express.RequestHandler {
+    private buildCacheMiddleware(validateGroupFunction: Function, cache: ApiCacheConfig, path: string, api: ApiConfig): express.RequestHandler {
         const body = new Array<string>();
-        const stats = this.createCacheStats(apiId, cache.server);
+        const requestLogEnabled = this.requestLogger.isRequestLogEnabled(api);
         if (validateGroupFunction) {
             body.push(`if (validateGroupFunction(req, res)){`);
         } else {
@@ -85,8 +76,8 @@ export class ApiCache {
         if (cache.server) {
             const serverCache: ServerCache = new ServerCache();
 
-            if (stats) {
-                body.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next', 'stats'));
+            if (requestLogEnabled) {
+                body.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next', true));
             } else {
                 body.push(serverCache.buildCacheMiddleware(cache.server, path, 'req', 'res', 'next'));
             }
@@ -97,7 +88,6 @@ export class ApiCache {
         return <express.RequestHandler>createFunction({
             ServerCache: ServerCache,
             onHeaders: onHeaders,
-            stats: stats,
             validateGroupFunction: validateGroupFunction
         }, 'req', 'res', 'next', body.join(''));
     }
@@ -130,20 +120,5 @@ export class ApiCache {
             }
         }
         return caches;
-    }
-
-    private createCacheStats(apiId: string, serverCache: ServerCacheConfig): StatsController {
-        if (!serverCache.disableStats && !this.config.gateway.disableStats) {
-            const stats: StatsController = new StatsController();
-            stats.cacheError = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'error'), serverCache.statsConfig);
-            stats.cacheHit = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'hit'), serverCache.statsConfig);
-            stats.cacheMiss = this.statsRecorder.createStats(Stats.getStatsKey('cache', apiId, 'miss'), serverCache.statsConfig);
-
-            if (stats.cacheMiss) {
-                return stats;
-            }
-        }
-
-        return null;
     }
 }

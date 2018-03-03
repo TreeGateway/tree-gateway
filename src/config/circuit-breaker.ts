@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 /**
@@ -31,14 +30,6 @@ export interface CircuitBreakerConfig {
      * When the failure counter reaches a maxFailures count, the breaker is tripped into Open state.
      */
     maxFailures?: number;
-    /**
-     * If true, disabled the statistical data recording.
-     */
-    disableStats?: boolean;
-    /**
-     * Configurations for circuitbreaker stats.
-     */
-    statsConfig?: StatsConfig;
     /**
      * The name of the function to execute once the circuit is open.
      * It receives the API path being called.
@@ -123,7 +114,6 @@ export interface ApiCircuitBreakerConfig extends CircuitBreakerConfig {
 }
 
 export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
-    disableStats: Joi.boolean(),
     maxFailures: Joi.number(),
     onClose: middlewareConfigValidatorSchema,
     onOpen: middlewareConfigValidatorSchema,
@@ -131,7 +121,6 @@ export let circuitBreakerConfigValidatorSchema = Joi.object().keys({
     rejectMessage: Joi.string(),
     rejectStatusCode: Joi.number(),
     resetTimeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
-    statsConfig: statsConfigValidatorSchema,
     timeWindow: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()]),
     timeoutMessage: Joi.string(),

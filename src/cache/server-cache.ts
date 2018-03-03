@@ -29,22 +29,22 @@ export class ServerCache {
     }
 
     buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req: string, res: string,
-        next: string, stats?: string) {
+        next: string, requestLog?: boolean) {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug('Configuring Server Cache for path [%s].', path);
         }
         const result = new Array<string>();
         result.push(`ServerCache.cacheStore.get(${req}.originalUrl, function(err, entry){`);
         result.push(`if (err) {`);
-        if (stats) {
-            result.push(`${stats}.cacheError.registerOccurrence(${req}, 1);`);
+        if (requestLog) {
+            result.push(`${req}.requestLog.cache = 'error';`);
         }
         result.push(`return ${next}();`);
         result.push('}');
         result.push('if (entry) {');
         // cache hit
-        if (stats) {
-            result.push(`${stats}.cacheHit.registerOccurrence(${req}, 1);`);
+        if (requestLog) {
+            result.push(`${req}.requestLog.cache = 'hit';`);
         }
         result.push(`${res}.contentType(entry.mimeType || "text/html");`);
         if (serverCache.preserveHeaders) {
@@ -56,8 +56,8 @@ export class ServerCache {
         result.push(`}`);
         result.push(`else {`);
         // cache miss
-        if (stats) {
-            result.push(`${stats}.cacheMiss.registerOccurrence(${req}, 1);`);
+        if (requestLog) {
+            result.push(`${req}.requestLog.cache = 'miss';`);
         }
         result.push(`${req}.parseRespBody = true;`);
         result.push(`var send = ${res}.send.bind(${res});`);

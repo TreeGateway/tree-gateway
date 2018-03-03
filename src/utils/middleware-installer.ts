@@ -15,8 +15,7 @@ export class MiddlewareInstaller {
         'authentication/strategy', 'authentication/verify',
         'throttling/keyGenerator', 'throttling/handler',
         'throttling/skip', 'circuitbreaker', 'cors/origin', 'proxy/router',
-        'servicediscovery', 'servicediscovery/provider', 'errorhandler',
-        'stats/request/mapper'];
+        'servicediscovery', 'servicediscovery/provider', 'errorhandler', 'request/logger'];
 
     @Inject private service: MiddlewareService;
     @Inject private logger: Logger;

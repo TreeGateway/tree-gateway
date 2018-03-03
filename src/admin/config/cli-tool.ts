@@ -213,6 +213,10 @@ export class Cli {
                 return this.processMiddlewareServiceDiscovery();
             case 'serviceDiscoveryProvider':
                 return this.processMiddlewareServiceDiscoveryProvider();
+            case 'errorHandler':
+                return this.processMiddlewareErrorHandler();
+                case 'requestLogger':
+                return this.processMiddlewareRequestLogger();
             default:
                 return new Promise<void>((resolve, reject) => reject(`Command not found: ${this.args.command}`));
         }
@@ -909,6 +913,114 @@ export class Cli {
                     .catch(reject);
             } else if (this.args.get) {
                 this.sdk.middleware.getServiceDiscoveryProviderMiddleware(this.args.get)
+                    .then((file) => {
+                        console.info(file.toString());
+                        resolve();
+                    })
+                    .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
+            }
+        });
+    }
+
+    private processMiddlewareErrorHandler(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.args.list) {
+                const args: any = {};
+                this.args.list.forEach((param: string) => {
+                    const parts = param.split(':');
+                    if (parts.length === 2) {
+                        args[parts[0]] = parts[1];
+                    }
+                });
+                this.sdk.middleware.errorHandler(<string>args['name'])
+                    .then(filters => {
+                        console.info(YAML.stringify(filters));
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.remove) {
+                this.sdk.middleware.removeErrorHandler(this.args.remove)
+                    .then(() => {
+                        console.info(`Middleware removed`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.update) {
+                const name = this.args.update[0];
+                const fileName = this.args.update[1];
+                this.sdk.middleware.updateErrorHandler(name, fileName)
+                    .then(() => {
+                        console.info(`Middleware updated`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.add) {
+                const name = this.args.add[0];
+                const fileName = this.args.add[1];
+                this.sdk.middleware.addErrorHandler(name, fileName)
+                    .then(() => {
+                        console.info(`Middleware added`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.get) {
+                this.sdk.middleware.getErrorHandlerMiddleware(this.args.get)
+                    .then((file) => {
+                        console.info(file.toString());
+                        resolve();
+                    })
+                    .catch(reject);
+            } else {
+                reject('Invalid arguments. Type -h for more info.');
+            }
+        });
+    }
+
+    private processMiddlewareRequestLogger(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (this.args.list) {
+                const args: any = {};
+                this.args.list.forEach((param: string) => {
+                    const parts = param.split(':');
+                    if (parts.length === 2) {
+                        args[parts[0]] = parts[1];
+                    }
+                });
+                this.sdk.middleware.requestLogger(<string>args['name'])
+                    .then(filters => {
+                        console.info(YAML.stringify(filters));
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.remove) {
+                this.sdk.middleware.removeRequestLogger(this.args.remove)
+                    .then(() => {
+                        console.info(`Middleware removed`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.update) {
+                const name = this.args.update[0];
+                const fileName = this.args.update[1];
+                this.sdk.middleware.updateRequestLogger(name, fileName)
+                    .then(() => {
+                        console.info(`Middleware updated`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.add) {
+                const name = this.args.add[0];
+                const fileName = this.args.add[1];
+                this.sdk.middleware.addRequestLogger(name, fileName)
+                    .then(() => {
+                        console.info(`Middleware added`);
+                        resolve();
+                    })
+                    .catch(reject);
+            } else if (this.args.get) {
+                this.sdk.middleware.getRequestLoggerMiddleware(this.args.get)
                     .then((file) => {
                         console.info(file.toString());
                         resolve();

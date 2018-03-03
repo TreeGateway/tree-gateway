@@ -41,16 +41,14 @@ export class MiddlewareLoader {
             'query': '../proxy/routers/query',
             'trafficSplit': '../proxy/routers/trafficSplit'
         },
+        'request/logger': {
+            'redis': '../stats/request-logger/redis'
+        },
         'servicediscovery': {
             'consul': '../servicediscovery/middleware/consul'
         },
         'servicediscovery/provider': {
             'consul': '../servicediscovery/middleware/provider/consul'
-        },
-        'stats/request/mapper': {
-            'operation': '../stats/request-mappers/operation',
-            'path': '../stats/request-mappers/path',
-            'total': '../stats/request-mappers/total'
         }
     };
 

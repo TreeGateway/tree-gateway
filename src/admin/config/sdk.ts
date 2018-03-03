@@ -33,7 +33,7 @@ export class SDK {
             const swaggerUrl = SDK.getSwaggerUrl(gateway);
             swagger(swaggerUrl, {
                 authorizations: {
-                    Bearer: `JWT ${token}`
+                    Bearer: `Bearer ${token}`
                 }
             })
                 .then((swaggerClient: any) => {

@@ -8,7 +8,6 @@ import adminApi from './admin/api/admin-api';
 import { UsersRest } from './admin/api/users';
 import { Server, HttpError } from 'typescript-rest';
 import { ApiConfig, validateApiConfig } from './config/api';
-import { StatsConfig } from './config/stats';
 import { ApiProxy } from './proxy/proxy';
 import { normalizePath } from './utils/path';
 import { ApiRateLimit } from './throttling/throttling';
@@ -19,9 +18,6 @@ import { ApiCache } from './cache/cache';
 import { ApiFilter } from './filter/filter';
 import { Logger } from './logger';
 import { AccessLogger } from './express-logger';
-import { Stats } from './stats/stats';
-import { StatsRecorder } from './stats/stats-recorder';
-import { Monitors } from './monitor/monitors';
 import { ConfigService } from './service/config';
 import { Configuration } from './configuration';
 import * as fs from 'fs-extra-promise';
@@ -33,11 +29,7 @@ import { getMilisecondsInterval } from './utils/time-intervals';
 import { ServiceDiscovery } from './servicediscovery/service-discovery';
 import { EventEmitter } from 'events';
 import { ApiErrorHandler } from './error/error-handler';
-
-class StatsController {
-    requestStats: Stats;
-    statusCodeStats: Stats;
-}
+import { RequestLogger } from './stats/request';
 
 @Singleton
 @AutoWired
@@ -52,8 +44,7 @@ export class Gateway extends EventEmitter {
     @Inject private apiAuth: ApiAuth;
     @Inject private apiFilter: ApiFilter;
     @Inject private logger: Logger;
-    @Inject private statsRecorder: StatsRecorder;
-    @Inject private monitors: Monitors;
+    @Inject private requestLogger: RequestLogger;
     @Inject private configService: ConfigService;
     @Inject private serviceDiscovery: ServiceDiscovery;
 
@@ -174,7 +165,6 @@ export class Gateway extends EventEmitter {
 
     stop(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.monitors.stopMonitors();
             if (this.apiServer) {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {
@@ -294,8 +284,8 @@ export class Gateway extends EventEmitter {
         api.path = normalizePath(api.path);
 
         const apiRouter = express.Router();
-        if (!api.proxy.disableStats) {
-            this.configureStatsMiddleware(apiRouter, api.id, api.proxy.statsConfig);
+        if (this.requestLogger.isRequestLogEnabled(api)) {
+            this.configureLogMiddleware(apiRouter, api);
         }
         this.apiFilter.buildApiFilters(apiRouter, api, this.config.gateway.config);
 
@@ -398,7 +388,6 @@ export class Gateway extends EventEmitter {
     private initialize(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.app = express();
-            this.monitors.startMonitors();
 
             this.configureServer()
                 .then(() => this.configService.removeAllListeners()
@@ -407,6 +396,9 @@ export class Gateway extends EventEmitter {
                     .subscribeEvents())
                 .then(() => {
                     this.configureAdminServer();
+                })
+                .then(() => {
+                    this.requestLogger.initialize();
                     resolve();
                 })
                 .catch((err) => {
@@ -459,9 +451,6 @@ export class Gateway extends EventEmitter {
                 this.adminApp.use(compression());
             }
             if (this.config.gateway.admin.accessLogger) {
-                if (!this.config.gateway.admin.disableStats) {
-                    this.configureStatsMiddleware(this.adminApp, 'admin', this.config.gateway.admin.statsConfig);
-                }
                 AccessLogger.configureAccessLoger(this.config.gateway.admin.accessLogger,
                     this.config.rootPath, this.adminApp, './logs/admin');
             }
@@ -515,37 +504,19 @@ export class Gateway extends EventEmitter {
         }
     }
 
-    private configureStatsMiddleware(server: express.Router, key: string, statsConfig: StatsConfig) {
-        if (!this.config.gateway.disableStats) {
-            const stats = this.createStatsController(key, statsConfig);
-            if (stats) {
-                const handler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-                    stats.requestStats.registerOccurrence(req, 1);
-                    const end = res.end;
-                    res.end = function(...args: any[]) {
-                        stats.statusCodeStats.registerOccurrence(req, 1, '' + res.statusCode);
-                        res.end = end;
-                        res.end.apply(res, arguments);
-                    };
-                    next();
-                };
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug(`Configuring Stats collector for accesses.`);
-                }
-                server.use(handler);
-            }
-        }
-    }
-
-    private createStatsController(apiId: string, statsConfig: StatsConfig): StatsController {
-        if ((this.config.gateway.statsConfig || statsConfig)) {
-            const stats: StatsController = new StatsController();
-            stats.requestStats = this.statsRecorder.createStats(Stats.getStatsKey('access', apiId, 'request'), statsConfig);
-            stats.statusCodeStats = this.statsRecorder.createStats(Stats.getStatsKey('access', apiId, 'status'), statsConfig);
-
-            return stats;
-        }
-
-        return null;
+    private configureLogMiddleware(server: express.Router, api: ApiConfig) {
+        server.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+            const requestLog = this.requestLogger.initRequestLog(req, api);
+            const end = res.end;
+            const requestLogger = this.requestLogger;
+            res.end = function(...args: any[]) {
+                requestLog.status = res.statusCode;
+                requestLog.responseTime = new Date().getTime() - requestLog.timestamp;
+                requestLogger.registerOccurrence(requestLog);
+                res.end = end;
+                res.end.apply(res, arguments);
+            };
+            next();
+        });
     }
 }

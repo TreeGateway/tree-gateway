@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ValidationError } from '../error/errors';
 
@@ -13,14 +12,6 @@ export interface AuthenticationConfig {
      * The strategy used for authentication
      */
     strategy: MiddlewareConfig;
-    /**
-     * If true, disabled the statistical data recording.
-     */
-    disableStats?: boolean;
-    /**
-     * Configurations for authentication stats.
-     */
-    statsConfig?: StatsConfig;
 }
 
 export interface ApiAuthenticationConfig extends AuthenticationConfig {
@@ -136,8 +127,6 @@ const localAuthenticationSchema = Joi.object().keys({
 });
 
 export let authenticationValidatorSchema = Joi.object().keys({
-    disableStats: Joi.boolean(),
-    statsConfig: statsConfigValidatorSchema,
     strategy: middlewareConfigValidatorSchema.required()
 });
 

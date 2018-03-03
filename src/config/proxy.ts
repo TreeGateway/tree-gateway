@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { StatsConfig, statsConfigValidatorSchema } from './stats';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ValidationError } from '../error/errors';
 
@@ -92,14 +91,6 @@ export interface Proxy {
      * a [human-interval](https://www.npmjs.com/package/human-interval) string
      */
     timeout?: string | number;
-    /**
-     * If true, disable the statistical data recording.
-     */
-    disableStats?: boolean;
-    /**
-     * Configurations for api requests stats.
-     */
-    statsConfig?: StatsConfig;
     /**
      * This sets the body size limit (default: 1mb). If the body size is larger than the specified (or default)
      * limit, a 413 Request Entity Too Large error will be returned. See [bytes.js](https://www.npmjs.com/package/bytes)
@@ -313,14 +304,12 @@ const jsonataExpressionSchema = Joi.object().keys({
 });
 
 export const proxyValidatorSchema = Joi.object().keys({
-    disableStats: Joi.boolean(),
     httpAgent: httpAgentSchema,
     interceptor: interceptorsSchema,
     limit: Joi.string(),
     parseCookies: Joi.boolean(),
     parseReqBody: Joi.alternatives([Joi.string().valid('json', 'urlencoded', 'raw'), Joi.array().items(Joi.string().valid('json', 'urlencoded', 'raw')), Joi.boolean()]),
     preserveHostHdr: Joi.boolean(),
-    statsConfig: statsConfigValidatorSchema,
     supressViaHeader: Joi.boolean(),
     target: targetSchema.required(),
     timeout: Joi.alternatives([Joi.string(), Joi.number().positive()])

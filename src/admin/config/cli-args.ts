@@ -795,41 +795,41 @@ errorHandler.addArgument(
     }
 );
 
-const statsRequestMapper = middlewareCommands.addParser('statsRequestMapper', {
+const requestLogger = middlewareCommands.addParser('requestLogger', {
     addHelp: true,
-    help: 'Stats Request Mapper configurations'
+    help: 'Request Logger configurations'
 });
 
-statsRequestMapper.addArgument(
+requestLogger.addArgument(
     ['-l', '--list'], {
-        help: 'Inform the search params for Stats Request Mapper listing. Ex: --list name:test',
+        help: 'Inform the search params for Request Logger listing. Ex: --list name:test',
         nargs: '*'
     }
 );
 
-statsRequestMapper.addArgument(
+requestLogger.addArgument(
     ['-r', '--remove'], {
-        help: 'Inform the Stats Request Mapper name to be removed',
+        help: 'Inform the Request Logger name to be removed',
     }
 );
 
-statsRequestMapper.addArgument(
+requestLogger.addArgument(
     ['-u', '--update'], {
-        help: 'Inform the name and path to the Stats Request Mapper file (JS format) to be updated. Ex: -u handler1 ./stats/request/mapper/handler1.js',
+        help: 'Inform the name and path to the Request Logger file (JS format) to be updated. Ex: -u handler1 ./request/logger/handler1.js',
         nargs: 2
     }
 );
 
-statsRequestMapper.addArgument(
+requestLogger.addArgument(
     ['-a', '--add'], {
-        help: 'Inform the name and path to the Stats Request Mapper file (JS format) to be added. Ex: -a handler1 ./stats/request/mapper/handler1.js',
+        help: 'Inform the name and path to the Request Logger file (JS format) to be added. Ex: -a handler1 ./request/logger/handler1.js',
         nargs: 2
     }
 );
 
-statsRequestMapper.addArgument(
+requestLogger.addArgument(
     ['-g', '--get'], {
-        help: 'Inform the name of the Stats Request Mapper to be retrieved',
+        help: 'Inform the name of the Request Logger to be retrieved',
     }
 );
 export let configArgs = parser.parseArgs();
