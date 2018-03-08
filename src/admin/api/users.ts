@@ -21,53 +21,35 @@ export class UsersRest {
 
     @POST
     @swagger.Security('Bearer')
-    addUser(user: UserData): Promise<Return.NewResource<void>> {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            validateUser(user)
-                .then((validUser: UserData) =>
-                    this.service.create(validUser)
-                )
-                .then(() => {
-                    resolve(new Return.NewResource<void>(`users/${user.login}`));
-                })
-                .catch(reject);
-        });
+    async addUser(user: UserData): Promise<Return.NewResource<void>> {
+        await validateUser(user);
+        await this.service.create(user);
+        return new Return.NewResource<void>(`users/${user.login}`);
     }
 
     @GET
     @Path(':login')
     @swagger.Security('Bearer')
-    getUser( @PathParam('login') login: string): Promise<UserData> {
-        return new Promise<UserData>((resolve, reject) => {
-            this.service.get(login)
-                .then(user => {
-                    if (user) {
-                        return resolve(<UserData>_.omit(user, 'password'));
-                    }
-                    return reject(new Errors.NotFoundError());
-                }).catch(reject);
-        });
+    async getUser( @PathParam('login') login: string): Promise<UserData> {
+        const user = await this.service.get(login);
+        if (!user) {
+            throw new Errors.NotFoundError();
+        }
+        return <UserData>_.omit(user, 'password');
     }
 
     @PUT
     @Path(':login')
     @swagger.Security('Bearer')
-    updateUser( @PathParam('login') login: string, user: UserData): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            user.login = login;
-            this.service.get(login)
-                .then(dbUser => {
-                    if (!dbUser) {
-                        return reject(new Errors.NotFoundError(`Not Found: ${login}`));
-                    }
-                    user = _.defaultsDeep(user, dbUser);
-                    validateUser(user)
-                        .then((validUser: UserData) => this.service.update(validUser))
-                        .then(() => resolve())
-                        .catch(reject);
-                })
-                .catch(reject);
-        });
+    async updateUser( @PathParam('login') login: string, user: UserData): Promise<void> {
+        user.login = login;
+        const dbUser = await this.service.get(login);
+        if (!dbUser) {
+            throw new Errors.NotFoundError(`Not Found: ${login}`);
+        }
+        user = _.defaultsDeep(user, dbUser);
+        await validateUser(user);
+        await this.service.update(user);
     }
 
     @DELETE
@@ -79,14 +61,12 @@ export class UsersRest {
 
     @POST
     @Path('/authentication')
-    getAuthToken( @FormParam('login') login: string, @FormParam('password') password: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.service.generateToken(login, password)
-                .then(resolve)
-                .catch(err => {
-                    reject(new Errors.UnauthorizedError(err));
-                });
-        });
+    async getAuthToken( @FormParam('login') login: string, @FormParam('password') password: string): Promise<string> {
+        try {
+            return await this.service.generateToken(login, password);
+        } catch (err) {
+            throw new Errors.UnauthorizedError(err.message);
+        }
     }
 
     @POST

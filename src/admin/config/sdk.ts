@@ -27,20 +27,15 @@ export class SDK {
         this.usersClient = new UsersClient(swaggerClient);
     }
 
-    static initialize(gateway: GatewayConfig): Promise<SDK> {
-        return new Promise<SDK>((resolve, reject) => {
-            const token: string = SDK.generateSecurityToken(gateway);
-            const swaggerUrl = SDK.getSwaggerUrl(gateway);
-            swagger(swaggerUrl, {
-                authorizations: {
-                    Bearer: `Bearer ${token}`
-                }
-            })
-                .then((swaggerClient: any) => {
-                    resolve(new SDK(swaggerClient, token, gateway));
-                })
-                .catch(reject);
+    static async initialize(gateway: GatewayConfig): Promise<SDK> {
+        const token: string = SDK.generateSecurityToken(gateway);
+        const swaggerUrl = SDK.getSwaggerUrl(gateway);
+        const swaggerClient = await swagger(swaggerUrl, {
+            authorizations: {
+                Bearer: `Bearer ${token}`
+            }
         });
+        return new SDK(swaggerClient, token, gateway);
     }
 
     private static generateSecurityToken(gateway: GatewayConfig) {

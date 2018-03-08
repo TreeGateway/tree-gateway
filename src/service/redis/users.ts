@@ -19,140 +19,88 @@ export class RedisUserService implements UserService {
     @Inject private config: Configuration;
     @Inject private database: Database;
 
-    list(): Promise<Array<UserData>> {
-        return new Promise((resolve, reject) => {
-            this.database.redisClient.hgetall(RedisUserService.USERS_PREFIX)
-                .then((users: any) => {
-                    resolve(<UserData[]>_.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password')));
-                })
-                .catch(reject);
-        });
+    async list(): Promise<Array<UserData>> {
+        const users = await this.database.redisClient.hgetall(RedisUserService.USERS_PREFIX);
+        return <UserData[]>_.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password'));
     }
 
-    get(login: string): Promise<UserData> {
-        return new Promise((resolve, reject) => {
-            this.database.redisClient.hget(RedisUserService.USERS_PREFIX, login)
-                .then((user: string) => {
-                    if (!user) {
-                        return resolve(null);
-                    }
+    async get(login: string): Promise<UserData> {
+        const user = await this.database.redisClient.hget(RedisUserService.USERS_PREFIX, login);
+        if (!user) {
+            return null;
+        }
 
-                    return resolve(JSON.parse(user));
-                })
-                .catch(reject);
-        });
+        return JSON.parse(user);
     }
 
-    create(user: UserData): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, user.login)
-                .then((exists: number) => {
-                    if (exists) {
-                        throw new ValidationError(`User ${user.login} already exists`);
-                    }
-                    if (!user.password) {
-                        throw new ValidationError(`Password is required for user.`);
-                    }
-                    return bcrypt.hash(user.password, 10);
-                }).then((password: string) => {
-                    user.password = password;
-                    return this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
-                }).then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async create(user: UserData): Promise<void> {
+        const exists = await this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, user.login);
+        if (exists) {
+            throw new ValidationError(`User ${user.login} already exists`);
+        }
+        if (!user.password) {
+            throw new ValidationError(`Password is required for user.`);
+        }
+        user.password = await bcrypt.hash(user.password, 10);
+        await this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
     }
 
-    changePassword(login: string, password: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            let user: UserData;
-            this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, login)
-                .then((exists: number) => {
-                    if (!exists) {
-                        throw new NotFoundError('User not found.');
-                    }
-                    return this.get(login);
-                }).then((dbUser: UserData) => {
-                    user = dbUser;
-                    return bcrypt.hash(user.password, 10);
-                }).then((encryptedPassword: string) => {
-                    user.password = encryptedPassword;
-                    return this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
-                }).then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async changePassword(login: string, password: string): Promise<void> {
+        const exists = await this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, login);
+        if (!exists) {
+            throw new NotFoundError('User not found.');
+        }
+        const user: UserData = await this.get(login);
+        user.password = await bcrypt.hash(user.password, 10);
+        await this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
     }
 
-    update(user: UserData): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, user.login)
-                .then((exists: number) => {
-                    if (!exists) {
-                        throw new NotFoundError('User not found.');
-                    }
-                    return this.get(user.login);
-                }).then((oldUser: UserData) => {
-                    user.password = oldUser.password;
-                    return this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
-                }).then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async update(user: UserData): Promise<void> {
+        const exists = await this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, user.login);
+        if (!exists) {
+            throw new NotFoundError('User not found.');
+        }
+        const oldUser = await this.get(user.login);
+        user.password = oldUser.password;
+        await this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
     }
 
-    remove(login: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.hdel(`${RedisUserService.USERS_PREFIX}`, login)
-                .then((count: number) => {
-                    if (count === 0) {
-                        throw new NotFoundError('User not found.');
-                    }
-
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async remove(login: string): Promise<void> {
+        const count = await this.database.redisClient.hdel(`${RedisUserService.USERS_PREFIX}`, login);
+        if (count === 0) {
+            throw new NotFoundError('User not found.');
+        }
     }
 
-    generateToken(login: string, password: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.get(login)
-                .then(user => {
-                    if (!user) {
-                        return reject('User not found');
-                    }
-                    bcrypt.compare(password, user.password, (err, same) => {
-                        if (err) {
-                            return reject('Error validating user password');
-                        }
-                        if (!same) {
-                            reject('Invalid username / password');
-                            return;
-                        }
-                        try {
-                            const dataToken = {
-                                email: user.email,
-                                login: user.login,
-                                name: user.name,
-                                roles: user.roles
-                            };
+    async generateToken(login: string, password: string): Promise<string> {
+        const user = await this.get(login);
+        if (!user) {
+            throw new ValidationError('User not found');
+        }
+        let same;
+        try {
+            same = await bcrypt.compare(password, user.password);
+        } catch (err) {
+            throw new ValidationError('Error validating user password');
+        }
+        if (!same) {
+            throw new ValidationError('Invalid username / password');
+        }
+        try {
+            const dataToken = {
+                email: user.email,
+                login: user.login,
+                name: user.name,
+                roles: user.roles
+            };
 
-                            const token = jwt.sign(dataToken, this.config.gateway.admin.userService.jwtSecret, {
-                                expiresIn: 7200 // TODO read an human interval configuration
-                            });
-                            resolve(token);
-                        } catch (e) {
-                            reject('Error validating user password');
-                        }
-                    });
-                }).catch(err => {
-                    reject('Error searching for user');
-                });
-        });
+            const token = jwt.sign(dataToken, this.config.gateway.admin.userService.jwtSecret, {
+                expiresIn: 7200 // TODO read an human interval configuration
+            });
+            return token;
+        } catch (err) {
+            throw new ValidationError('Error validating user password');
+        }
     }
 
     getAuthMiddleware(): express.RequestHandler {

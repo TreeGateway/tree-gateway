@@ -13,21 +13,13 @@ export class ConfigPackageRest {
     @Inject private service: ConfigPackageService;
 
     @POST
-    set(config: ConfigPackage): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            validateConfigPackage(config)
-                .then(() => this.service.set(config))
-                .then(resolve)
-                .catch(reject);
-        });
+    async set(config: ConfigPackage): Promise<void> {
+        await validateConfigPackage(config);
+        await this.service.set(config);
     }
 
     @GET
-    get(): Promise<ConfigPackage> {
-        return new Promise((resolve, reject) => {
-            this.service.get()
-                .then(resolve)
-                .catch(reject);
-        });
+    async get(): Promise<ConfigPackage> {
+        return await this.service.get();
     }
 }

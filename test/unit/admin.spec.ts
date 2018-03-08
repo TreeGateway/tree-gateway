@@ -56,19 +56,12 @@ const createUsers = () => {
 };
 
 describe('Gateway Admin Tasks', () => {
-    before(() => {
+    before(async () => {
         config = Container.get(Configuration);
         adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 
-        return new Promise<void>((resolve, reject) => {
-            SDK.initialize(config.gateway)
-                .then((s) => {
-                    sdk = s;
-                    return createUsers();
-                })
-                .then(() => resolve())
-                .catch(reject);
-        });
+        sdk = await SDK.initialize(config.gateway);
+        await createUsers();
     });
 
     describe('/healthcheck', () => {
@@ -268,78 +261,46 @@ describe('Gateway Admin Tasks', () => {
             return sdk.users.changeUserPassword(simpleUser.login, 'newPassword');
         });
 
-        it('should be able to update user properties', () => {
+        it('should be able to update user properties', async () => {
             const updatedUser = Object.assign({}, simpleUser);
             updatedUser.name = 'New updated Name';
-            return new Promise((resolve, reject) => {
-                sdk.users.updateUser(simpleUser.login, updatedUser)
-                    .then(() => sdk.users.getUser(simpleUser.login))
-                    .then(user => {
-                        expect(user.name).to.equals('New updated Name');
-                        resolve();
-                    })
-                    .catch(reject);
-            });
+            await sdk.users.updateUser(simpleUser.login, updatedUser);
+            const user = await sdk.users.getUser(simpleUser.login);
+            expect(user.name).to.equals('New updated Name');
         });
-        it('should be able to create new user', () => {
+        it('should be able to create new user', async () => {
             const newUser = Object.assign({}, simpleUser);
             newUser.login = simpleUser.login+'_sdk';
-            return new Promise((resolve, reject) => {
-                sdk.users.addUser(newUser)
-                    .then(() => resolve())
-                    .catch(reject);
-            });
+            await sdk.users.addUser(newUser);
         });
-        it('should be able to remove users', () => {
-            return new Promise((resolve, reject) => {
-                sdk.users.removeUser(simpleUser.login+'_sdk')
-                    .then(() => resolve())
-                    .catch(reject);
-            });
+        it('should be able to remove users', async () => {
+            await sdk.users.removeUser(simpleUser.login+'_sdk');
         });
-        it('should be able to list users', () => {
-            return new Promise((resolve, reject) => {
-                sdk.users.list({})
-                    .then((users) => {
-                        const logins = users.map(user => user.login);
-                        expect(logins).to.have.length(4);
-                        expect(logins).to.have.members(['admin', 'config', 'simple', 'simple2']);
-                        resolve();
-                    })
-                    .catch(reject);
-            });
+        it('should be able to list users', async () => {
+            const users = await sdk.users.list({});
+            const logins = users.map(user => user.login);
+            expect(logins).to.have.length(4);
+            expect(logins).to.have.members(['admin', 'config', 'simple', 'simple2']);
         });
     });
 
     describe('gateway SDK', () => {
-        it('should be able to set configuration for gateway', () => {
+        it('should be able to set configuration for gateway', async () => {
             const newConfig = fs.readJSONSync(path.join(process.cwd(), 'test/data/tree-gateway.json')).gateway;
-            return new Promise((resolve, reject) => {
-                sdk.gateway.updateConfig(newConfig)
-                    .then(() => {
-                        setTimeout(resolve, 5000); // wait gateway restart after a gateway config change
-                    })
-                    .catch(reject);
-            });
+            await sdk.gateway.updateConfig(newConfig);
+            await timeout(5000); // wait gateway restart after a gateway config change
         });
-        it('should be able to retrieve configuration for gateway', () => {
-            return new Promise((resolve, reject) => {
-                sdk.gateway.getConfig()
-                    .then(dbConfig => {
-                        expect(dbConfig.logger.level).to.equals('debug');
-                        resolve();
-                    })
-                    .catch(reject);
-            });
+        it('should be able to retrieve configuration for gateway', async () => {
+            const dbConfig = await sdk.gateway.getConfig();
+            expect(dbConfig.logger.level).to.equals('debug');
         });
-        it('should be able to remove configuration for gateway', () => {
-            return new Promise((resolve, reject) => {
-                sdk.gateway.removeConfig()
-                    .then(() => {
-                        setTimeout(resolve, 5000); // wait gateway restart after a gateway config change
-                    })
-                    .catch(reject);
-            });
+        it('should be able to remove configuration for gateway', async () => {
+            await sdk.gateway.removeConfig();
+            await timeout(5000); // wait gateway restart after a gateway config change
         });
     });
+
+    function timeout(ms: number) {
+        return new Promise<void>(resolve => setTimeout(resolve, ms));
+    }
 });

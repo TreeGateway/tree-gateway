@@ -14,29 +14,18 @@ export class ConfigClient implements Config {
         this.swaggerClient = swaggerClient;
     }
 
-    set(config: ConfigPackage): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Config.ConfigPackageRestSet({ config })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async set(config: ConfigPackage): Promise<void> {
+        const response = await this.swaggerClient.apis.Config.ConfigPackageRestSet({ config });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    get(): Promise<ConfigPackage> {
-        return new Promise<ConfigPackage>((resolve, reject) => {
-            this.swaggerClient.apis.Config.ConfigPackageRestGet({})
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async get(): Promise<ConfigPackage> {
+        const response = await this.swaggerClient.apis.Config.ConfigPackageRestGet({});
+        if (response.status !== 200) {
+            throw new Error(response.text);
+        }
+        return response.body;
     }
 }

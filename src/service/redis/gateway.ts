@@ -16,55 +16,35 @@ export class RedisGatewayService implements GatewayService {
     @Inject
     private database: Database;
 
-    remove(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.multi()
-                .del(RedisGatewayService.GATEWAY_CONFIG_KEY)
-                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
-                .exec()
-                .then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async remove(): Promise<void> {
+        await this.database.redisClient.multi()
+            .del(RedisGatewayService.GATEWAY_CONFIG_KEY)
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
+            .exec();
     }
 
-    save(config: GatewayConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.castArrays(config);
-            this.database.redisClient.multi()
-                .set(RedisGatewayService.GATEWAY_CONFIG_KEY, JSON.stringify(config))
-                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
-                .exec()
-                .then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async save(config: GatewayConfig): Promise<void> {
+        this.castArrays(config);
+        await this.database.redisClient.multi()
+            .set(RedisGatewayService.GATEWAY_CONFIG_KEY, JSON.stringify(config))
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
+            .exec();
     }
 
-    read(): Promise<GatewayConfig> {
-        return new Promise<GatewayConfig>((resolve, reject) => {
-            this.get()
-                .then((config: any) => {
-                    if (!config) {
-                        throw new NotFoundError('Config not found.');
-                    }
-                    resolve(config);
-                }).catch(reject);
-        });
+    async read(): Promise<GatewayConfig> {
+        const config = await this.get();
+        if (!config) {
+            throw new NotFoundError('Config not found.');
+        }
+        return (config);
     }
 
-    get(): Promise<GatewayConfig> {
-        return new Promise<GatewayConfig>((resolve, reject) => {
-            this.database.redisClient.get(RedisGatewayService.GATEWAY_CONFIG_KEY)
-                .then((config: any) => {
-                    if (!config) {
-                        return resolve(null);
-                    }
-                    resolve(JSON.parse(config));
-                }).catch(reject);
-        });
+    async get(): Promise<GatewayConfig> {
+        const config = await this.database.redisClient.get(RedisGatewayService.GATEWAY_CONFIG_KEY);
+        if (!config) {
+            return null;
+        }
+        return JSON.parse(config);
     }
 
     registerGatewayVersion() {

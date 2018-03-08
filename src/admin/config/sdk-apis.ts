@@ -17,78 +17,51 @@ export class ApisClient implements Apis {
         this.swaggerClient = swaggerClient;
     }
 
-    list(filters: any): Promise<Array<ApiConfig>> {
-        return new Promise<Array<ApiConfig>>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestList(filters)
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async list(filters: any): Promise<Array<ApiConfig>> {
+        const response = await this.swaggerClient.apis.APIs.APIRestList(filters);
+        if (response.status !== 200) {
+            throw new Error(response.text);
+        }
+        return response.body;
     }
 
-    addApi(api: ApiConfig): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.swaggerClient.apis.APIs.APIRestAddApi({ api })
-                .then((response: any) => {
-                    if (response.status === 201) {
-                        return resolve(response.headers['location'].substring(5));
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async addApi(api: ApiConfig): Promise<string> {
+        const response = await this.swaggerClient.apis.APIs.APIRestAddApi({ api });
+        if (response.status !== 201) {
+            throw new Error(response.text);
+        }
+        return response.headers['location'].substring(5);
     }
 
-    updateApi(id: string, api: ApiConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            if (!id) {
-                return reject(new Error('Invalid API id. To update an API, you must provide a valid ID field'));
-            }
-            api.id = id;
-            this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async updateApi(id: string, api: ApiConfig): Promise<void> {
+        if (!id) {
+            throw new Error('Invalid API id. To update an API, you must provide a valid ID field');
+        }
+        api.id = id;
+        const response = await this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeApi(id: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            if (!id) {
-                return reject(new Error('Invalid API id. To remove an API, you must provide a valid ID'));
-            }
-            this.swaggerClient.apis.APIs.APIRestRemoveApi({ id })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async removeApi(id: string): Promise<void> {
+        if (!id) {
+            throw new Error('Invalid API id. To remove an API, you must provide a valid ID');
+        }
+        const response = await this.swaggerClient.apis.APIs.APIRestRemoveApi({ id });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    getApi(id: string): Promise<ApiConfig> {
-        return new Promise<ApiConfig>((resolve, reject) => {
-            if (!id) {
-                return reject(new Error('Invalid API id. To retrieve an API, you must provide a valid ID'));
-            }
-            this.swaggerClient.apis.APIs.APIRestGetApi({ id })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(new Error(response.text));
-                })
-                .catch(reject);
-        });
+    async getApi(id: string): Promise<ApiConfig> {
+        if (!id) {
+            throw new Error('Invalid API id. To retrieve an API, you must provide a valid ID');
+        }
+        const response = await this.swaggerClient.apis.APIs.APIRestGetApi({ id });
+        if (response.status !== 200) {
+            throw new Error(response.text);
+        }
+        return response.body;
     }
 }

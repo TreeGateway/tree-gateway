@@ -21,76 +21,45 @@ export class MiddlewareInstaller {
     @Inject private logger: Logger;
     @Inject private config: Configuration;
 
-    installAll(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            Promise.all(this.types.map(type => this.installAllOfType(type)))
-                .then(() => resolve())
-                .catch(reject);
-        });
+    async installAll(): Promise<void> {
+        await Promise.all(this.types.map(type => this.installAllOfType(type)));
     }
 
-    install(type: string, name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.uninstall(type, name)
-                .then(() => {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Installing middleware ${type}/${name}`);
-                    }
-                    return this.service.read(type, name);
-                })
-                .then((content: any) => {
-                    return this.saveFile(this.getPath(type, name), content);
-                })
-                .then(() => {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Middleware ${type}/${name} installed.`);
-                    }
-
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async install(type: string, name: string): Promise<void> {
+        await this.uninstall(type, name);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Installing middleware ${type}/${name}`);
+        }
+        const content = await this.service.read(type, name);
+        await this.saveFile(this.getPath(type, name), content);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Middleware ${type}/${name} installed.`);
+        }
     }
 
-    uninstall(type: string, name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug(`Uninstalling middleware ${type}/${name}`);
-            }
-            const p = this.getPath(type, name);
-            if (fs.existsSync(p)) {
-                this.removeModuleCache(type, name);
-                fs.removeAsync(p)
-                    .then(resolve)
-                    .catch(reject);
-            } else {
-                resolve();
-            }
-        });
+    async uninstall(type: string, name: string): Promise<void> {
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(`Uninstalling middleware ${type}/${name}`);
+        }
+        const p = this.getPath(type, name);
+        if (fs.existsSync(p)) {
+            this.removeModuleCache(type, name);
+            await fs.removeAsync(p);
+        }
     }
 
     removeModuleCache(type: string, name: string) {
         decache(this.getModuleName(type, name));
     }
 
-    private installAllOfType(type: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.service.list(type)
-                .then((names: Array<string>) => {
-                    return Promise.all(names.map((name: string) => this.install(type, name)));
-                })
-                .then(() => resolve())
-                .catch(reject);
-        });
+    private async installAllOfType(type: string): Promise<void> {
+        const names = await this.service.list(type);
+        await Promise.all(names.map((name: string) => this.install(type, name)));
     }
 
-    private saveFile(filePath: string, content: Buffer): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            // TODO: support zip files
-            fs.outputFileAsync(filePath, content)
-                .then(resolve)
-                .catch(reject);
-        });
+    private async saveFile(filePath: string, content: Buffer): Promise<void> {
+        // TODO: support zip files
+        await fs.outputFileAsync(filePath, content);
     }
 
     private getPath(type: string, name: string): string {

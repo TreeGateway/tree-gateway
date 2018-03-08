@@ -195,526 +195,296 @@ export class MiddlewareRest {
     @PUT
     @Path('filters/:name')
     updateFilter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('filter', name, file.buffer);
+        return this.saveMiddleware('filter', file, name);
     }
 
     @PUT
     @Path('interceptors/request/:name')
     updateRequestInterceptor( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('interceptor/request', name, file.buffer);
+        return this.saveMiddleware('interceptor/request', file, name);
     }
 
     @PUT
     @Path('interceptors/response/:name')
     updateResponseInterceptor( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('interceptor/response', name, file.buffer);
+        return this.saveMiddleware('interceptor/response', file, name);
     }
 
     @PUT
     @Path('authentication/strategies/:name')
     updateAuthStrategy( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('authentication/strategy', name, file.buffer);
+        return this.saveMiddleware('authentication/strategy', file, name);
     }
 
     @PUT
     @Path('authentication/verify/:name')
     updateAuthVerify( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('authentication/verify', name, file.buffer);
+        return this.saveMiddleware('authentication/verify', file, name);
     }
 
     @PUT
     @Path('throttling/keyGenerators/:name')
     updateThrottlingKeyGenerator( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('throttling/keyGenerator', name, file.buffer);
+        return this.saveMiddleware('throttling/keyGenerator', file, name);
     }
 
     @PUT
     @Path('throttling/handlers/:name')
     updateThrottlingHandler( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('throttling/handler', name, file.buffer);
+        return this.saveMiddleware('throttling/handler', file, name);
     }
 
     @PUT
     @Path('throttling/skip/:name')
     updateThrottlingSkip( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('throttling/skip', name, file.buffer);
+        return this.saveMiddleware('throttling/skip', file, name);
     }
 
     @PUT
     @Path('circuitbreaker/:name')
     updateCircuitBreaker( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('circuitbreaker', name, file.buffer);
+        return this.saveMiddleware('circuitbreaker', file, name);
     }
 
     @PUT
     @Path('cors/origin/:name')
     updateCors( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('cors/origin', name, file.buffer);
+        return this.saveMiddleware('cors/origin', file, name);
     }
 
     @PUT
     @Path('proxy/router/:name')
     updateProxyRouter( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('proxy/router', name, file.buffer);
+        return this.saveMiddleware('proxy/router', file, name);
     }
 
     @PUT
     @Path('servicediscovery/:name')
     updateServiceDiscovery( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('servicediscovery', name, file.buffer);
+        return this.saveMiddleware('servicediscovery', file, name);
     }
 
     @PUT
     @Path('servicediscovery/provider/:name')
     updateServiceDiscoveryProvider( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('servicediscovery/provider', name, file.buffer);
+        return this.saveMiddleware('servicediscovery/provider', file, name);
     }
 
     @PUT
     @Path('errorhandler/:name')
     updateErrorHandler( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('errorhandler', name, file.buffer);
+        return this.saveMiddleware('errorhandler', file, name);
     }
 
     @PUT
     @Path('request/logger/:name')
     updateRequestLogger( @PathParam('name') name: string, @FileParam('file') file: Express.Multer.File): Promise<void> {
-        return this.service.save('request/logger', name, file.buffer);
+        return this.saveMiddleware('request/logger', file, name);
     }
 
     @GET
     @Path('filters/:name')
     getFilter( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            // FIXME: 'read' should return a Buffer
-            this.service.read('filter', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('filter', name);
     }
 
     @GET
     @Path('interceptors/request/:name')
     getRequestInterceptor( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('interceptor/request', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('interceptor/request', name);
     }
 
     @GET
     @Path('interceptors/response/:name')
     getResponseInterceptor( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('interceptor/response', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('interceptor/response', name);
     }
 
     @GET
     @Path('authentication/strategies/:name')
     getAuthStrategy( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('authentication/strategy', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('authentication/strategy', name);
     }
 
     @GET
     @Path('authentication/verify/:name')
     getAuthVerify( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('authentication/verify', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('authentication/verify', name);
     }
 
     @GET
     @Path('throttling/keyGenerators/:name')
     getThrottlingKeyGenerator( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('throttling/keyGenerator', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('throttling/keyGenerator', name);
     }
 
     @GET
     @Path('throttling/handlers/:name')
     getThrottlingHandler( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('throttling/handler', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('throttling/handler', name);
     }
 
     @GET
     @Path('throttling/skip/:name')
     getThrottlingSkip( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('throttling/skip', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('throttling/skip', name);
     }
 
     @GET
     @Path('circuitbreaker/:name')
     getCircuitBreakerMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('circuitbreaker', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('circuitbreaker', name);
     }
 
     @GET
     @Path('cors/origin/:name')
     getCorsMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('cors/origin', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('cors/origin', name);
     }
 
     @GET
     @Path('proxy/router/:name')
     getProxyRouterMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('proxy/router', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('proxy/router', name);
     }
 
     @GET
     @Path('servicediscovery/:name')
     getServiceDiscoveryMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('servicediscovery', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('servicediscovery', name);
     }
 
     @GET
     @Path('servicediscovery/provider/:name')
     getServiceDiscoveryProviderMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('servicediscovery/provider', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('servicediscovery/provider', name);
     }
 
     @GET
     @Path('errorhandler/:name')
     getErrorHandlerMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('errorhandler', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('errorhandler', name);
     }
 
     @GET
     @Path('request/logger/:name')
     getRequestLoggerMiddleware( @PathParam('name') name: string): Promise<Return.DownloadBinaryData> {
-        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
-            this.service.read('request/logger', name)
-                .then(value => {
-                    resolve(new Return.DownloadBinaryData(value, 'application/javascript', name + '.js'));
-                })
-                .catch(err => {
-                    reject(new Errors.NotFoundError());
-                });
-        });
+        return this.getMiddleware('request/logger', name);
     }
 
     @POST
     @Path('filters')
-    addFilter( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('filter', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('filter', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving filter.'));
-                });
-        });
+    addFilter( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('filter', file, name);
     }
 
     @POST
     @Path('interceptors/request')
-    addRequestInterceptor( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('interceptor/request', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('interceptors/request', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving interceptor.'));
-                });
-        });
+    addRequestInterceptor( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('interceptor/request', file, name, 'interceptors/request');
     }
 
     @POST
     @Path('interceptors/response')
-    addResponseInterceptor( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('interceptor/response', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('interceptors/response', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving interceptor.'));
-                });
-        });
+    addResponseInterceptor( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('interceptor/response', file, name, 'interceptors/response');
     }
 
     @POST
     @Path('authentication/strategies')
-    addAuthStrategy( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('authentication/strategy', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('authentication/strategy', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving strategy.'));
-                });
-        });
+    addAuthStrategy( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('authentication/strategy', file, name);
     }
 
     @POST
     @Path('authentication/verify')
-    addAuthVerify( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('authentication/verify', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('authentication/verify', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving verify function.'));
-                });
-        });
+    addAuthVerify( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('authentication/verify', file, name);
     }
 
     @POST
     @Path('throttling/keyGenerators')
-    addThrottlingKeyGenerator( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('throttling/keyGenerator', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('throttling/keyGenerators', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving keyGenerator.'));
-                });
-        });
+    addThrottlingKeyGenerator( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('throttling/keyGenerator', file, name, 'throttling/keyGenerators');
     }
 
     @POST
     @Path('throttling/handlers')
-    addThrottlingHander( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('throttling/handler', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('throttling/handlers', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addThrottlingHander( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('throttling/handler', file, name, 'throttling/handlers');
     }
 
     @POST
     @Path('throttling/skip')
-    addThrottlingSkip( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('throttling/skip', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('throttling/skip', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addThrottlingSkip( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('throttling/skip', file, name);
     }
 
     @POST
     @Path('circuitbreaker')
-    addCircuitBreaker( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('circuitbreaker', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('circuitbreaker', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addCircuitBreaker( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('circuitbreaker', file, name);
     }
 
     @POST
     @Path('cors/origin')
-    addCors( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('cors/origin', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('cors/origin', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addCors( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('cors/origin', file, name);
     }
 
     @POST
     @Path('proxy/router')
-    addProxyRouter( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('proxy/router', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('proxy/router', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addProxyRouter( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('proxy/router', file, name);
     }
 
     @POST
     @Path('servicediscovery')
-    addServiceDiscovery( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('servicediscovery', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('servicediscovery', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addServiceDiscovery( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('servicediscovery', file, name);
     }
 
     @POST
     @Path('servicediscovery/provider')
-    addServiceDiscoveryProvider( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('servicediscovery/provider', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('servicediscovery/provider', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addServiceDiscoveryProvider( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('servicediscovery/provider', file, name);
     }
 
     @POST
     @Path('errorhandler')
-    addErrorHandler( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('errorhandler', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('errorhandler', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addErrorHandler( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('errorhandler', file, name);
     }
 
     @POST
     @Path('request/logger')
-    addRequestLogger( @FileParam('file') file: Express.Multer.File,
-        @FormParam('name') name: string) {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            this.service.add('request/logger', name, file.buffer)
-                .then(value => {
-                    resolve(new Return.NewResource<void>(path.join('request/logger', name)));
-                })
-                .catch(err => {
-                    reject(new Errors.InternalServerError('Error saving handler.'));
-                });
-        });
+    addRequestLogger( @FileParam('file') file: Express.Multer.File, @FormParam('name') name: string) {
+        return this.addMiddleware('request/logger', file, name);
+    }
+
+    private async getMiddleware(type: string, name: string): Promise<Return.DownloadBinaryData> {
+        try {
+            const value = await this.service.read(type, name);
+            return new Return.DownloadBinaryData(value, 'application/javascript', name + '.js');
+        } catch (err) {
+            throw new Errors.NotFoundError();
+        }
+    }
+
+    private async addMiddleware(type: string, file: Express.Multer.File, name: string, basePath?: string): Promise<Return.NewResource<void>> {
+        try {
+            await this.service.add(type, name, file.buffer);
+            return new Return.NewResource<void>(path.join(basePath || type, name));
+        } catch(err) {
+            throw new Errors.InternalServerError(`Error saving ${type}.`);
+        }
+    }
+
+    private async saveMiddleware(type: string, file: Express.Multer.File, name: string): Promise<void> {
+        try {
+            return await this.service.save('servicediscovery', name, file.buffer);
+        } catch(err) {
+            throw new Errors.InternalServerError(`Error saving ${type}.`);
+        }
     }
 }

@@ -11,59 +11,37 @@ export class RedisMiddlewareService implements MiddlewareService {
 
     @Inject private database: Database;
 
-    list(middleware: string, filter?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.database.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`)
-                .then((result: string[]) => {
-                    result = result.filter((middlwareName: string) => {
-                        if (filter && !middlwareName.includes(filter)) {
-                            return false;
-                        }
-                        return true;
-                    });
-
-                    resolve(result);
-                })
-                .catch(reject);
+    async list(middleware: string, filter?: string): Promise<Array<string>> {
+        let result: string[] = await this.database.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`);
+        result = result.filter((middlwareName: string) => {
+            if (filter && !middlwareName.includes(filter)) {
+                return false;
+            }
+            return true;
         });
+
+        return result;
     }
 
-    add(middleware: string, name: string, content: Buffer): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.save(middleware, name, content)
-                .then(() => {
-                    resolve(name);
-                })
-                .catch(reject);
-        });
+    async add(middleware: string, name: string, content: Buffer): Promise<string> {
+        await this.save(middleware, name, content);
+        return name;
     }
 
-    remove(middleware: string, name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.multi()
-                .srem(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
-                .del(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`)
-                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisMiddlewareService.ADMIN_API }))
-                .exec()
-                .then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async remove(middleware: string, name: string): Promise<void> {
+        await this.database.redisClient.multi()
+            .srem(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
+            .del(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`)
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisMiddlewareService.ADMIN_API }))
+            .exec();
     }
 
-    save(middleware: string, name: string, content: Buffer): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.multi()
-                .sadd(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
-                .set(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`, content)
-                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisMiddlewareService.ADMIN_API }))
-                .exec()
-                .then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async save(middleware: string, name: string, content: Buffer): Promise<void> {
+        await this.database.redisClient.multi()
+            .sadd(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
+            .set(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`, content)
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisMiddlewareService.ADMIN_API }))
+            .exec();
     }
 
     read(middleware: string, name: string): Promise<Buffer> {

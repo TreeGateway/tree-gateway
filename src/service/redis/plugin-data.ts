@@ -19,14 +19,8 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
         return this.database.redisClient.smembers(`${RedisPluginsDataService.PREFIX}:${configKey}`);
     }
 
-    addConfigurationItem(configKey: string, value: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.database.redisClient.sadd(`${RedisPluginsDataService.PREFIX}:${configKey}`, value)
-                .then(() => {
-                    resolve();
-                })
-                .catch(reject);
-        });
+    async addConfigurationItem(configKey: string, value: string): Promise<void> {
+        await this.database.redisClient.sadd(`${RedisPluginsDataService.PREFIX}:${configKey}`, value);
     }
 
     watchConfigurationItems(configKey: string, interval: number): NodeJS.Timer {
