@@ -19,62 +19,48 @@ let gateway: Gateway;
 let sdk: SDK = null;
 
 describe('Gateway APIs uninstall', () => {
-    before(() => {
+    before(async () => {
         config = Container.get(Configuration);
         database = Container.get(Database);
         gateway = Container.get(Gateway);
 
-        return new Promise((resolve, reject) => {
-            SDK.initialize(config.gateway)
-                .then((s) => {
-                    sdk = s;
-                    resolve();
-                })
-                .catch(reject);
-        });
+        sdk = await SDK.initialize(config.gateway);
     });
 
-    it('should be able to uninstall APIs', () => {
-         return new Promise<void>((resolve, reject) => {
-                sdk.apis.list({})
-                    .then(apiConfigs => {
-                        const promises = apiConfigs.map(api => sdk.apis.removeApi(api.id));
-                        return Promise.all(promises);
-                    })
-                    .then(() => resolve())
-                    .catch(reject);
-        });
+    it('should be able to uninstall APIs', async () => {
+        const apiConfigs = await sdk.apis.list({});
+        const promises = apiConfigs.map(api => sdk.apis.removeApi(api.id));
+        await Promise.all(promises);
     });
 
-    it('should be able to uninstall Middlewares', () => {
-         return new Promise<void>((resolve, reject) => {
-             sdk.middleware.removeAuthStrategy('myJwtStrategy')
-             .then(() => sdk.middleware.removeAuthVerify('verifyBasicUser'))
-             .then(() => sdk.middleware.removeAuthVerify('verifyJwtUser'))
-             .then(() => sdk.middleware.removeFilter('myCustomFilter'))
-             .then(() => sdk.middleware.removeFilter('mySecondFilter'))
-             .then(() => sdk.middleware.removeRequestInterceptor('myRequestInterceptor'))
-             .then(() => sdk.middleware.removeRequestInterceptor('mySecondRequestInterceptor'))
-             .then(() => sdk.middleware.removeRequestInterceptor('changeBodyInterceptor'))
-             .then(() => sdk.middleware.removeResponseInterceptor('myResponseInterceptor'))
-             .then(() => sdk.middleware.removeResponseInterceptor('SecondInterceptor'))
-             .then(() => sdk.middleware.removeResponseInterceptor('changeBodyResponseInterceptor'))
-             .then(() => sdk.middleware.removeResponseInterceptor('removeHeaderResponseInterceptor'))
-             .then(() => sdk.middleware.removeCircuitBreaker('myOpenHandler'))
-             .then(() => sdk.middleware.removeCors('corsOrigin'))
-             .then(() => {
-                 setTimeout(resolve, 1500);
-             })
-             .catch(reject);
-        });
+    it('should be able to uninstall Middlewares', async () => {
+        await sdk.middleware.removeAuthStrategy('myJwtStrategy');
+        await sdk.middleware.removeAuthVerify('verifyBasicUser');
+        await sdk.middleware.removeAuthVerify('verifyJwtUser');
+        await sdk.middleware.removeFilter('myCustomFilter');
+        await sdk.middleware.removeFilter('mySecondFilter');
+        await sdk.middleware.removeRequestInterceptor('myRequestInterceptor');
+        await sdk.middleware.removeRequestInterceptor('mySecondRequestInterceptor');
+        await sdk.middleware.removeRequestInterceptor('changeBodyInterceptor');
+        await sdk.middleware.removeResponseInterceptor('myResponseInterceptor');
+        await sdk.middleware.removeResponseInterceptor('SecondInterceptor');
+        await sdk.middleware.removeResponseInterceptor('changeBodyResponseInterceptor');
+        await sdk.middleware.removeResponseInterceptor('removeHeaderResponseInterceptor');
+        await sdk.middleware.removeCircuitBreaker('myOpenHandler');
+        await sdk.middleware.removeCors('corsOrigin');
+        await timeout(1500);
     });
 
-    after(() => {
-        return database.redisClient.flushdb()
-            .then(() => gateway.stopAdmin())
-            .then(() => gateway.stop())
-            .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'middleware')))
-            .then(() => fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'logs')))
-            .then(() => database.disconnect());
+    after(async () => {
+        await database.redisClient.flushdb();
+        await gateway.stopAdmin();
+        await gateway.stop();
+        await fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'middleware'));
+        await fs.removeAsync(path.join(process.cwd(), 'test', 'data', 'root', 'logs'));
+        database.disconnect();
     });
+
+    function timeout(ms: number) {
+        return new Promise<void>(resolve => setTimeout(resolve, ms));
+    }
 });

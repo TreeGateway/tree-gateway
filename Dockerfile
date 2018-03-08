@@ -17,7 +17,7 @@ COPY ./package.json /usr/src/app/
 RUN npm install
 
 # Install app
-COPY README.md tree-gateway.json rest.config /usr/src/app/
+COPY README.md tree-gateway.json rest.config ioc.config /usr/src/app/
 COPY ./lib /usr/src/app/lib/
 COPY ./dist /usr/src/app/dist/
 

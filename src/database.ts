@@ -34,38 +34,29 @@ export class Database {
         this.redisEvents.disconnect();
     }
 
-    registerGatewayVersion(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    async registerGatewayVersion(): Promise<void> {
+        try {
             const packageJson = require('../package.json');
-            this.redisClient.set(Database.GATEWAY_VERSION_KEY, `${packageJson.version}`)
-                .then(() => {
-                    return resolve();
-                }).catch((err: any) => {
-                    reject(new Error('It was not possible to register the Tree Gateway version.'));
-                });
-        });
+            await this.redisClient.set(Database.GATEWAY_VERSION_KEY, `${packageJson.version}`);
+        } catch(err) {
+            throw new Error('It was not possible to register the Tree Gateway version.');
+        }
     }
 
-    getGatewayVersion(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.redisClient.get(Database.GATEWAY_VERSION_KEY)
-                .then((version: string) => {
-                    return resolve(version);
-                }).catch((err: any) => {
-                    reject(new Error('It was not possible to retrieve the Tree Gateway version.'));
-                });
-        });
+    async getGatewayVersion(): Promise<string> {
+        try {
+            return await this.redisClient.get(Database.GATEWAY_VERSION_KEY);
+        } catch(err) {
+            throw(new Error('It was not possible to retrieve the Tree Gateway version.'));
+        }
     }
 
-    startGatewayUpdate(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.redisClient.getset(Database.GATEWAY_VERSION_KEY, Database.UPDATING)
-                .then((version: string) => {
-                    return resolve(version);
-                }).catch((err: any) => {
-                    reject(new Error('It was not possible to retrieve the Tree Gateway version.'));
-                });
-        });
+    async startGatewayUpdate(): Promise<string> {
+        try {
+            return await this.redisClient.getset(Database.GATEWAY_VERSION_KEY, Database.UPDATING);
+        } catch(err) {
+            throw(new Error('It was not possible to retrieve the Tree Gateway version.'));
+        }
     }
 
     private initializeRedis(config: RedisConfig) {

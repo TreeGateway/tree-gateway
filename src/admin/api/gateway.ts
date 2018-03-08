@@ -13,30 +13,18 @@ export class GatewayRest {
     @Inject private service: GatewayService;
 
     @PUT
-    updateConfig(config: GatewayConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            validateGatewayConfig(config);
-            this.service.save(config)
-                .then(resolve)
-                .catch(reject);
-        });
+    async updateConfig(config: GatewayConfig): Promise<void> {
+        await validateGatewayConfig(config);
+        await this.service.save(config);
     }
 
     @DELETE
-    removeConfig(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.service.remove()
-                .then(resolve)
-                .catch(reject);
-        });
+    async removeConfig(): Promise<void> {
+        await this.service.remove();
     }
 
     @GET
-    getConfig(): Promise<GatewayConfig> {
-        return new Promise((resolve, reject) => {
-            this.service.read()
-                .then(resolve)
-                .catch(reject);
-        });
+    async getConfig(): Promise<GatewayConfig> {
+        return await this.service.read();
     }
 }

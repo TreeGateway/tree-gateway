@@ -33,77 +33,60 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
         return this.apiService.list();
     }
 
-    subscribeEvents(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            if (this.subscribed) {
-                return resolve();
-            }
-
+    async subscribeEvents(): Promise<void> {
+        if (!this.subscribed) {
             const topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
-            this.database.redisEvents.psubscribe(topicPattern)
-                .then(() => {
-                    return this.database.redisEvents.on('pmessage', (pattern: string, channel: string, message: string) => {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug(`Message Received on topic ${channel}. Message: ${JSON.stringify(message)}`);
-                        }
-                        try {
-                            const parsedMesg = JSON.parse(message);
-                            switch (channel) {
-                                case ConfigTopics.CONFIG_UPDATED:
-                                    this.emit(ConfigEvents.CONFIG_UPDATED, parsedMesg.packageId, parsedMesg.needsReload);
-                                    break;
-                                case ConfigTopics.CIRCUIT_CHANGED:
-                                    this.emit(ConfigEvents.CIRCUIT_CHANGED, parsedMesg.id, parsedMesg.state);
-                                    break;
-                                default:
-                                // Ignore event
-                            }
-                        } catch (err) {
-                            this.logger.error(`Error processing received message. Message: ${message}. Err: ${this.logger.inspectObject(err)}`);
-                        }
-                    });
-                })
-                .then(() => {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug(`Listening to events on topic ${topicPattern}`);
+            await this.database.redisEvents.psubscribe(topicPattern);
+            await this.database.redisEvents.on('pmessage', (pattern: string, channel: string, message: string) => {
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(`Message Received on topic ${channel}. Message: ${JSON.stringify(message)}`);
+                }
+                try {
+                    const parsedMesg = JSON.parse(message);
+                    switch (channel) {
+                        case ConfigTopics.CONFIG_UPDATED:
+                            this.emit(ConfigEvents.CONFIG_UPDATED, parsedMesg.packageId, parsedMesg.needsReload);
+                            break;
+                        case ConfigTopics.CIRCUIT_CHANGED:
+                            this.emit(ConfigEvents.CIRCUIT_CHANGED, parsedMesg.id, parsedMesg.state);
+                            break;
+                        default:
+                        // Ignore event
                     }
-                    this.subscribed = true;
-                    resolve();
-                })
-                .catch(reject);
-        });
+                } catch (err) {
+                    this.logger.error(`Error processing received message. Message: ${message}. Err: ${this.logger.inspectObject(err)}`);
+                }
+            });
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(`Listening to events on topic ${topicPattern}`);
+            }
+            this.subscribed = true;
+        }
     }
 
-    installAllMiddlewares(): Promise<void> {
+    async installAllMiddlewares(): Promise<void> {
+        const machineId = getMachineId();
+        const host = os.hostname();
+        const idMsg = 'allMiddlewares';
+        const replies = await this.database.redisClient.multi()
+            .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
+            .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
+            .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 60)
+            .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 60)
+            .exec();
+        if (replies[0][1] === 1 && replies[1][1] === 1) {
+            this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
+            this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
+            await this.middlewareInstaller.installAll();
+            await this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`,
+                    `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`);
+        } else {
+            await this.runAfterMiddlewareInstallations(idMsg);
+        }
+    }
+
+    private async runAfterMiddlewareInstallations(idMsg: string) {
         return new Promise<void>((resolve, reject) => {
-            const machineId = getMachineId();
-            const host = os.hostname();
-            const idMsg = 'allMiddlewares';
-            this.database.redisClient.multi()
-                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, machineId)
-                .setnx(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, machineId)
-                .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 60)
-                .expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 60)
-                .exec()
-                .then((replies: any[][]) => {
-                    if (replies[0][1] === 1 && replies[1][1] === 1) {
-                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`, 15);
-                        this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
-                        this.middlewareInstaller.installAll()
-                            .then(() => this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`,
-                                `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`))
-                            .then(resolve)
-                            .catch(reject);
-                    } else {
-                        this.runAfterMiddlewareInstallations(idMsg, resolve);
-                    }
-                })
-                .catch(reject);
-        });
-    }
-
-    private runAfterMiddlewareInstallations(idMsg: string, callback: () => void) {
-        // return new Promise<void>((resolve, reject) => {
             const host = os.hostname();
             let interval: NodeJS.Timer;
             interval = setInterval(() => {
@@ -112,10 +95,13 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
                     .then((exists: number) => {
                         if (exists < 2) {
                             clearInterval(interval);
-                            return callback();
+                            return resolve();
                         }
+                    }).catch((err: any) => {
+                        clearInterval(interval);
+                        return reject(err);
                     });
             }, 100);
-        // });
+        });
     }
 }

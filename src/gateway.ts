@@ -220,16 +220,12 @@ export class Gateway extends EventEmitter {
         });
     }
 
-    restart(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.logger.info(`Gateway is restarting...`);
-            this.stopAdmin()
-                .then(() => this.stop())
-                .then(() => this.start())
-                .then(() => this.startAdmin())
-                .then(resolve)
-                .catch(reject);
-        });
+    async restart(): Promise<void> {
+        this.logger.info(`Gateway is restarting...`);
+        await this.stopAdmin();
+        await this.stop();
+        await this.start();
+        await this.startAdmin();
     }
 
     private createHttpsServer(app: express.Application) {
@@ -240,39 +236,30 @@ export class Gateway extends EventEmitter {
         return https.createServer(credentials, app);
     }
 
-    private loadApis(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    private async loadApis(): Promise<void> {
+        try {
             this.installedApis = new Map<string, ApiConfig>();
 
-            this.configService.getAllApiConfig()
-                .then((configs: Array<ApiConfig>) => {
-                    const loaders = configs.map((config) => {
-                        return this.loadApi(config);
-                    });
+            const configs: Array<ApiConfig> = await this.configService.getAllApiConfig();
+            const loaders = configs.map((config) => {
+                return this.loadApi(config);
+            });
 
-                    return Promise.all(loaders);
-                })
-                .then(() => resolve())
-                .catch((err) => {
-                    this.logger.error(`Error while installing API's: ${err}`);
-                    reject(err);
-                });
-        });
+            await Promise.all(loaders);
+        } catch (err) {
+            this.logger.error(`Error while installing API's: ${err}`);
+            throw err;
+        }
     }
 
-    private loadApi(api: ApiConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            validateApiConfig(api, this.config.gateway.disableApiIdValidation)
-                .then((value: ApiConfig) => {
-                    this.loadValidateApi(value);
-                    resolve();
-                })
-                .catch((err) => {
-                    this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
-
-                    reject(err);
-                });
-        });
+    private async loadApi(api: ApiConfig): Promise<void> {
+        try {
+            await validateApiConfig(api, this.config.gateway.disableApiIdValidation);
+            await this.loadValidateApi(api);
+        } catch (err) {
+            this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
+            throw err;
+        }
     }
 
     private loadValidateApi(api: ApiConfig) {
@@ -385,53 +372,40 @@ export class Gateway extends EventEmitter {
         });
     }
 
-    private initialize(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    private async initialize(): Promise<void> {
+        try {
             this.app = express();
-
-            this.configureServer()
-                .then(() => this.configService.removeAllListeners()
-                    .on(ConfigEvents.CONFIG_UPDATED, (packageId: string, needsReload: boolean) => this.updateConfig(packageId, needsReload))
-                    .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => this.circuitChanged(id, state))
-                    .subscribeEvents())
-                .then(() => {
-                    this.configureAdminServer();
-                })
-                .then(() => {
-                    this.requestLogger.initialize();
-                    resolve();
-                })
-                .catch((err) => {
-                    this.logger.error(`Error configuring gateway server. Config File:\n${JSON.stringify(this.config.gateway)}`);
-                    this.logger.inspectObject(err);
-                    reject(err);
-                });
-        });
+            await this.configureServer();
+            await this.configService.removeAllListeners()
+                .on(ConfigEvents.CONFIG_UPDATED, (packageId: string, needsReload: boolean) => this.updateConfig(packageId, needsReload))
+                .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => this.circuitChanged(id, state))
+                .subscribeEvents();
+            await this.configureAdminServer();
+            this.requestLogger.initialize();
+        } catch (err) {
+            this.logger.error(`Error configuring gateway server. Config File:\n${JSON.stringify(this.config.gateway)}`);
+            this.logger.inspectObject(err);
+            throw err;
+        }
     }
 
-    private configureServer(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.app.disable('x-powered-by');
-            if (!this.config.gateway.disableCompression) {
-                this.app.use(compression());
-            }
-            if (this.config.gateway.underProxy) {
-                this.app.enable('trust proxy');
-            }
-            if (this.config.gateway.accessLogger) {
-                AccessLogger.configureAccessLoger(this.config.gateway.accessLogger,
-                    this.config.rootPath, this.app, './logs');
-            }
-            this.configureHealthcheck();
-            this.configService.installAllMiddlewares()
-                .then(() => this.serviceDiscovery.loadServiceDiscoveryProviders(this.config.gateway))
-                .then(() => {
-                    this.apiFilter.buildGatewayFilters(this.app, this.config.gateway.filter);
-                    return this.loadApis();
-                })
-                .then(resolve)
-                .catch(reject);
-        });
+    private async configureServer(): Promise<void> {
+        this.app.disable('x-powered-by');
+        if (!this.config.gateway.disableCompression) {
+            this.app.use(compression());
+        }
+        if (this.config.gateway.underProxy) {
+            this.app.enable('trust proxy');
+        }
+        if (this.config.gateway.accessLogger) {
+            AccessLogger.configureAccessLoger(this.config.gateway.accessLogger,
+                this.config.rootPath, this.app, './logs');
+        }
+        this.configureHealthcheck();
+        await this.configService.installAllMiddlewares();
+        await this.serviceDiscovery.loadServiceDiscoveryProviders(this.config.gateway);
+        this.apiFilter.buildGatewayFilters(this.app, this.config.gateway.filter);
+        await  this.loadApis();
     }
 
     private configureHealthcheck() {

@@ -23,45 +23,30 @@ export class APIRest {
     }
 
     @POST
-    addApi(api: ApiConfig): Promise<Return.NewResource<void>> {
-        return new Promise<Return.NewResource<void>>((resolve, reject) => {
-            validateApiConfig(api, this.config.gateway.disableApiIdValidation)
-                .then(() => this.service.create(api))
-                .then((apiId) => resolve(new Return.NewResource<void>(`apis/${apiId}`)))
-                .catch(reject);
-        });
+    async addApi(api: ApiConfig): Promise<Return.NewResource<void>> {
+        await validateApiConfig(api, this.config.gateway.disableApiIdValidation);
+        const apiId = await this.service.create(api);
+        return (new Return.NewResource<void>(`apis/${apiId}`));
     }
 
     @PUT
     @Path('/:id')
-    updateApi( @PathParam('id') id: string, api: ApiConfig): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            api.id = id;
+    async updateApi( @PathParam('id') id: string, api: ApiConfig): Promise<void> {
+        api.id = id;
 
-            validateApiConfig(api, this.config.gateway.disableApiIdValidation)
-                .then(() => this.service.update(api))
-                .then(() => resolve())
-                .catch(reject);
-        });
+        await validateApiConfig(api, this.config.gateway.disableApiIdValidation);
+        await this.service.update(api);
     }
 
     @DELETE
     @Path('/:id')
-    removeApi( @PathParam('id') id: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.service.remove(id)
-                .then(() => resolve())
-                .catch(reject);
-        });
+    async removeApi( @PathParam('id') id: string): Promise<void> {
+        await this.service.remove(id);
     }
 
     @GET
     @Path('/:id')
-    getApi( @PathParam('id') id: string): Promise<ApiConfig> {
-        return new Promise((resolve, reject) => {
-            this.service.get(id)
-                .then(resolve)
-                .catch(reject);
-        });
+    async getApi( @PathParam('id') id: string): Promise<ApiConfig> {
+        return await this.service.get(id);
     }
 }

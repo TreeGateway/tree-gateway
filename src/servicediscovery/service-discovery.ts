@@ -13,9 +13,9 @@ export class ServiceDiscovery {
 
     private loadedClients: Map<string, any> = new Map<string, any>();
 
-    loadServiceDiscoveryProviders(gatewayConfig: GatewayConfig) {
+    async loadServiceDiscoveryProviders(gatewayConfig: GatewayConfig): Promise<void> {
         if (!gatewayConfig.serviceDiscovery || !gatewayConfig.serviceDiscovery.provider || !gatewayConfig.serviceDiscovery.provider.length) {
-            return Promise.resolve();
+            return;
         }
         const promises = gatewayConfig.serviceDiscovery.provider.map(provider => {
             return new Promise<void>((resolve, reject) => {
@@ -36,9 +36,7 @@ export class ServiceDiscovery {
                 }
             });
         });
-        return new Promise<void>((resolve, reject) => {
-            Promise.all(promises).then(() => resolve()).catch(reject);
-        });
+        await Promise.all(promises);
     }
 
     loadServiceDiscovery(middlewareConfig: MiddlewareConfig, ssl?: boolean) {

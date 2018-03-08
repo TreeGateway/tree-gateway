@@ -11,15 +11,12 @@ export class HealthCheck {
     @Inject private database: Database;
 
     @GET
-    check(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.database.redisClient.ping()
-                .then(() => {
-                    resolve('OK');
-                })
-                .catch((err: any) => {
-                    reject(new Errors.InternalServerError());
-                });
-        });
+    async check(): Promise<string> {
+        try {
+            await this.database.redisClient.ping();
+            return 'OK';
+        } catch (err) {
+            throw new Errors.InternalServerError();
+        }
     }
 }

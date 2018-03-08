@@ -209,19 +209,25 @@ export let serverConfigValidatorSchema = Joi.object().keys({
 });
 
 export function validateGatewayConfig(gatewayConfig: GatewayConfig) {
-    const result = Joi.validate(gatewayConfig, gatewayConfigValidatorSchema);
-    if (result.error) {
-        throw new ValidationError(result.error);
-    } else {
-        return result.value;
-    }
+    return new Promise<GatewayConfig>((resolve, reject) => {
+        Joi.validate(gatewayConfig, gatewayConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(new ValidationError(err));
+            } else {
+                return resolve(value);
+            }
+        });
+    });
 }
 
 export function validateServerConfig(config: ServerConfig) {
-    const result = Joi.validate(config, serverConfigValidatorSchema);
-    if (result.error) {
-        throw new ValidationError(result.error);
-    } else {
-        return result.value;
-    }
+    return new Promise<ServerConfig>((resolve, reject) => {
+        Joi.validate(config, serverConfigValidatorSchema, (err, value) => {
+            if (err) {
+                reject(new ValidationError(err));
+            } else {
+                return resolve(value);
+            }
+        });
+    });
 }

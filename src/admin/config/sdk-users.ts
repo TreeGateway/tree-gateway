@@ -18,82 +18,50 @@ export class UsersClient implements Users {
         this.swaggerClient = swaggerClient;
     }
 
-    list(filters: any): Promise<Array<UserData>> {
-        return new Promise<Array<UserData>>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestList(filters)
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async list(filters: any): Promise<Array<UserData>> {
+        const response = await this.swaggerClient.apis.Users.UsersRestList(filters);
+        return this.getResponseBody(response);
     }
 
-    addUser(user: UserData): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestAddUser({ user: user })
-                .then((response: any) => {
-                    if (response.status === 201) {
-                        return resolve(response.headers['location'].substring(6));
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async addUser(user: UserData): Promise<string> {
+        const response = await this.swaggerClient.apis.Users.UsersRestAddUser({ user: user });
+        if (response.status !== 201) {
+            throw new Error(response.text);
+        }
+        return response.headers['location'].substring(6);
     }
 
-    updateUser(login: string, user: UserData): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            user.login = login;
-            this.swaggerClient.apis.Users.UsersRestUpdateUser({ login: login, user: user })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async updateUser(login: string, user: UserData): Promise<void> {
+        user.login = login;
+        const response = await this.swaggerClient.apis.Users.UsersRestUpdateUser({ login: login, user: user });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeUser(login: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestRemoveUser({ login: login })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeUser(login: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Users.UsersRestRemoveUser({ login: login });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    getUser(login: string): Promise<UserData> {
-        return new Promise<UserData>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestGetUser({ login: login })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getUser(login: string): Promise<UserData> {
+        const response = await this.swaggerClient.apis.Users.UsersRestGetUser({ login: login });
+        return this.getResponseBody(response);
     }
 
-    changeUserPassword(login: string, password: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Users.UsersRestChangePassword({ login: login, password: password })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async changeUserPassword(login: string, password: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Users.UsersRestChangePassword({ login: login, password: password });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
+    }
+
+    private getResponseBody(response: any) {
+        if (response.status !== 200) {
+            throw new Error(response.text);
+        }
+        return response.body;
     }
 }

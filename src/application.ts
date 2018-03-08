@@ -80,31 +80,27 @@ export class Application {
         });
     }
 
-    private runGateway() {
-        return new Promise<void>((resolve, reject) => {
-            const gateway: Gateway = Container.get(Gateway);
-            const database: Database = Container.get(Database);
-            if (gateway.running) {
-                return resolve();
-            }
-            this.ensureConfigVersionIsUpdated()
-                .then(() => gateway.start())
-                .then(() => gateway.startAdmin())
-                .then(() => database.registerGatewayVersion())
-                .then(resolve)
-                .catch(reject);
+    private async runGateway() {
+        const gateway: Gateway = Container.get(Gateway);
+        const database: Database = Container.get(Database);
+        if (gateway.running) {
+            return;
+        }
+        async function graceful() {
+            await gateway.stopAdmin();
+            await gateway.stop();
+            await database.disconnect();
+            process.exit(0);
+        }
 
-            function graceful() {
-                gateway.stopAdmin()
-                    .then(() => gateway.stop())
-                    .then(() => database.disconnect())
-                    .then(() => process.exit(0));
-            }
+        // Stop graceful
+        process.on('SIGTERM', graceful);
+        process.on('SIGINT', graceful);
 
-            // Stop graceful
-            process.on('SIGTERM', graceful);
-            process.on('SIGINT', graceful);
-        });
+        await this.ensureConfigVersionIsUpdated();
+        await gateway.start();
+        await gateway.startAdmin();
+        await database.registerGatewayVersion();
     }
 
     private ensureConfigVersionIsUpdated() {

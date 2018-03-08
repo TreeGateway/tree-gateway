@@ -104,394 +104,184 @@ export class MiddlewareClient implements Middleware {
 
     }
 
-    filters(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestFilters({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async filters(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestFilters({ name });
+        return this.getResponseBody(response);
     }
 
-    requestInterceptors(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRequestInterceptors({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async requestInterceptors(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRequestInterceptors({ name });
+        return this.getResponseBody(response);
     }
 
-    responseInterceptors(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestResponseInterceptors({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async responseInterceptors(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestResponseInterceptors({ name });
+        return this.getResponseBody(response);
     }
 
-    authStrategies(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestAuthStrategies({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async authStrategies(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestAuthStrategies({ name });
+        return this.getResponseBody(response);
     }
 
-    authVerify(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestAuthVerify({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async authVerify(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestAuthVerify({ name });
+        return this.getResponseBody(response);
     }
 
-    throttlingKeyGenerator(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingKeyGenerator({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async throttlingKeyGenerator(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingKeyGenerator({ name });
+        return this.getResponseBody(response);
     }
 
-    throttlingHandler(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingHandler({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async throttlingHandler(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingHandler({ name });
+        return this.getResponseBody(response);
     }
 
-    throttlingSkip(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingSkip({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async throttlingSkip(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingSkip({ name });
+        return this.getResponseBody(response);
     }
 
-    circuitBreaker(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async circuitBreaker(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({ name });
+        return this.getResponseBody(response);
     }
 
-    corsOrigin(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestCorsOrigin({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async corsOrigin(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestCorsOrigin({ name });
+        return this.getResponseBody(response);
     }
 
-    proxyRouter(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async proxyRouter(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({ name });
+        return this.getResponseBody(response);
     }
 
-    serviceDiscovery(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscovery({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async serviceDiscovery(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscovery({ name });
+        return this.getResponseBody(response);
     }
 
-    serviceDiscoveryProvider(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscoveryProvider({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async serviceDiscoveryProvider(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscoveryProvider({ name });
+        return this.getResponseBody(response);
     }
 
-    errorHandler(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestErrorHandler({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async errorHandler(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestErrorHandler({ name });
+        return this.getResponseBody(response);
     }
 
-    requestLogger(name?: string): Promise<Array<string>> {
-        return new Promise<Array<string>>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRequestLogger({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async requestLogger(name?: string): Promise<Array<string>> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRequestLogger({ name });
+        return this.getResponseBody(response);
     }
 
-    removeFilter(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeFilter(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeRequestInterceptor(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestInterceptor({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeRequestInterceptor(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestInterceptor({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeResponseInterceptor(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveResponseInterceptor({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeResponseInterceptor(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveResponseInterceptor({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeAuthStrategy(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthStrategy({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeAuthStrategy(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthStrategy({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeAuthVerify(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthVerify({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeAuthVerify(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthVerify({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeThrottlingKeyGenerator(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingKeyGenerator({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeThrottlingKeyGenerator(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingKeyGenerator({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeThrottlingHandler(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingHandler({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeThrottlingHandler(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingHandler({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeThrottlingSkip(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingSkip({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeThrottlingSkip(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingSkip({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeCircuitBreaker(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCircuitBreaker({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeCircuitBreaker(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCircuitBreaker({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeCors(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCors({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeCors(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCors({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeProxyRouter(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeProxyRouter(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeServiceDiscovery(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscovery({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeServiceDiscovery(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscovery({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeServiceDiscoveryProvider(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscoveryProvider({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeServiceDiscoveryProvider(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscoveryProvider({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeErrorHandler(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveErrorHandler({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeErrorHandler(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveErrorHandler({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
-    removeRequestLogger(name: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestLogger({ name })
-                .then((response: any) => {
-                    if (response.status === 204) {
-                        return resolve();
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async removeRequestLogger(name: string): Promise<void> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestLogger({ name });
+        if (response.status !== 204) {
+            throw new Error(response.text);
+        }
     }
 
     updateFilter(name: string, fileName: string): Promise<void> {
@@ -614,199 +404,79 @@ export class MiddlewareClient implements Middleware {
         return this.installMiddleware('request/logger', fileName);
     }
 
-    getFilter(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetFilter({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getFilter(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetFilter({ name });
+        return this.getResponseBody(response);
     }
 
-    getRequestInterceptor(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestInterceptor({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getRequestInterceptor(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestInterceptor({ name });
+        return this.getResponseBody(response);
     }
 
-    getResponseInterceptor(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetResponseInterceptor({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getResponseInterceptor(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetResponseInterceptor({ name });
+        return this.getResponseBody(response);
     }
 
-    getAuthStrategy(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthStrategy({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getAuthStrategy(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthStrategy({ name });
+        return this.getResponseBody(response);
     }
 
-    getAuthVerify(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthVerify({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getAuthVerify(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthVerify({ name });
+        return this.getResponseBody(response);
     }
 
-    getThrottlingKeyGenerator(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingKeyGenerator({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getThrottlingKeyGenerator(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingKeyGenerator({ name });
+        return this.getResponseBody(response);
     }
 
-    getThrottlingHandler(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingHandler({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getThrottlingHandler(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingHandler({ name });
+        return this.getResponseBody(response);
     }
 
-    getThrottlingSkip(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingSkip({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getThrottlingSkip(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingSkip({ name });
+        return this.getResponseBody(response);
     }
 
-    getCircuitBreakerMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetCircuitBreakerMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getCircuitBreakerMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetCircuitBreakerMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
-    getCorsMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getCorsMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
-    getProxyRouterMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getProxyRouterMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
-    getServiceDiscoveryMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getServiceDiscoveryMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
-    getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getServiceDiscoveryProviderMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
-    getErrorHandlerMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetErrorHandlerMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getErrorHandlerMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetErrorHandlerMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
-    getRequestLoggerMiddleware(name: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestLoggerMiddleware({ name })
-                .then((response: any) => {
-                    if (response.status === 200) {
-                        return resolve(response.body);
-                    }
-                    reject(response.text);
-                })
-                .catch(reject);
-        });
+    async getRequestLoggerMiddleware(name: string): Promise<Buffer> {
+        const response = await this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestLoggerMiddleware({ name });
+        return this.getResponseBody(response);
     }
 
     private getStream(fileName: string) {
@@ -835,5 +505,12 @@ export class MiddlewareClient implements Middleware {
             form.append('name', fileName.replace('.js', ''));
             form.append('file', <any>stream, fileName);
         });
+    }
+
+    private getResponseBody(response: any) {
+        if (response.status !== 200) {
+            throw new Error(response.text);
+        }
+        return response.body;
     }
 }
