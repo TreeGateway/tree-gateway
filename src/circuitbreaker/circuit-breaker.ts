@@ -9,10 +9,11 @@ import { CircuitBreaker } from './express-circuit-breaker';
 import * as Groups from '../group';
 import { RedisStateHandler } from './redis-state-handler';
 import { Logger } from '../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
+import { AutoWired, Inject, Container } from 'typescript-ioc';
 import { RequestLog, RequestLogger } from '../stats/request';
 import { getMilisecondsInterval } from '../utils/time-intervals';
 import { MiddlewareLoader } from '../utils/middleware-loader';
+import { Gateway } from '../gateway';
 
 interface BreakerInfo {
     circuitBreaker?: CircuitBreaker;
@@ -34,7 +35,7 @@ export class ApiCircuitBreaker {
         sortedBreakers.forEach((cbConfig: ApiCircuitBreakerConfig, index: number) => {
             cbConfig = this.resolveReferences(cbConfig, gatewayFeatures);
             const breakerInfo: BreakerInfo = {};
-            const cbStateID = (breakersSize > 1 ? `${api.path}:${index}` : api.path);
+            const cbStateID = (breakersSize > 1 ? `${api.id}:${index}` : api.id);
             const cbOptions: any = {
                 id: cbStateID,
                 maxFailures: (cbConfig.maxFailures || 10),
@@ -63,6 +64,7 @@ export class ApiCircuitBreaker {
         });
 
         this.setupMiddlewares(apiRouter, breakerInfos);
+        this.addStopListeners();
     }
 
     onStateChanged(id: string, state: string) {
@@ -72,11 +74,8 @@ export class ApiCircuitBreaker {
         }
     }
 
-    removeBreaker(id: string) {
-        this.activeBreakers.delete(id);
-    }
-
     removeAllBreakers() {
+        this.activeBreakers.forEach(breaker => breaker.destroy());
         this.activeBreakers.clear();
     }
 
@@ -176,5 +175,19 @@ export class ApiCircuitBreaker {
             }
         }
         return breakers;
+    }
+
+    private addStopListeners() {
+        const gateway: Gateway = Container.get(Gateway);
+        const stop = () => {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug('API stopped. Removing circuitbreakers handlers.');
+            }
+            this.removeAllBreakers();
+            gateway.removeListener('stop', stop);
+            gateway.removeListener('api-reload', stop);
+        };
+        gateway.on('stop', stop);
+        gateway.on('api-reload', stop);
     }
 }

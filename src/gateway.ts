@@ -252,17 +252,22 @@ export class Gateway extends EventEmitter {
         }
     }
 
+    private reloadApis(): Promise<void> {
+        this.emit('api-reload', this);
+        return this.loadApis();
+    }
+
     private async loadApi(api: ApiConfig): Promise<void> {
         try {
             await validateApiConfig(api, this.config.gateway.disableApiIdValidation);
-            await this.loadValidateApi(api);
+            await this.loadValidApi(api);
         } catch (err) {
             this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
             throw err;
         }
     }
 
-    private loadValidateApi(api: ApiConfig) {
+    private loadValidApi(api: ApiConfig) {
         if (this.logger.isInfoEnabled()) {
             this.logger.info(`Configuring API [${api.id}] on path: ${api.path}`);
         }
@@ -349,10 +354,8 @@ export class Gateway extends EventEmitter {
                     this.logger.inspectObject(error);
                 });
         } else {
-            this.emit('api-reload', this);
-            this.apiCircuitBreaker.removeAllBreakers();
             this.configService.installAllMiddlewares()
-                .then(() => this.loadApis())
+                .then(() => this.reloadApis())
                 .then(() => {
                     this.removeOldAPIs();
                     this.logger.info(`Configuration package ${packageId} applied successfuly.`);

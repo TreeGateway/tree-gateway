@@ -48,6 +48,10 @@ describe('Gateway APIs uninstall', () => {
         await sdk.middleware.removeResponseInterceptor('removeHeaderResponseInterceptor');
         await sdk.middleware.removeCircuitBreaker('myOpenHandler');
         await sdk.middleware.removeCors('corsOrigin');
+        await sdk.middleware.removeErrorHandler('errorHandler');
+        await sdk.middleware.removeThrottlingKeyGenerator('myKeyGen');
+        await sdk.middleware.removeThrottlingSkip('mySkip');
+        await sdk.middleware.removeThrottlingHandler('myHandler');
         await timeout(1500);
     });
 

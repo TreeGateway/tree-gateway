@@ -28,6 +28,7 @@ export interface StateHandler {
     incrementFailures(): Promise<number>;
     initialState(): void;
     onStateChanged(state: string): void;
+    destroy(): void;
 }
 
 export class CircuitBreaker extends EventEmitter {
@@ -93,6 +94,11 @@ export class CircuitBreaker extends EventEmitter {
 
     get id(): string {
         return this.options.id;
+    }
+
+    destroy() {
+        this.removeAllListeners();
+        this.options.stateHandler.destroy();
     }
 
     private invokeApi(req: express.Request, res: express.Response, next: express.NextFunction) {

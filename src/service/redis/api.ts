@@ -61,7 +61,7 @@ export class RedisApiService implements ApiService {
             await this.ensureAPICreateConstraints(api);
             await this.database.redisClient.multi()
                     .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: Constants.ADMIN_API }))
+                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API }))
                     .exec();
             return api.id;
         } catch (err) {
@@ -81,7 +81,7 @@ export class RedisApiService implements ApiService {
             await this.ensureAPIUpdateConstraints(api, upsert);
             await this.database.redisClient.multi()
                     .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: api.id }))
+                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API, id: api.id }))
                     .exec();
         } catch (err) {
             if (typeof err === 'string') {
@@ -94,7 +94,7 @@ export class RedisApiService implements ApiService {
     async remove(id: string): Promise<void> {
         await this.database.redisClient.multi()
             .hdel(`${Constants.APIS_PREFIX}`, id)
-            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: Constants.ADMIN_API }))
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API }))
             .exec();
     }
 
@@ -125,7 +125,7 @@ export class RedisApiService implements ApiService {
         let existingApi = apis.find((a: ApiConfig) =>
             (a.name === api.name && a.version === api.version) && a.id !== api.id);
         if (existingApi) {
-            throw new ValidationError(`Can not update this api to ${api.name}:${api.version}. This name conflicts with another existing API`);
+            throw new ValidationError(`Can not update this api to ${api.name}:${api.version}. This name conflicts with another existing API (${existingApi.id})`);
         }
         existingApi = apis.find((a: ApiConfig) => a.path === api.path && a.id !== api.id);
         if (existingApi) {

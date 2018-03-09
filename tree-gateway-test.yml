@@ -112,6 +112,12 @@ gateway:
                 timeWindow: one minute
                 delay: 1 second
                 max: 1
+                keyGenerator:
+                    name: myKeyGen
+                skip:
+                    name: mySkip
+                handler:
+                    name: myHandler
         cors:
             my-cors:
                 origin:

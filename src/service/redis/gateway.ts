@@ -19,7 +19,7 @@ export class RedisGatewayService implements GatewayService {
     async remove(): Promise<void> {
         await this.database.redisClient.multi()
             .del(RedisGatewayService.GATEWAY_CONFIG_KEY)
-            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: RedisGatewayService.ADMIN_API, needsReload: true }))
             .exec();
     }
 
@@ -27,7 +27,7 @@ export class RedisGatewayService implements GatewayService {
         this.castArrays(config);
         await this.database.redisClient.multi()
             .set(RedisGatewayService.GATEWAY_CONFIG_KEY, JSON.stringify(config))
-            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ id: RedisGatewayService.ADMIN_API, needsReload: true }))
+            .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: RedisGatewayService.ADMIN_API, needsReload: true }))
             .exec();
     }
 

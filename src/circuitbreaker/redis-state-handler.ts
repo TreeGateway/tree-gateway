@@ -21,6 +21,7 @@ export class RedisStateHandler implements StateHandler {
     halfOpenCallPending: boolean;
     private resetTimeout: number;
     private timeWindow: number;
+    private timerHalfOpen: NodeJS.Timer = null;
 
     constructor(id: string, resetTimeout: number, timeWindow?: number) {
         this.id = id;
@@ -126,6 +127,13 @@ export class RedisStateHandler implements StateHandler {
         }
     }
 
+    destroy() {
+        if (this.timerHalfOpen) {
+            clearTimeout(this.timerHalfOpen);
+            this.timerHalfOpen = null;
+        }
+    }
+
     private getRedisFailuresKey() {
         return `${CircuitBreakerKeys.CIRCUIT_BREAKER_FAILURES}:${this.id}`;
     }
@@ -141,7 +149,8 @@ export class RedisStateHandler implements StateHandler {
 
         this.state = State.OPEN;
         // After reset timeout circuit should enter half open state
-        setTimeout(() => {
+        this.timerHalfOpen = setTimeout(() => {
+            this.timerHalfOpen = null;
             this.forceHalfOpen();
         }, this.resetTimeout);
 
