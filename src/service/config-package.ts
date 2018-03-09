@@ -26,7 +26,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
     async set(config: ConfigPackage): Promise<void> {
         if (config.middlewares) {
             await Promise.all(config.middlewares.map(mid =>
-                this.middlewareService.save(mid.middleware, mid.id || mid.name, new Buffer(mid.content)))
+                this.middlewareService.update(mid.middleware, mid.id || mid.name, new Buffer(mid.content), true))
             );
             await this.setApisAndGateway(config);
         } else {
@@ -62,8 +62,8 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
             this.middlewareService.list('interceptor/response'),
             this.middlewareService.list('authentication/strategy'),
             this.middlewareService.list('authentication/verify'),
-            this.middlewareService.list('throttling/keyGenerators'),
-            this.middlewareService.list('throttling/handlers'),
+            this.middlewareService.list('throttling/keyGenerator'),
+            this.middlewareService.list('throttling/handler'),
             this.middlewareService.list('throttling/skip'),
             this.middlewareService.list('circuitbreaker'),
             this.middlewareService.list('cors/origin'),
@@ -79,8 +79,8 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
             this.getMiddlewaresByType('interceptor/response', allMiddlewares[2]),
             this.getMiddlewaresByType('authentication/strategy', allMiddlewares[3]),
             this.getMiddlewaresByType('authentication/verify', allMiddlewares[4]),
-            this.getMiddlewaresByType('throttling/keyGenerators', allMiddlewares[5]),
-            this.getMiddlewaresByType('throttling/handlers', allMiddlewares[6]),
+            this.getMiddlewaresByType('throttling/keyGenerator', allMiddlewares[5]),
+            this.getMiddlewaresByType('throttling/handler', allMiddlewares[6]),
             this.getMiddlewaresByType('throttling/skip', allMiddlewares[7]),
             this.getMiddlewaresByType('circuitbreaker', allMiddlewares[8]),
             this.getMiddlewaresByType('cors/origin', allMiddlewares[9]),

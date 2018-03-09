@@ -1,6 +1,7 @@
 'use strict';
 
 import { ConfigPackage } from '../../config/config-package';
+import { getResponseBody, checkStatus, invoke } from './utils';
 
 export interface Config {
     set(config: ConfigPackage): Promise<void>;
@@ -15,17 +16,12 @@ export class ConfigClient implements Config {
     }
 
     async set(config: ConfigPackage): Promise<void> {
-        const response = await this.swaggerClient.apis.Config.ConfigPackageRestSet({ config });
-        if (response.status !== 204) {
-            throw new Error(response.text);
-        }
+        const response = await invoke(this.swaggerClient.apis.Config.ConfigPackageRestSet({ config }));
+        checkStatus(response, 204);
     }
 
     async get(): Promise<ConfigPackage> {
-        const response = await this.swaggerClient.apis.Config.ConfigPackageRestGet({});
-        if (response.status !== 200) {
-            throw new Error(response.text);
-        }
-        return response.body;
+        const response = await invoke(this.swaggerClient.apis.Config.ConfigPackageRestGet({}));
+        return getResponseBody(response);
     }
 }

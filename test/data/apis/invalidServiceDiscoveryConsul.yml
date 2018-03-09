@@ -1,5 +1,5 @@
 ---
-name: TestServiceDiscoveryConsulAPI
+name: TestInvalidServiceDiscoveryConsulAPI
 version: 1.0.0
 path: "/invalidServiceDiscoveryConsul"
 proxy:

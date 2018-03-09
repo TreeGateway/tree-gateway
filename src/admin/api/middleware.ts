@@ -472,19 +472,11 @@ export class MiddlewareRest {
     }
 
     private async addMiddleware(type: string, file: Express.Multer.File, name: string, basePath?: string): Promise<Return.NewResource<void>> {
-        try {
-            await this.service.add(type, name, file.buffer);
-            return new Return.NewResource<void>(path.join(basePath || type, name));
-        } catch(err) {
-            throw new Errors.InternalServerError(`Error saving ${type}.`);
-        }
+        await this.service.add(type, name, file.buffer);
+        return new Return.NewResource<void>(path.join(basePath || type, name));
     }
 
     private async saveMiddleware(type: string, file: Express.Multer.File, name: string): Promise<void> {
-        try {
-            return await this.service.save('servicediscovery', name, file.buffer);
-        } catch(err) {
-            throw new Errors.InternalServerError(`Error saving ${type}.`);
-        }
+        return await this.service.update(type, name, file.buffer);
     }
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 import { ApiConfig } from '../../config/api';
+import { getResponseBody, checkStatus, getCreatedResource, invoke } from './utils';
 
 export interface Apis {
     list(filters: any): Promise<Array<ApiConfig>>;
@@ -18,19 +19,13 @@ export class ApisClient implements Apis {
     }
 
     async list(filters: any): Promise<Array<ApiConfig>> {
-        const response = await this.swaggerClient.apis.APIs.APIRestList(filters);
-        if (response.status !== 200) {
-            throw new Error(response.text);
-        }
-        return response.body;
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestList(filters));
+        return getResponseBody(response);
     }
 
     async addApi(api: ApiConfig): Promise<string> {
-        const response = await this.swaggerClient.apis.APIs.APIRestAddApi({ api });
-        if (response.status !== 201) {
-            throw new Error(response.text);
-        }
-        return response.headers['location'].substring(5);
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestAddApi({ api }));
+        return getCreatedResource(response).substring(5);
     }
 
     async updateApi(id: string, api: ApiConfig): Promise<void> {
@@ -38,30 +33,23 @@ export class ApisClient implements Apis {
             throw new Error('Invalid API id. To update an API, you must provide a valid ID field');
         }
         api.id = id;
-        const response = await this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api });
-        if (response.status !== 204) {
-            throw new Error(response.text);
-        }
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api }));
+        checkStatus(response, 204);
     }
 
     async removeApi(id: string): Promise<void> {
         if (!id) {
             throw new Error('Invalid API id. To remove an API, you must provide a valid ID');
         }
-        const response = await this.swaggerClient.apis.APIs.APIRestRemoveApi({ id });
-        if (response.status !== 204) {
-            throw new Error(response.text);
-        }
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestRemoveApi({ id }));
+        checkStatus(response, 204);
     }
 
     async getApi(id: string): Promise<ApiConfig> {
         if (!id) {
             throw new Error('Invalid API id. To retrieve an API, you must provide a valid ID');
         }
-        const response = await this.swaggerClient.apis.APIs.APIRestGetApi({ id });
-        if (response.status !== 200) {
-            throw new Error(response.text);
-        }
-        return response.body;
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestGetApi({ id }));
+        return getResponseBody(response);
     }
 }

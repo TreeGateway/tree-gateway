@@ -459,7 +459,7 @@ export class Cli {
             await this.sdk.middleware.addCircuitBreaker(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getCircuitBreakerMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getCircuitBreaker(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -491,7 +491,7 @@ export class Cli {
             await this.sdk.middleware.addCors(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getCorsMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getCors(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -523,7 +523,7 @@ export class Cli {
             await this.sdk.middleware.addProxyRouter(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getProxyRouterMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getProxyRouter(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -555,7 +555,7 @@ export class Cli {
             await this.sdk.middleware.addServiceDiscovery(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getServiceDiscoveryMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getServiceDiscovery(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -587,7 +587,7 @@ export class Cli {
             await this.sdk.middleware.addServiceDiscoveryProvider(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getServiceDiscoveryProviderMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getServiceDiscoveryProvider(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -619,7 +619,7 @@ export class Cli {
             await this.sdk.middleware.addErrorHandler(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getErrorHandlerMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getErrorHandler(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -651,7 +651,7 @@ export class Cli {
             await this.sdk.middleware.addRequestLogger(name, fileName);
             console.info(`Middleware added`);
         } else if (this.args.get) {
-            const file = await this.sdk.middleware.getRequestLoggerMiddleware(this.args.get);
+            const file = await this.sdk.middleware.getRequestLogger(this.args.get);
             console.info(file.toString());
         } else {
             throw new Error('Invalid arguments. Type -h for more info.');
@@ -720,7 +720,7 @@ export class Cli {
 
     private async processConfig(): Promise<void> {
         if (this.args.update) {
-            const config: ConfigPackage = await this.loadConfigObject(this.args.update)
+            const config: ConfigPackage = await this.loadConfigObject(this.args.update);
             await this.sdk.config.set(config);
             console.info(`Gateway configurations imported`);
         } else if (this.args.get) {
