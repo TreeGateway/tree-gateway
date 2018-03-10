@@ -3,7 +3,6 @@
 import { UserData } from '../../config/users';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { Strategy, ExtractJwt } from 'passport-jwt';
 import * as auth from 'passport';
 import * as _ from 'lodash';
 import * as express from 'express';
@@ -12,12 +11,14 @@ import { Configuration } from '../../configuration';
 import { Database } from '../../database';
 import { NotFoundError, ValidationError } from '../../error/errors';
 import { UserService } from '../users';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
 
 export class RedisUserService implements UserService {
     static USERS_PREFIX = 'adminUsers';
 
     @Inject private config: Configuration;
     @Inject private database: Database;
+    @Inject private middlewareLoader: MiddlewareLoader;
 
     async list(): Promise<Array<UserData>> {
         const users = await this.database.redisClient.hgetall(RedisUserService.USERS_PREFIX);
@@ -105,12 +106,9 @@ export class RedisUserService implements UserService {
 
     getAuthMiddleware(): express.RequestHandler {
         const opts: any = {
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: this.config.gateway.admin.userService.jwtSecret
         };
-        const strategy = new Strategy(opts, function(jwtPayload, done) {
-            return done(null, jwtPayload);
-        });
+        const strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', {name: 'jwt', options: opts});
         auth.use('_tree_gateway_admin_', strategy);
 
         return auth.authenticate('_tree_gateway_admin_', { session: false, failWithError: true });
