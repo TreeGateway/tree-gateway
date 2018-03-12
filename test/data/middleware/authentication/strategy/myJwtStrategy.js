@@ -1,14 +1,23 @@
 "use strict";
 
-var JwtStrategy = require('passport-jwt').Strategy,
-    ExtractJwt = require('passport-jwt').ExtractJwt;
+var Strategy = require('passport-strategy')
+
+class JwtStrategy extends Strategy {
+    constructor() {
+        super();
+    }
+
+    authenticate(req) {
+        const token = req.query.jwt;
+        if (token) {
+            this.success({}, null);
+        } else {
+            this.fail(401);
+        }
+    }
+}
 
 module.exports = function (authConfig) {
-    var opts = {}
-    opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
-    opts.secretOrKey = authConfig.secret;
-    return new JwtStrategy(opts, function(jwt_payload, done) {
-        done(null,jwt_payload.sub);
-    });
+    return new JwtStrategy();
 }; 
 module.exports.factory = true;
