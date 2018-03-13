@@ -6,7 +6,7 @@
         "target": {
             "host": "http://httpbin.org"
         },
-        "parseReqBody": true,
         "timeout": 5000
-    }
+    },
+    "parseReqBody": true
 }

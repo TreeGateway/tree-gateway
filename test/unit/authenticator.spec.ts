@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import * as request from 'request';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
+import {Cookie} from 'tough-cookie';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -50,6 +51,32 @@ describe('The Gateway Authenticator', () => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
             expect(result.args.jwt).to.exist;
+            done();
+        });
+    });
+
+    it('should be able to verify JWT authentication on requests to API via custom header', (done) => {
+        gatewayRequest.get({
+            headers: {'x-my-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'},
+            url:'/secure/get'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
+
+    it('should be able to verify JWT authentication on requests to API via custom cookie', (done) => {
+        const cookie = new Cookie({
+            key: 'my-cookie',
+            value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
+        });
+        const jar = gatewayRequest.jar();
+        jar.setCookie(cookie, 'http://localhost:8001');
+        gatewayRequest.get({
+            jar: jar,
+            url:'/secure/get'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
             done();
         });
     });

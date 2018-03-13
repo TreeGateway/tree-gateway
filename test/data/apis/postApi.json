@@ -2,35 +2,35 @@
     "name": "PostTestAPI",
     "version": "1.0.0",
     "path": "hasbody/",
+    "parseReqBody": true,
     "proxy": {
         "target": {
             "host": "http://httpbin.org"
         },
-        "parseReqBody": true,
-        "timeout": 5000,
-        "interceptor": {
-            "request": [
-                {
-                    "middleware": { 
-                        "name":"myRequestInterceptor"
-                    }
-                },
-                {
-                    "middleware": { 
-                        "name":"mySecondRequestInterceptor"
-                    }
-                },
-                {
-                    "middleware": { 
-                        "name":"changeBodyInterceptor"
-                    } 
+        "timeout": 5000
+    },
+    "interceptor": {
+        "request": [
+            {
+                "middleware": { 
+                    "name":"myRequestInterceptor"
                 }
-            ], 
-            "response": [
-                {"middleware": { "name":"myResponseInterceptor"} }, 
-                {"middleware": { "name":"SecondInterceptor"} },
-                {"middleware": { "name":"changeBodyResponseInterceptor"} }
-            ] 
-        }
+            },
+            {
+                "middleware": { 
+                    "name":"mySecondRequestInterceptor"
+                }
+            },
+            {
+                "middleware": { 
+                    "name":"changeBodyInterceptor"
+                } 
+            }
+        ], 
+        "response": [
+            {"middleware": { "name":"myResponseInterceptor"} }, 
+            {"middleware": { "name":"SecondInterceptor"} },
+            {"middleware": { "name":"changeBodyResponseInterceptor"} }
+        ] 
     }
 }

@@ -21,30 +21,30 @@
         "target": {
             "host": "http://httpbin.org"
         },
-        "timeout": 5000,
-        "interceptor": {
-            "request": [
-                {
-                    "middleware": {
-                        "id":"myRequestInterceptor"
-                    }, 
-                    "group": "Group1"
-                },
-                {
-                    "middleware": {"name":"mySecondRequestInterceptor"}
-                }
-            ], 
-            "response": [
-                {
-                    "middleware": {"id":"myResponseInterceptor"}
+        "timeout": 5000
+    },
+    "interceptor": {
+        "request": [
+            {
+                "middleware": {
+                    "id":"myRequestInterceptor"
                 }, 
-                {
-                    "middleware": {
-                        "name":"SecondInterceptor"
-                    },
-                    "group": "Group1"
-                }
-            ] 
-        }
-    }
+                "group": "Group1"
+            },
+            {
+                "middleware": {"name":"mySecondRequestInterceptor"}
+            }
+        ], 
+        "response": [
+            {
+                "middleware": {"id":"myResponseInterceptor"}
+            }, 
+            {
+                "middleware": {
+                    "name":"SecondInterceptor"
+                },
+                "group": "Group1"
+            }
+        ] 
+    }    
 }

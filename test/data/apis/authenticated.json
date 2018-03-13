@@ -8,13 +8,17 @@
         },
         "timeout": "five seconds"
     },
+    "parseCookies": true,
     "authentication": {
         "strategy": {
             "name": "jwt",
             "options": {
                 "extractFrom": {
                     "authHeader": "Bearer",
-                    "queryParam": "jwt"
+                    "queryParam": "jwt",
+                    "header": "x-my-token",
+                    "bodyField": "token",
+                    "cookie": "my-cookie"
                 },
                 "secretOrKey": "secret",
                 "algorithms": ["HS256", "HS384"],

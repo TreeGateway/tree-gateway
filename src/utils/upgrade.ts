@@ -49,7 +49,18 @@ export class VersionUpgrades {
                     if (_.has(api, 'proxy.disableStats')) {
                         api.disableStats = _.get(api.proxy, 'disableStats');
                     }
-                    return <ApiConfig>_.omit(api, 'proxy.statsConfig', 'proxy.disableStats');
+                    if (_.has(api, 'proxy.parseReqBody')) {
+                        api.parseReqBody = _.get(api.proxy, 'parseReqBody');
+                    }
+                    if (_.has(api, 'proxy.parseCookies')) {
+                        api.parseCookies = _.get(api.proxy, 'parseCookies');
+                    }
+                    if (_.has(api, 'proxy.interceptor')) {
+                        api.interceptor = _.get(api.proxy, 'interceptor');
+                    }
+                    return <ApiConfig>_.omit(api, 'proxy.statsConfig', 'proxy.disableStats',
+                                            'proxy.parseReqBody', 'proxy.parseCookies',
+                                            'proxy.interceptor');
                 });
             }
             await this.service.set(pac);

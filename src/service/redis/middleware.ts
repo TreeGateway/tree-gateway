@@ -4,7 +4,8 @@ import { ConfigTopics } from '../../config/events';
 import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
 import { MiddlewareService } from '../middleware';
-import { ValidationError, NotFoundError } from '../../error/errors';
+import { ValidationError } from '../../config/errors';
+import { NotFoundError } from '../../pipeline/error/errors';
 
 export class RedisMiddlewareService implements MiddlewareService {
     private static MIDDLEWARE_PREFIX = '{config}:middleware';

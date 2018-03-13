@@ -1,7 +1,7 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { ValidationError } from '../error/errors';
+import { ValidationError } from './errors';
 
 export interface UserData {
     /**

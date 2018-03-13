@@ -11,32 +11,32 @@ group:
     description: "Endpoints Group Two"
     member:
       - method: "POST"
+parseReqBody: true
 proxy:
   target:
     host: http://httpbin.org
   timeout: 5000
-  parseReqBody: true
-  interceptor:
-    response:
-      - middleware:
-          name: responseBodyTransformer
-          options:
-            expression: >
-              {
-                'argumentNames': $sort($keys(args), function($l, $r) {
-                   $l < $r
-                 })
-              }
-        group: Group1
-      - middleware:
-          name: webSecurity
-    request:
-      middleware:
-        name: requestBodyTransformer
+interceptor:
+  response:
+    - middleware:
+        name: responseBodyTransformer
         options:
           expression: >
             {
-              'test': test
+              'argumentNames': $sort($keys(args), function($l, $r) {
+                  $l < $r
+                })
             }
-      group: Group2
+      group: Group1
+    - middleware:
+        name: webSecurity
+  request:
+    middleware:
+      name: requestBodyTransformer
+      options:
+        expression: >
+          {
+            'test': test
+          }
+    group: Group2
         
