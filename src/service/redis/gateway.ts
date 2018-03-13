@@ -4,7 +4,7 @@ import { ConfigTopics } from '../../config/events';
 import { GatewayConfig } from '../../config/gateway';
 import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
-import { NotFoundError } from '../../error/errors';
+import { NotFoundError } from '../../pipeline/error/errors';
 import { GatewayService } from '../gateway';
 import { castArray } from '../../utils/config';
 import * as _ from 'lodash';

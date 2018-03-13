@@ -12,7 +12,7 @@ import { AuthenticationConfig, authenticationValidatorSchema } from './authentic
 import { CacheConfig, cacheConfigValidatorSchema } from './cache';
 import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
 import { ThrottlingConfig, throttlingConfigValidatorSchema } from './throttling';
-import { ValidationError } from '../error/errors';
+import { ValidationError } from './errors';
 
 /**
  * The Server config descriptor.

@@ -3,7 +3,7 @@
 import * as Joi from 'joi';
 import { GatewayConfig, gatewayConfigValidatorSchema } from './gateway';
 import { ApiConfig, apiConfigValidatorSchema } from './api';
-import { ValidationError } from '../error/errors';
+import { ValidationError } from './errors';
 
 /**
  * The Server config descriptor.

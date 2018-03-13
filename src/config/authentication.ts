@@ -2,7 +2,7 @@
 
 import * as Joi from 'joi';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
-import { ValidationError } from '../error/errors';
+import { ValidationError } from './errors';
 
 /**
  * Configure Authentication for APIs.

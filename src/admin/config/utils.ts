@@ -1,6 +1,6 @@
 'use strict';
 
-import { SdkError } from '../../error/errors';
+import { SdkError } from './errors';
 
 export function checkStatus(response: any, status: number) {
     if (response.status !== status) {

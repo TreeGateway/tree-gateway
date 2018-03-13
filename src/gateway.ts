@@ -7,15 +7,7 @@ import * as express from 'express';
 import adminApi from './admin/api/admin-api';
 import { UsersRest } from './admin/api/users';
 import { Server, HttpError } from 'typescript-rest';
-import { ApiConfig, validateApiConfig } from './config/api';
-import { ApiProxy } from './proxy/proxy';
-import { normalizePath } from './utils/path';
-import { ApiRateLimit } from './throttling/throttling';
-import { ApiCors } from './cors/cors';
-import { ApiCircuitBreaker } from './circuitbreaker/circuit-breaker';
-import { ApiAuth } from './authentication/auth';
-import { ApiCache } from './cache/cache';
-import { ApiFilter } from './filter/filter';
+import { ApiConfig } from './config/api';
 import { Logger } from './logger';
 import { AccessLogger } from './express-logger';
 import { ConfigService } from './service/config';
@@ -24,36 +16,26 @@ import * as fs from 'fs-extra-promise';
 import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
 import * as path from 'path';
-import * as cors from 'cors';
 import { getMilisecondsInterval } from './utils/time-intervals';
-import { ServiceDiscovery } from './servicediscovery/service-discovery';
+import { ServiceDiscovery } from './pipeline/servicediscovery/service-discovery';
 import { EventEmitter } from 'events';
-import { ApiErrorHandler } from './error/error-handler';
-import { RequestLogger } from './stats/request';
+import { RequestLogger } from './pipeline/stats/request';
+import { ApiPileline } from './pipeline/api';
 
 @Singleton
 @AutoWired
 export class Gateway extends EventEmitter {
     @Inject private config: Configuration;
-    @Inject private apiProxy: ApiProxy;
-    @Inject private apiErrorHandler: ApiErrorHandler;
-    @Inject private apiRateLimit: ApiRateLimit;
-    @Inject private apiCors: ApiCors;
-    @Inject private apiCircuitBreaker: ApiCircuitBreaker;
-    @Inject private apiCache: ApiCache;
-    @Inject private apiAuth: ApiAuth;
-    @Inject private apiFilter: ApiFilter;
     @Inject private logger: Logger;
     @Inject private requestLogger: RequestLogger;
     @Inject private configService: ConfigService;
     @Inject private serviceDiscovery: ServiceDiscovery;
+    @Inject private apiPipeline: ApiPileline;
 
     private app: express.Application;
     private adminApp: express.Application;
     private apiServer: Map<string, http.Server>;
     private adminServer: Map<string, http.Server>;
-    private apiRoutes: Map<string, express.Router> = new Map<string, express.Router>();
-    private installedApis: Map<string, ApiConfig>;
     private serverRunning: boolean = false;
 
     constructor() {
@@ -66,11 +48,7 @@ export class Gateway extends EventEmitter {
     }
 
     get apis(): Array<ApiConfig> {
-        const result = new Array<ApiConfig>();
-        this.installedApis.forEach(element => {
-            result.push(element);
-        });
-        return result;
+        return this.apiPipeline.apis;
     }
 
     get running(): boolean {
@@ -78,7 +56,7 @@ export class Gateway extends EventEmitter {
     }
 
     getApiConfig(apiId: string): ApiConfig {
-        return this.installedApis.get(apiId);
+        return this.apiPipeline.getApiConfig(apiId);
     }
 
     start(): Promise<void> {
@@ -169,7 +147,7 @@ export class Gateway extends EventEmitter {
                 let toClose = this.apiServer.size;
                 if (toClose === 0) {
                     this.serverRunning = false;
-                    this.apiRoutes.clear();
+                    this.apiPipeline.clearRoutes();
                     this.emit('stop', this);
                     return resolve();
                 }
@@ -179,7 +157,7 @@ export class Gateway extends EventEmitter {
                         if (toClose === 0) {
                             this.logger.info('Gateway server stopped');
                             this.serverRunning = false;
-                            this.apiRoutes.clear();
+                            this.apiPipeline.clearRoutes();
                             this.emit('stop', this);
                             resolve();
                         }
@@ -188,7 +166,7 @@ export class Gateway extends EventEmitter {
                 this.apiServer = null;
             } else {
                 this.serverRunning = false;
-                this.apiRoutes.clear();
+                this.apiPipeline.clearRoutes();
                 this.emit('stop', this);
                 resolve();
             }
@@ -237,105 +215,13 @@ export class Gateway extends EventEmitter {
     }
 
     private async loadApis(): Promise<void> {
-        try {
-            this.installedApis = new Map<string, ApiConfig>();
-
-            const configs: Array<ApiConfig> = await this.configService.getAllApiConfig();
-            const loaders = configs.map((config) => {
-                return this.loadApi(config);
-            });
-
-            await Promise.all(loaders);
-        } catch (err) {
-            this.logger.error(`Error while installing API's: ${err}`);
-            throw err;
-        }
+        const configs: Array<ApiConfig> = await this.configService.getAllApiConfig();
+        await this.apiPipeline.loadApis(configs, this.server);
     }
 
-    private reloadApis(): Promise<void> {
+    private async reloadApis(): Promise<void> {
         this.emit('api-reload', this);
-        return this.loadApis();
-    }
-
-    private async loadApi(api: ApiConfig): Promise<void> {
-        try {
-            await validateApiConfig(api, this.config.gateway.disableApiIdValidation);
-            await this.loadValidApi(api);
-        } catch (err) {
-            this.logger.error(`Error loading api config: ${err.message}\n${JSON.stringify(api)}`);
-            throw err;
-        }
-    }
-
-    private loadValidApi(api: ApiConfig) {
-        if (this.logger.isInfoEnabled()) {
-            this.logger.info(`Configuring API [${api.id}] on path: ${api.path}`);
-        }
-
-        this.installedApis.set(api.id, api);
-        api.path = normalizePath(api.path);
-
-        const apiRouter = express.Router();
-        if (this.requestLogger.isRequestLogEnabled(api)) {
-            this.configureLogMiddleware(apiRouter, api);
-        }
-        this.apiFilter.buildApiFilters(apiRouter, api, this.config.gateway.config);
-
-        if (api.throttling) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug('Configuring API Rate Limits');
-            }
-            this.apiRateLimit.throttling(apiRouter, api, this.config.gateway.config);
-        }
-        if (api.cors) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug('Configuring API Cors support');
-            }
-            this.apiCors.cors(apiRouter, api, this.config.gateway.config);
-        } else {
-            this.configureDefaultCors(apiRouter);
-        }
-        if (api.circuitBreaker) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug('Configuring API Circuit Breaker');
-            }
-            this.apiCircuitBreaker.circuitBreaker(apiRouter, api, this.config.gateway.config);
-        }
-        if (api.authentication) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug('Configuring API Authentication');
-            }
-            this.apiAuth.authentication(apiRouter, api.id, api, this.config.gateway.config);
-        }
-        this.apiProxy.configureProxyHeader(apiRouter, api);
-        if (api.cache) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug('Configuring API Cache');
-            }
-            this.apiCache.cache(apiRouter, api, this.config.gateway.config);
-        }
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug('Configuring API Proxy');
-        }
-
-        this.apiProxy.proxy(apiRouter, api);
-        this.apiErrorHandler.handle(apiRouter, api);
-
-        const initializeRouter = !this.apiRoutes.has(api.id);
-        this.apiRoutes.set(api.id, apiRouter);
-        if (initializeRouter) {
-            this.server.use(api.path, (req, res, next) => {
-                if (this.apiRoutes.has(api.id)) {
-                    this.apiRoutes.get(api.id)(req, res, next);
-                } else {
-                    next();
-                }
-            });
-        }
-    }
-
-    private circuitChanged(id: string, state: string) {
-        this.apiCircuitBreaker.onStateChanged(id, state);
+        await this.loadApis();
     }
 
     private updateConfig(packageId: string, needsReload: boolean) {
@@ -357,7 +243,6 @@ export class Gateway extends EventEmitter {
             this.configService.installAllMiddlewares()
                 .then(() => this.reloadApis())
                 .then(() => {
-                    this.removeOldAPIs();
                     this.logger.info(`Configuration package ${packageId} applied successfuly.`);
                 })
                 .catch(err => {
@@ -367,21 +252,13 @@ export class Gateway extends EventEmitter {
         }
     }
 
-    private removeOldAPIs() {
-        this.apiRoutes.forEach((value, apiId) => {
-            if (!this.installedApis.has(apiId)) {
-                this.apiRoutes.delete(apiId);
-            }
-        });
-    }
-
     private async initialize(): Promise<void> {
         try {
             this.app = express();
             await this.configureServer();
             await this.configService.removeAllListeners()
                 .on(ConfigEvents.CONFIG_UPDATED, (packageId: string, needsReload: boolean) => this.updateConfig(packageId, needsReload))
-                .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => this.circuitChanged(id, state))
+                .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => this.apiPipeline.circuitChanged(id, state))
                 .subscribeEvents();
             await this.configureAdminServer();
             this.requestLogger.initialize();
@@ -407,7 +284,7 @@ export class Gateway extends EventEmitter {
         this.configureHealthcheck();
         await this.configService.installAllMiddlewares();
         await this.serviceDiscovery.loadServiceDiscoveryProviders(this.config.gateway);
-        this.apiFilter.buildGatewayFilters(this.app, this.config.gateway.filter);
+        this.apiPipeline.buildGatewayFilters(this.app, this.config.gateway.filter);
         await  this.loadApis();
     }
 
@@ -431,7 +308,7 @@ export class Gateway extends EventEmitter {
                 AccessLogger.configureAccessLoger(this.config.gateway.admin.accessLogger,
                     this.config.rootPath, this.adminApp, './logs/admin');
             }
-            this.apiFilter.buildGatewayFilters(this.adminApp, this.config.gateway.admin.filter);
+            this.apiPipeline.buildGatewayFilters(this.adminApp, this.config.gateway.admin.filter);
             this.configureAdminCors();
             this.configureApiDocs();
 
@@ -454,8 +331,7 @@ export class Gateway extends EventEmitter {
 
     private configureAdminCors() {
         if (this.config.gateway.admin.cors) {
-            const corsOptions = new ApiCors().configureCorsOptions(this.config.gateway.admin.cors);
-            this.adminApp.use(cors(corsOptions));
+            this.adminApp.use(this.apiPipeline.configureCors(this.config.gateway.admin.cors));
         }
     }
 
@@ -472,28 +348,5 @@ export class Gateway extends EventEmitter {
             const apiHost = this.config.gateway.admin.apiDocs.host;
             Server.swagger(this.adminApp, swaggerFile, apiPath, apiHost, schemes);
         }
-    }
-
-    private configureDefaultCors(apiRouter: express.Router) {
-        if (this.config.gateway.cors) {
-            const corsOptions = new ApiCors().configureCorsOptions(this.config.gateway.cors);
-            apiRouter.use(cors(corsOptions));
-        }
-    }
-
-    private configureLogMiddleware(server: express.Router, api: ApiConfig) {
-        server.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const requestLog = this.requestLogger.initRequestLog(req, api);
-            const end = res.end;
-            const requestLogger = this.requestLogger;
-            res.end = function(...args: any[]) {
-                requestLog.status = res.statusCode;
-                requestLog.responseTime = new Date().getTime() - requestLog.timestamp;
-                requestLogger.registerOccurrence(requestLog);
-                res.end = end;
-                res.end.apply(res, arguments);
-            };
-            next();
-        });
     }
 }

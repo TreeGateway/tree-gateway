@@ -11,8 +11,8 @@
             "keepAliveTime": "five seconds",
             "freeSocketKeepAliveTimeout": "50 seconds"
         },
-        "timeout": "five seconds", 
-        "parseReqBody": false
+        "timeout": "five seconds"
     },
+    "parseReqBody": false,
     "disableStats": true
 }

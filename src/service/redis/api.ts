@@ -2,7 +2,8 @@
 
 import { ObjectID } from 'bson';
 import { ApiService } from '../api';
-import { NotFoundError, ValidationError } from '../../error/errors';
+import { ValidationError } from '../../config/errors';
+import { NotFoundError } from '../../pipeline/error/errors';
 import { ApiConfig } from '../../config/api';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { Database } from '../../database';
@@ -184,13 +185,13 @@ export class RedisApiService implements ApiService {
             castArray(api, 'filter');
             api.filter.forEach(config => castArray(config, 'group'));
         }
-        if (_.has(api, 'proxy.interceptor.request')) {
-            castArray(api, 'proxy.interceptor.request');
-            api.proxy.interceptor.request.forEach(interceptor => castArray(interceptor, 'group'));
+        if (_.has(api, 'interceptor.request')) {
+            castArray(api, 'interceptor.request');
+            api.interceptor.request.forEach(interceptor => castArray(interceptor, 'group'));
         }
-        if (_.has(api, 'proxy.interceptor.response')) {
-            castArray(api, 'proxy.interceptor.response');
-            api.proxy.interceptor.response.forEach(interceptor => castArray(interceptor, 'group'));
+        if (_.has(api, 'interceptor.response')) {
+            castArray(api, 'interceptor.response');
+            api.interceptor.response.forEach(interceptor => castArray(interceptor, 'group'));
         }
     }
 }

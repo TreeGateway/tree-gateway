@@ -11,44 +11,44 @@ import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 export class MiddlewareLoader {
     private static providedMiddlewares: any = {
         'authentication/strategy': {
-            'basic': '../authentication/strategies/basic',
-            'jwt': '../authentication/strategies/jwt',
-            'local': '../authentication/strategies/local'
+            'basic': '../pipeline/authentication/strategies/basic',
+            'jwt': '../pipeline/authentication/strategies/jwt',
+            'local': '../pipeline/authentication/strategies/local'
         },
         'errorhandler': {
-            'json': '../error/handlers/json',
-            'mustache': '../error/handlers/mustache'
+            'json': '../pipeline/error/handlers/json',
+            'mustache': '../pipeline/error/handlers/mustache'
         },
         'filter': {
-            'ipFilter': '../filter/filters/ipFilter'
+            'ipFilter': '../pipeline/filter/filters/ipFilter'
         },
         'interceptor/request': {
-            'requestBodyTransformer': '../proxy/interceptors/requestBodyTransformer',
-            'requestHeaders': '../proxy/interceptors/requestHeaders',
-            'requestMustache': '../proxy/interceptors/requestMustache',
-            'requestXml': '../proxy/interceptors/requestXml'
+            'requestBodyTransformer': '../pipeline/proxy/interceptors/requestBodyTransformer',
+            'requestHeaders': '../pipeline/proxy/interceptors/requestHeaders',
+            'requestMustache': '../pipeline/proxy/interceptors/requestMustache',
+            'requestXml': '../pipeline/proxy/interceptors/requestXml'
         },
         'interceptor/response': {
-            'responseBodyTransformer': '../proxy/interceptors/responseBodyTransformer',
-            'responseHeaders': '../proxy/interceptors/responseHeaders',
-            'responseMustache': '../proxy/interceptors/responseMustache',
-            'responseXml': '../proxy/interceptors/responseXml',
-            'webSecurity': '../proxy/interceptors/webSecurity'
+            'responseBodyTransformer': '../pipeline/proxy/interceptors/responseBodyTransformer',
+            'responseHeaders': '../pipeline/proxy/interceptors/responseHeaders',
+            'responseMustache': '../pipeline/proxy/interceptors/responseMustache',
+            'responseXml': '../pipeline/proxy/interceptors/responseXml',
+            'webSecurity': '../pipeline/proxy/interceptors/webSecurity'
         },
         'proxy/router': {
-            'header': '../proxy/routers/header',
-            'loadBalancer': '../proxy/routers/loadBalancer',
-            'query': '../proxy/routers/query',
-            'trafficSplit': '../proxy/routers/trafficSplit'
+            'header': '../pipeline/proxy/routers/header',
+            'loadBalancer': '../pipeline/proxy/routers/loadBalancer',
+            'query': '../pipeline/proxy/routers/query',
+            'trafficSplit': '../pipeline/proxy/routers/trafficSplit'
         },
         'request/logger': {
-            'redis': '../stats/request-logger/redis'
+            'redis': '../pipeline/stats/request-logger/redis'
         },
         'servicediscovery': {
-            'consul': '../servicediscovery/middleware/consul'
+            'consul': '../pipeline/servicediscovery/middleware/consul'
         },
         'servicediscovery/provider': {
-            'consul': '../servicediscovery/middleware/provider/consul'
+            'consul': '../pipeline/servicediscovery/middleware/provider/consul'
         }
     };
 

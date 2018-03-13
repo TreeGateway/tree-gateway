@@ -9,7 +9,8 @@ import * as express from 'express';
 import { Inject } from 'typescript-ioc';
 import { Configuration } from '../../configuration';
 import { Database } from '../../database';
-import { NotFoundError, ValidationError } from '../../error/errors';
+import { ValidationError } from '../../config/errors';
+import { NotFoundError } from '../../pipeline/error/errors';
 import { UserService } from '../users';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
 
