@@ -261,7 +261,9 @@ export class Gateway extends EventEmitter {
                 .on(ConfigEvents.CIRCUIT_CHANGED, (id: string, state: string) => this.apiPipeline.circuitChanged(id, state))
                 .subscribeEvents();
             await this.configureAdminServer();
-            this.requestLogger.initialize();
+            if (this.requestLogger.isGatewayRequestLogEnabled()) {
+                this.requestLogger.initialize();
+            }
         } catch (err) {
             this.logger.error(`Error configuring gateway server. Config File:\n${JSON.stringify(this.config.gateway)}`);
             this.logger.inspectObject(err);

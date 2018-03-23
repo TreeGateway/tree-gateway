@@ -42,12 +42,15 @@ export class VersionUpgrades {
             if (pac && pac.gateway) {
                 console.info(chalk.magenta('An older configuration was found. Updating it to the newer format. '
                                                 + 'Check tree-gateway migration guide for more info.'));
-                pac.gateway = <GatewayConfig>_.omit(pac.gateway, 'statsConfig', 'monitor');
+                if (!(<any>pac.gateway)['disableStats']) {
+                    pac.gateway.analytics = { enabled: true, logger: { name: 'redis' } };
+                }
+                pac.gateway = <GatewayConfig>_.omit(pac.gateway, 'statsConfig', 'monitor', 'disableStats');
             }
             if (pac.apis) {
                 pac.apis = pac.apis.map(api => {
                     if (_.has(api, 'proxy.disableStats')) {
-                        api.disableStats = _.get(api.proxy, 'disableStats');
+                        api.disableAnalytics = _.get(api.proxy, 'disableStats');
                     }
                     if (_.has(api, 'proxy.parseReqBody')) {
                         api.parseReqBody = _.get(api.proxy, 'parseReqBody');

@@ -120,10 +120,6 @@ export interface GatewayConfig {
      */
     config?: ApiFeaturesConfig;
     /**
-     * Disable all stats recording for the gateway
-     */
-    disableStats?: boolean;
-    /**
      * Inform how request analytics should be stored by the gateway
      */
     analytics?: RequestAnalyticsConfig;
@@ -134,9 +130,13 @@ export interface GatewayConfig {
  */
 export interface RequestAnalyticsConfig {
     /**
+     * Enable log recording for the gateway requests
+     */
+    enabled?: boolean;
+    /**
      * The logger middleware
      */
-    logger: MiddlewareConfig;
+    logger?: MiddlewareConfig;
 }
 
 /**
@@ -179,7 +179,8 @@ const apiFeaturesConfigSchema = Joi.object().keys({
 });
 
 export const requestAnalyticsConfigSchema = Joi.object().keys({
-    logger: middlewareConfigValidatorSchema.required()
+    enabled: Joi.boolean(),
+    logger: middlewareConfigValidatorSchema
 });
 
 export const gatewayConfigValidatorSchema = Joi.object().keys({
@@ -190,7 +191,6 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     cors: corsConfigSchema,
     disableApiIdValidation: Joi.boolean(),
     disableCompression: Joi.boolean(),
-    disableStats: Joi.boolean(),
     errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.alternatives([Joi.array().items(middlewareConfigValidatorSchema), middlewareConfigValidatorSchema]),
     healthcheck: Joi.string(),

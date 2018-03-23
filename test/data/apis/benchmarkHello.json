@@ -14,5 +14,5 @@
         "timeout": "five seconds"
     },
     "parseReqBody": false,
-    "disableStats": true
+    "disableAnalytics": true
 }

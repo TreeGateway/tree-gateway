@@ -38,7 +38,11 @@ export class RequestLogger {
     }
 
     isRequestLogEnabled(api: ApiConfig): boolean {
-        return (!this.config.gateway.disableStats && !api.disableStats);
+        return (this.isGatewayRequestLogEnabled() && !api.disableAnalytics);
+    }
+
+    isGatewayRequestLogEnabled() {
+        return this.config.gateway.analytics && this.config.gateway.analytics.enabled;
     }
 
     getRequestLog(req: Request): RequestLog {
@@ -61,7 +65,7 @@ export class RequestLogger {
     }
 
     private getRequestLogMiddleware() {
-        if (this.config.gateway.analytics) {
+        if (this.config.gateway.analytics && this.config.gateway.analytics.logger) {
             return this.config.gateway.analytics.logger;
         }
         return {

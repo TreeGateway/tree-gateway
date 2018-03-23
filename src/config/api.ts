@@ -137,9 +137,9 @@ export interface ApiConfig {
      */
     errorHandler?: MiddlewareConfig;
     /**
-     * Disable all stats recording for this API
+     * Disable all request log recording for this API
      */
-    disableStats?: boolean;
+    disableAnalytics?: boolean;
     /**
      * Allows you to control when to parse the request body. Just enable it if you need to access the ```request.body```
      * inside a proxy middleware, like a ```filter``` or ```interceptor```. You can inform the expected
@@ -207,7 +207,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     circuitBreaker: Joi.alternatives([Joi.array().items(apiCircuitBreakerConfigValidatorSchema), apiCircuitBreakerConfigValidatorSchema]),
     cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),
     description: Joi.string(),
-    disableStats: Joi.boolean(),
+    disableAnalytics: Joi.boolean(),
     errorHandler: middlewareConfigValidatorSchema,
     filter: Joi.alternatives([Joi.array().items(apiFilterSchema), apiFilterSchema]),
     group: Joi.alternatives([Joi.array().items(groupValidatorSchema), groupValidatorSchema]),
