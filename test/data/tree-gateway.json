@@ -10,7 +10,6 @@
     },
     "gateway": {
         "underProxy": false,
-        "disableStats": true,
         "disableCompression": true,
         "protocol": {
             "http": {
@@ -73,6 +72,9 @@
                 "prettyPrint": true,
                 "outputDir": "./logs"
             }
+        },
+        "analytics": {
+            "enabled": false
         }
     } 
 }

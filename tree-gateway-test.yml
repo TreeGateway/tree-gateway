@@ -69,7 +69,8 @@ gateway:
             message: IP Filtered
             database:
                 checkInterval: 1 second
-
+    analytics:
+        enabled: true
     serviceDiscovery:
         provider:
             name: consul
