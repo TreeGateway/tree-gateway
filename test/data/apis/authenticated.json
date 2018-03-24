@@ -30,10 +30,12 @@
         } 
     },
     "errorHandler": {
-        "name": "mustache",
-        "options": {
-            "template": "<html><head></head><body>Error: {{error.message}}</body></html>",
-            "contentType": "text/html"
+        "middleware": {
+            "name": "mustache",
+            "options": {
+                "template": "<html><head></head><body>Error: {{error.message}}</body></html>",
+                "contentType": "text/html"
+            }
         }
     }
 }

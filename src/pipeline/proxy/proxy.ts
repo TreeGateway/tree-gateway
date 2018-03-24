@@ -12,6 +12,7 @@ import * as _ from 'lodash';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
 import { ServiceDiscovery } from '../servicediscovery/service-discovery';
 import { WritableStreamBuffer } from 'stream-buffers';
+import { ApiPipelineConfig } from '../../config/gateway';
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../../lib/http-proxy');
 
@@ -29,11 +30,11 @@ export class ApiProxy {
     /**
      * Configure a proxy for a given API
      */
-    proxy(apiRouter: express.Router, api: ApiConfig) {
+    proxy(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         this.buildRouterMiddleware(apiRouter, api);
         this.buildServiceDiscoveryMiddleware(apiRouter, api);
-        this.interceptor.buildRequestInterceptors(apiRouter, api);
-        apiRouter.use(this.configureProxy(api));
+        this.interceptor.buildRequestInterceptors(apiRouter, api, pipelineConfig);
+        apiRouter.use(this.configureProxy(api, pipelineConfig));
     }
 
     configureProxyHeader(apiRouter: express.Router, api: ApiConfig) {
@@ -87,7 +88,7 @@ export class ApiProxy {
         return new agentKeepAlive(agentOptions);
     }
 
-    private configureProxy(api: ApiConfig) {
+    private configureProxy(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const apiProxy: Proxy = api.proxy;
         const proxyConfig: any = {
             changeOrigin: !apiProxy.preserveHostHdr,
@@ -114,7 +115,7 @@ export class ApiProxy {
         });
 
         const maybeWrapResponse = this.interceptor.hasResponseInterceptor(api);
-        const responseInterceptor: ResponseInterceptors = this.interceptor.responseInterceptor(api);
+        const responseInterceptor: ResponseInterceptors = this.interceptor.buildResponseInterceptors(api, pipelineConfig);
         this.handleResponseInterceptor(api, proxy, responseInterceptor);
 
         function validateInterceptors(req: express.Request, res: express.Response): boolean {

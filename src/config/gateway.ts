@@ -116,9 +116,9 @@ export interface GatewayConfig {
      */
     errorHandler?: MiddlewareConfig;
     /**
-     * Configure features globally, to be imported by api configureations
+     * Configure pipeline steps globally, to be imported by api configureations
      */
-    config?: ApiFeaturesConfig;
+    config?: ApiPipelineConfig;
     /**
      * Inform how request analytics should be stored by the gateway
      */
@@ -142,7 +142,7 @@ export interface RequestAnalyticsConfig {
 /**
  * Declare common configurations that can be used by different APIs.
  */
-export interface ApiFeaturesConfig {
+export interface ApiPipelineConfig {
     /**
      * Authentication configuration
      */
@@ -167,14 +167,34 @@ export interface ApiFeaturesConfig {
      * Throttling configuration
      */
     throttling?: { [index: string]: ThrottlingConfig };
+    /**
+     * Interceptors configuration
+     */
+    interceptor?: ApiInterceptorFeatureConfig;
+    /**
+     * Error Handler configuration
+     */
+    errorHandler?: { [index: string]: MiddlewareConfig };
 }
 
-const apiFeaturesConfigSchema = Joi.object().keys({
+export interface ApiInterceptorFeatureConfig {
+    request?: { [index: string]: MiddlewareConfig };
+    response?: { [index: string]: MiddlewareConfig };
+}
+
+const interceptorsSchema = Joi.object().keys({
+    request: Joi.object().pattern(/\w+/, middlewareConfigValidatorSchema),
+    response: Joi.object().pattern(/\w+/, middlewareConfigValidatorSchema)
+});
+
+const apiPipelineConfigSchema = Joi.object().keys({
     authentication: Joi.object().pattern(/\w+/, authenticationValidatorSchema),
     cache: Joi.object().pattern(/\w+/, cacheConfigValidatorSchema),
     circuitBreaker: Joi.object().pattern(/\w+/, circuitBreakerConfigValidatorSchema),
     cors: Joi.object().pattern(/\w+/, corsConfigSchema),
+    errorHandler: Joi.object().pattern(/\w+/, middlewareConfigValidatorSchema),
     filter: Joi.object().pattern(/\w+/, middlewareConfigValidatorSchema),
+    interceptor: interceptorsSchema,
     throttling: Joi.object().pattern(/\w+/, throttlingConfigValidatorSchema)
 });
 
@@ -187,7 +207,7 @@ export const gatewayConfigValidatorSchema = Joi.object().keys({
     accessLogger: accessLoggerConfigSchema,
     admin: adminConfigValidatorSchema,
     analytics: requestAnalyticsConfigSchema,
-    config: apiFeaturesConfigSchema,
+    config: apiPipelineConfigSchema,
     cors: corsConfigSchema,
     disableApiIdValidation: Joi.boolean(),
     disableCompression: Joi.boolean(),

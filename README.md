@@ -32,7 +32,6 @@ It provides:
   - **Integrated CircuitBreaker** - A fast [circuitbreaker](https://martinfowler.com/bliki/CircuitBreaker.html) to fast fail your responses when your API is having problems to work. It support custom handlers for events like "open" or "close" circuit.
   - Real Time **Monitoring and Analytics** - 
     - Collect statistics about any access to your APIs. Capture any event, like a cache hit on a cache entrance, a circuitbreaker open circuit or an authentication attempt.
-    - Use an existing monitor (or define your own monitor) to capture periodic information about the server or about your APIs. Ex: CPU monitor, MEM Monitor etc.
     - A very flexible and powerfull log system, that can be integrated with any service like logstash, loggly or new relic.
   - **Easy Administration** - The gateway can be configured remotelly. And no restart is needed. Any API configuration can be "hot" changed and all configurations are propagated to other tree-gateway cluster nodes with no pain. The gateway can be configured through:
     - Admin API - A REST API that can be invoked through HTTP;
@@ -60,6 +59,6 @@ Take a better look into Tree Gateway by checking out the project and working wit
   <a href="http://dashboard.leanty.com/"><img src="http://treegateway.org/img/slide/example-slide-1.png" /><a/>
 </p>
  
-## Migrating from 1.0
+## Migrating from previous versions
 
 Check our [migration guide](https://github.com/Leanty/tree-gateway/wiki/migrationGuide).

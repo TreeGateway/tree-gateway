@@ -26,9 +26,11 @@
         "group": ["Group1"]        
     },
     "errorHandler": {
-        "name": "json",
-        "options": {
-            "expression": "{'Err': error.message}"
+        "middleware": {
+            "name": "json",
+            "options": {
+                "expression": "{'Err': error.message}"
+            }
         }
     }
 }

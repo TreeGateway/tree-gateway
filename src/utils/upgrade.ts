@@ -52,6 +52,9 @@ export class VersionUpgrades {
                     if (_.has(api, 'proxy.disableStats')) {
                         api.disableAnalytics = _.get(api.proxy, 'disableStats');
                     }
+                    if (_.has(api, 'errorHandler')) {
+                        api.errorHandler = { middleware: _.get(api.proxy, 'errorHandler') };
+                    }
                     if (_.has(api, 'proxy.parseReqBody')) {
                         api.parseReqBody = _.get(api.proxy, 'parseReqBody');
                     }

@@ -135,7 +135,7 @@ export interface ApiConfig {
     /**
      * Configure how to handle errors during API pipeline.
      */
-    errorHandler?: MiddlewareConfig;
+    errorHandler?: ErrorHandler;
     /**
      * Disable all request log recording for this API
      */
@@ -151,6 +151,21 @@ export interface ApiConfig {
      * inside a proxy middleware, like a ```filter``` or ```interceptor```.
      */
     parseCookies?: boolean;
+}
+
+/**
+ * Add error handler to the request pipeline. An ErrorHandler is a valid expressjs
+ * erro handler.
+ */
+export interface ErrorHandler {
+    /**
+     * The filter to be used.
+     */
+    middleware: MiddlewareConfig;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
 }
 
 /**
@@ -183,6 +198,10 @@ export interface Interceptor {
      * Defaults to *.
      */
     group?: Array<string>;
+    /**
+     * Import a configuration from gateway config session
+     */
+    use?: string;
 }
 
 export interface ResponseInterceptorResult {
@@ -191,9 +210,15 @@ export interface ResponseInterceptorResult {
     updateHeaders?: any;
 }
 
+const errorHandlerSchema = Joi.object().keys({
+    middleware: middlewareConfigValidatorSchema,
+    use: Joi.string()
+}).xor('middleware', 'use');
+
 const interceptorSchema = Joi.object().keys({
     group: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
-    middleware: middlewareConfigValidatorSchema.required()
+    middleware: middlewareConfigValidatorSchema,
+    use: Joi.string()
 });
 
 const interceptorsSchema = Joi.object().keys({
@@ -208,7 +233,7 @@ export let apiConfigValidatorSchema = Joi.object().keys({
     cors: Joi.alternatives([Joi.array().items(apiCorsConfigSchema), apiCorsConfigSchema]),
     description: Joi.string(),
     disableAnalytics: Joi.boolean(),
-    errorHandler: middlewareConfigValidatorSchema,
+    errorHandler: errorHandlerSchema,
     filter: Joi.alternatives([Joi.array().items(apiFilterSchema), apiFilterSchema]),
     group: Joi.alternatives([Joi.array().items(groupValidatorSchema), groupValidatorSchema]),
     id: Joi.string(),
