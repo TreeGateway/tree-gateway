@@ -17,7 +17,6 @@
         }
     },
     "errorHandler": {
-        "name": "errorHandler",
-        "options": {}
+        "use": "my-ErrorHandler" 
     }
 }

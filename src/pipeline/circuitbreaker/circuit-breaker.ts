@@ -1,6 +1,6 @@
 'use strict';
 
-import { ApiFeaturesConfig } from '../../config/gateway';
+import { ApiPipelineConfig } from '../../config/gateway';
 import { ApiCircuitBreakerConfig } from '../../config/circuit-breaker';
 import { ApiConfig } from '../../config/api';
 import * as express from 'express';
@@ -28,12 +28,12 @@ export class ApiCircuitBreaker {
 
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
-    circuitBreaker(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
+    circuitBreaker(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const breakerInfos: Array<BreakerInfo> = new Array<BreakerInfo>();
         const sortedBreakers = this.sortBreakers(api.circuitBreaker, api.path);
         const breakersSize = sortedBreakers.length;
         sortedBreakers.forEach((cbConfig: ApiCircuitBreakerConfig, index: number) => {
-            cbConfig = this.resolveReferences(cbConfig, gatewayFeatures);
+            cbConfig = this.resolveReferences(cbConfig, pipelineConfig);
             const breakerInfo: BreakerInfo = {};
             const cbStateID = (breakersSize > 1 ? `${api.id}:${index}` : api.id);
             const cbOptions: any = {
@@ -79,10 +79,10 @@ export class ApiCircuitBreaker {
         this.activeBreakers.clear();
     }
 
-    private resolveReferences(circuitBreaker: ApiCircuitBreakerConfig, features: ApiFeaturesConfig) {
-        if (circuitBreaker.use && features.circuitBreaker) {
-            if (features.circuitBreaker[circuitBreaker.use]) {
-                circuitBreaker = _.defaults(circuitBreaker, features.circuitBreaker[circuitBreaker.use]);
+    private resolveReferences(circuitBreaker: ApiCircuitBreakerConfig, pipelineConfig: ApiPipelineConfig) {
+        if (circuitBreaker.use && pipelineConfig.circuitBreaker) {
+            if (pipelineConfig.circuitBreaker[circuitBreaker.use]) {
+                circuitBreaker = _.defaults(circuitBreaker, pipelineConfig.circuitBreaker[circuitBreaker.use]);
             } else {
                 throw new Error(`Invalid reference ${circuitBreaker.use}. There is no configuration for this id.`);
             }

@@ -162,8 +162,8 @@ export class ApiPileline {
             this.logger.debug('Configuring API Proxy');
         }
 
-        this.apiProxy.proxy(apiRouter, api);
-        this.apiErrorHandler.handle(apiRouter, api);
+        this.apiProxy.proxy(apiRouter, api, this.config.gateway.config);
+        this.apiErrorHandler.handle(apiRouter, api, this.config.gateway.config);
 
         const initializeRouter = !this.apiRoutes.has(api.id);
         this.apiRoutes.set(api.id, apiRouter);

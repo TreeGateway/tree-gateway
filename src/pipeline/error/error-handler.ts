@@ -1,13 +1,14 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig } from '../../config/api';
+import { ApiConfig, ErrorHandler } from '../../config/api';
 import { Logger } from '../../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
 import { Configuration } from '../../configuration';
 import { MiddlewareConfig } from '../../config/middleware';
 import { RequestLogger } from '../stats/request';
+import { ApiPipelineConfig } from '../../config/gateway';
 
 /**
  * The API Error handler. Called to handle errors in API pipeline processing.
@@ -22,12 +23,13 @@ export class ApiErrorHandler {
     /**
      * Configure a proxy for a given API
      */
-    handle(apiRouter: express.Router, api: ApiConfig) {
-        apiRouter.use(this.configureErrorHandler(api));
+    handle(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+        apiRouter.use(this.configureErrorHandler(api, pipelineConfig));
     }
 
-    private configureErrorHandler(api: ApiConfig) {
-        const errorHandler: MiddlewareConfig = api.errorHandler || this.config.gateway.errorHandler;
+    private configureErrorHandler(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+        const apiErrorHandler = api.errorHandler ? this.resolveReferences(api.errorHandler, pipelineConfig) : null;
+        const errorHandler: MiddlewareConfig = apiErrorHandler ?  apiErrorHandler.middleware : this.config.gateway.errorHandler;
         const appErrorHandler = this.getAppErrorHandler(errorHandler);
         if (this.requestLogger.isRequestLogEnabled(api)) {
             return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -42,6 +44,17 @@ export class ApiErrorHandler {
         } else {
             return appErrorHandler;
         }
+    }
+
+    private resolveReferences(errorHandler: ErrorHandler, pipelineConfig: ApiPipelineConfig) {
+        if (errorHandler.use && pipelineConfig.errorHandler) {
+            if (pipelineConfig.errorHandler[errorHandler.use]) {
+                errorHandler.middleware = pipelineConfig.errorHandler[errorHandler.use];
+            } else {
+                throw new Error(`Invalid reference ${errorHandler.use}. There is no configuration for this id.`);
+            }
+        }
+        return errorHandler;
     }
 
     private getAppErrorHandler(errorHandler: MiddlewareConfig) {
@@ -73,7 +86,7 @@ export class ApiErrorHandler {
                             res.send(err.message);
                     }
                     if (this.logger.isWarnEnabled()) {
-                        this.logger.warn(`Error on API pipeline processing: ${err.message}`);
+                        this.logger.warn(`Error processing API pipeline: ${err.message}`);
                         this.logger.warn(err);
                     }
                 } else {

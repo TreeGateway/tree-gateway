@@ -1,13 +1,14 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig } from '../../config/api';
+import { ApiConfig, Interceptor } from '../../config/api';
 import * as Groups from '../group';
 import { Inject } from 'typescript-ioc';
 import { Logger } from '../../logger';
 import { createFunction } from '../../utils/functions';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
 import * as mm from 'micromatch';
+import { ApiPipelineConfig } from '../../config/gateway';
 
 export interface ResponseInterceptors {
     middelware: Function;
@@ -18,15 +19,15 @@ export class ProxyInterceptor {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private logger: Logger;
 
-    buildRequestInterceptors(apiRouter: express.Router, api: ApiConfig) {
+    buildRequestInterceptors(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.hasRequestInterceptor(api)) {
-            this.createRequestInterceptors(apiRouter, api);
+            this.createRequestInterceptors(apiRouter, api, pipelineConfig);
         }
     }
 
-    responseInterceptor(api: ApiConfig) {
+    buildResponseInterceptors(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.hasResponseInterceptor(api)) {
-            return (this.buildResponseInterceptor(api));
+            return (this.createResponseInterceptors(api, pipelineConfig));
         }
         return null;
     }
@@ -39,12 +40,35 @@ export class ProxyInterceptor {
         return (api.interceptor && api.interceptor.response && api.interceptor.response.length > 0);
     }
 
-    private createRequestInterceptors(apiRouter: express.Router, api: ApiConfig) {
+    private resolveRequestInterceptorReferences(interceptor: Interceptor, pipelineConfig: ApiPipelineConfig) {
+        if (interceptor.use && pipelineConfig.interceptor && pipelineConfig.interceptor.request) {
+            if (pipelineConfig.interceptor.request[interceptor.use]) {
+                interceptor.middleware = pipelineConfig.interceptor.request[interceptor.use];
+            } else {
+                throw new Error(`Invalid reference ${interceptor.use}. There is no configuration for this id.`);
+            }
+        }
+        return interceptor;
+    }
+
+    private resolveResponseInterceptorReferences(interceptor: Interceptor, pipelineConfig: ApiPipelineConfig) {
+        if (interceptor.use && pipelineConfig.interceptor && pipelineConfig.interceptor.response) {
+            if (pipelineConfig.interceptor.response[interceptor.use]) {
+                interceptor.middleware = pipelineConfig.interceptor.response[interceptor.use];
+            } else {
+                throw new Error(`Invalid reference ${interceptor.use}. There is no configuration for this id.`);
+            }
+        }
+        return interceptor;
+    }
+
+    private createRequestInterceptors(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Configuring request interceptors for Proxy target [${api.path}]. Interceptors [${JSON.stringify(api.interceptor.request)}]`);
         }
 
         api.interceptor.request.forEach((interceptor, index) => {
+            interceptor = this.resolveRequestInterceptorReferences(interceptor, pipelineConfig);
             const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/request', interceptor.middleware);
             if (interceptor.group) {
                 const groupValidator = Groups.buildGroupAllowFilter(api.group, interceptor.group);
@@ -89,7 +113,7 @@ export class ProxyInterceptor {
         });
     }
 
-    private buildResponseInterceptor(api: ApiConfig) {
+    private createResponseInterceptors(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const body = new Array<string>();
         const interceptors: any = {};
         const result: ResponseInterceptors = {
@@ -98,6 +122,7 @@ export class ProxyInterceptor {
         };
         body.push(`var continueChain = function(body, headers, request){ return {body: body}; };`);
         api.interceptor.response.forEach((interceptor, index) => {
+            interceptor = this.resolveResponseInterceptorReferences(interceptor, pipelineConfig);
             const interceptorMiddleware = this.middlewareLoader.loadMiddleware('interceptor/response', interceptor.middleware);
             const middlewareId = this.middlewareLoader.getId(interceptor.middleware);
             interceptors[middlewareId] = interceptorMiddleware;

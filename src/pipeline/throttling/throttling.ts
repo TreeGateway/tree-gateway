@@ -3,7 +3,7 @@
 import * as express from 'express';
 import { ApiConfig } from '../../config/api';
 import { ApiThrottlingConfig } from '../../config/throttling';
-import { ApiFeaturesConfig } from '../../config/gateway';
+import { ApiPipelineConfig } from '../../config/gateway';
 import * as _ from 'lodash';
 import * as Groups from '../group';
 import { RedisStore } from './redis-store';
@@ -25,14 +25,14 @@ export class ApiRateLimit {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private requestLogger: RequestLogger;
 
-    throttling(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
+    throttling(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const path: string = api.path;
         const throttlings: Array<ApiThrottlingConfig> = this.sortLimiters(api.throttling, path);
         const rateLimit = require('express-rate-limit');
         const throttlingInfos: Array<ThrottlingInfo> = new Array<ThrottlingInfo>();
 
         throttlings.forEach((throttling: ApiThrottlingConfig) => {
-            throttling = this.resolveReferences(throttling, gatewayFeatures);
+            throttling = this.resolveReferences(throttling, pipelineConfig);
             const throttlingInfo: ThrottlingInfo = {};
             const rateConfig: any = _.defaults(_.omit(throttling, 'store', 'keyGenerator', 'handler', 'group', 'timeWindow', 'delay'), {
                 message: 'Too many requests, please try again later.',
@@ -71,10 +71,10 @@ export class ApiRateLimit {
         this.setupMiddlewares(apiRouter, throttlingInfos);
     }
 
-    private resolveReferences(throttling: ApiThrottlingConfig, features: ApiFeaturesConfig) {
-        if (throttling.use && features.throttling) {
-            if (features.throttling[throttling.use]) {
-                throttling = _.defaults(throttling, features.throttling[throttling.use]);
+    private resolveReferences(throttling: ApiThrottlingConfig, pipelineConfig: ApiPipelineConfig) {
+        if (throttling.use && pipelineConfig.throttling) {
+            if (pipelineConfig.throttling[throttling.use]) {
+                throttling = _.defaults(throttling, pipelineConfig.throttling[throttling.use]);
             } else {
                 throw new Error(`Invalid reference ${throttling.use}. There is no configuration for this id.`);
             }

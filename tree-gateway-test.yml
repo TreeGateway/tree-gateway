@@ -132,3 +132,15 @@ gateway:
                         - "::1"
                     statusCode: 403
                     message: IP Filtered
+        interceptor:
+            request:
+                myRequestInterceptor:
+                    id: myRequestInterceptor
+            response:
+                myResponseInterceptor: 
+                    id: myResponseInterceptor
+        errorHandler:
+            my-ErrorHandler: 
+                name: errorHandler
+                options: {}
+                

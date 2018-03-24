@@ -1,7 +1,7 @@
 'use strict';
 
 import { ApiConfig } from '../../config/api';
-import { ApiFeaturesConfig } from '../../config/gateway';
+import { ApiPipelineConfig } from '../../config/gateway';
 import { ApiAuthenticationConfig } from '../../config/authentication';
 import * as auth from 'passport';
 import * as Groups from '../group';
@@ -18,13 +18,13 @@ export class ApiAuth {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private requestLogger: RequestLogger;
 
-    authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
+    authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const path: string = api.path;
         const authentications: Array<ApiAuthenticationConfig> = this.sortMiddlewares(api.authentication, path);
 
         authentications.forEach((authentication: ApiAuthenticationConfig, index: number) => {
             try {
-                authentication = this.resolveReferences(authentication, gatewayFeatures);
+                authentication = this.resolveReferences(authentication, pipelineConfig);
                 const authStrategy: auth.Strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', authentication.strategy);
                 if (!authStrategy) {
                     this.logger.error('Error configuring authenticator. Invalid Strategy');
@@ -48,10 +48,10 @@ export class ApiAuth {
         });
     }
 
-    private resolveReferences(authentication: ApiAuthenticationConfig, features: ApiFeaturesConfig) {
-        if (authentication.use && features.authentication) {
-            if (features.authentication[authentication.use]) {
-                authentication = _.defaults(authentication, features.authentication[authentication.use]);
+    private resolveReferences(authentication: ApiAuthenticationConfig, pipelineConfig: ApiPipelineConfig) {
+        if (authentication.use && pipelineConfig.authentication) {
+            if (pipelineConfig.authentication[authentication.use]) {
+                authentication = _.defaults(authentication, pipelineConfig.authentication[authentication.use]);
             } else {
                 throw new Error(`Invalid reference ${authentication.use}. There is no configuration for this id.`);
             }

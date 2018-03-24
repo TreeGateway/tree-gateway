@@ -2,7 +2,7 @@
 
 import * as express from 'express';
 import { ApiConfig } from '../../config/api';
-import { ApiFeaturesConfig } from '../../config/gateway';
+import { ApiPipelineConfig } from '../../config/gateway';
 import { ApiCacheConfig } from '../../config/cache';
 import { ServerCache } from './server-cache';
 import { ClientCache } from './client-cache';
@@ -20,18 +20,18 @@ export class ApiCache {
     @Inject private logger: Logger;
     @Inject private requestLogger: RequestLogger;
 
-    cache(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
+    cache(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.useCache(api)) {
-            this.configureCache(apiRouter, api, gatewayFeatures);
+            this.configureCache(apiRouter, api, pipelineConfig);
         }
     }
 
-    private configureCache(apiRouter: express.Router, api: ApiConfig, gatewayFeatures: ApiFeaturesConfig) {
+    private configureCache(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const path: string = api.path;
         const cacheConfigs: Array<ApiCacheConfig> = this.sortCaches(api.cache, path);
 
         cacheConfigs.forEach((cache: ApiCacheConfig) => {
-            cache = this.resolveReferences(cache, gatewayFeatures);
+            cache = this.resolveReferences(cache, pipelineConfig);
             let validateGroupFunction: Function;
             if (cache.group) {
                 if (this.logger.isDebugEnabled()) {
@@ -49,10 +49,10 @@ export class ApiCache {
         });
     }
 
-    private resolveReferences(cache: ApiCacheConfig, features: ApiFeaturesConfig) {
-        if (cache.use && features.cache) {
-            if (features.cache[cache.use]) {
-                cache = _.defaults(cache, features.cache[cache.use]);
+    private resolveReferences(cache: ApiCacheConfig, pipelineConfig: ApiPipelineConfig) {
+        if (cache.use && pipelineConfig.cache) {
+            if (pipelineConfig.cache[cache.use]) {
+                cache = _.defaults(cache, pipelineConfig.cache[cache.use]);
             } else {
                 throw new Error(`Invalid reference ${cache.use}. There is no configuration for this id.`);
             }
