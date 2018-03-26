@@ -64,7 +64,12 @@ export class MiddlewareLoader {
             p = path.join(this.config.middlewarePath, type, middlewareId);
         }
 
-        let middleware = require(p);
+        let middleware;
+        try {
+            middleware = require(p);
+        } catch(e) {
+            middleware = require(middlewareId);
+        }
         if (middleware.factory) {
             middleware = middleware(middlewareConfig.options || {});
         }

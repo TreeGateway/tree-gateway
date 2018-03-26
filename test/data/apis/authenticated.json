@@ -6,7 +6,7 @@
         "target": {
             "host": "http://httpbin.org"
         },
-        "timeout": "five seconds"
+        "timeout": "fifteen seconds"
     },
     "parseCookies": true,
     "authentication": {
