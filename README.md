@@ -32,7 +32,7 @@ It provides:
   - **Integrated CircuitBreaker** - A fast [circuitbreaker](https://martinfowler.com/bliki/CircuitBreaker.html) to fast fail your responses when your API is having problems to work. It support custom handlers for events like "open" or "close" circuit.
   - Real Time **Monitoring and Analytics** - 
     - Collect statistics about any access to your APIs. Capture any event, like a cache hit on a cache entrance, a circuitbreaker open circuit or an authentication attempt.
-    - A very flexible and powerfull log system, that can be integrated with any service like logstash, loggly or new relic.
+    - A very flexible and powerfull log system, that can be integrated with any service like logstash, timescale, loggly or new relic.
   - **Easy Administration** - The gateway can be configured remotelly. And no restart is needed. Any API configuration can be "hot" changed and all configurations are propagated to other tree-gateway cluster nodes with no pain. The gateway can be configured through:
     - Admin API - A REST API that can be invoked through HTTP;
     - SDK - A Node JS SDK that can be used to configure the Gateway (or a cluster of gateways) programmatically;
@@ -49,16 +49,47 @@ It provides:
 <a href="https://www.youtube.com/watch?v=FkAeEmt2wro"><img src="https://img.youtube.com/vi/FkAeEmt2wro/1.jpg"/></a>
 
 
-## Try Tree Gateway
+## Quick Start
+
+Install the gateway:
+
+```sh
+npm install -g tree-gateway
+```
+
+Run it:
+
+```sh
+treeGateway
+```
+
+Then map your first API. Just create an YML file (my-api.yaml):
+
+```yaml
+---
+name: Test
+version: 1.0.0
+path: "/test"
+proxy:
+  target:
+    host: http://httpbin.org
+  timeout: five seconds
+```
+
+And use the Tree Gateway CLI to configure it into the gateway:
+
+```sh
+treeGatewayConfig apis --add ./my-api.yaml
+```
+
+And its done. You can test it accessing in your browser: `http://localhost:8000/test/get`
+
+
+## Gateway Configuration Reference
 
 Take a better look into Tree Gateway by checking out the project and working with it guided by our [Docs](https://github.com/Leanty/tree-gateway/wiki).
 
-## Check out the Dashboard!
 
-<p align="center">
-  <a href="http://dashboard.leanty.com/"><img src="http://treegateway.org/img/slide/example-slide-1.png" /><a/>
-</p>
- 
 ## Migrating from previous versions
 
 Check our [migration guide](https://github.com/Leanty/tree-gateway/wiki/migrationGuide).

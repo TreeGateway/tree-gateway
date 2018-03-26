@@ -13,6 +13,7 @@ import { MiddlewareLoader } from '../../utils/middleware-loader';
 import { ServiceDiscovery } from '../servicediscovery/service-discovery';
 import { WritableStreamBuffer } from 'stream-buffers';
 import { ApiPipelineConfig } from '../../config/gateway';
+import { RequestLogger } from '../stats/request';
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../../lib/http-proxy');
 
@@ -26,6 +27,7 @@ export class ApiProxy {
     @Inject private logger: Logger;
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private serviceDiscovery: ServiceDiscovery;
+    @Inject private requestLogger: RequestLogger;
 
     /**
      * Configure a proxy for a given API
@@ -103,7 +105,12 @@ export class ApiProxy {
         }
 
         const proxy = httpProxy.createProxyServer(proxyConfig);
+        const requestLogEnabled = this.requestLogger.isRequestLogEnabled(api);
         proxy.on('error', (err: any, req: express.Request, res: express.Response) => {
+            if (requestLogEnabled) {
+                const requestLog = this.requestLogger.getRequestLog(req);
+                requestLog.proxyTime -= new Date().getTime();
+            }
             const hostname = (req.headers && req.headers.host) || (req.hostname || req.host);     // (websocket) || (node0.10 || node 4/5)
             const target = apiProxy.target.host;
             const errReference = 'https://nodejs.org/api/errors.html#errors_common_system_errors'; // link to Node Common Systems Errors page
@@ -113,6 +120,12 @@ export class ApiProxy {
                 res.status(502).send('Bad Gateway');
             }
         });
+        if (requestLogEnabled) {
+            proxy.on('start', (req: express.Request, res: express.Response) => {
+                const requestLog = this.requestLogger.getRequestLog(req);
+                requestLog.proxyTime = new Date().getTime();
+            });
+        }
 
         const maybeWrapResponse = this.interceptor.hasResponseInterceptor(api);
         const responseInterceptor: ResponseInterceptors = this.interceptor.buildResponseInterceptors(api, pipelineConfig);
@@ -147,7 +160,12 @@ export class ApiProxy {
     }
 
     private handleResponseInterceptor(api: ApiConfig, proxy: any, responseInterceptor: ResponseInterceptors) {
+        const requestLogEnabled = this.requestLogger.isRequestLogEnabled(api);
         proxy.on('end', (req: any, res: any, proxyRes: any, ) => {
+            if (requestLogEnabled) {
+                const requestLog = this.requestLogger.getRequestLog(req);
+                requestLog.proxyTime -= new Date().getTime();
+            }
             if (res.__data) {
                 if (responseInterceptor) {
                     responseInterceptor.middelware(res.__data.getContents(), proxyRes, req, res, res.__ignore,

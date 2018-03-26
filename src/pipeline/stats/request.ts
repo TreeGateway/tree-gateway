@@ -18,6 +18,7 @@ export interface RequestLog {
     ip: string;
     method: string;
     path: string;
+    proxyTime: number;
     responseTime: number;
     status: number;
     timestamp: number;
