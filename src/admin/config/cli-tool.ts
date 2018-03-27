@@ -9,6 +9,7 @@ import { Configuration } from '../../configuration';
 import { Inject } from 'typescript-ioc';
 import * as fs from 'fs-extra-promise';
 import * as YAML from 'yamljs';
+import { getSwaggerHost, getSwaggerUrl, generateSecurityToken } from '../../utils/config';
 
 export class Cli {
     @Inject private config: Configuration;
@@ -21,7 +22,11 @@ export class Cli {
     }
 
     async processCommand(): Promise<void> {
-        this.sdk = await SDK.initialize(this.config.gateway);
+        this.sdk = await SDK.initialize({
+            defaultHost: getSwaggerHost(this.config.gateway),
+            swaggerUrl: getSwaggerUrl(this.config.gateway),
+            token: generateSecurityToken(this.config.gateway)
+        });
         return this.doCommand();
     }
 

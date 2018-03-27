@@ -87,7 +87,7 @@ And its done. You can test it accessing in your browser: `http://localhost:8000/
 
 ## Gateway Configuration Reference
 
-Take a better look into Tree Gateway by checking out the project and working with it guided by our [Docs](https://github.com/Leanty/tree-gateway/wiki).
+Check the [Docs](https://github.com/Leanty/tree-gateway/wiki).
 
 
 ## Migrating from previous versions

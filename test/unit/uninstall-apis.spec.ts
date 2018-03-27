@@ -9,6 +9,7 @@ import {Configuration} from '../../src/configuration';
 import {Gateway} from '../../src/gateway';
 import {Database} from '../../src/database';
 import {SDK} from '../../src/admin/config/sdk';
+import { getSwaggerHost, getSwaggerUrl, generateSecurityToken } from '../../src/utils/config';
 
 // tslint:disable:no-unused-expression
 // tslint:disable:no-console
@@ -24,7 +25,11 @@ describe('Gateway APIs uninstall', () => {
         database = Container.get(Database);
         gateway = Container.get(Gateway);
 
-        sdk = await SDK.initialize(config.gateway);
+        sdk = await SDK.initialize({
+            defaultHost: getSwaggerHost(config.gateway),
+            swaggerUrl: getSwaggerUrl(config.gateway),
+            token: generateSecurityToken(config.gateway)
+        });
     });
 
     it('should be able to uninstall APIs', async () => {

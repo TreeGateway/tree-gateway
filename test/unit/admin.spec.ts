@@ -10,6 +10,7 @@ import {ApiConfig} from '../../src/config/api';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
 import {SDK} from '../../src/admin/config/sdk';
+import { generateSecurityToken, getSwaggerUrl, getSwaggerHost } from '../../src/utils/config';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -60,7 +61,11 @@ describe('Gateway Admin Tasks', () => {
         config = Container.get(Configuration);
         adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
 
-        sdk = await SDK.initialize(config.gateway);
+        sdk = await SDK.initialize({
+            defaultHost: getSwaggerHost(config.gateway),
+            swaggerUrl: getSwaggerUrl(config.gateway),
+            token: generateSecurityToken(config.gateway)
+        });
         await createUsers();
     });
 
