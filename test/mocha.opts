@@ -2,5 +2,5 @@
 --require source-map-support/register
 --full-trace
 --bail
---timeout 25000
+--timeout 35000
 test/unit/tests.spec.ts
