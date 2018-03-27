@@ -2,6 +2,7 @@
 !README.md
 !package.json
 !rest.config
+!ioc.config
 !tree-gateway.json
 !lib
 !dist
