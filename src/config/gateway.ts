@@ -170,14 +170,14 @@ export interface ApiPipelineConfig {
     /**
      * Interceptors configuration
      */
-    interceptor?: ApiInterceptorFeatureConfig;
+    interceptor?: PipelineInterceptorConfig;
     /**
      * Error Handler configuration
      */
     errorHandler?: { [index: string]: MiddlewareConfig };
 }
 
-export interface ApiInterceptorFeatureConfig {
+export interface PipelineInterceptorConfig {
     request?: { [index: string]: MiddlewareConfig };
     response?: { [index: string]: MiddlewareConfig };
 }
