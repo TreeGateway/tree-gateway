@@ -13,6 +13,7 @@ import {SDK} from '../../src/admin/config/sdk';
 import * as YAML from 'yamljs';
 import { ApiConfig } from '../../src/config/api';
 import { ConfigPackage } from '../../src/config/config-package';
+import { getSwaggerHost, getSwaggerUrl, generateSecurityToken } from '../../src/utils/config';
 
 chai.use(chaiPromises);
 
@@ -262,7 +263,11 @@ describe('Gateway SDKs', () => {
         await gateway.start();
         await gateway.startAdmin();
         gateway.server.set('env', 'test');
-        sdk = await SDK.initialize(config.gateway);
+        sdk = await SDK.initialize({
+            defaultHost: getSwaggerHost(config.gateway),
+            swaggerUrl: getSwaggerUrl(config.gateway),
+            token: generateSecurityToken(config.gateway)
+        });
     }
 
     function timeout(ms: number) {
