@@ -92,7 +92,7 @@
     "request": "^2.83.0",
     "requires-port": "1.x.x",
     "stream-buffers": "^3.0.1",
-    "swagger-client": "^3.5.0",
+    "swagger-client": "^3.8.1",
     "typescript-ioc": "^1.2.1",
     "typescript-rest": "^1.5.2",
     "typescript-rest-swagger": "0.0.12",
