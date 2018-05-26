@@ -68,7 +68,17 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
                     if (i > 0) {
                         func.push(`||`);
                     }
-                    func.push(`(mm.isMatch(${request}.path, '${normalizePath(path)}'))`);
+                    if (path && path.indexOf('&') > 0) {
+                        const expressions = path.split('&')
+                                            .map(p => normalizePath(p))
+                                            .filter(p => p.trim().length > 0)
+                                            .map(p => `'${p}'`)
+                                            .join(',');
+                        func.push(`(mm.all(${request}.path, [${expressions}]))`);
+                        console.info(expressions);
+                    } else {
+                        func.push(`(mm.isMatch(${request}.path, '${normalizePath(path)}'))`);
+                    }
                 });
                 func.push(`)`);
             }

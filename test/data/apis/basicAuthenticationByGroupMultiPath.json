@@ -1,0 +1,36 @@
+{
+    "name": "TestAuthdByGroupAPIMultiPath",
+    "version": "1.0.0",
+    "path": "secureBasic-by-group-multi/",
+    "group": [
+        {
+            "id": "Group1",
+            "description": "Endpoints Group One",
+            "member": [
+                {
+                    "path": ["!**/headers & !**/useragent"],
+                    "method": ["GET"],
+                    "protocol": ["http"]
+                }
+            ] 
+        }
+    ],
+    "proxy": {
+        "target": {
+            "host": "http://httpbin.org"
+        },
+        "timeout": 5000
+    },
+    "authentication": {
+        "use": "my-basic-validator",
+        "group": ["Group1"]        
+    },
+    "errorHandler": {
+        "middleware": {
+            "name": "json",
+            "options": {
+                "expression": "{'Err': error.message}"
+            }
+        }
+    }
+}

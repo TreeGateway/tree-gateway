@@ -27,7 +27,7 @@ export interface Member {
 }
 
 const methodValidator = Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
-const pathString = Joi.string().regex(/^!?[A-Za-z\-\/0-9_\.\*]+$/i);
+const pathString = Joi.string().regex(/(!?[A-Za-z\-\/0-9_\.\*]+(\s*&\s*)?)+/i);
 const memberValidatorSchema = Joi.object().keys({
     method: Joi.alternatives([Joi.array().items(methodValidator), methodValidator]),
     path: Joi.alternatives([Joi.array().items(pathString),pathString]),

@@ -113,6 +113,26 @@ describe('The Gateway Authenticator', () => {
         });
     });
 
+    it('should be able to verify authentication only to restricted groups in API with multiple paths', (done) => {
+        gatewayRequest.get({
+            url:'/secureBasic-by-group-multi/get?arg=1'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(401);
+            const result = JSON.parse(body);
+            expect(result.Err).to.equal('Unauthorized');
+            done();
+        });
+    });
+
+    it('should be able to verify authentication only to restricted groups in API with multiple paths', (done) => {
+        gatewayRequest.get({
+            url:'/secureBasic-by-group-multi/headers'
+        }, (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
+
     it('should be able to verify Local authentication on requests to API', (done) => {
         gatewayRequest.get({
             url:'/secureLocal/get?userid=test&passwd=test123'
