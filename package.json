@@ -1,6 +1,6 @@
 {
   "name": "tree-gateway",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "homepage": "http://treegateway.org",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
@@ -79,7 +79,7 @@
     "jsonwebtoken": "^8.2.0",
     "lodash": "^4.17.5",
     "lodash-deep": "^2.0.0",
-    "micromatch": "^3.1.9",
+    "micromatch": "^3.1.10",
     "mustache": "^2.3.0",
     "on-headers": "^1.0.1",
     "os": "^0.1.1",

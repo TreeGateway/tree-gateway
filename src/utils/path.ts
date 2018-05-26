@@ -5,6 +5,7 @@ export function normalizePath(path: string) {
     if (!path) {
         return path;
     }
+    path = path.trim();
     const negate = _.startsWith(path, '!');
     if (negate) {
         path = path.substring(1);
