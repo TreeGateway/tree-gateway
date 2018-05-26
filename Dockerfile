@@ -5,15 +5,9 @@ ENV NODE_ENV production
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# Install dependencies
-# RUN apk --no-cache add --virtual builds-deps build-base python && \
-RUN npm install pm2 -g
-
 # Install app dependencies
 COPY ./package.json /usr/src/app/
 
-# RUN npm install && npm rebuild bcrypt --build-from-source && \
-#     apk --no-cache del builds-deps build-base python
 RUN npm install
 
 # Install app
@@ -25,4 +19,4 @@ EXPOSE 8000 8001
 
 VOLUME ["/usr/src/app/logs"]
 
-CMD ["pm2-docker", "./dist/index.js", "-i", "0"]
+CMD ["npm", "run", "start:cluster"]
