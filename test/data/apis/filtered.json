@@ -28,7 +28,7 @@
     ],
     "proxy": {
         "target": {
-            "host": "http://localhost"
+            "host": "http://localhost:7000"
         },
         "timeout": 5000
     },

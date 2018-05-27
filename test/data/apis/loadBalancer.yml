@@ -9,12 +9,12 @@ proxy:
         name: loadBalancer
         options:
           destinations: 
-            - target: http://localhost
+            - target: http://localhost:7000
               weight: 75
-              healthCheck: http://localhost/get
-            - target: http://localhost/anything
+              healthCheck: http://localhost:7000/get
+            - target: http://localhost:7000/anything
               weight: 25
-              healthCheck: http://localhost/anything/get
+              healthCheck: http://localhost:7000/anything/get
           database:
             checkInterval: 5 minutes
           strategy: weight

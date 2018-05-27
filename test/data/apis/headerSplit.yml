@@ -9,10 +9,10 @@ proxy:
         name: header
         options:
           name: authorization
-          defaultTarget: http://localhost
+          defaultTarget: http://localhost:7000
           destinations: 
-            - target: http://localhost
+            - target: http://localhost:7000
               value: '1'
-            - target: http://localhost/anything
+            - target: http://localhost:7000/anything
               value: '2'
   timeout: 5000

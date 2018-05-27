@@ -9,8 +9,8 @@ proxy:
         name: trafficSplit
         options:
           destinations: 
-            - target: http://localhost
+            - target: http://localhost:7000
               weight: 75
-            - target: http://localhost/anything
+            - target: http://localhost:7000/anything
               weight: 25
   timeout: 5000

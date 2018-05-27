@@ -4,7 +4,7 @@
     "path": "circuitbreaker/",
     "proxy": {
         "target": {
-            "host": "http://localhost"
+            "host": "http://localhost:7000"
         }
     },
     "circuitBreaker": [{

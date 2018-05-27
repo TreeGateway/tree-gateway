@@ -9,7 +9,7 @@ proxy:
         name: query
         options:
           param: apiVersion
-          defaultTarget: http://localhost
+          defaultTarget: http://localhost:7000
           destinations: 
             - target: testConsulService
               value: '1'
