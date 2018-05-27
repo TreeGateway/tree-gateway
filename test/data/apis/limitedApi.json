@@ -4,7 +4,7 @@
     "path": "limited",
     "proxy": {
         "target": {
-            "host": "http://httpbin.org"
+            "host": "http://localhost"
         },
         "timeout": 5000
     },

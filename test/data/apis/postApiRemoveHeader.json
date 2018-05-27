@@ -5,7 +5,7 @@
     "parseReqBody": true,
     "proxy": {
         "target": {
-            "host": "http://httpbin.org"
+            "host": "http://localhost"
         },
         "supressViaHeader": true,
         "timeout": 5000
