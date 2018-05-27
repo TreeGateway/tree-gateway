@@ -4,7 +4,7 @@
     "path": "circuitbreakerTime/",
     "proxy": {
         "target": {
-            "host": "http://httpbin.org"
+            "host": "http://localhost"
         }
     },
     "circuitBreaker": [{

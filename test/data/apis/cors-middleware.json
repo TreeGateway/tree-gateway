@@ -4,7 +4,7 @@
     "path": "cors-middleware/",
     "proxy": {
         "target": {
-            "host": "http://httpbin.org"
+            "host": "http://localhost"
         }
     },
     "cors" : [{

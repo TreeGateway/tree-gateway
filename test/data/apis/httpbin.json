@@ -32,7 +32,7 @@
     ],
     "proxy": {
         "target": {
-            "host": "http://httpbin.org",
+            "host": "http://localhost",
             "allow": ["Group1"],
             "deny": "Group2"
         },

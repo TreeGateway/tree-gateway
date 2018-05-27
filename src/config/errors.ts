@@ -29,7 +29,7 @@ export class ValidationError extends Errors.ForbidenError {
             } else if (_.endsWith(e.type, 'Unknown')) {
                 unexpectedFields.push(e.path);
             } else {
-                invalidFields.push(e.path);
+                invalidFields.push(`${e.path} (${e.context?e.context.value:''})`);
             }
         });
 

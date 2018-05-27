@@ -75,7 +75,6 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
                                             .map(p => `'${p}'`)
                                             .join(',');
                         func.push(`(mm.all(${request}.path, [${expressions}]))`);
-                        console.info(expressions);
                     } else {
                         func.push(`(mm.isMatch(${request}.path, '${normalizePath(path)}'))`);
                     }

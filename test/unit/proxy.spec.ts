@@ -118,11 +118,11 @@ describe('The Gateway Proxy', () => {
         gatewayRequest('/querySplit/get', (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
-            expect(result.url).to.equal('http://httpbin.org/get');
+            expect(result.url).to.equal('http://localhost/get');
             gatewayRequest('/querySplit/get?apiVersion=2', (err: any, res: any, b: any) => {
                 expect(res.statusCode).to.equal(200);
                 const result2 = JSON.parse(b);
-                expect(result2.url).to.equal('http://httpbin.org/anything/get?apiVersion=2');
+                expect(result2.url).to.equal('http://localhost/anything/get?apiVersion=2');
                 done();
             });
         });
@@ -131,14 +131,14 @@ describe('The Gateway Proxy', () => {
         gatewayRequest('/headerSplit/get', (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
-            expect(result.url).to.equal('http://httpbin.org/get');
+            expect(result.url).to.equal('http://localhost/get');
             gatewayRequest.get({
                 headers: { 'authorization': '2' },
                 url: '/headerSplit/get'
             }, (err: any, res: any, b: any) => {
                 expect(res.statusCode).to.equal(200);
                 const result2 = JSON.parse(b);
-                expect(result2.url).to.equal('http://httpbin.org/anything/get');
+                expect(result2.url).to.equal('http://localhost/anything/get');
                 done();
             });
         });

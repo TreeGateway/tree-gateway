@@ -9,12 +9,12 @@ proxy:
         name: loadBalancer
         options:
           destinations: 
-            - target: http://httpbin.org
+            - target: http://localhost
               weight: 75
-              healthCheck: http://httpbin.org/get
-            - target: http://httpbin.org/anything
+              healthCheck: http://localhost/get
+            - target: http://localhost/anything
               weight: 25
-              healthCheck: http://httpbin.org/anything/get
+              healthCheck: http://localhost/anything/get
           database:
             checkInterval: 5 minutes
           strategy: weight

@@ -9,10 +9,10 @@ proxy:
         name: query
         options:
           param: apiVersion
-          defaultTarget: http://httpbin.org
+          defaultTarget: http://localhost
           destinations: 
-            - target: http://httpbin.org
+            - target: http://localhost
               value: '1'
-            - target: http://httpbin.org/anything
+            - target: http://localhost/anything
               value: '2'
   timeout: 5000
