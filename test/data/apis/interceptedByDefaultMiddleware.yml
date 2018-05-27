@@ -14,7 +14,7 @@ group:
 parseReqBody: true
 proxy:
   target:
-    host: http://localhost:7000
+    host: http://localhost
   timeout: 5000
 interceptor:
   response:

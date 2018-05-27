@@ -9,10 +9,10 @@ proxy:
         name: query
         options:
           param: apiVersion
-          defaultTarget: http://localhost:7000
+          defaultTarget: http://localhost
           destinations: 
-            - target: http://localhost:7000
+            - target: http://localhost
               value: '1'
-            - target: http://localhost:7000/anything
+            - target: http://localhost/anything
               value: '2'
   timeout: 5000

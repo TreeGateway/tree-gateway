@@ -5,7 +5,7 @@
     "parseReqBody": true,
     "proxy": {
         "target": {
-            "host": "http://localhost:7000"
+            "host": "http://localhost"
         },
         "supressViaHeader": true,
         "timeout": 5000

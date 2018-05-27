@@ -11,7 +11,7 @@ services:
 - docker
 before_install:
 - docker run -p 6379:6379 -d --name tree_redis redis:3.0.7-alpine
-- docker run -p 80:7000 -d --name httpbin kennethreitz/httpbin
+- docker run -p 80:80 -d --name httpbin kennethreitz/httpbin
 - docker run -p 8500:8500 -d --name tree_consul consul
 script: nyc npm run test && nyc report --reporter=text-lcov | coveralls
 deploy:

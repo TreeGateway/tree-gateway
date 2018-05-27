@@ -32,7 +32,7 @@
     ],
     "proxy": {
         "target": {
-            "host": "http://localhost:7000",
+            "host": "http://localhost",
             "allow": ["Group1"],
             "deny": "Group2"
         },
