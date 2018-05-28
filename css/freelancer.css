@@ -1,6 +1,6 @@
 /*!
  * Start Bootstrap - Freelancer v3.3.7+1 (http://www.treegateway.org)
- * Copyright 2013-2017 Tree Gateway
+ * Copyright 2013-2018 Tree Gateway
  * Licensed under  ()
  */
 body {
@@ -243,24 +243,24 @@ img#logo {
 .floating-label-form-group textarea {
   padding-top: 20px !important;
 }
-#portfolio .text-image {
+#features .text-image {
   top: -16px;
   color: black;
 }
-#portfolio .text-image > * {
+#features .text-image > * {
   font-size: 20px;
 }
-#portfolio .portfolio-item {
+#features .portfolio-item {
   margin: 0 0 15px;
   right: 0;
 }
-#portfolio .portfolio-item .portfolio-link {
+#features .portfolio-item .portfolio-link {
   display: block;
   position: relative;
   max-width: 400px;
   margin: 0 auto;
 }
-#portfolio .portfolio-item .portfolio-link .caption {
+#features .portfolio-item .portfolio-link .caption {
   background: rgba(9, 100, 191, 0.9);
   position: absolute;
   width: 100%;
@@ -270,10 +270,10 @@ img#logo {
   -webkit-transition: all ease 0.5s;
   -moz-transition: all ease 0.5s;
 }
-#portfolio .portfolio-item .portfolio-link .caption:hover {
+#features .portfolio-item .portfolio-link .caption:hover {
   opacity: 1;
 }
-#portfolio .portfolio-item .portfolio-link .caption .caption-content {
+#features .portfolio-item .portfolio-link .caption .caption-content {
   position: absolute;
   width: 100%;
   height: 20px;
@@ -283,18 +283,18 @@ img#logo {
   margin-top: -12px;
   color: white;
 }
-#portfolio .portfolio-item .portfolio-link .caption .caption-content i {
+#features .portfolio-item .portfolio-link .caption .caption-content i {
   margin-top: -12px;
 }
-#portfolio .portfolio-item .portfolio-link .caption .caption-content h3,
-#portfolio .portfolio-item .portfolio-link .caption .caption-content h4 {
+#features .portfolio-item .portfolio-link .caption .caption-content h3,
+#features .portfolio-item .portfolio-link .caption .caption-content h4 {
   margin: 0;
 }
-#portfolio * {
+#features * {
   z-index: 2;
 }
 @media (min-width: 767px) {
-  #portfolio .portfolio-item {
+  #features .portfolio-item {
     margin: 0 0 30px;
   }
 }
@@ -571,4 +571,18 @@ fieldset[disabled] .btn-success.active {
 }
 div#maincontent {
   outline: none;
+}
+#dashboard {
+  background: blue !important;
+}
+.dashboardtext {
+  color: white !important;
+}
+@media only screen and (max-width: 400px) {
+  #dashboardimg {
+    width: 300px !important;
+  }
+}
+#dashboardimg {
+  width: 500px;
 }

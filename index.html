@@ -6,10 +6,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Free API Gateway node JS Open source">
-    <meta name="author" content="Tree Gateway">
+    
+    <meta name="description" content="Opensource and Fully Customizable API Gateway. Secure and Enhance your Cloud now.">
+    <meta name="author" content="Leanty">
 
-    <title>Treegateway - A full Featured and free API Gateway</title>
+    <meta name="keywords" content="tree gateway, treegateway, api gateway, apigateway, free api gateway, opensource api gateway, api management, cloud, api, microservices security, microservices api gateway, gateway, performance, circuit breaker, monitoring, routing, authentication, rate limits, filter, caching"/>
+    
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Open-Source API Management and Microservice Management" />
+    <meta property="og:site_name" content="TreeGateway" />
+
+    <meta property="og:url" content="http://treegateway.org" />
+    <meta property="og:description" content="Secure, Manage &amp; Extend your APIs or Microservices with plugins for authentication, logging, rate-limiting, transformations and more." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="http://treegateway.org/img/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@treegateway" />
+    <meta name="twitter:creator" content="@leanty" />
+    <meta name="twitter:url" content="http://treegateway.org" />
+    <meta name="twitter:description" content="Secure, Manage &amp; Extend your APIs or Microservices with plugins for authentication, logging, rate-limiting, transformations and more.">
+    <meta name="twitter:image" content="http://treegateway.org/img/logo.png">
+
+    <title>Treegateway - A Full Featured and Free API Gateway</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -34,6 +54,81 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="js/background-video.js"></script>
+
+  <!-- SlidesJS Optional: If you'd like to use this design -->
+  <style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      font: normal 15px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #232525;
+      padding-top:50px;
+    }
+
+    #slides {
+      display: none
+    }
+
+    #slides .slidesjs-navigation {
+      margin-top:3px;
+    }
+
+    #slides .slidesjs-previous {
+      margin-right: 5px;
+      float: left;
+    }
+
+    #slides .slidesjs-next {
+      margin-right: 5px;
+      float: left;
+    }
+
+    .slidesjs-pagination {
+      margin: 6px 0 0;
+      float: right;
+      list-style: none;
+    }
+
+    .slidesjs-pagination li {
+      float: left;
+      margin: 0 1px;
+    }
+
+    .slidesjs-pagination li a {
+      display: block;
+      width: 13px;
+      height: 0;
+      padding-top: 13px;
+      background-image: url(img/slide/pagination.png);
+      background-position: 0 0;
+      float: left;
+      overflow: hidden;
+    }
+
+    .slidesjs-pagination li a.active,
+    .slidesjs-pagination li a:hover.active {
+      background-position: 0 -13px
+    }
+
+    .slidesjs-pagination li a:hover {
+      background-position: 0 -26px
+    }
+
+    #slides a:link,
+    #slides a:visited {
+      color: #333
+    }
+
+    #slides a:hover,
+    #slides a:active {
+      color: #9e2020
+    }
+
+    .navbar {
+      overflow: hidden
+    }
+  </style>
+  <!-- End SlidesJS Optional-->
+
 </head>
 
 <body id="page-top" class="index">    
@@ -57,16 +152,22 @@
                         <a href="#page-top"></a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#intro">Intro</a>
+                        <a href="#intro" alt="What is an Api Gateway? What is TreeGateway?">Intro</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#installation">Installation</a>
+                        <a href="#installation" alt="Learn how it's easy to install TreeGateway">Installation</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#portfolio">Features</a>
+                        <a href="#features" alt="Take a look on our main features and undestand why we are considered the best opensource and free gateway">Features</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#contact">Contact</a>
+                        <a href="documentation/index.html" target="_blank" alt="Learn how to install and use the TreeGateway">Documentation</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#dashboard" alt="The space to easily manage and monitor your Apis. Built exclusively for you">Dashboard</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#contact" alt="Contact us. We can work together to improve your infrastructure">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -83,10 +184,9 @@
                     <img id="logo" class="img-responsive" src="img/logo.png" alt="TreeGateway">
                     <div class="intro-text">
                         <hr class="star-light">
-                        <span class="skills">Full Featured and Free API Gateway</span>
+                        <p class="skills">Full Featured and Free API Gateway</p>
+                        <p style="font-size: 1.25em; font-weight: 100;">Tree Gateway is a free and open source solution that has a complete and customizable pipeline to handle your requests</p>
                         <br>
-                        <span style="font-size: 1.25em; font-weight: 100;">Tree Gateway is a free and open source solution that has a complete and customizable pipeline to handle your requests</span>
-                        <br><br>
                         <a class="github-button" href="https://github.com/Leanty/tree-gateway" aria-label="Follow @Us on GitHub" data-size="large">Follow</a>
                         <a class="github-button" href="https://github.com/Leanty/tree-gateway" data-icon="octicon-star" data-size="large" aria-label="Star Leanty/tree-gateway on GitHub">Star</a>
                     </div>
@@ -105,7 +205,7 @@
                 <div class="col-lg-12 text-center" id="main-intro-text">
                     <h1>The Entrance for your Cloud Services</h1>
                     <!--<hr class="star-primary">-->
-                    <h3> An API gateway provides a single and unified entry point across one or more internal Micro Services APIs</h3>
+                    <h3> TreeGateway provides a single and unified entry point across one or more internal Micro Services APIs</h3>
                 </div>
             </div>
         </div>
@@ -140,7 +240,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="portfolio" style="background: white;">
+    <section id="features" style="background: white;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -275,6 +375,38 @@
         </div>
     </section>
 
+    <!-- Dashboard Section -->
+    <section id="dashboard">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center" id="main-dashboard-text">
+                    <div style="text-align: center">
+                        <h1><a style="color: white;" href="http://dashboard.leanty.com/">Meet the Dashboard</a></h1>
+                    </div>
+                    <br/>
+                    <!-- SlidesJS Required: Start Slides -->
+                    <!-- The container is used to define the width of the slideshow -->
+                    <div class="container">
+                        <div id="slides">
+                            <img src="img/slide/example-slide-1.png">
+                            <img src="img/slide/example-slide-2.png">
+                            <img src="img/slide/example-slide-3.png">
+                            <img src="img/slide/example-slide-4.png">
+                            <img src="img/slide/example-slide-5.png">
+                            <!-- <img src="img/slide/example-slide-5.png"> -->
+                            <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="icon-chevron-left icon-large"></i></a>
+                            <a href="#" class="slidesjs-next slidesjs-navigation"><i class="icon-chevron-right icon-large"></i></a>
+                        </div>
+                    </div>
+                    <!-- End SlidesJS Required: Start Slides -->
+                </div>
+                <div style="text-align: center">
+                    <h1><a style="color: white;" href="http://dashboard.leanty.com/">More...</a></h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section class="success" id="contact">
         <div class="container">
@@ -343,7 +475,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        Copyright &copy; TreeGateway 2017
+                        Copyright &copy; TreeGateway 2018
                     </div>
                 </div>
             </div>
@@ -627,7 +759,40 @@
       ga('create', 'UA-102232560-1', 'auto');
       ga('send', 'pageview');
 
-    </script>    
+    </script>
+
+    <!-- SlidesJS Required: Link to jquery.slides.js -->
+    <script src="js/jquery.slides.min.js"></script>
+    <!-- End SlidesJS Required -->
+
+    <!-- SlidesJS Required: Initialize SlidesJS with a jQuery doc ready -->
+    <script>
+        $(function() {
+        $('#slides').slidesjs({
+            width: 940,
+            height: 528,
+            navigation: false,
+            play: {
+                active: false,
+                    // [boolean] Generate the play and stop buttons.
+                    // You cannot use your own buttons. Sorry.
+                effect: "slide",
+                    // [string] Can be either "slide" or "fade".
+                interval: 4000,
+                    // [number] Time spent on each slide in milliseconds.
+                auto: true,
+                    // [boolean] Start playing the slideshow on load.
+                swap: true,
+                    // [boolean] show/hide stop and play buttons
+                pauseOnHover: false,
+                    // [boolean] pause a playing slideshow on hover
+                restartDelay: 2500
+                    // [number] restart delay on inactive slideshow
+                }
+        });
+        });
+    </script>
+    <!-- End SlidesJS Required -->
     
 </body>
 
