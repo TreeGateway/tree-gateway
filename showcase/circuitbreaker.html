@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Circuit Breaker</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Circuit Breaker</h1>
+    
+    <!-- <p>In all circuit breaker examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p> -->
+
+    <p>We are assuming in these examples, that our test gateway will be running at 'http://gateway.address.com'.</p>
+
+    <h2>Circuit Breaker</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Circuit Breaker Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyResilientAPI
+version: 1.0.0
+path: circuit/
+proxy:
+    target:
+        host: http://httpbin.org
+circuitBreaker:
+    timeout: 30 seconds
+    resetTimeout: 1 minute
+    timeWindow: 2 minutes
+    maxFailures: 5
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses a circuit breaker to control calls to the target API. </p>
+            <p>If a call to the API spends more than 30 seconds to answer, Tree Gateway will assume that the call failed and 
+                a timeout error will be returned to the caller.
+            </p>
+            <p>If during the same time window (in this case a period of 2 minutes), this API fail more than 
+                5 times, the circuit will open.</p>
+            <p>When the circuit is open, Tree Gateway will fast fail any call to the API, with a 'Service Unavailable' response.</p>
+            <p>When the circuit is open, Tree Gateway will wait for 1 minute to check again if the API is working
+                (Entering in the 'Half Open' state). In this state, Tree Gateway will allow that only one request try to hit 
+                the target API. Depending on the response of that request, it will close the circuit or open it again.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+            
+    <h2>Circuit Breaker Events</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Circuit Breaker Events</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyResilientAPI
+version: 1.0.0
+path: circuit/
+proxy:
+    target:
+        host: http://httpbin.org
+circuitBreaker:
+    timeout: 30 seconds
+    resetTimeout: 1 minute
+    timeWindow: 2 minutes
+    maxFailures: 5
+    onOpen:
+        name: myHandler
+    onClose:
+        name: myHandler        
+        </leanty-source>
+        <leanty-source label="myHandler Middleware" language="javascript">
+"use strict";
+
+module.exports = function (apiPath, event, apiId) {
+    console.log('My API circuitbreaker for ' + apiId +' is now ' + event + '!);
+}; 
+        </leanty-source>
+        <leanty-description>
+            <p>This sample is similar to the previous example, but it declare middlewares to be called when the 
+                circuit breaker changes its state to open or close.
+        </leanty-description>
+    </leanty-source-code-example>
+
+</body>
+
+</html>

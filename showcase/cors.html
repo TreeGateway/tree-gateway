@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Cache</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Cors</h1>
+    
+    <!-- <p>In all cors examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p> -->
+
+    <p>We are assuming in these examples, that our test gateway will be running at 'http://gateway.address.com'.</p>
+
+    <h2>Cors</h2>
+
+    <leanty-source-code-example>
+        <leanty-title>Cors Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyCorsTestAPI
+version: 1.0.0
+path: cors/
+proxy:
+    target:
+        host: http://httpbin.org
+cors:
+    origin:
+        enableAll: true
+        </leanty-source>
+        <leanty-description>
+            <p>This sample enables cors requests from all origins.</p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+    <h2>Cors Origins</h2>
+    
+    <leanty-source-code-example>
+        <leanty-title>Cors Origins Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyCorsTestAPI
+version: 1.0.0
+path: cors/
+proxy:
+    target:
+        host: http://httpbin.org
+cors:
+  origin:
+    allow:
+      - value: http://example1.com
+      - value: http://example2.com
+  methods:
+  - GET
+  - PUT
+  - POST
+  allowedHeaders:
+  - X-MyHeader
+        </leanty-source>
+        <leanty-description>
+            <p>This sample enables cors requests from a specific set of origins and HTTP methods and allow 
+                access to a specific header.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+    
+    <h2>Cors Origins Regexp</h2>
+
+    <leanty-source-code-example>
+        <leanty-title>Cors Origins Regexp Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyCorsTestAPI
+version: 1.0.0
+path: cors/
+proxy:
+    target:
+        host: http://httpbin.org
+cors:
+    origin:
+        allow:
+            regexp: "/example\\.com$/"
+        </leanty-source>
+        <leanty-description>
+            <p>This sample enables cors requests depending on the origin. It uses a regular expression to 
+                check the origin.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+    
+    <h2>Cors Origins Middleware</h2>
+
+    <leanty-source-code-example>
+        <leanty-title>Cors Origins Middleware Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyCorsTestAPI
+version: 1.0.0
+path: cors/
+proxy:
+    target:
+        host: http://httpbin.org
+cors:
+    origin:
+        middleware:
+            name: myCorsCheck
+        </leanty-source>
+        <leanty-source label="myCorsCheck" language="javascript">
+const whiteList = ['http://example1.com'];
+module.exports = function (origin) {
+    return (whitelist.indexOf(origin) !== -1);
+};
+        </leanty-source>
+        <leanty-description>
+            <p>This sample enables cors requests depending on the origin. It uses a custom middleware to check
+                the origin.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+</body>
+
+</html>

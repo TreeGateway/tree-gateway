@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Filters</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Filters</h1>
+    
+    <!-- <p>In all filter examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p> -->
+
+    <p>We are assuming in these examples, that our test gateway will be running at 'http://gateway.address.com'.</p>
+
+    <h2>Custom Filter</h2>
+
+    <leanty-source-code-example>
+        <leanty-title>Filter Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyFilteredAPI
+version: 1.0.0
+path: filtered/
+proxy:
+    target:
+        host: http://httpbin.org
+filter:
+    middleware:
+        name: myFilter
+        </leanty-source>
+        <leanty-source label="myFilter" language="javascript">
+module.exports = function (request, response) {
+    return req.query.denyParam !== '1';
+};
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses a filter to check if the current request should proceed or not.</p>
+            <p>That example will avoid that a request containing the query parameter 'denyParam=1' proceed.
+                Eg: Eg. <span style="background-color: black; color: white; font-size: 13px;">curl http://gateway.address.com/filtered/get?denyParam=1</span>
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+    <h2>IP Whitelist filter</h2>
+
+    <leanty-source-code-example>
+        <leanty-title>Whitelist Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyFilteredAPI
+version: 1.0.0
+path: filtered/
+proxy:
+    target:
+        host: http://httpbin.org
+filter:
+    middleware:
+        name: ipFilter
+        options:
+          whitelist:
+          - 127.0.0.1
+          - "::1"
+          statusCode: 403
+          message: IP Filtered
+          database:
+            checkInterval: 'one minute'
+            key: 'MyFilteredApi:whitelist'        
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses the ipfilter (included into Tree Gateway distribution) to check if the current request should proceed or not.</p>
+            <p>We enable access only to localhost requests and configure a database pooling for aditional IPs 
+                that should be allowed.</p>
+        </leanty-description>
+    </leanty-source-code-example>
+    
+    <h2>IP Blacklist filter</h2>
+
+    <leanty-source-code-example>
+        <leanty-title>Blacklist Example</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: MyFilteredAPI
+version: 1.0.0
+path: filtered/
+proxy:
+    target:
+        host: http://httpbin.org
+filter:
+    middleware:
+        name: ipFilter
+        options:
+          blacklist:
+          - 127.0.0.1
+          - "::1"
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses the ipfilter (included into Tree Gateway distribution) to check if the current request should proceed or not.</p>
+            <p>We enable access to all request except to requests coming from localhost.</p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+</body>
+
+</html>
