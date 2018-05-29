@@ -114,7 +114,7 @@ export let corsConfigSchema = Joi.object().keys({
     credentials: Joi.boolean(),
     exposedHeaders: Joi.alternatives([Joi.array().items(Joi.string()), Joi.string()]),
     maxAge: Joi.string(),
-    method: Joi.alternatives([Joi.array().items(methodValidator),methodValidator]),
+    methods: Joi.alternatives([Joi.array().items(methodValidator),methodValidator]),
     origin: corsOriginSchema.required(),
     preflightContinue: Joi.boolean()
 });

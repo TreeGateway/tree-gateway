@@ -334,7 +334,7 @@ export class Configuration extends EventEmitter {
             _.keys(server.gateway.config.cors).forEach(corsKey => {
                 castArray(server.gateway.config.cors[corsKey], 'allowedHeaders');
                 castArray(server.gateway.config.cors[corsKey], 'exposedHeaders');
-                castArray(server.gateway.config.cors[corsKey], 'method');
+                castArray(server.gateway.config.cors[corsKey], 'methods');
             });
         }
     }

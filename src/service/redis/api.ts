@@ -177,7 +177,7 @@ export class RedisApiService implements ApiService {
             api.cors.forEach(config => {
                 castArray(config, 'allowedHeaders');
                 castArray(config, 'exposedHeaders');
-                castArray(config, 'method');
+                castArray(config, 'methods');
                 castArray(config, 'group');
             });
         }
