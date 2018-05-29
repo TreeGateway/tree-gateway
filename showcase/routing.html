@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Throttling</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Routers</h1>
+    
+    <!-- <p>In all throttling examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p> -->
+
+    <p>We are assuming in these examples, that our test gateway will be running at 'http://gateway.address.com'.</p>
+
+    <h2>Query Router</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Query Router</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: TestQueryAPI
+version: 1.0.0
+path: "/queryTest"
+proxy:
+    target:
+    router:
+        middleware:
+            name: query
+            options:
+                param: apiVersion
+                defaultTarget: http://httpbin.org
+                destinations: 
+                    - target: http://httpbin.org
+                      value: '1'
+                    - target: http://httpbin.org/anything
+                      value: '2'
+        </leanty-source>
+        <leanty-description>
+            <p>This configuration will make requests to http://gateway.address.com/queryTest?apiVersion=1 be routed 
+                to http://httpbin.org and requests to http://gateway.address.com/queryTest?apiVersion=2 be routed 
+                to http://httpbin.org/anything.</p>
+
+            <p>If no parameter is provided, the request will be routed to http://httpbin.org.</p>
+        </leanty-description>
+    </leanty-source-code-example>
+            
+    <h2>Header Router</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Header Router</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: TestHeaderAPI
+version: 1.0.0
+path: "/headerTest"
+proxy:
+    target:
+    router:
+        middleware:
+            name: header
+            options:
+                name: host
+                defaultTarget: http://httpbin.org
+                destinations: 
+                    - target: http://httpbin.org
+                      value: api.address.com
+                    - target: http://httpbin.org/anything
+                      value: docs.address.com
+        </leanty-source>
+        <leanty-description>
+            <p>This sample is very similar to the previous one. The difference is that it uses the header 'host'
+                to choose between the targets.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+    <h2>Traffic Split Router</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Traffic Split</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: TestTrafficSplitAPI
+version: 1.0.0
+path: "/trafficSplit"
+proxy:
+    target:
+        router:
+            middleware:
+                name: trafficSplit
+                options:
+                    destinations: 
+                        - target: http://httpbin.org
+                          weight: 75
+                        - target: http://httpbin.org/anything
+                          weight: 25
+        </leanty-source>
+        <leanty-description>
+            <p>This configuration will route requests to http://httpbin.org and to http://httpbin.org/anything. 
+                The first target will receive a bigger load (3 times greater than the second one).
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+    <h2>Load Balancer</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Load Balancer</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: TestLoadBalancerAPI
+version: 1.0.0
+path: "/loadBalancer"
+proxy:
+    target:
+    router:
+        middleware:
+            name: loadBalancer
+            options:
+                destinations: 
+                    - target: http://httpbin.org
+                      weight: 75
+                      healthCheck: http://httpbin.org/get
+                    - target: http://httpbin.org/anything
+                      weight: 25
+                      healthCheck: http://httpbin.org/anything/get
+                database:
+                    checkInterval: 5 minutes
+                strategy: weight
+                healthCheckOptions:
+                    checkInterval: 5 seconds
+                    failCount: 3
+                    waitTimeout: 5 seconds
+        </leanty-source>
+        <leanty-description>
+            <p>
+                    This configuration will route requests to http://httpbin.org and to http://httpbin.org/anything. 
+                    The first target will receive a bigger load (3 times greater than the second one). It will use a 
+                    database to be able to change the configuration dynamically and a health check will be performed 
+                    to avoid traffic redirection to unavailable servers.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+    <h2>Round-Robin Load Balancer</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Round-Robin Load Balancer</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: TestLoadBalancerAPI
+version: 1.0.0
+path: "/loadBalancer"
+proxy:
+    target:
+    router:
+        middleware:
+            name: loadBalancer
+            options:
+                destinations: 
+                    - target: http://httpbin.org
+                      healthCheck: http://httpbin.org/get
+                    - target: http://httpbin.org/anything
+                      healthCheck: http://httpbin.org/anything/get
+                database:
+                    key: 'my-table-name'
+                    checkInterval: 5 minutes
+                strategy: round-robin
+        </leanty-source>
+        <leanty-description>
+            <p>
+                This sample is similar to the previous one. The difference is that it uses a round-robin balance strategy.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+
+    <h2>Custom Router</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Custom Router</leanty-title>
+        <leanty-source label="Yaml File" language="yaml">
+---
+name: TestCustomRouterAPI
+version: 1.0.0
+path: "/customrouter"
+proxy:
+    target:
+    router:
+        middleware:
+            name: myCustomRouter
+        </leanty-source>
+        <leanty-source label="Router Middleware" language="javascript">
+/**
+* Where request is the original request received by the gateway.
+*/
+module.exports = function (request) {
+    return req.query.version == '2'? 'http://myapiversiontwo/':'http://myapiversionone/';
+};
+        </leanty-source>
+        <leanty-description>
+            <p>
+                You can define any custom middleware to route the requests to your APIs. Your router middleware
+                can also return a promise if you need an async behavior.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+
+</body>
+
+</html>

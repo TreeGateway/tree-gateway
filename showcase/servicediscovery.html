@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Throttling</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Service Discovery</h1>
+    
+
+    <h2>Service Discovery</h2>
+
+    <leanty-source-code-example id="simple">
+        <leanty-title>Service Discovery</leanty-title>
+        <leanty-source label="API Yaml File" language="yaml">
+---
+name: MyDiscovarableAPI
+version: 1.0.0
+path: discoverable/
+proxy:
+    target:
+        router:
+            serviceDiscovery:
+                name: consul
+                options:
+                    serviceName: testService
+                    loadBalancer: round-robin
+        </leanty-source>
+        <leanty-source label="Gateway Yaml File" language="yaml">
+---
+serviceDiscovery:
+    provider:
+        - name: consul
+            options:
+                host: localhost
+                port: 8500
+                defaults: 
+                    wait: 30 seconds
+        </leanty-source>
+        <leanty-description>
+            <p>This sample uses a service discovery configuration to control calls to the target API. </p>
+            <p>Consul is being used here as our service discovery provider.</p>
+            <p>The gateway will check the consul provider to find out available service nodes for the service 'testService'.</p>
+            <p>
+                Once the gateway knows all the available nodes for a given service, it will use a round-robin algorithm to balance
+                the traffic between them.
+            </p>
+        </leanty-description>
+    </leanty-source-code-example>
+            
+    <h2>Dynamic Service Discovery</h2>
+
+    <leanty-source-code-example id="code">
+        <leanty-title>Dynamic Service Discovery</leanty-title>
+        <leanty-source label="API Yaml File" language="yaml">
+---
+name: MyDiscovarableAPI
+version: 1.0.0
+path: discoverable/
+proxy:
+    target:
+        router:
+            middleware:
+                name: trafficSplit
+                options:
+                    destinations: 
+                        - target: testService_v1
+                        weight: 97
+                        - target: testService_v2
+                        weight: 3
+            serviceDiscovery:
+                name: consul
+                options:
+                    serviceName: testService
+                    loadBalancer: round-robin
+    timeout: five seconds
+        </leanty-source>
+        <leanty-source label="Gateway Yaml File" language="yaml">
+---
+serviceDiscovery:
+    provider:
+        - name: consul
+            options:
+                host: localhost
+                port: 8500
+                defaults: 
+                    wait: 30 seconds
+        </leanty-source>
+        <leanty-description>
+            <p>This sample is similar to the previous one, but it uses a proxy router middleware to resolve the destination
+                 (service name) that will be passed as input to the service discovery middleware.
+            </p>
+            <p>This configuration will route the requests sending 97% of the requests to the service 
+                'testService_v1' and only 3% for the 'testService_v2'. 
+                Then the service discovery middleware will find available nodes for the requested service 
+                and use a round-robin load balancer to choose one between these nodes.</p>
+        </leanty-description>                
+    </leanty-source-code-example>
+
+</body>
+
+</html>
