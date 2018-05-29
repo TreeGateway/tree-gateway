@@ -34,17 +34,17 @@ version: 1.0.0
 path: "/queryTest"
 proxy:
     target:
-    router:
-        middleware:
-            name: query
-            options:
-                param: apiVersion
-                defaultTarget: http://httpbin.org
-                destinations: 
-                    - target: http://httpbin.org
-                      value: '1'
-                    - target: http://httpbin.org/anything
-                      value: '2'
+        router:
+            middleware:
+                name: query
+                options:
+                    param: apiVersion
+                    defaultTarget: http://httpbin.org
+                    destinations: 
+                        - target: http://httpbin.org
+                          value: '1'
+                        - target: http://httpbin.org/anything
+                          value: '2'
         </leanty-source>
         <leanty-description>
             <p>This configuration will make requests to http://gateway.address.com/queryTest?apiVersion=1 be routed 
@@ -66,17 +66,17 @@ version: 1.0.0
 path: "/headerTest"
 proxy:
     target:
-    router:
-        middleware:
-            name: header
-            options:
-                name: host
-                defaultTarget: http://httpbin.org
-                destinations: 
-                    - target: http://httpbin.org
-                      value: api.address.com
-                    - target: http://httpbin.org/anything
-                      value: docs.address.com
+        router:
+            middleware:
+                name: header
+                options:
+                    name: host
+                    defaultTarget: http://httpbin.org
+                    destinations: 
+                        - target: http://httpbin.org
+                          value: api.address.com
+                        - target: http://httpbin.org/anything
+                          value: docs.address.com
         </leanty-source>
         <leanty-description>
             <p>This sample is very similar to the previous one. The difference is that it uses the header 'host'
@@ -124,24 +124,24 @@ version: 1.0.0
 path: "/loadBalancer"
 proxy:
     target:
-    router:
-        middleware:
-            name: loadBalancer
-            options:
-                destinations: 
-                    - target: http://httpbin.org
-                      weight: 75
-                      healthCheck: http://httpbin.org/get
-                    - target: http://httpbin.org/anything
-                      weight: 25
-                      healthCheck: http://httpbin.org/anything/get
-                database:
-                    checkInterval: 5 minutes
-                strategy: weight
-                healthCheckOptions:
-                    checkInterval: 5 seconds
-                    failCount: 3
-                    waitTimeout: 5 seconds
+        router:
+            middleware:
+                name: loadBalancer
+                options:
+                    destinations: 
+                        - target: http://httpbin.org
+                          weight: 75
+                          healthCheck: http://httpbin.org/get
+                        - target: http://httpbin.org/anything
+                          weight: 25
+                          healthCheck: http://httpbin.org/anything/get
+                    database:
+                        checkInterval: 5 minutes
+                    strategy: weight
+                    healthCheckOptions:
+                        checkInterval: 5 seconds
+                        failCount: 3
+                        waitTimeout: 5 seconds
         </leanty-source>
         <leanty-description>
             <p>
@@ -164,19 +164,19 @@ version: 1.0.0
 path: "/loadBalancer"
 proxy:
     target:
-    router:
-        middleware:
-            name: loadBalancer
-            options:
-                destinations: 
-                    - target: http://httpbin.org
-                      healthCheck: http://httpbin.org/get
-                    - target: http://httpbin.org/anything
-                      healthCheck: http://httpbin.org/anything/get
-                database:
-                    key: 'my-table-name'
-                    checkInterval: 5 minutes
-                strategy: round-robin
+        router:
+            middleware:
+                name: loadBalancer
+                options:
+                    destinations: 
+                        - target: http://httpbin.org
+                          healthCheck: http://httpbin.org/get
+                        - target: http://httpbin.org/anything
+                          healthCheck: http://httpbin.org/anything/get
+                    database:
+                        key: 'my-table-name'
+                        checkInterval: 5 minutes
+                    strategy: round-robin
         </leanty-source>
         <leanty-description>
             <p>
@@ -197,9 +197,9 @@ version: 1.0.0
 path: "/customrouter"
 proxy:
     target:
-    router:
-        middleware:
-            name: myCustomRouter
+        router:
+            middleware:
+                name: myCustomRouter
         </leanty-source>
         <leanty-source label="Router Middleware" language="javascript">
 /**
