@@ -71,7 +71,7 @@ export class RedisGatewayService implements GatewayService {
             _.keys(gateway.config.cors).forEach(corsKey => {
                 castArray(gateway.config.cors[corsKey], 'allowedHeaders');
                 castArray(gateway.config.cors[corsKey], 'exposedHeaders');
-                castArray(gateway.config.cors[corsKey], 'method');
+                castArray(gateway.config.cors[corsKey], 'methods');
             });
         }
     }
