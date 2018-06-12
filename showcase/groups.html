@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free API Gateway node JS Open source">
+    <meta name="author" content="Tree Gateway">
+    
+    <title>Tree Gateway - Groups</title>
+    
+    <script type="text/javascript" src="./webcomponents-lite.js" ></script>
+    <script type="text/javascript" src="./source-code-example.js" ></script>
+</head>
+
+<body id="page-top" class="index">
+    <h1>Tree Gateway - Groups</h1>
+    
+    <!-- <p>In all authentication examples, we will map a route to the test API <a href="http://httpbin.org">http://httpbin.org</a>.
+    This site contains a set of test endpoints, like <a href="http://httpbin.org/get">http://httpbin.org/get</a>.
+    </p> -->
+
+    <p>Tree Gateway allow you to create groups of endpoints and configure any of its features to be applied only to
+        one or more groups.</p>
+
+    <h2>Blocking or Allowing Groups</h2>
+
+    <leanty-source-code-example id="code">
+            <leanty-title>Group Example</leanty-title>
+            <leanty-source label="Yaml File" language="yaml">
+---
+name: MyGrouppedAPI
+version: 1.0.0
+path: group/
+group:
+    - id: Allowed
+        description: Specify a group of endpoints that will be allowed to be called
+        member:
+            - path:
+                - /allowed/**/*
+            method:
+                - GET
+proxy:
+    target:
+        host: http://httpbin.org
+        allow:
+            - Allowed
+            </leanty-source>
+            <leanty-description>
+                <p>This sample will make tree gateway to return 404 to all requests that does not match the 'Allowed' group rules. </p>
+                <p>The Allowed group includes only GET requestes to enpoints which path matches the glob pattern '/allowed/**/*'
+                </p>
+            </leanty-description>
+        </leanty-source-code-example>
+
+        <h2>Complex conditions</h2>
+
+        <leanty-source-code-example id="code">
+            <leanty-title>Complex Conditions</leanty-title>
+            <leanty-source label="Yaml File" language="yaml">
+---
+name: MyBasicAuthenticatedAPI
+version: 1.0.0
+path: grouptest/
+group:
+    - id: secureGroup
+    description: All routes that need to be authenticated
+    member:
+        - path:
+            - '!**/auth && !**/set-new-password && !**/ask-new-password-code'
+proxy:
+    target:
+        host: http://httpbin.org
+authentication:
+    strategy:
+        name: jwt
+        options:
+            extractFrom:
+                authHeader: Bearer
+            secretOrKey: secret
+    group: secureGroup
+            </leanty-source>
+            <leanty-description>
+                <p>This sample wil configure the same authentication as we show in the JWT example, but 
+                    applying it only to certain group of URIs.</p>
+                <p>All API requests will be authenticated, except by those which matches the pattern specified.</p>
+                <p>Example of URI that will not be authenticated:
+                <span style="background-color: black; color: white; font-size: 13px;">curl http://gateway.address.com/grouptest/test/auth</span>.
+                </p>
+            </leanty-description>
+        </leanty-source-code-example>
+            
+</body>
+
+</html>
