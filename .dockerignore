@@ -1,6 +1,7 @@
 *
 !README.md
 !package.json
+!npm-shrinkwrap.json
 !rest.config
 !ioc.config
 !tree-gateway.json
