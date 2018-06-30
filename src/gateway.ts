@@ -209,7 +209,22 @@ export class Gateway extends EventEmitter {
     private createHttpsServer(app: express.Application) {
         const privateKey = fs.readFileSync(this.config.gateway.protocol.https.privateKey, 'utf8');
         const certificate = fs.readFileSync(this.config.gateway.protocol.https.certificate, 'utf8');
-        const credentials = { key: privateKey, cert: certificate };
+        const credentials: any = {
+            cert: certificate,
+            key: privateKey
+        };
+        if (this.config.gateway.protocol.https.certificateAuthority) {
+            const certificateAuthority = fs.readFileSync(
+                this.config.gateway.protocol.https.certificateAuthority, 'utf8'
+            );
+            credentials.ca = certificateAuthority;
+        }
+        if (this.config.gateway.protocol.https.ciphers) {
+            credentials.ciphers = this.config.gateway.protocol.https.ciphers.join(':');
+        }
+        if (this.config.gateway.protocol.https.honorCipherOrder) {
+            credentials.honorCipherOrder = true;
+        }
         const https = require('https');
         return https.createServer(credentials, app);
     }
@@ -287,7 +302,7 @@ export class Gateway extends EventEmitter {
         await this.configService.installAllMiddlewares();
         await this.serviceDiscovery.loadServiceDiscoveryProviders(this.config.gateway);
         this.apiPipeline.buildGatewayFilters(this.app, this.config.gateway.filter);
-        await  this.loadApis();
+        await this.loadApis();
     }
 
     private configureHealthcheck() {
