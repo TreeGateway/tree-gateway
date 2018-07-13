@@ -1,19 +1,19 @@
 'use strict';
 
 import { ObjectID } from 'bson';
-import { ApiService } from '../api';
-import { ValidationError } from '../../config/errors';
-import { NotFoundError } from '../../pipeline/error/errors';
-import { ApiConfig } from '../../config/api';
-import { AutoWired, Singleton, Inject } from 'typescript-ioc';
-import { Database } from '../../database';
-import { ConfigTopics } from '../../config/events';
-import { castArray } from '../../utils/config';
 import * as _ from 'lodash';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
+import { ApiConfig } from '../../config/api';
+import { ValidationError } from '../../config/errors';
+import { ConfigTopics } from '../../config/events';
+import { Database } from '../../database';
+import { NotFoundError } from '../../pipeline/error/errors';
+import { castArray } from '../../utils/config';
+import { ApiService } from '../api';
 
 class Constants {
-    static APIS_PREFIX = '{config}:apis';
-    static ADMIN_API = 'ADMIN_API';
+    public static APIS_PREFIX = '{config}:apis';
+    public static ADMIN_API = 'ADMIN_API';
 }
 
 @AutoWired
@@ -22,7 +22,7 @@ export class RedisApiService implements ApiService {
 
     @Inject private database: Database;
 
-    async list(name?: string, version?: string | number, description?: string, path?: string): Promise<Array<ApiConfig>> {
+    public async list(name?: string, version?: string | number, description?: string, path?: string): Promise<Array<ApiConfig>> {
         let apis = await this.database.redisClient.hgetall(Constants.APIS_PREFIX);
         apis = Object.keys(apis).map((key: any) => JSON.parse(apis[key]));
         apis = apis.filter((api: ApiConfig) => {
@@ -44,7 +44,7 @@ export class RedisApiService implements ApiService {
         return apis;
     }
 
-    async get(id: string): Promise<ApiConfig> {
+    public async get(id: string): Promise<ApiConfig> {
         const api = await this.database.redisClient.hget(Constants.APIS_PREFIX, id);
         if (!api) {
             throw new NotFoundError('Api not found.');
@@ -53,7 +53,7 @@ export class RedisApiService implements ApiService {
         return JSON.parse(api);
     }
 
-    async create(api: ApiConfig): Promise<string> {
+    public async create(api: ApiConfig): Promise<string> {
         try {
             if (!api.id) {
                 api.id = new ObjectID().toString();
@@ -61,9 +61,9 @@ export class RedisApiService implements ApiService {
             this.castArrays(api);
             await this.ensureAPICreateConstraints(api);
             await this.database.redisClient.multi()
-                    .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API }))
-                    .exec();
+                .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
+                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API }))
+                .exec();
             return api.id;
         } catch (err) {
             if (typeof err === 'string') {
@@ -73,7 +73,7 @@ export class RedisApiService implements ApiService {
         }
     }
 
-    async update(api: ApiConfig, upsert?: boolean): Promise<void> {
+    public async update(api: ApiConfig, upsert?: boolean): Promise<void> {
         try {
             if (upsert && !api.id) {
                 api.id = new ObjectID().toString();
@@ -81,9 +81,9 @@ export class RedisApiService implements ApiService {
             this.castArrays(api);
             await this.ensureAPIUpdateConstraints(api, upsert);
             await this.database.redisClient.multi()
-                    .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
-                    .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API, id: api.id }))
-                    .exec();
+                .hmset(`${Constants.APIS_PREFIX}`, api.id, JSON.stringify(api))
+                .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API, id: api.id }))
+                .exec();
         } catch (err) {
             if (typeof err === 'string') {
                 err = new ValidationError(err);
@@ -92,7 +92,7 @@ export class RedisApiService implements ApiService {
         }
     }
 
-    async remove(id: string): Promise<void> {
+    public async remove(id: string): Promise<void> {
         await this.database.redisClient.multi()
             .hdel(`${Constants.APIS_PREFIX}`, id)
             .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: Constants.ADMIN_API }))

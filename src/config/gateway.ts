@@ -2,17 +2,17 @@
 
 import * as Joi from 'joi';
 import { AdminConfig, adminConfigValidatorSchema } from './admin';
-import { ProtocolConfig, protocolConfigSchema } from './protocol';
-import { LoggerConfig, AccessLoggerConfig, loggerConfigSchema, accessLoggerConfigSchema } from './logger';
-import { CorsConfig, corsConfigSchema } from './cors';
-import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
-import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './service-discovery';
-import { DatabaseConfig, databaseSchema } from './database';
 import { AuthenticationConfig, authenticationValidatorSchema } from './authentication';
 import { CacheConfig, cacheConfigValidatorSchema } from './cache';
 import { CircuitBreakerConfig, circuitBreakerConfigValidatorSchema } from './circuit-breaker';
-import { ThrottlingConfig, throttlingConfigValidatorSchema } from './throttling';
+import { CorsConfig, corsConfigSchema } from './cors';
+import { DatabaseConfig, databaseSchema } from './database';
 import { ValidationError } from './errors';
+import { AccessLoggerConfig, accessLoggerConfigSchema, LoggerConfig, loggerConfigSchema } from './logger';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+import { ProtocolConfig, protocolConfigSchema } from './protocol';
+import { ServiceDiscoveryConfig, serviceDiscoveryConfigValidatorSchema } from './service-discovery';
+import { ThrottlingConfig, throttlingConfigValidatorSchema } from './throttling';
 
 /**
  * The Server config descriptor.
@@ -70,9 +70,9 @@ export interface GatewayConfig {
      */
     admin?: AdminConfig;
     /**
-    * Configure default cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
-    * It can be configured also in the API configuration
-    */
+     * Configure default cors support for API requests. It uses the [cors](https://www.npmjs.com/package/cors) module.
+     * It can be configured also in the API configuration
+     */
     cors?: CorsConfig;
     /**
      * Configure a timeout for the gateway http.Server. You can inform the amount of milisencods, or use

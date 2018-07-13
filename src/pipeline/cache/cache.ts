@@ -1,17 +1,17 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig } from '../../config/api';
-import { ApiPipelineConfig } from '../../config/gateway';
-import { ApiCacheConfig } from '../../config/cache';
-import { ServerCache } from './server-cache';
-import { ClientCache } from './client-cache';
-import * as Groups from '../group';
 import * as _ from 'lodash';
-import { Logger } from '../../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
+import { ApiConfig } from '../../config/api';
+import { ApiCacheConfig } from '../../config/cache';
+import { ApiPipelineConfig } from '../../config/gateway';
+import { Logger } from '../../logger';
 import { createFunction } from '../../utils/functions';
+import * as Groups from '../group';
 import { RequestLogger } from '../stats/request';
+import { ClientCache } from './client-cache';
+import { ServerCache } from './server-cache';
 
 const onHeaders = require('on-headers');
 
@@ -20,7 +20,7 @@ export class ApiCache {
     @Inject private logger: Logger;
     @Inject private requestLogger: RequestLogger;
 
-    cache(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public cache(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.useCache(api)) {
             this.configureCache(apiRouter, api, pipelineConfig);
         }
@@ -85,11 +85,11 @@ export class ApiCache {
 
         body.push(`}`);
         body.push(`next();`);
-        return <express.RequestHandler>createFunction({
+        return createFunction({
             ServerCache: ServerCache,
             onHeaders: onHeaders,
             validateGroupFunction: validateGroupFunction
-        }, 'req', 'res', 'next', body.join(''));
+        }, 'req', 'res', 'next', body.join('')) as express.RequestHandler;
     }
 
     private useCache(api: ApiConfig): boolean {

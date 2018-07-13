@@ -2,7 +2,7 @@
 
 import * as _ from 'lodash';
 
-export function createFunction(contextVars: any, ...args: string[]) {
+export function createFunction(contextVars: any, ...args: Array<string>) {
     const params = args.length > 1 ? args.slice(0, args.length - 1) : [];
     const constextVarNames = _.keys(contextVars);
 

@@ -1,15 +1,15 @@
 'use strict';
 
-import { CacheEntry, CacheStore } from './cache-store';
-import { ServerCacheConfig } from '../../config/cache';
-import { RedisStore } from './redis-store';
-import { Logger } from '../../logger';
 import { Inject } from 'typescript-ioc';
+import { ServerCacheConfig } from '../../config/cache';
 import { Database } from '../../database';
+import { Logger } from '../../logger';
 import { getMilisecondsInterval } from '../../utils/time-intervals';
+import { CacheEntry, CacheStore } from './cache-store';
+import { RedisStore } from './redis-store';
 
 export class ServerCache {
-    static cacheStore: CacheStore<CacheEntry>;
+    public static cacheStore: CacheStore<CacheEntry>;
     @Inject private logger: Logger;
     @Inject private database: Database;
 
@@ -19,16 +19,7 @@ export class ServerCache {
         }
     }
 
-    private initializeCacheStore() {
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug('Initializing Redis cache store.');
-        }
-        ServerCache.cacheStore = new RedisStore({
-            client: this.database.redisClient
-        });
-    }
-
-    buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req: string, res: string,
+    public buildCacheMiddleware(serverCache: ServerCacheConfig, path: string, req: string, res: string,
         next: string, requestLog?: boolean) {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug('Configuring Server Cache for path [%s].', path);
@@ -98,5 +89,14 @@ export class ServerCache {
         result.push(`});`);
         result.push(`return;`);
         return result.join('');
+    }
+
+    private initializeCacheStore() {
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug('Initializing Redis cache store.');
+        }
+        ServerCache.cacheStore = new RedisStore({
+            client: this.database.redisClient
+        });
     }
 }

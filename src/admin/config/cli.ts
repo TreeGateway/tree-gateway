@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
+import { Container } from 'typescript-ioc';
+import { Configuration } from '../../configuration';
+import { Database } from '../../database';
 import { configArgs } from './cli-args';
 import { Cli } from './cli-tool';
-import { Configuration } from '../../configuration';
-import { Container } from 'typescript-ioc';
-import { Database } from '../../database';
+
+// tslint:disable:no-console
 
 try {
     const config: Configuration = Container.get(Configuration);

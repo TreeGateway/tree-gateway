@@ -1,8 +1,8 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 import { ValidationError } from './errors';
+import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
 
 /**
  * Configure Authentication for APIs.

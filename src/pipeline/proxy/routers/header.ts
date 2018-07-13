@@ -1,8 +1,8 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { ValidationError } from '../../../config/errors';
 import * as _ from 'lodash';
+import { ValidationError } from '../../../config/errors';
 
 interface HeaderSplitConfig {
     destinations: Array<RouterDestination>;
@@ -35,7 +35,7 @@ function validateHeaderSplitConfig(config: HeaderSplitConfig) {
     }
 }
 
-module.exports = function(config: HeaderSplitConfig) {
+module.exports = function (config: HeaderSplitConfig) {
     validateHeaderSplitConfig(config);
     const targets = new Map<string, string>();
     config.destinations = _.castArray(config.destinations || []);

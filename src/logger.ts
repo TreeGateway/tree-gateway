@@ -1,19 +1,19 @@
 'use strict';
 
-import * as Winston from 'winston';
-import { LoggerConfig, LogLevel } from './config/logger';
+import * as fs from 'fs-extra-promise';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as fs from 'fs-extra-promise';
-import { AutoWired, Singleton, Inject } from 'typescript-ioc';
-import { Configuration } from './configuration';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { inspect } from 'util';
+import * as Winston from 'winston';
+import { LoggerConfig, LogLevel } from './config/logger';
+import { Configuration } from './configuration';
 
 @Singleton
 @AutoWired
 export class Logger {
-    level: LogLevel;
-    winston: Winston.LoggerInstance;
+    public level: LogLevel;
+    public winston: Winston.LoggerInstance;
     @Inject private config: Configuration;
 
     constructor() {
@@ -26,8 +26,44 @@ export class Logger {
         });
     }
 
+    public isDebugEnabled(): boolean {
+        return this.level === LogLevel.debug;
+    }
+
+    public isInfoEnabled(): boolean {
+        return this.level >= LogLevel.info;
+    }
+
+    public isWarnEnabled(): boolean {
+        return this.level >= LogLevel.warn;
+    }
+
+    public isErrorEnabled(): boolean {
+        return this.level >= LogLevel.error;
+    }
+
+    public debug(...args: Array<any>) {
+        this.winston.debug.apply(this, arguments);
+    }
+
+    public info(...args: Array<any>) {
+        this.winston.info.apply(this, arguments);
+    }
+
+    public warn(...args: Array<any>) {
+        this.winston.warn.apply(this, arguments);
+    }
+
+    public error(...args: Array<any>) {
+        this.winston.error.apply(this, arguments);
+    }
+
+    public inspectObject(object: any) {
+        inspect(object, { colors: true, depth: 15 });
+    }
+
     private instantiateLogger(config: LoggerConfig) {
-        this.level = (config ? (<any>LogLevel)[config.level] : LogLevel.info);
+        this.level = (config ? (LogLevel as any)[config.level] : LogLevel.info);
         const options: Winston.LoggerOptions = {
             level: LogLevel[this.level],
             transports: []
@@ -43,47 +79,11 @@ export class Logger {
                 outputDir = path.join(this.config.rootPath, outputDir);
             }
             const fileName = (process.env.processNumber ? `gateway-${process.env.processNumber}.log` : `gateway.log`);
-            (<any>config).file['filename'] = path.join(outputDir, fileName);
-            fs.ensureDirSync(path.dirname((<any>config).file['filename']));
+            (config as any).file['filename'] = path.join(outputDir, fileName);
+            fs.ensureDirSync(path.dirname((config as any).file['filename']));
             options.transports.push(new Winston.transports.File(config.file));
         }
 
         return new Winston.Logger(options);
-    }
-
-    isDebugEnabled(): boolean {
-        return this.level === LogLevel.debug;
-    }
-
-    isInfoEnabled(): boolean {
-        return this.level >= LogLevel.info;
-    }
-
-    isWarnEnabled(): boolean {
-        return this.level >= LogLevel.warn;
-    }
-
-    isErrorEnabled(): boolean {
-        return this.level >= LogLevel.error;
-    }
-
-    debug(...args: any[]) {
-        this.winston.debug.apply(this, arguments);
-    }
-
-    info(...args: any[]) {
-        this.winston.info.apply(this, arguments);
-    }
-
-    warn(...args: any[]) {
-        this.winston.warn.apply(this, arguments);
-    }
-
-    error(...args: any[]) {
-        this.winston.error.apply(this, arguments);
-    }
-
-    inspectObject(object: any) {
-        inspect(object, { colors: true, depth: 15 });
     }
 }

@@ -1,12 +1,12 @@
 'use strict';
 
-import * as Joi from 'joi';
-import { UsersConfig, usersConfigValidatorSchema } from './users';
-import { AccessLoggerConfig, accessLoggerConfigSchema } from './logger';
-import { ProtocolConfig, protocolConfigSchema } from './protocol';
 import { CorsConfig, corsConfigSchema } from './cors';
+import { AccessLoggerConfig, accessLoggerConfigSchema } from './logger';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
+import { ProtocolConfig, protocolConfigSchema } from './protocol';
+import { UsersConfig, usersConfigValidatorSchema } from './users';
 
+import * as Joi from 'joi';
 /**
  * Configure the Admin module for the gateway.
  */

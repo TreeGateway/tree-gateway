@@ -1,13 +1,13 @@
 'use strict';
 
+import * as _ from 'lodash';
+import { Inject } from 'typescript-ioc';
 import { ConfigTopics } from '../../config/events';
 import { GatewayConfig } from '../../config/gateway';
-import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
 import { NotFoundError } from '../../pipeline/error/errors';
-import { GatewayService } from '../gateway';
 import { castArray } from '../../utils/config';
-import * as _ from 'lodash';
+import { GatewayService } from '../gateway';
 
 export class RedisGatewayService implements GatewayService {
     private static GATEWAY_CONFIG_KEY = '{config}:gateway';
@@ -16,14 +16,14 @@ export class RedisGatewayService implements GatewayService {
     @Inject
     private database: Database;
 
-    async remove(): Promise<void> {
+    public async remove(): Promise<void> {
         await this.database.redisClient.multi()
             .del(RedisGatewayService.GATEWAY_CONFIG_KEY)
             .publish(ConfigTopics.CONFIG_UPDATED, JSON.stringify({ packageId: RedisGatewayService.ADMIN_API, needsReload: true }))
             .exec();
     }
 
-    async save(config: GatewayConfig): Promise<void> {
+    public async save(config: GatewayConfig): Promise<void> {
         this.castArrays(config);
         await this.database.redisClient.multi()
             .set(RedisGatewayService.GATEWAY_CONFIG_KEY, JSON.stringify(config))
@@ -31,7 +31,7 @@ export class RedisGatewayService implements GatewayService {
             .exec();
     }
 
-    async read(): Promise<GatewayConfig> {
+    public async read(): Promise<GatewayConfig> {
         const config = await this.get();
         if (!config) {
             throw new NotFoundError('Config not found.');
@@ -39,7 +39,7 @@ export class RedisGatewayService implements GatewayService {
         return (config);
     }
 
-    async get(): Promise<GatewayConfig> {
+    public async get(): Promise<GatewayConfig> {
         const config = await this.database.redisClient.get(RedisGatewayService.GATEWAY_CONFIG_KEY);
         if (!config) {
             return null;
@@ -47,7 +47,7 @@ export class RedisGatewayService implements GatewayService {
         return JSON.parse(config);
     }
 
-    registerGatewayVersion() {
+    public registerGatewayVersion() {
         return this.database.registerGatewayVersion();
     }
 

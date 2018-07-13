@@ -1,7 +1,7 @@
 'use strict';
 
-import * as mustache from 'mustache';
 import * as Joi from 'joi';
+import * as mustache from 'mustache';
 import { ValidationError } from '../../../config/errors';
 
 interface MustacheConfig {
@@ -21,7 +21,7 @@ function validateMustacheConfig(config: MustacheConfig) {
     }
 }
 
-module.exports = function(config: MustacheConfig) {
+module.exports = function (config: MustacheConfig) {
     validateMustacheConfig(config);
     const template = config.template;
     return (req: any) => {

@@ -1,16 +1,16 @@
 'use strict';
 
 import * as Redis from 'ioredis';
-import { RedisConfig } from './config/database';
 import * as _ from 'lodash';
-import { AutoWired, Singleton, Inject } from 'typescript-ioc';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
+import { RedisConfig } from './config/database';
 import { Configuration } from './configuration';
 
 @Singleton
 @AutoWired
 export class Database {
-    static GATEWAY_VERSION_KEY: string = '{config}:treegateway:version';
-    static UPDATING = `0.0.0`;
+    public static GATEWAY_VERSION_KEY: string = '{config}:treegateway:version';
+    public static UPDATING = `0.0.0`;
 
     @Inject private config: Configuration;
     private client: Redis.Redis;
@@ -29,33 +29,33 @@ export class Database {
         return this.events;
     }
 
-    disconnect() {
+    public disconnect() {
         this.redisClient.disconnect();
         this.redisEvents.disconnect();
     }
 
-    async registerGatewayVersion(): Promise<void> {
+    public async registerGatewayVersion(): Promise<void> {
         try {
             const packageJson = require('../package.json');
             await this.redisClient.set(Database.GATEWAY_VERSION_KEY, `${packageJson.version}`);
-        } catch(err) {
+        } catch (err) {
             throw new Error('It was not possible to register the Tree Gateway version.');
         }
     }
 
-    async getGatewayVersion(): Promise<string> {
+    public async getGatewayVersion(): Promise<string> {
         try {
             return await this.redisClient.get(Database.GATEWAY_VERSION_KEY);
-        } catch(err) {
-            throw(new Error('It was not possible to retrieve the Tree Gateway version.'));
+        } catch (err) {
+            throw (new Error('It was not possible to retrieve the Tree Gateway version.'));
         }
     }
 
-    async startGatewayUpdate(): Promise<string> {
+    public async startGatewayUpdate(): Promise<string> {
         try {
             return await this.redisClient.getset(Database.GATEWAY_VERSION_KEY, Database.UPDATING);
-        } catch(err) {
-            throw(new Error('It was not possible to retrieve the Tree Gateway version.'));
+        } catch (err) {
+            throw (new Error('It was not possible to retrieve the Tree Gateway version.'));
         }
     }
 
@@ -71,7 +71,7 @@ export class Database {
                 node.port = _.toSafeInteger(node.port);
                 node.host = node.host;
             });
-            client = new Redis.Cluster(<any>config.cluster, {
+            client = new Redis.Cluster(config.cluster as any, {
                 redisOptions: config.options,
                 scaleReads: 'all'
             });

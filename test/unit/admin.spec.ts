@@ -1,16 +1,16 @@
 'use strict';
 
-import 'mocha';
 import * as chai from 'chai';
-import * as request from 'request';
 import * as fs from 'fs-extra-promise';
+import 'mocha';
 import * as path from 'path';
+import * as request from 'request';
 
-import {ApiConfig} from '../../src/config/api';
-import {Container} from 'typescript-ioc';
-import {Configuration} from '../../src/configuration';
-import {SDK} from '../../src/admin/config/sdk';
-import { generateSecurityToken, getSwaggerUrl, getSwaggerHost } from '../../src/utils/config';
+import { Container } from 'typescript-ioc';
+import { SDK } from '../../src/admin/config/sdk';
+import { ApiConfig } from '../../src/config/api';
+import { Configuration } from '../../src/configuration';
+import { generateSecurityToken, getSwaggerHost, getSwaggerUrl } from '../../src/utils/config';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -42,31 +42,46 @@ const simpleUser = {
     login: 'simple',
     name: 'Simple user',
     password: '123test',
-    roles: <string[]>[]
+    roles: [] as Array<string>
 };
 
 const getIdFromResponse = (response: any) => {
     const location = response.headers['location'];
     expect(location).to.exist;
     const parts = location ? location.split('/') : [];
-    return parts.length > 0 ? parts[parts.length-1] : null;
+    return parts.length > 0 ? parts[parts.length - 1] : null;
 };
 
 const createUsers = () => {
     return Promise.all([sdk.users.addUser(adminUser), sdk.users.addUser(configUser), sdk.users.addUser(simpleUser)]);
 };
 
+async function initialize() {
+    adminRequest = request.defaults({ baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}` });
+
+    sdk = await SDK.initialize({
+        defaultHost: getSwaggerHost(config.gateway),
+        swaggerUrl: getSwaggerUrl(config.gateway),
+        token: generateSecurityToken(config.gateway)
+    });
+    await createUsers();
+}
+
 describe('Gateway Admin Tasks', () => {
     before(async () => {
         config = Container.get(Configuration);
-        adminRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.admin.protocol.http.listenPort}`});
-
-        sdk = await SDK.initialize({
-            defaultHost: getSwaggerHost(config.gateway),
-            swaggerUrl: getSwaggerUrl(config.gateway),
-            token: generateSecurityToken(config.gateway)
-        });
-        await createUsers();
+        if (config.loaded) {
+            await initialize();
+        } else {
+            await new Promise<void>((resolve, reject) => {
+                config.on('load', () => {
+                    initialize().then(resolve).catch(reject);
+                });
+                config.on('error', (err) => {
+                    reject(err);
+                });
+            });
+        }
     });
 
     describe('/healthcheck', () => {
@@ -94,7 +109,7 @@ describe('Gateway Admin Tasks', () => {
             };
             adminRequest.post({
                 form: form,
-                url:'/users/authentication'
+                url: '/users/authentication'
             }, (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(200);
                 adminToken = body;
@@ -108,7 +123,7 @@ describe('Gateway Admin Tasks', () => {
             };
             adminRequest.post({
                 form: form,
-                url:'/users/authentication'
+                url: '/users/authentication'
             }, (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(200);
                 configToken = body;
@@ -122,7 +137,7 @@ describe('Gateway Admin Tasks', () => {
             };
             adminRequest.post({
                 form: form,
-                url:'/users/authentication'
+                url: '/users/authentication'
             }, (error: any, response: any, body: any) => {
                 expect(response.statusCode).to.equal(200);
                 done();
@@ -132,15 +147,15 @@ describe('Gateway Admin Tasks', () => {
     });
 
     describe('/apis', () => {
-        const apiMock = <ApiConfig> {
+        const apiMock = {
             description: 'API mock',
             name: 'apiMock',
             path: 'newApi',
             proxy: {
-                target: {host: 'http://test.com'}
+                target: { host: 'http://test.com' }
             },
             version: '1.0'
-        };
+        } as ApiConfig;
 
         it('should be able to create a new API', (done) => {
             adminRequest.post('/apis', {
@@ -181,7 +196,7 @@ describe('Gateway Admin Tasks', () => {
         it('should be able to list all APIs', (done) => {
             adminRequest.get({
                 headers: { 'authorization': `Bearer ${configToken}` },
-                url:'/apis'
+                url: '/apis'
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
                 expect(response.statusCode).to.equal(200);
@@ -206,7 +221,7 @@ describe('Gateway Admin Tasks', () => {
         it('should be able to get an API', (done) => {
             adminRequest.get({
                 headers: { 'authorization': `Bearer ${configToken}` },
-                url:`/apis/${apiMock.id}`
+                url: `/apis/${apiMock.id}`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
                 expect(response.statusCode).to.equal(200);
@@ -219,7 +234,7 @@ describe('Gateway Admin Tasks', () => {
         it('should be able to delete an API', (done) => {
             adminRequest.delete({
                 headers: { 'authorization': `Bearer ${configToken}` },
-                url:`/apis/${apiMock.id}`
+                url: `/apis/${apiMock.id}`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
                 expect(response.statusCode).to.equal(204);
@@ -232,7 +247,7 @@ describe('Gateway Admin Tasks', () => {
         it('should reject requests with low privileges', (done) => {
             adminRequest.delete({
                 headers: { 'authorization': `Bearer ${configToken}` },
-                url:`/users/simple`
+                url: `/users/simple`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
                 expect(response.statusCode).to.equal(403);
@@ -245,14 +260,14 @@ describe('Gateway Admin Tasks', () => {
                 login: 'simple2',
                 name: 'Simple user 2',
                 password: '123test',
-                roles: <string[]>[]
+                roles: [] as Array<string>
             };
 
             adminRequest.post({
                 body: simpleUser2,
                 headers: { 'authorization': `Bearer ${adminToken}` },
                 json: true,
-                url:`/users`
+                url: `/users`
             }, (error: any, response: any, body: any) => {
                 expect(error).to.not.exist;
                 expect(response.statusCode).to.equal(201);
@@ -275,11 +290,11 @@ describe('Gateway Admin Tasks', () => {
         });
         it('should be able to create new user', async () => {
             const newUser = Object.assign({}, simpleUser);
-            newUser.login = simpleUser.login+'_sdk';
+            newUser.login = simpleUser.login + '_sdk';
             await sdk.users.addUser(newUser);
         });
         it('should be able to remove users', async () => {
-            await sdk.users.removeUser(simpleUser.login+'_sdk');
+            await sdk.users.removeUser(simpleUser.login + '_sdk');
         });
         it('should be able to list users', async () => {
             const users = await sdk.users.list({});

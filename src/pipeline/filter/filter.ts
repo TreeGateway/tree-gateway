@@ -1,21 +1,21 @@
 'use strict';
 
 import * as express from 'express';
+import { Inject } from 'typescript-ioc';
 import { ApiConfig } from '../../config/api';
+import { ApiFilter as Filter } from '../../config/filter';
 import { ApiPipelineConfig } from '../../config/gateway';
 import { MiddlewareConfig } from '../../config/middleware';
-import * as Groups from '../group';
 import { Logger } from '../../logger';
-import { Inject } from 'typescript-ioc';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
-import { ApiFilter as Filter } from '../../config/filter';
 import { NotFoundError } from '../error/errors';
+import * as Groups from '../group';
 
 export class ApiFilter {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private logger: Logger;
 
-    buildApiFilters(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public buildApiFilters(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (api.proxy.target.allow) {
             this.buildAllowFilter(apiRouter, api);
         }
@@ -27,7 +27,7 @@ export class ApiFilter {
         }
     }
 
-    buildGatewayFilters(apiRouter: express.Router, filters: Array<MiddlewareConfig>) {
+    public buildGatewayFilters(apiRouter: express.Router, filters: Array<MiddlewareConfig>) {
         if (filters) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug(`Configuring custom filters for Tree Gateway. Filters [${JSON.stringify(filters)}]`);

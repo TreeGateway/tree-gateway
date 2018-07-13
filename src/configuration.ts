@@ -1,33 +1,33 @@
 'use strict';
 
+import chalk from 'chalk';
+import { EventEmitter } from 'events';
 import * as fs from 'fs-extra-promise';
+import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as YAML from 'yamljs';
-import * as uuid from 'uuid';
-import { EventEmitter } from 'events';
-import { ServerConfig, GatewayConfig, validateServerConfig, validateGatewayConfig } from './config/gateway';
-import { DatabaseConfig } from './config/database';
 import { AutoWired, Container, Singleton } from 'typescript-ioc';
-import { checkEnvVariable } from './utils/env';
-import { UserService } from './service/users';
-import { MiddlewareService } from './service/middleware';
+import * as uuid from 'uuid';
+import * as YAML from 'yamljs';
+import { DatabaseConfig } from './config/database';
+import { GatewayConfig, ServerConfig, validateGatewayConfig, validateServerConfig } from './config/gateway';
 import { ApiService } from './service/api';
 import { ConfigService } from './service/config';
 import { GatewayService } from './service/gateway';
+import { MiddlewareService } from './service/middleware';
 import { PluginsDataService } from './service/plugin-data';
+import { UserService } from './service/users';
 import { castArray } from './utils/config';
-import * as inquirer from 'inquirer';
-import chalk from 'chalk';
+import { checkEnvVariable } from './utils/env';
 
 _.mixin(require('lodash-deep'));
 
 @Singleton
 @AutoWired
 export class Configuration extends EventEmitter {
-    static gatewayConfigFile: string;
-    static resetBeforeStart: boolean;
-    static instances: number;
+    public static gatewayConfigFile: string;
+    public static resetBeforeStart: boolean;
+    public static instances: number;
 
     private config: ServerConfig;
     private isLoaded: boolean = false;
@@ -37,7 +37,7 @@ export class Configuration extends EventEmitter {
         this.load();
     }
 
-    async load() {
+    public async load() {
         if (!this.isLoaded) {
             try {
                 await this.loadGatewayConfig(Configuration.gatewayConfigFile || path.join(process.cwd(), 'tree-gateway.json'));
@@ -50,7 +50,7 @@ export class Configuration extends EventEmitter {
         }
     }
 
-    async reload(): Promise<void> {
+    public async reload(): Promise<void> {
         this.config = null;
         await this.loadGatewayConfig(Configuration.gatewayConfigFile || path.join(process.cwd(), 'tree-gateway.json'));
         this.emit('gateway-update', this.gateway);
@@ -104,7 +104,7 @@ export class Configuration extends EventEmitter {
             serverConfig.middlewarePath = path.join(serverConfig.rootPath, serverConfig.middlewarePath);
         }
 
-        serverConfig = this.config = (<any>_).deepMapValues(serverConfig, (value: string) => {
+        serverConfig = this.config = (_ as any).deepMapValues(serverConfig, (value: string) => {
             return checkEnvVariable(value);
         });
 
@@ -154,6 +154,7 @@ export class Configuration extends EventEmitter {
         return new Promise<void>((resolve, reject) => {
             setTimeout(() => {
                 if (Configuration.resetBeforeStart) {
+                    // tslint:disable-next-line:no-console
                     console.info('reseting database');
                     const Database = require('./database').Database;
                     const database = Container.get(Database);
@@ -174,7 +175,7 @@ export class Configuration extends EventEmitter {
         const gatewayService: GatewayService = Container.get(GatewayService);
         const gatewayConfig = await gatewayService.get();
         if (gatewayConfig) {
-            this.config.gateway = <GatewayConfig>_.defaultsDeep(gatewayConfig, this.config.gateway);
+            this.config.gateway = _.defaultsDeep(gatewayConfig, this.config.gateway) as GatewayConfig;
             await validateGatewayConfig(this.config.gateway);
             if (!this.config.gateway.protocol) {
                 throw new Error('GatewayConfig protocol is required.');
@@ -207,13 +208,13 @@ export class Configuration extends EventEmitter {
         return fileName;
     }
 
-    private async loadServerConfig(configFileName: string): Promise<ServerConfig>  {
+    private async loadServerConfig(configFileName: string): Promise<ServerConfig> {
         let config: ServerConfig = this.loadConfigObject(configFileName);
         if (process.env.NODE_ENV) {
             const envConfigFileName = (`${configFileName}-${process.env.NODE_ENV}`);
             const envConfig = this.loadConfigObject(envConfigFileName);
             if (envConfig) {
-                config = <ServerConfig>_.defaultsDeep(envConfig, config);
+                config = _.defaultsDeep(envConfig, config) as ServerConfig;
             }
         }
         if (!config) {
@@ -224,6 +225,7 @@ export class Configuration extends EventEmitter {
 
     private async loadDefaultServerConfig(): Promise<ServerConfig> {
         const filePath = path.join(process.cwd(), 'tree-gateway.yaml');
+        // tslint:disable-next-line:no-console
         console.info(chalk.yellowBright(`No server configuration file was found. Creating a configuration file and saving it on '${filePath}'`));
         const config: ServerConfig = YAML.load(require.resolve('./tree-gateway-server-default.yaml'));
 
@@ -238,8 +240,8 @@ export class Configuration extends EventEmitter {
             {
                 choices: ['Cluster', 'Standalone'],
                 default: 'Standalone',
-                filter: function(val) {
-                  return val.toLowerCase();
+                filter: function (val) {
+                    return val.toLowerCase();
                 },
                 message: 'Choose the redis topology:',
                 name: 'connectionType',
@@ -256,7 +258,7 @@ export class Configuration extends EventEmitter {
                 message: 'Redis port:',
                 name: 'port',
                 type: 'input',
-                validate: function(val) {
+                validate: function (val) {
                     const valid = val === '' || val.match(/^[0-9]+$/) !== null;
                     return valid || 'Please enter a number';
                 }
@@ -265,7 +267,7 @@ export class Configuration extends EventEmitter {
                 message: 'Redis DB number (Optional):',
                 name: 'db',
                 type: 'input',
-                validate: function(val) {
+                validate: function (val) {
                     const valid = val === '' || val.match(/^[0-9]+$/) !== null;
                     return valid || 'Please enter a number';
                 }
@@ -307,6 +309,7 @@ export class Configuration extends EventEmitter {
 
     private loadDefaultGatewayConfig(): GatewayConfig {
         const gateway: GatewayConfig = YAML.load(require.resolve('./tree-gateway-default.yaml'));
+        // tslint:disable-next-line:no-console
         console.info(`No configuration for gateway was found. Using default configuration and saving it on database.`);
         gateway.admin.userService.jwtSecret = uuid();
         return gateway;

@@ -1,15 +1,17 @@
 'use strict';
 
-import { SDK } from './sdk';
-import { ApiConfig } from '../../config/api';
-import { UserData } from '../../config/users';
-import { GatewayConfig } from '../../config/gateway';
-import { ConfigPackage } from '../../config/config-package';
-import { Configuration } from '../../configuration';
-import { Inject } from 'typescript-ioc';
 import * as fs from 'fs-extra-promise';
+import { Inject } from 'typescript-ioc';
 import * as YAML from 'yamljs';
-import { getSwaggerHost, getSwaggerUrl, generateSecurityToken } from '../../utils/config';
+import { ApiConfig } from '../../config/api';
+import { ConfigPackage } from '../../config/config-package';
+import { GatewayConfig } from '../../config/gateway';
+import { UserData } from '../../config/users';
+import { Configuration } from '../../configuration';
+import { generateSecurityToken, getSwaggerHost, getSwaggerUrl } from '../../utils/config';
+import { SDK } from './sdk';
+
+// tslint:disable:no-console
 
 export class Cli {
     @Inject private config: Configuration;
@@ -21,7 +23,7 @@ export class Cli {
         this.args = configArgs;
     }
 
-    async processCommand(): Promise<void> {
+    public async processCommand(): Promise<void> {
         this.sdk = await SDK.initialize({
             defaultHost: getSwaggerHost(this.config.gateway),
             swaggerUrl: getSwaggerUrl(this.config.gateway),
@@ -62,7 +64,7 @@ export class Cli {
             case 'update':
                 return this.processUsersUpdate();
             default:
-            throw new Error(`Command not found: ${this.args.usersCommand}`);
+                throw new Error(`Command not found: ${this.args.usersCommand}`);
         }
     }
 
@@ -192,7 +194,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.filters(<string>args['name']);
+            const filters = await this.sdk.middleware.filters(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeFilter(this.args.remove);
@@ -224,7 +226,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.requestInterceptors(<string>args['name']);
+            const filters = await this.sdk.middleware.requestInterceptors(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeRequestInterceptor(this.args.remove);
@@ -256,7 +258,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.responseInterceptors(<string>args['name']);
+            const filters = await this.sdk.middleware.responseInterceptors(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeResponseInterceptor(this.args.remove);
@@ -288,7 +290,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.authStrategies(<string>args['name']);
+            const filters = await this.sdk.middleware.authStrategies(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeAuthStrategy(this.args.remove);
@@ -320,7 +322,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.authVerify(<string>args['name']);
+            const filters = await this.sdk.middleware.authVerify(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeAuthVerify(this.args.remove);
@@ -352,7 +354,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.throttlingKeyGenerator(<string>args['name']);
+            const filters = await this.sdk.middleware.throttlingKeyGenerator(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeThrottlingKeyGenerator(this.args.remove);
@@ -384,7 +386,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.throttlingHandler(<string>args['name']);
+            const filters = await this.sdk.middleware.throttlingHandler(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeThrottlingHandler(this.args.remove);
@@ -416,7 +418,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.throttlingSkip(<string>args['name']);
+            const filters = await this.sdk.middleware.throttlingSkip(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeThrottlingSkip(this.args.remove);
@@ -448,7 +450,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.circuitBreaker(<string>args['name']);
+            const filters = await this.sdk.middleware.circuitBreaker(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeCircuitBreaker(this.args.remove);
@@ -480,7 +482,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.corsOrigin(<string>args['name']);
+            const filters = await this.sdk.middleware.corsOrigin(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeCors(this.args.remove);
@@ -512,7 +514,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.proxyRouter(<string>args['name']);
+            const filters = await this.sdk.middleware.proxyRouter(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeProxyRouter(this.args.remove);
@@ -544,7 +546,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.serviceDiscovery(<string>args['name']);
+            const filters = await this.sdk.middleware.serviceDiscovery(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeServiceDiscovery(this.args.remove);
@@ -576,7 +578,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.serviceDiscoveryProvider(<string>args['name']);
+            const filters = await this.sdk.middleware.serviceDiscoveryProvider(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeServiceDiscoveryProvider(this.args.remove);
@@ -608,7 +610,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.errorHandler(<string>args['name']);
+            const filters = await this.sdk.middleware.errorHandler(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeErrorHandler(this.args.remove);
@@ -640,7 +642,7 @@ export class Cli {
                     args[parts[0]] = parts[1];
                 }
             });
-            const filters = await this.sdk.middleware.requestLogger(<string>args['name']);
+            const filters = await this.sdk.middleware.requestLogger(args['name'] as string);
             console.info(YAML.stringify(filters));
         } else if (this.args.remove) {
             await this.sdk.middleware.removeRequestLogger(this.args.remove);

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-import './command-line';
 import { Application } from './application';
+import './command-line';
 
 const app = new Application();
 

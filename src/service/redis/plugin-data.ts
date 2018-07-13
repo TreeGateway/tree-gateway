@@ -1,9 +1,9 @@
 'use strict';
 
-import { Logger } from '../../logger';
+import { EventEmitter } from 'events';
 import { Inject } from 'typescript-ioc';
 import { Database } from '../../database';
-import { EventEmitter } from 'events';
+import { Logger } from '../../logger';
 import { PluginsDataService } from '../plugin-data';
 
 export class RedisPluginsDataService extends EventEmitter implements PluginsDataService {
@@ -12,18 +12,18 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
     @Inject private logger: Logger;
     @Inject private database: Database;
 
-    listConfigurationItems(configKey: string): Promise<Array<string>> {
+    public listConfigurationItems(configKey: string): Promise<Array<string>> {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Checking configuration items for plugin config key: ${RedisPluginsDataService.PREFIX}:${configKey} `);
         }
         return this.database.redisClient.smembers(`${RedisPluginsDataService.PREFIX}:${configKey}`);
     }
 
-    async addConfigurationItem(configKey: string, value: string): Promise<void> {
+    public async addConfigurationItem(configKey: string, value: string): Promise<void> {
         await this.database.redisClient.sadd(`${RedisPluginsDataService.PREFIX}:${configKey}`, value);
     }
 
-    watchConfigurationItems(configKey: string, interval: number): NodeJS.Timer {
+    public watchConfigurationItems(configKey: string, interval: number): NodeJS.Timer {
         const result = setInterval(() => {
             this.checkConfigurationItens(configKey);
         }, interval);
@@ -34,7 +34,7 @@ export class RedisPluginsDataService extends EventEmitter implements PluginsData
         return result;
     }
 
-    stopWatchingConfigurationItems(watcherKey: NodeJS.Timer): void {
+    public stopWatchingConfigurationItems(watcherKey: NodeJS.Timer): void {
         clearInterval(watcherKey);
     }
 

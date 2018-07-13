@@ -1,9 +1,9 @@
 'use strict';
 
-import { GatewayConfig } from '../config/gateway';
+import * as jwt from 'jsonwebtoken';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as jwt from 'jsonwebtoken';
+import { GatewayConfig } from '../config/gateway';
 
 export function getSwaggerHost(gateway: GatewayConfig) {
     let host;

@@ -23,7 +23,7 @@
     "build": "npm run clean && tsc && npm run swagger && copyfiles -u 1 src/*.yaml dist",
     "clean": "rimraf dist",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
-    "format": "tsfmt -r",
+    "lint:fix": "tslint --fix ./src/**/*.ts ./test/**/*.ts -t verbose",
     "postversion": "git push origin master",
     "pretest": "cross-env NODE_ENV=test npm run build && npm run lint",
     "swagger": "swaggerGen -c ./swagger.config.json",
@@ -153,9 +153,9 @@
     "source-map-support": "^0.4.14",
     "tough-cookie": "^2.3.4",
     "ts-node": "^3.3.0",
-    "tslint": "^5.9.1",
-    "typescript": "2.7.1",
-    "typescript-formatter": "^5.2.0"
+    "tslint": "^5.10.0",
+    "tslint-config-prettier": "^1.13.0",
+    "typescript": "2.7.1"
   },
   "repository": {
     "type": "git",

@@ -1,19 +1,19 @@
 'use strict';
 
+import { EventEmitter } from 'events';
 import * as os from 'os';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
+import { ApiConfig } from '../../config/api';
+import { ConfigEvents, ConfigTopics } from '../../config/events';
+import { Database } from '../../database';
+import { Logger } from '../../logger';
+import { getMachineId } from '../../utils/machine';
+import { MiddlewareInstaller } from '../../utils/middleware-installer';
 import { ApiService } from '../api';
 import { ConfigService } from '../config';
-import { ApiConfig } from '../../config/api';
-import { ConfigTopics, ConfigEvents } from '../../config/events';
-import { Logger } from '../../logger';
-import { AutoWired, Singleton, Inject } from 'typescript-ioc';
-import { Database } from '../../database';
-import { MiddlewareInstaller } from '../../utils/middleware-installer';
-import { EventEmitter } from 'events';
-import { getMachineId } from '../../utils/machine';
 
 class Constants {
-    static MIDDLEWARE_INSTALLATION = '{middleware_installation}';
+    public static MIDDLEWARE_INSTALLATION = '{middleware_installation}';
 }
 
 @AutoWired
@@ -25,15 +25,15 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
     @Inject private database: Database;
     private subscribed: boolean = false;
 
-    getApiConfig(apiId: string): Promise<ApiConfig> {
+    public getApiConfig(apiId: string): Promise<ApiConfig> {
         return this.apiService.get(apiId);
     }
 
-    getAllApiConfig(): Promise<Array<ApiConfig>> {
+    public getAllApiConfig(): Promise<Array<ApiConfig>> {
         return this.apiService.list();
     }
 
-    async subscribeEvents(): Promise<void> {
+    public async subscribeEvents(): Promise<void> {
         if (!this.subscribed) {
             const topicPattern = `${ConfigTopics.BASE_TOPIC}:*`;
             await this.database.redisEvents.psubscribe(topicPattern);
@@ -64,7 +64,7 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
         }
     }
 
-    async installAllMiddlewares(): Promise<void> {
+    public async installAllMiddlewares(): Promise<void> {
         const machineId = getMachineId();
         const host = os.hostname();
         const idMsg = 'allMiddlewares';
@@ -79,7 +79,7 @@ export class RedisConfigService extends EventEmitter implements ConfigService {
             this.database.redisClient.expire(`${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`, 15);
             await this.middlewareInstaller.installAll();
             await this.database.redisClient.del(`${Constants.MIDDLEWARE_INSTALLATION}:${host}`,
-                    `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`);
+                `${Constants.MIDDLEWARE_INSTALLATION}:${host}:${idMsg}`);
         } else {
             await this.runAfterMiddlewareInstallations(idMsg);
         }

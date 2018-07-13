@@ -1,7 +1,7 @@
 'use strict';
 
 import { ApiConfig } from '../../config/api';
-import { getResponseBody, checkStatus, getCreatedResource, invoke } from './utils';
+import { checkStatus, getCreatedResource, getResponseBody, invoke } from './utils';
 
 export interface Apis {
     list(filters: any): Promise<Array<ApiConfig>>;
@@ -18,38 +18,38 @@ export class ApisClient implements Apis {
         this.swaggerClient = swaggerClient;
     }
 
-    async list(filters: any): Promise<Array<ApiConfig>> {
+    public async list(filters: any): Promise<Array<ApiConfig>> {
         const response = await invoke(this.swaggerClient.apis.APIs.APIRestList(filters));
         return getResponseBody(response);
     }
 
-    async addApi(api: ApiConfig): Promise<string> {
-        const response = await invoke(this.swaggerClient.apis.APIs.APIRestAddApi({ api }));
+    public async addApi(api: ApiConfig): Promise<string> {
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestAddApi({ api: api }));
         return getCreatedResource(response).substring(5);
     }
 
-    async updateApi(id: string, api: ApiConfig): Promise<void> {
+    public async updateApi(id: string, api: ApiConfig): Promise<void> {
         if (!id) {
             throw new Error('Invalid API id. To update an API, you must provide a valid ID field');
         }
         api.id = id;
-        const response = await invoke(this.swaggerClient.apis.APIs.APIRestUpdateApi({ id, api }));
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestUpdateApi({ id: id, api: api }));
         checkStatus(response, 204);
     }
 
-    async removeApi(id: string): Promise<void> {
+    public async removeApi(id: string): Promise<void> {
         if (!id) {
             throw new Error('Invalid API id. To remove an API, you must provide a valid ID');
         }
-        const response = await invoke(this.swaggerClient.apis.APIs.APIRestRemoveApi({ id }));
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestRemoveApi({ id: id }));
         checkStatus(response, 204);
     }
 
-    async getApi(id: string): Promise<ApiConfig> {
+    public async getApi(id: string): Promise<ApiConfig> {
         if (!id) {
             throw new Error('Invalid API id. To retrieve an API, you must provide a valid ID');
         }
-        const response = await invoke(this.swaggerClient.apis.APIs.APIRestGetApi({ id }));
+        const response = await invoke(this.swaggerClient.apis.APIs.APIRestGetApi({ id: id }));
         return getResponseBody(response);
     }
 }

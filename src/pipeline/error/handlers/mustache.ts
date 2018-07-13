@@ -1,11 +1,11 @@
 'use strict';
 
 import * as express from 'express';
-import { Logger } from '../../../logger';
-import { Container } from 'typescript-ioc';
-import * as mustache from 'mustache';
 import * as Joi from 'joi';
+import * as mustache from 'mustache';
+import { Container } from 'typescript-ioc';
 import { ValidationError } from '../../../config/errors';
+import { Logger } from '../../../logger';
 
 interface MustacheConfig {
     template: string;
@@ -26,7 +26,7 @@ function validateMustacheConfig(config: MustacheConfig) {
     }
 }
 
-module.exports = function(config: MustacheConfig) {
+module.exports = function (config: MustacheConfig) {
     validateMustacheConfig(config);
     const template = config.template;
     const logger: Logger = Container.get(Logger);

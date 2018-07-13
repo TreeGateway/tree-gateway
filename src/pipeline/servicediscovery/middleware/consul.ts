@@ -1,7 +1,7 @@
 'use strict';
 
-import * as Joi from 'joi';
 import * as consul from 'consul';
+import * as Joi from 'joi';
 import { ValidationError } from '../../../config/errors';
 import { UnavailableError } from '../../error/errors';
 
@@ -52,10 +52,10 @@ function random(serviceInstances: Array<string>) {
 }
 
 function roundRobin(serviceInstances: Array<string>) {
-    let next = (<any>serviceInstances).next || 0;
+    let next = (serviceInstances as any).next || 0;
     const index = next % serviceInstances.length;
     next++;
-    (<any>serviceInstances).next = next;
+    (serviceInstances as any).next = next;
     return serviceInstances[index];
 }
 
@@ -85,7 +85,7 @@ function observeService(serviceName: string, config: ConsulConfig, knownServiceI
     });
 }
 
-module.exports = function(config: ConsulConfig) {
+module.exports = function (config: ConsulConfig) {
     validateConsulConfig(config);
 
     const knownServiceInstances: Map<string, Array<string>> = new Map<string, Array<string>>();

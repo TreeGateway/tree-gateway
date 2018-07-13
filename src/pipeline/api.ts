@@ -1,26 +1,26 @@
 'use strict';
 
-import { ApiProxy } from './proxy/proxy';
-import { Inject, Singleton, AutoWired } from 'typescript-ioc';
-import { ApiErrorHandler } from './error/error-handler';
-import { ApiRateLimit } from './throttling/throttling';
-import { ApiCors } from './cors/cors';
-import { ApiCircuitBreaker } from './circuitbreaker/circuit-breaker';
-import { ApiCache } from './cache/cache';
-import { ApiAuth } from './authentication/auth';
-import { ApiFilter } from './filter/filter';
-import { ApiConfig, validateApiConfig } from '../config/api';
-import { Configuration } from '../configuration';
-import { Logger } from '../logger';
-import * as express from 'express';
-import { RequestLogger } from './stats/request';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import * as getRawBody from 'raw-body';
 import * as cors from 'cors';
-import { normalizePath } from '../utils/path';
-import { MiddlewareConfig } from '../config/middleware';
+import * as express from 'express';
+import * as getRawBody from 'raw-body';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
+import { ApiConfig, validateApiConfig } from '../config/api';
 import { ApiCorsConfig } from '../config/cors';
+import { MiddlewareConfig } from '../config/middleware';
+import { Configuration } from '../configuration';
+import { Logger } from '../logger';
+import { normalizePath } from '../utils/path';
+import { ApiAuth } from './authentication/auth';
+import { ApiCache } from './cache/cache';
+import { ApiCircuitBreaker } from './circuitbreaker/circuit-breaker';
+import { ApiCors } from './cors/cors';
+import { ApiErrorHandler } from './error/error-handler';
+import { ApiFilter } from './filter/filter';
+import { ApiProxy } from './proxy/proxy';
+import { RequestLogger } from './stats/request';
+import { ApiRateLimit } from './throttling/throttling';
 
 @Singleton
 @AutoWired
@@ -49,15 +49,15 @@ export class ApiPileline {
         return result;
     }
 
-    getApiConfig(apiId: string): ApiConfig {
+    public getApiConfig(apiId: string): ApiConfig {
         return this.installedApis.get(apiId);
     }
 
-    clearRoutes() {
+    public clearRoutes() {
         this.apiRoutes.clear();
     }
 
-    async loadApi(api: ApiConfig, server: express.Application): Promise<void> {
+    public async loadApi(api: ApiConfig, server: express.Application): Promise<void> {
         try {
             await validateApiConfig(api, this.config.gateway.disableApiIdValidation);
             await this.loadValidApi(api, server);
@@ -67,11 +67,11 @@ export class ApiPileline {
         }
     }
 
-    circuitChanged(id: string, state: string) {
+    public circuitChanged(id: string, state: string) {
         this.apiCircuitBreaker.onStateChanged(id, state);
     }
 
-    async loadApis(configs: Array<ApiConfig>, server: express.Application): Promise<void> {
+    public async loadApis(configs: Array<ApiConfig>, server: express.Application): Promise<void> {
         try {
             this.installedApis = new Map<string, ApiConfig>();
 
@@ -87,11 +87,11 @@ export class ApiPileline {
         }
     }
 
-    buildGatewayFilters(apiRouter: express.Router, filters: Array<MiddlewareConfig>) {
+    public buildGatewayFilters(apiRouter: express.Router, filters: Array<MiddlewareConfig>) {
         this.apiFilter.buildGatewayFilters(apiRouter, filters);
     }
 
-    configureCors(config: ApiCorsConfig) {
+    public configureCors(config: ApiCorsConfig) {
         const corsOptions = this.apiCors.configureCorsOptions(config);
         return cors(corsOptions);
     }
@@ -190,7 +190,7 @@ export class ApiPileline {
             const requestLog = this.requestLogger.initRequestLog(req, api);
             const end = res.end;
             const requestLogger = this.requestLogger;
-            res.end = function(...args: any[]) {
+            res.end = function(...args: Array<any>) {
                 requestLog.status = res.statusCode;
                 requestLog.responseTime = new Date().getTime() - requestLog.timestamp;
                 requestLogger.registerOccurrence(requestLog);
@@ -205,7 +205,7 @@ export class ApiPileline {
         const limit = api.proxy.limit || '1mb';
         let parsers: Array<string>;
         if (Array.isArray(api.parseReqBody)) {
-            parsers = <Array<string>>api.parseReqBody;
+            parsers = api.parseReqBody as Array<string>;
         } else {
             parsers = [`${api.parseReqBody}`];
         }
@@ -235,7 +235,7 @@ export class ApiPileline {
             return Promise.resolve(req.body);
         } else {
             return getRawBody(req, {
-                length: <string>req.headers['content-length'],
+                length: req.headers['content-length'] as string,
                 limit: limit
             });
         }

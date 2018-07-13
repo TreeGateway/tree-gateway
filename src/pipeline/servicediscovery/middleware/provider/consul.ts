@@ -1,11 +1,11 @@
 'use strict';
 
-import * as Joi from 'joi';
 import * as consul from 'consul';
+import * as fs from 'fs-extra-promise';
+import * as Joi from 'joi';
+import * as _ from 'lodash';
 import { ValidationError } from '../../../../config/errors';
 import { getMilisecondsInterval } from '../../../../utils/time-intervals';
-import * as fs from 'fs-extra-promise';
-import * as _ from 'lodash';
 
 interface ConsulConfig {
     /**
@@ -89,7 +89,7 @@ function validateConsulConfig(config: ConsulConfig) {
     }
 }
 
-module.exports = function(config: ConsulConfig) {
+module.exports = function (config: ConsulConfig) {
     validateConsulConfig(config);
 
     const consulConfig: consul.ConsulOptions = {};
@@ -107,11 +107,11 @@ module.exports = function(config: ConsulConfig) {
         if (config.defaults.wait) {
             config.defaults.wait = `${getMilisecondsInterval(config.defaults.wait)}ms`;
         }
-        consulConfig.defaults = <any>config.defaults;
+        consulConfig.defaults = config.defaults as any;
     }
     if (config.ca) {
         config.ca = _.castArray(config.ca);
-        consulConfig.ca = <any[]>config.ca.map(ca => fs.readFileSync(ca));
+        consulConfig.ca = config.ca.map(ca => fs.readFileSync(ca)) as Array<any>;
     }
     return () => {
         return consul(consulConfig);

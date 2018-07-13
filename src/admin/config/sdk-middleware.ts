@@ -1,10 +1,10 @@
 'use strict';
 
-import * as _ from 'lodash';
 import * as fs from 'fs-extra-promise';
+import * as _ from 'lodash';
 import * as path from 'path';
 import * as request from 'request';
-import { getResponseBody, checkStatus, invoke } from './utils';
+import { checkStatus, getResponseBody, invoke } from './utils';
 
 export interface Middleware {
     filters(name?: string): Promise<Array<string>>;
@@ -100,348 +100,348 @@ export class MiddlewareClient implements Middleware {
 
     }
 
-    async filters(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestFilters({ name }));
+    public async filters(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestFilters({ name: name }));
         return getResponseBody(response);
     }
 
-    async requestInterceptors(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRequestInterceptors({ name }));
+    public async requestInterceptors(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRequestInterceptors({ name: name }));
         return getResponseBody(response);
     }
 
-    async responseInterceptors(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestResponseInterceptors({ name }));
+    public async responseInterceptors(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestResponseInterceptors({ name: name }));
         return getResponseBody(response);
     }
 
-    async authStrategies(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestAuthStrategies({ name }));
+    public async authStrategies(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestAuthStrategies({ name: name }));
         return getResponseBody(response);
     }
 
-    async authVerify(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestAuthVerify({ name }));
+    public async authVerify(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestAuthVerify({ name: name }));
         return getResponseBody(response);
     }
 
-    async throttlingKeyGenerator(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingKeyGenerator({ name }));
+    public async throttlingKeyGenerator(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingKeyGenerator({ name: name }));
         return getResponseBody(response);
     }
 
-    async throttlingHandler(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingHandler({ name }));
+    public async throttlingHandler(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingHandler({ name: name }));
         return getResponseBody(response);
     }
 
-    async throttlingSkip(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingSkip({ name }));
+    public async throttlingSkip(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestThrottlingSkip({ name: name }));
         return getResponseBody(response);
     }
 
-    async circuitBreaker(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({ name }));
+    public async circuitBreaker(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestCircuitBreaker({ name: name }));
         return getResponseBody(response);
     }
 
-    async corsOrigin(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestCorsOrigin({ name }));
+    public async corsOrigin(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestCorsOrigin({ name: name }));
         return getResponseBody(response);
     }
 
-    async proxyRouter(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({ name }));
+    public async proxyRouter(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestProxyRouter({ name: name }));
         return getResponseBody(response);
     }
 
-    async serviceDiscovery(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscovery({ name }));
+    public async serviceDiscovery(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscovery({ name: name }));
         return getResponseBody(response);
     }
 
-    async serviceDiscoveryProvider(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscoveryProvider({ name }));
+    public async serviceDiscoveryProvider(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestServiceDiscoveryProvider({ name: name }));
         return getResponseBody(response);
     }
 
-    async errorHandler(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestErrorHandler({ name }));
+    public async errorHandler(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestErrorHandler({ name: name }));
         return getResponseBody(response);
     }
 
-    async requestLogger(name?: string): Promise<Array<string>> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRequestLogger({ name }));
+    public async requestLogger(name?: string): Promise<Array<string>> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRequestLogger({ name: name }));
         return getResponseBody(response);
     }
 
-    async removeFilter(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name }));
+    public async removeFilter(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveFilter({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeRequestInterceptor(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestInterceptor({ name }));
+    public async removeRequestInterceptor(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestInterceptor({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeResponseInterceptor(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveResponseInterceptor({ name }));
+    public async removeResponseInterceptor(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveResponseInterceptor({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeAuthStrategy(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthStrategy({ name }));
+    public async removeAuthStrategy(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthStrategy({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeAuthVerify(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthVerify({ name }));
+    public async removeAuthVerify(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveAuthVerify({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeThrottlingKeyGenerator(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingKeyGenerator({ name }));
+    public async removeThrottlingKeyGenerator(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingKeyGenerator({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeThrottlingHandler(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingHandler({ name }));
+    public async removeThrottlingHandler(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingHandler({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeThrottlingSkip(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingSkip({ name }));
+    public async removeThrottlingSkip(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveThrottlingSkip({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeCircuitBreaker(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCircuitBreaker({ name }));
+    public async removeCircuitBreaker(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCircuitBreaker({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeCors(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCors({ name }));
+    public async removeCors(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveCors({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeProxyRouter(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({ name }));
+    public async removeProxyRouter(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveProxyRouter({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeServiceDiscovery(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscovery({ name }));
+    public async removeServiceDiscovery(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscovery({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeServiceDiscoveryProvider(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscoveryProvider({ name }));
+    public async removeServiceDiscoveryProvider(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveServiceDiscoveryProvider({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeErrorHandler(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveErrorHandler({ name }));
+    public async removeErrorHandler(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveErrorHandler({ name: name }));
         checkStatus(response, 204);
     }
 
-    async removeRequestLogger(name: string): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestLogger({ name }));
+    public async removeRequestLogger(name: string): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestRemoveRequestLogger({ name: name }));
         checkStatus(response, 204);
     }
 
-    updateFilter(name: string, fileName: string): Promise<void> {
+    public updateFilter(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('filters', fileName, name);
     }
 
-    updateRequestInterceptor(name: string, fileName: string): Promise<void> {
+    public updateRequestInterceptor(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('interceptors/request', fileName, name);
     }
 
-    updateResponseInterceptor(name: string, fileName: string): Promise<void> {
+    public updateResponseInterceptor(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('interceptors/response', fileName, name);
     }
 
-    updateAuthStrategy(name: string, fileName: string): Promise<void> {
+    public updateAuthStrategy(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('authentication/strategies', fileName, name);
     }
 
-    updateAuthVerify(name: string, fileName: string): Promise<void> {
+    public updateAuthVerify(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('authentication/verify', fileName, name);
     }
 
-    updateThrottlingKeyGenerator(name: string, fileName: string): Promise<void> {
+    public updateThrottlingKeyGenerator(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('throttling/keyGenerators', fileName, name);
     }
 
-    updateThrottlingHandler(name: string, fileName: string): Promise<void> {
+    public updateThrottlingHandler(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('throttling/handlers', fileName, name);
     }
 
-    updateThrottlingSkip(name: string, fileName: string): Promise<void> {
+    public updateThrottlingSkip(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('throttling/skip', fileName, name);
     }
 
-    updateCircuitBreaker(name: string, fileName: string): Promise<void> {
+    public updateCircuitBreaker(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('circuitbreaker', fileName, name);
     }
 
-    updateCors(name: string, fileName: string): Promise<void> {
+    public updateCors(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('cors/origin', fileName, name);
     }
 
-    updateProxyRouter(name: string, fileName: string): Promise<void> {
+    public updateProxyRouter(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('proxy/router', fileName, name);
     }
 
-    updateServiceDiscovery(name: string, fileName: string): Promise<void> {
+    public updateServiceDiscovery(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('servicediscovery', fileName, name);
     }
 
-    updateServiceDiscoveryProvider(name: string, fileName: string): Promise<void> {
+    public updateServiceDiscoveryProvider(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('servicediscovery/provider', fileName, name);
     }
 
-    updateErrorHandler(name: string, fileName: string): Promise<void> {
+    public updateErrorHandler(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('errorhandler', fileName, name);
     }
 
-    updateRequestLogger(name: string, fileName: string): Promise<void> {
+    public updateRequestLogger(name: string, fileName: string): Promise<void> {
         return this.updateMiddleware('request/logger', fileName, name);
     }
 
-    addFilter(name: string, fileName: string): Promise<void> {
+    public addFilter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('filters', fileName, name);
     }
 
-    addRequestInterceptor(name: string, fileName: string): Promise<void> {
+    public addRequestInterceptor(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('interceptors/request', fileName, name);
     }
 
-    addResponseInterceptor(name: string, fileName: string): Promise<void> {
+    public addResponseInterceptor(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('interceptors/response', fileName, name);
     }
 
-    addAuthStrategy(name: string, fileName: string): Promise<void> {
+    public addAuthStrategy(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('authentication/strategies', fileName, name);
     }
 
-    addAuthVerify(name: string, fileName: string): Promise<void> {
+    public addAuthVerify(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('authentication/verify', fileName, name);
     }
 
-    addThrottlingKeyGenerator(name: string, fileName: string): Promise<void> {
+    public addThrottlingKeyGenerator(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('throttling/keyGenerators', fileName, name);
     }
 
-    addThrottlingHandler(name: string, fileName: string): Promise<void> {
+    public addThrottlingHandler(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('throttling/handlers', fileName, name);
     }
 
-    addThrottlingSkip(name: string, fileName: string): Promise<void> {
+    public addThrottlingSkip(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('throttling/skip', fileName, name);
     }
 
-    addCircuitBreaker(name: string, fileName: string): Promise<void> {
+    public addCircuitBreaker(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('circuitbreaker', fileName, name);
     }
 
-    addCors(name: string, fileName: string): Promise<void> {
+    public addCors(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('cors/origin', fileName, name);
     }
 
-    addProxyRouter(name: string, fileName: string): Promise<void> {
+    public addProxyRouter(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('proxy/router', fileName, name);
     }
 
-    addServiceDiscovery(name: string, fileName: string): Promise<void> {
+    public addServiceDiscovery(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('servicediscovery', fileName, name);
     }
 
-    addServiceDiscoveryProvider(name: string, fileName: string): Promise<void> {
+    public addServiceDiscoveryProvider(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('servicediscovery/provider', fileName, name);
     }
 
-    addErrorHandler(name: string, fileName: string): Promise<void> {
+    public addErrorHandler(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('errorhandler', fileName, name);
     }
 
-    addRequestLogger(name: string, fileName: string): Promise<void> {
+    public addRequestLogger(name: string, fileName: string): Promise<void> {
         return this.installMiddleware('request/logger', fileName, name);
     }
 
-    async getFilter(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetFilter({ name }));
+    public async getFilter(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetFilter({ name: name }));
         return getResponseBody(response);
     }
 
-    async getRequestInterceptor(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestInterceptor({ name }));
+    public async getRequestInterceptor(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestInterceptor({ name: name }));
         return getResponseBody(response);
     }
 
-    async getResponseInterceptor(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetResponseInterceptor({ name }));
+    public async getResponseInterceptor(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetResponseInterceptor({ name: name }));
         return getResponseBody(response);
     }
 
-    async getAuthStrategy(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthStrategy({ name }));
+    public async getAuthStrategy(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthStrategy({ name: name }));
         return getResponseBody(response);
     }
 
-    async getAuthVerify(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthVerify({ name }));
+    public async getAuthVerify(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetAuthVerify({ name: name }));
         return getResponseBody(response);
     }
 
-    async getThrottlingKeyGenerator(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingKeyGenerator({ name }));
+    public async getThrottlingKeyGenerator(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingKeyGenerator({ name: name }));
         return getResponseBody(response);
     }
 
-    async getThrottlingHandler(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingHandler({ name }));
+    public async getThrottlingHandler(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingHandler({ name: name }));
         return getResponseBody(response);
     }
 
-    async getThrottlingSkip(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingSkip({ name }));
+    public async getThrottlingSkip(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetThrottlingSkip({ name: name }));
         return getResponseBody(response);
     }
 
-    async getCircuitBreaker(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetCircuitBreakerMiddleware({ name }));
+    public async getCircuitBreaker(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetCircuitBreakerMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
-    async getCors(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({ name }));
+    public async getCors(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetCorsMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
-    async getProxyRouter(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({ name }));
+    public async getProxyRouter(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetProxyRouterMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
-    async getServiceDiscovery(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryMiddleware({ name }));
+    public async getServiceDiscovery(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
-    async getServiceDiscoveryProvider(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({ name }));
+    public async getServiceDiscoveryProvider(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetServiceDiscoveryProviderMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
-    async getErrorHandler(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetErrorHandlerMiddleware({ name }));
+    public async getErrorHandler(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetErrorHandlerMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
-    async getRequestLogger(name: string): Promise<Buffer> {
-        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestLoggerMiddleware({ name }));
+    public async getRequestLogger(name: string): Promise<Buffer> {
+        const response = await invoke(this.swaggerClient.apis.Middleware.MiddlewareRestGetRequestLoggerMiddleware({ name: name }));
         return getResponseBody(response);
     }
 
@@ -469,7 +469,7 @@ export class MiddlewareClient implements Middleware {
             });
             const form: FormData = req.form();
             form.append('name', name);
-            form.append('file', <any>stream, fileName);
+            form.append('file', stream as any, fileName);
         });
     }
 
@@ -489,7 +489,7 @@ export class MiddlewareClient implements Middleware {
                 return reject(`Status code: ${response.statusCode}`);
             });
             const form: FormData = req.form();
-            form.append('file', <any>stream, fileName);
+            form.append('file', stream as any, fileName);
         });
     }
 }

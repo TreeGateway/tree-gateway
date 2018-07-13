@@ -1,11 +1,11 @@
 'use strict';
 
 import 'mocha';
-import * as chai from 'chai';
 
+import * as chai from 'chai';
 import * as request from 'request';
-import {Container} from 'typescript-ioc';
-import {Configuration} from '../../src/configuration';
+import { Container } from 'typescript-ioc';
+import { Configuration } from '../../src/configuration';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -17,7 +17,7 @@ let config: Configuration;
 describe('The Gateway Limit Controller', () => {
     before(() => {
         config = Container.get(Configuration);
-        gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
+        gatewayRequest = request.defaults({ baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}` });
     });
 
     it('should be able to limit the requests to API', (done) => {

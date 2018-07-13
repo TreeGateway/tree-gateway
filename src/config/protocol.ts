@@ -54,7 +54,7 @@ const httpsConfigSchema = Joi.object().keys({
     listenPort: Joi.alternatives([Joi.number().positive(), Joi.string()]).required(),
     privateKey: Joi.string().required()
 
-});
+}).unknown(true);
 
 export let protocolConfigSchema = Joi.object().keys({
     http: httpConfigSchema,

@@ -1,6 +1,6 @@
 'use strict';
 
-import { HttpError, Errors } from 'typescript-rest';
+import { Errors, HttpError } from 'typescript-rest';
 
 export class UnauthorizedError extends Errors.UnauthorizedError {
     constructor(message?: string) {
@@ -19,7 +19,7 @@ export class NotFoundError extends Errors.NotFoundError {
 }
 
 export class UnavailableError extends Error {
-    statusCode: number = 503;
+    public statusCode: number = 503;
     constructor(message: string) {
         super(message);
         Object.setPrototypeOf(this, UnavailableError.prototype);

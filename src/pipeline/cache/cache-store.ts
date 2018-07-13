@@ -5,9 +5,7 @@ export interface CacheEntry {
     content: string;
 }
 
-export interface StoreCallback<T> {
-    (err: any, value: T): void;
-}
+export type StoreCallback<T> = (err: any, value: T) => void;
 
 export interface CacheStore<T> {
     get(key: string, callback: StoreCallback<T>): void;

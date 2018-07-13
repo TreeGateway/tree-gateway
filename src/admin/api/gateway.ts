@@ -1,10 +1,10 @@
 'use strict';
 
-import { Path, GET, DELETE, PUT } from 'typescript-rest';
+import { Inject } from 'typescript-ioc';
+import { DELETE, GET, Path, PUT } from 'typescript-rest';
+import * as swagger from 'typescript-rest-swagger';
 import { GatewayConfig, validateGatewayConfig } from '../../config/gateway';
 import { GatewayService } from '../../service/gateway';
-import { Inject } from 'typescript-ioc';
-import * as swagger from 'typescript-rest-swagger';
 
 @Path('gateway')
 @swagger.Tags('Gateway')
@@ -13,18 +13,18 @@ export class GatewayRest {
     @Inject private service: GatewayService;
 
     @PUT
-    async updateConfig(config: GatewayConfig): Promise<void> {
+    public async updateConfig(config: GatewayConfig): Promise<void> {
         await validateGatewayConfig(config);
         await this.service.save(config);
     }
 
     @DELETE
-    async removeConfig(): Promise<void> {
+    public async removeConfig(): Promise<void> {
         await this.service.remove();
     }
 
     @GET
-    async getConfig(): Promise<GatewayConfig> {
+    public async getConfig(): Promise<GatewayConfig> {
         return await this.service.read();
     }
 }

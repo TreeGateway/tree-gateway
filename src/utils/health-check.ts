@@ -1,13 +1,13 @@
 'use strict';
 
+import { EventEmitter } from 'events';
 import * as http from 'http';
 import * as https from 'https';
-import * as url from 'url';
 import * as _ from 'lodash';
-import { EventEmitter } from 'events';
-import { getMilisecondsInterval } from './time-intervals';
-import { Logger } from '../logger';
 import { Inject } from 'typescript-ioc';
+import * as url from 'url';
+import { Logger } from '../logger';
+import { getMilisecondsInterval } from './time-intervals';
 
 export interface HealthCheckOptions {
     checkInterval?: string | number;
@@ -51,7 +51,7 @@ export class HealthCheck extends EventEmitter {
         }
     }
 
-    start() {
+    public start() {
         if (!this.interval) {
             this.check();
             this.interval = setInterval(() => {
@@ -60,14 +60,14 @@ export class HealthCheck extends EventEmitter {
         }
     }
 
-    stop() {
+    public stop() {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = 0;
         }
     }
 
-    isDown(serverUrl: string) {
+    public isDown(serverUrl: string) {
         const hc = this.checks[serverUrl];
         if (hc) {
             return hc.down;
@@ -76,7 +76,7 @@ export class HealthCheck extends EventEmitter {
         }
     }
 
-    status() {
+    public status() {
         return Object.assign({}, this.checks);
     }
 

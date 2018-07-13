@@ -1,19 +1,19 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig } from '../../config/api';
-import { Proxy, HttpAgent, ProxyRouter } from '../../config/proxy';
-import { ProxyInterceptor, ResponseInterceptors } from './interceptor';
-import { Logger } from '../../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
-import { getMilisecondsInterval } from '../../utils/time-intervals';
-import * as url from 'url';
 import * as _ from 'lodash';
-import { MiddlewareLoader } from '../../utils/middleware-loader';
-import { ServiceDiscovery } from '../servicediscovery/service-discovery';
 import { WritableStreamBuffer } from 'stream-buffers';
+import { AutoWired, Inject } from 'typescript-ioc';
+import * as url from 'url';
+import { ApiConfig } from '../../config/api';
 import { ApiPipelineConfig } from '../../config/gateway';
+import { HttpAgent, Proxy, ProxyRouter } from '../../config/proxy';
+import { Logger } from '../../logger';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { getMilisecondsInterval } from '../../utils/time-intervals';
+import { ServiceDiscovery } from '../servicediscovery/service-discovery';
 import { RequestLogger } from '../stats/request';
+import { ProxyInterceptor, ResponseInterceptors } from './interceptor';
 const agentKeepAlive = require('agentkeepalive');
 const httpProxy = require('../../../lib/http-proxy');
 
@@ -32,14 +32,14 @@ export class ApiProxy {
     /**
      * Configure a proxy for a given API
      */
-    proxy(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public proxy(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         this.buildRouterMiddleware(apiRouter, api);
         this.buildServiceDiscoveryMiddleware(apiRouter, api);
         this.interceptor.buildRequestInterceptors(apiRouter, api, pipelineConfig);
         apiRouter.use(this.configureProxy(api, pipelineConfig));
     }
 
-    configureProxyHeader(apiRouter: express.Router, api: ApiConfig) {
+    public configureProxyHeader(apiRouter: express.Router, api: ApiConfig) {
         if (!api.proxy.supressViaHeader) {
             const onHeaders = require('on-headers');
             const gatewayId = 'Tree-Gateway';
@@ -134,10 +134,10 @@ export class ApiProxy {
         function validateInterceptors(req: express.Request, res: express.Response): boolean {
             if (responseInterceptor) {
                 let ignoreAll = true;
-                (<any>res).__ignore = new Array<boolean>();
+                (res as any).__ignore = new Array<boolean>();
                 responseInterceptor.validators.forEach((validator, index) => {
                     const ignore = validator(req);
-                    (<any>res).__ignore.push(ignore);
+                    (res as any).__ignore.push(ignore);
                     ignoreAll = ignoreAll && ignore;
                 });
                 return maybeWrapResponse && !ignoreAll;
@@ -146,13 +146,13 @@ export class ApiProxy {
         }
 
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (validateInterceptors(req, res) || (<any>req).parseRespBody) {
-                const options: any = (<any>req).proxyOptions || {};
-                (<any>res).__data = new WritableStreamBuffer();
-                options.destPipe = { stream: (<any>res).__data };
+            if (validateInterceptors(req, res) || (req as any).parseRespBody) {
+                const options: any = (req as any).proxyOptions || {};
+                (res as any).__data = new WritableStreamBuffer();
+                options.destPipe = { stream: (res as any).__data };
                 proxy.web(req, res, options);
-            } else if ((<any>req).proxyOptions) {
-                proxy.web(req, res, (<any>req).proxyOptions);
+            } else if ((req as any).proxyOptions) {
+                proxy.web(req, res, (req as any).proxyOptions);
             } else {
                 proxy.web(req, res);
             }
@@ -169,7 +169,7 @@ export class ApiProxy {
             if (res.__data) {
                 if (responseInterceptor) {
                     responseInterceptor.middelware(res.__data.getContents(), proxyRes, req, res, res.__ignore,
-                        (newHeaders: any, removeHeaders: string[]) => {
+                        (newHeaders: any, removeHeaders: Array<string>) => {
                             if (newHeaders) {
                                 Object.keys(newHeaders).forEach(name => {
                                     proxyRes.headers[name.toLowerCase()] = newHeaders[name];
@@ -215,7 +215,7 @@ export class ApiProxy {
                 apiRouter.use((req, res, next) => {
                     Promise.resolve(routerMiddleware(req))
                         .then(result => {
-                            (<any>req).proxyOptions = { target: result };
+                            (req as any).proxyOptions = { target: result };
                             next();
                         }).catch(err => {
                             next(err);
@@ -231,9 +231,9 @@ export class ApiProxy {
             if (router.serviceDiscovery) {
                 const serviceDiscovery = this.serviceDiscovery.loadServiceDiscovery(router.serviceDiscovery, router.ssl);
                 apiRouter.use((req, res, next) => {
-                    Promise.resolve(serviceDiscovery((<any>req).proxyOptions ? (<any>req).proxyOptions.target : null))
+                    Promise.resolve(serviceDiscovery((req as any).proxyOptions ? (req as any).proxyOptions.target : null))
                         .then(result => {
-                            (<any>req).proxyOptions = { target: result };
+                            (req as any).proxyOptions = { target: result };
                             next();
                         }).catch(err => {
                             next(err);

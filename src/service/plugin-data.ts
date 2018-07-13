@@ -1,11 +1,11 @@
 'use strict';
 
 export abstract class PluginsDataService {
-    abstract listConfigurationItems(configKey: string): Promise<Array<string>>;
-    abstract addConfigurationItem(configKey: string, value: string): Promise<void>;
-    abstract on(event: string | symbol, listener: (...args: any[]) => void): this;
-    abstract removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
-    abstract removeAllListeners(event?: string | symbol): this;
-    abstract watchConfigurationItems(configKey: string, interval: number): NodeJS.Timer;
-    abstract stopWatchingConfigurationItems(watcherKey: NodeJS.Timer): void;
+    public abstract listConfigurationItems(configKey: string): Promise<Array<string>>;
+    public abstract addConfigurationItem(configKey: string, value: string): Promise<void>;
+    public abstract on(event: string | symbol, listener: (...args: Array<any>) => void): this;
+    public abstract removeListener(event: string | symbol, listener: (...args: Array<any>) => void): this;
+    public abstract removeAllListeners(event?: string | symbol): this;
+    public abstract watchConfigurationItems(configKey: string, interval: number): NodeJS.Timer;
+    public abstract stopWatchingConfigurationItems(watcherKey: NodeJS.Timer): void;
 }

@@ -51,7 +51,7 @@ function validateConfig(config: FilterConfig) {
     }
 }
 
-module.exports = function(config: FilterConfig) {
+module.exports = function (config: FilterConfig) {
     config = _.defaults(config, {
         dnsPrefetchControl: true,
         frameguard: 'DENY',

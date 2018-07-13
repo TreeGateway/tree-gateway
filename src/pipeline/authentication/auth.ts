@@ -1,15 +1,15 @@
 'use strict';
 
-import { ApiConfig } from '../../config/api';
-import { ApiPipelineConfig } from '../../config/gateway';
-import { ApiAuthenticationConfig } from '../../config/authentication';
-import * as auth from 'passport';
-import * as Groups from '../group';
 import * as express from 'express';
-import { Logger } from '../../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
-import { MiddlewareLoader } from '../../utils/middleware-loader';
 import * as _ from 'lodash';
+import * as auth from 'passport';
+import { AutoWired, Inject } from 'typescript-ioc';
+import { ApiConfig } from '../../config/api';
+import { ApiAuthenticationConfig } from '../../config/authentication';
+import { ApiPipelineConfig } from '../../config/gateway';
+import { Logger } from '../../logger';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
+import * as Groups from '../group';
 import { RequestLog, RequestLogger } from '../stats/request';
 
 @AutoWired
@@ -18,7 +18,7 @@ export class ApiAuth {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private requestLogger: RequestLogger;
 
-    authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public authentication(apiRouter: express.Router, apiKey: string, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const path: string = api.path;
         const authentications: Array<ApiAuthenticationConfig> = this.sortMiddlewares(api.authentication, path);
 

@@ -1,9 +1,9 @@
 'use strict';
 import * as Joi from 'joi';
-import { RequestLog } from '../request';
 import { Container } from 'typescript-ioc';
-import { Database } from '../../../database';
 import { ValidationError } from '../../../config/errors';
+import { Database } from '../../../database';
+import { RequestLog } from '../request';
 
 const LOG_KEY = '{REQUEST_LOG}';
 
@@ -29,10 +29,10 @@ module.exports = (config: RequestLogConfig) => {
     const database: Database = Container.get(Database);
 
     return (requestLog: RequestLog) => {
-    database.redisClient.multi()
-        .lpush(LOG_KEY, JSON.stringify(requestLog))
-        .ltrim(LOG_KEY, 0, config.maxEntries || 10000)
-        .exec();
+        database.redisClient.multi()
+            .lpush(LOG_KEY, JSON.stringify(requestLog))
+            .ltrim(LOG_KEY, 0, config.maxEntries || 10000)
+            .exec();
     };
 };
 

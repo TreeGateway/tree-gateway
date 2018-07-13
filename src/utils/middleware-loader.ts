@@ -2,9 +2,9 @@
 
 import * as _ from 'lodash';
 import * as path from 'path';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { MiddlewareConfig } from '../config/middleware';
 import { Configuration } from '../configuration';
-import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 
 @AutoWired
 @Singleton
@@ -54,7 +54,7 @@ export class MiddlewareLoader {
 
     @Inject private config: Configuration;
 
-    loadMiddleware(type: string, middlewareConfig: MiddlewareConfig) {
+    public loadMiddleware(type: string, middlewareConfig: MiddlewareConfig) {
         let p: string;
         const middlewareId = this.getId(middlewareConfig);
         if ((_.has(MiddlewareLoader.providedMiddlewares, type)) &&
@@ -67,7 +67,7 @@ export class MiddlewareLoader {
         let middleware;
         try {
             middleware = require(p);
-        } catch(e) {
+        } catch (e) {
             middleware = require(middlewareId);
         }
         if (middleware.factory) {
@@ -76,7 +76,7 @@ export class MiddlewareLoader {
         return middleware;
     }
 
-    getId(middlewareConfig: MiddlewareConfig) {
+    public getId(middlewareConfig: MiddlewareConfig) {
         return middlewareConfig.id || middlewareConfig.name;
     }
 }

@@ -1,16 +1,16 @@
 'use strict';
 
+import * as corsLib from 'cors';
 import * as express from 'express';
+import * as _ from 'lodash';
+import { AutoWired, Inject } from 'typescript-ioc';
 import { ApiConfig } from '../../config/api';
 import { ApiCorsConfig } from '../../config/cors';
 import { ApiPipelineConfig } from '../../config/gateway';
-import * as _ from 'lodash';
-import * as Groups from '../group';
-import * as corsLib from 'cors';
 import { Logger } from '../../logger';
-import { AutoWired, Inject } from 'typescript-ioc';
-import { getMilisecondsInterval } from '../../utils/time-intervals';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { getMilisecondsInterval } from '../../utils/time-intervals';
+import * as Groups from '../group';
 
 interface CorsInfo {
     corsMiddleware?: express.RequestHandler;
@@ -23,7 +23,7 @@ export class ApiCors {
     @Inject private logger: Logger;
     @Inject private middlewareLoader: MiddlewareLoader;
 
-    cors(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public cors(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const path: string = api.path;
         const configusrations: Array<ApiCorsConfig> = this.sortMiddlewares(api.cors, path);
         const corsInfos: Array<CorsInfo> = new Array<CorsInfo>();
@@ -50,8 +50,8 @@ export class ApiCors {
         this.setupMiddlewares(apiRouter, corsInfos);
     }
 
-    configureCorsOptions(cors: ApiCorsConfig): corsLib.CorsOptions {
-        const corsOptions: corsLib.CorsOptions = <any>_.omit(cors, 'id', 'origin', 'maxAge', 'group');
+    public configureCorsOptions(cors: ApiCorsConfig): corsLib.CorsOptions {
+        const corsOptions: corsLib.CorsOptions = _.omit(cors, 'id', 'origin', 'maxAge', 'group') as any;
         if (cors.maxAge) {
             corsOptions.maxAge = getMilisecondsInterval(cors.maxAge);
         }
@@ -63,13 +63,13 @@ export class ApiCors {
             if (_.filter(cors.origin.allow, obj => obj.value === '*').length > 0) {
                 corsOptions.origin = true;
             } else {
-                corsOptions.origin = <string[]>cors.origin.allow.map(originConfig => {
+                corsOptions.origin = cors.origin.allow.map(originConfig => {
                     if (originConfig.value) {
                         return originConfig.value;
                     } else {
                         return new RegExp(originConfig.regexp);
                     }
-                });
+                }) as Array<string>;
             }
         } else if (cors.origin.middleware) {
             const corsMiddleware = this.middlewareLoader.loadMiddleware('cors/origin', cors.origin.middleware);
