@@ -1,15 +1,15 @@
 'use strict';
 
+import * as express from 'express';
 import * as Joi from 'joi';
 import * as _ from 'lodash';
-import * as express from 'express';
-import { ValidationError } from '../../../config/errors';
+import * as mm from 'micromatch';
 import { Container } from 'typescript-ioc';
+import { ValidationError } from '../../../config/errors';
 import { Gateway } from '../../../gateway';
 import { Logger } from '../../../logger';
-import { getMilisecondsInterval } from '../../../utils/time-intervals';
 import { PluginsDataService } from '../../../service/plugin-data';
-import * as mm from 'micromatch';
+import { getMilisecondsInterval } from '../../../utils/time-intervals';
 
 const IPV6_PREFIX = '::ffff:';
 
@@ -130,7 +130,7 @@ function getWhitelistFilter(config: IpFilterConfig) {
     };
 }
 
-module.exports = function(config: IpFilterConfig) {
+module.exports = function (config: IpFilterConfig) {
     validateIpFilterConfig(config);
     if (config.whitelist) {
         return getWhitelistFilter(config);

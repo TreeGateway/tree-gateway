@@ -3,10 +3,10 @@
 import { ApiConfig } from '../config/api';
 
 export abstract class ConfigService {
-    abstract installAllMiddlewares(): Promise<void>;
-    abstract getAllApiConfig(): Promise<Array<ApiConfig>>;
-    abstract getApiConfig(apiId: string): Promise<ApiConfig>;
-    abstract subscribeEvents(): Promise<void>;
-    abstract on(event: string | symbol, listener: Function): this;
-    abstract removeAllListeners(event?: string | symbol): this;
+    public abstract installAllMiddlewares(): Promise<void>;
+    public abstract getAllApiConfig(): Promise<Array<ApiConfig>>;
+    public abstract getApiConfig(apiId: string): Promise<ApiConfig>;
+    public abstract subscribeEvents(): Promise<void>;
+    public abstract on(event: string | symbol, listener: Function): this;
+    public abstract removeAllListeners(event?: string | symbol): this;
 }

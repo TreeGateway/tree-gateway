@@ -1,17 +1,17 @@
 'use strict';
 
+import { ObjectID } from 'bson';
 import * as Joi from 'joi';
 import { ApiAuthenticationConfig, apiAuthenticationValidatorSchema } from './authentication';
-import { ApiCorsConfig, apiCorsConfigSchema } from './cors';
-import { ApiThrottlingConfig, apiThrottlingConfigValidatorSchema } from './throttling';
 import { ApiCacheConfig, apiCacheConfigValidatorSchema } from './cache';
-import { Proxy, proxyValidatorSchema } from './proxy';
-import { Group, groupValidatorSchema } from './group';
 import { ApiCircuitBreakerConfig, apiCircuitBreakerConfigValidatorSchema } from './circuit-breaker';
-import { ApiFilter, apiFilterSchema } from './filter';
+import { ApiCorsConfig, apiCorsConfigSchema } from './cors';
 import { ValidationError } from './errors';
+import { ApiFilter, apiFilterSchema } from './filter';
+import { Group, groupValidatorSchema } from './group';
 import { MiddlewareConfig, middlewareConfigValidatorSchema } from './middleware';
-import { ObjectID } from 'bson';
+import { Proxy, proxyValidatorSchema } from './proxy';
+import { ApiThrottlingConfig, apiThrottlingConfigValidatorSchema } from './throttling';
 
 /**
  * The API config descriptor.

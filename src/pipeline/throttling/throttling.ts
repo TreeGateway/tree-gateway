@@ -1,18 +1,18 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig } from '../../config/api';
-import { ApiThrottlingConfig } from '../../config/throttling';
-import { ApiPipelineConfig } from '../../config/gateway';
 import * as _ from 'lodash';
-import * as Groups from '../group';
-import { RedisStore } from './redis-store';
-import { Logger } from '../../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { getMilisecondsInterval } from '../../utils/time-intervals';
+import { ApiConfig } from '../../config/api';
+import { ApiPipelineConfig } from '../../config/gateway';
+import { ApiThrottlingConfig } from '../../config/throttling';
+import { Logger } from '../../logger';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { getMilisecondsInterval } from '../../utils/time-intervals';
 import { ProxyError } from '../error/errors';
+import * as Groups from '../group';
 import { RequestLogger } from '../stats/request';
+import { RedisStore } from './redis-store';
 
 interface ThrottlingInfo {
     limiter?: express.RequestHandler;
@@ -25,7 +25,7 @@ export class ApiRateLimit {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private requestLogger: RequestLogger;
 
-    throttling(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public throttling(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const path: string = api.path;
         const throttlings: Array<ApiThrottlingConfig> = this.sortLimiters(api.throttling, path);
         const rateLimit = require('express-rate-limit');

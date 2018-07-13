@@ -1,7 +1,7 @@
 'use strict';
 
 import { GatewayConfig } from '../../config/gateway';
-import { checkStatus, invoke, getResponseBody } from './utils';
+import { checkStatus, getResponseBody, invoke } from './utils';
 
 export interface Gateway {
     updateConfig(config: GatewayConfig): Promise<void>;
@@ -16,17 +16,17 @@ export class GatewayClient implements Gateway {
         this.swaggerClient = swaggerClient;
     }
 
-    async updateConfig(config: GatewayConfig): Promise<void> {
-        const response = await invoke(this.swaggerClient.apis.Gateway.GatewayRestUpdateConfig({ config }));
+    public async updateConfig(config: GatewayConfig): Promise<void> {
+        const response = await invoke(this.swaggerClient.apis.Gateway.GatewayRestUpdateConfig({ config: config }));
         checkStatus(response, 204);
     }
 
-    async removeConfig(): Promise<void> {
+    public async removeConfig(): Promise<void> {
         const response = await invoke(this.swaggerClient.apis.Gateway.GatewayRestRemoveConfig({}));
         checkStatus(response, 204);
     }
 
-    async getConfig(): Promise<GatewayConfig> {
+    public async getConfig(): Promise<GatewayConfig> {
         const response = await invoke(this.swaggerClient.apis.Gateway.GatewayRestGetConfig({}));
         return getResponseBody(response);
     }

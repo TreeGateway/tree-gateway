@@ -2,7 +2,7 @@
 
 import { EventEmitter } from 'events';
 import * as express from 'express';
-import { ProxyError } from  '../error/errors';
+import { ProxyError } from '../error/errors';
 
 export enum State { OPEN, CLOSED, HALF_OPEN }
 
@@ -40,19 +40,19 @@ export class CircuitBreaker extends EventEmitter {
         this.options.stateHandler.initialState();
     }
 
-    isOpen() {
+    public isOpen() {
         return this.options.stateHandler.isOpen();
     }
 
-    isHalfOpen() {
+    public isHalfOpen() {
         return this.options.stateHandler.isHalfOpen();
     }
 
-    isClosed() {
+    public isClosed() {
         return this.options.stateHandler.isClosed();
     }
 
-    forceOpen(req: express.Request) {
+    public forceOpen(req: express.Request) {
         if (!this.options.stateHandler.forceOpen()) {
             return;
         }
@@ -60,21 +60,21 @@ export class CircuitBreaker extends EventEmitter {
         this.emit('open', req);
     }
 
-    forceClosed(req: express.Request) {
+    public forceClosed(req: express.Request) {
         if (!this.options.stateHandler.forceClose()) {
             return;
         }
         this.emit('close', req);
     }
 
-    forceHalfOpen() {
+    public forceHalfOpen() {
         if (!this.options.stateHandler.forceHalfOpen()) {
             return;
         }
         this.emit('halfOpen');
     }
 
-    middleware(): express.RequestHandler {
+    public middleware(): express.RequestHandler {
         return (req, res, next) => {
             // this.emit('request');
             if (this.isOpen() || (this.isHalfOpen() && this.options.stateHandler.halfOpenCallPending)) {
@@ -88,7 +88,7 @@ export class CircuitBreaker extends EventEmitter {
         };
     }
 
-    onStateChanged(state: string) {
+    public onStateChanged(state: string) {
         this.options.stateHandler.onStateChanged(state);
     }
 
@@ -96,7 +96,7 @@ export class CircuitBreaker extends EventEmitter {
         return this.options.id;
     }
 
-    destroy() {
+    public destroy() {
         this.removeAllListeners();
         this.options.stateHandler.destroy();
     }
@@ -109,7 +109,7 @@ export class CircuitBreaker extends EventEmitter {
         }, this.options.timeout);
         const end = res.end;
         const self = this;
-        res.end = function(...args: any[]) {
+        res.end = function (...args: Array<any>) {
             if (!operationTimeout) {
                 clearTimeout(timeoutID);
                 if (res.statusCode >= 500) {

@@ -1,7 +1,7 @@
 'use strict';
 import * as _ from 'lodash';
-import { Database } from '../../database';
 import { Inject } from 'typescript-ioc';
+import { Database } from '../../database';
 
 export interface Options {
     path: string;
@@ -11,7 +11,7 @@ export interface Options {
 }
 
 export class RedisStore {
-    options: Options;
+    public options: Options;
     @Inject private database: Database;
 
     constructor(options: Options) {
@@ -21,7 +21,7 @@ export class RedisStore {
         });
     }
 
-    incr(key: string, cb: any) {
+    public incr(key: string, cb: any) {
         const rdskey = this.getRedisKey(key);
         const opt: Options = this.options;
         this.database.redisClient.multi()
@@ -42,7 +42,7 @@ export class RedisStore {
             });
     }
 
-    resetKey(key: string) {
+    public resetKey(key: string) {
         const rdskey = this.getRedisKey(key);
         this.database.redisClient.del(rdskey);
     }

@@ -21,7 +21,7 @@ export interface RedisConfig {
     /**
      * List of cluster nodes.
      */
-    cluster?: RedisNodeConfig[];
+    cluster?: Array<RedisNodeConfig>;
     /**
      * Configure additional options to be passed to redis driver.
      */
@@ -47,7 +47,7 @@ export interface RedisSentinelConfig {
     /**
      * List of sentinel nodes.
      */
-    nodes: RedisNodeConfig[];
+    nodes: Array<RedisNodeConfig>;
     /**
      * Group os instances to connect (master/slaves group).
      */

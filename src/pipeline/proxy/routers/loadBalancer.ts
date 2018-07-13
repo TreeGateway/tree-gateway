@@ -2,15 +2,15 @@
 
 import * as Joi from 'joi';
 import * as _ from 'lodash';
+import { Container } from 'typescript-ioc';
 import * as chooser from 'weighted';
 import { ValidationError } from '../../../config/errors';
-import { UnavailableError } from '../../error/errors';
-import { Container } from 'typescript-ioc';
 import { Gateway } from '../../../gateway';
 import { Logger } from '../../../logger';
-import { getMilisecondsInterval } from '../../../utils/time-intervals';
 import { PluginsDataService } from '../../../service/plugin-data';
 import { HealthCheck } from '../../../utils/health-check';
+import { getMilisecondsInterval } from '../../../utils/time-intervals';
+import { UnavailableError } from '../../error/errors';
 
 interface LoadBalancerConfig {
     destinations?: Array<Destination>;
@@ -80,6 +80,8 @@ abstract class Balancer {
         this.updateInstances(this.fixedServiceInstances, config.healthCheckOptions);
         this.observeDatabase(config);
     }
+
+    public abstract balance(): string;
 
     protected observeDatabase(config: LoadBalancerConfig) {
         if (config.database) {
@@ -169,8 +171,6 @@ abstract class Balancer {
             this.verifiedInstances = this.serviceInstances;
         }
     }
-
-    abstract balance(): string;
 }
 
 class RandomBalancer extends Balancer {
@@ -178,7 +178,7 @@ class RandomBalancer extends Balancer {
         super(config);
     }
 
-    balance(): string {
+    public balance(): string {
         if (this.verifiedInstances.length) {
             return this.verifiedInstances[Math.floor(Math.random() * this.verifiedInstances.length)].target;
         }
@@ -190,12 +190,12 @@ class RoundRobinBalancer extends Balancer {
     constructor(config: LoadBalancerConfig) {
         super(config);
     }
-    balance(): string {
+    public balance(): string {
         if (this.verifiedInstances.length) {
-            let next = (<any>this.verifiedInstances).next || 0;
+            let next = (this.verifiedInstances as any).next || 0;
             const index = next % this.verifiedInstances.length;
             next++;
-            (<any>this.verifiedInstances).next = next;
+            (this.verifiedInstances as any).next = next;
             return this.verifiedInstances[index].target;
         }
         throw new UnavailableError(`No instance available.`);
@@ -210,21 +210,21 @@ class WeightedBalancer extends Balancer {
         super(config);
     }
 
-    protected updateInstances(data: Array<Destination>, healthCheckOptions?: HealthCheckOptions) {
-        super.updateInstances(data, healthCheckOptions);
-        this.instances = this.verifiedInstances.map(item => item.target);
-        this.weights = this.verifiedInstances.map(item => item.weight);
-    }
-
-    balance(): string {
+    public balance(): string {
         if (this.instances.length) {
             return chooser.select(this.instances, this.weights);
         }
         throw new UnavailableError(`No instance available.`);
     }
+
+    protected updateInstances(data: Array<Destination>, healthCheckOptions?: HealthCheckOptions) {
+        super.updateInstances(data, healthCheckOptions);
+        this.instances = this.verifiedInstances.map(item => item.target);
+        this.weights = this.verifiedInstances.map(item => item.weight);
+    }
 }
 
-module.exports = function(config: LoadBalancerConfig) {
+module.exports = function (config: LoadBalancerConfig) {
     validateLoadBalancerConfig(config);
     let balancer: Balancer;
     switch (config.strategy) {

@@ -1,5 +1,6 @@
 'use strict';
 
+// tslint:disable:ordered-imports
 import * as install from './install-apis.spec';
 import * as admin from './admin.spec';
 import * as auth from './authenticator.spec';

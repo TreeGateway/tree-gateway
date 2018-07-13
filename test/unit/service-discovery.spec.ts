@@ -1,7 +1,7 @@
 'use strict';
 
-import 'mocha';
 import * as chai from 'chai';
+import 'mocha';
 
 import * as request from 'request';
 import {Container} from 'typescript-ioc';

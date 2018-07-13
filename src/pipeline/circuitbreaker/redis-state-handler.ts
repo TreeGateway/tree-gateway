@@ -1,24 +1,23 @@
 'use strict';
 
-import { StateHandler, State } from './express-circuit-breaker';
-import { Logger } from '../../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { Database } from '../../database';
 import { ConfigTopics } from '../../config/events';
+import { Database } from '../../database';
+import { Logger } from '../../logger';
+import { State, StateHandler } from './express-circuit-breaker';
 
 export class CircuitBreakerKeys {
-    static CIRCUIT_BREAKER_FAILURES = '{circuitbreaker}:failures';
-    static CIRCUIT_BREAKER_STATE = '{circuitbreaker}:state';
+    public static CIRCUIT_BREAKER_FAILURES = '{circuitbreaker}:failures';
+    public static CIRCUIT_BREAKER_STATE = '{circuitbreaker}:state';
 }
 
 @AutoWired
 export class RedisStateHandler implements StateHandler {
+    public halfOpenCallPending: boolean;
     @Inject private logger: Logger;
     @Inject private database: Database;
-
     private id: string;
     private state: State;
-    halfOpenCallPending: boolean;
     private resetTimeout: number;
     private timeWindow: number;
     private timerHalfOpen: NodeJS.Timer = null;
@@ -31,7 +30,7 @@ export class RedisStateHandler implements StateHandler {
         }
     }
 
-    initialState() {
+    public initialState() {
         this.database.redisClient.get(this.getRedisStateKey())
             .then((state: any) => {
                 if (state === 'open') {
@@ -44,19 +43,19 @@ export class RedisStateHandler implements StateHandler {
             });
     }
 
-    isOpen(): boolean {
+    public isOpen(): boolean {
         return this.state === State.OPEN;
     }
 
-    isHalfOpen(): boolean {
+    public isHalfOpen(): boolean {
         return this.state === State.HALF_OPEN;
     }
 
-    isClosed(): boolean {
+    public isClosed(): boolean {
         return this.state === State.CLOSED;
     }
 
-    forceOpen(): boolean {
+    public forceOpen(): boolean {
         if (!this.openState()) {
             return false;
         }
@@ -64,7 +63,7 @@ export class RedisStateHandler implements StateHandler {
         return true;
     }
 
-    forceClose(): boolean {
+    public forceClose(): boolean {
         if (!this.closeState()) {
             return false;
         }
@@ -72,7 +71,7 @@ export class RedisStateHandler implements StateHandler {
         return true;
     }
 
-    forceHalfOpen(): boolean {
+    public forceHalfOpen(): boolean {
         if (this.state === State.HALF_OPEN) {
             return false;
         }
@@ -82,33 +81,33 @@ export class RedisStateHandler implements StateHandler {
         return true;
     }
 
-    incrementFailures(): Promise<number> {
+    public incrementFailures(): Promise<number> {
         const rdskey = this.getRedisFailuresKey();
         if (this.timeWindow) {
             return new Promise<number>((resolve, reject) => {
                 this.database.redisClient.multi()
-                .incr(rdskey)
-                .ttl(rdskey)
-                .exec((err, replies) => {
-                    if (err) {
-                        return reject(err);
-                    }
+                    .incr(rdskey)
+                    .ttl(rdskey)
+                    .exec((err, replies) => {
+                        if (err) {
+                            return reject(err);
+                        }
 
-                    // if this is new or has no expire
-                    if (replies[0][1] === 1 || replies[1][1] === -1) {
-                        // then expire it after the timeout
-                        this.database.redisClient.expire(rdskey, this.timeWindow);
-                    }
+                        // if this is new or has no expire
+                        if (replies[0][1] === 1 || replies[1][1] === -1) {
+                            // then expire it after the timeout
+                            this.database.redisClient.expire(rdskey, this.timeWindow);
+                        }
 
-                    resolve(replies[0][1]);
-                });
+                        resolve(replies[0][1]);
+                    });
             });
         } else {
             return this.database.redisClient.incr(rdskey);
         }
     }
 
-    onStateChanged(state: string) {
+    public onStateChanged(state: string) {
         switch (state) {
             case 'open':
                 if (this.logger.isDebugEnabled()) {
@@ -127,7 +126,7 @@ export class RedisStateHandler implements StateHandler {
         }
     }
 
-    destroy() {
+    public destroy() {
         if (this.timerHalfOpen) {
             clearTimeout(this.timerHalfOpen);
             this.timerHalfOpen = null;

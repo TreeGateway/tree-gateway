@@ -1,9 +1,9 @@
 'use strict';
 
 import * as Joi from 'joi';
-import { GatewayConfig, gatewayConfigValidatorSchema } from './gateway';
 import { ApiConfig, apiConfigValidatorSchema } from './api';
 import { ValidationError } from './errors';
+import { GatewayConfig, gatewayConfigValidatorSchema } from './gateway';
 
 /**
  * The Server config descriptor.

@@ -1,9 +1,9 @@
 'use strict';
 
-import { ClientCacheConfig } from '../../config/cache';
 import * as _ from 'lodash';
-import { Logger } from '../../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
+import { ClientCacheConfig } from '../../config/cache';
+import { Logger } from '../../logger';
 import { getMilisecondsInterval } from '../../utils/time-intervals';
 
 @AutoWired
@@ -11,7 +11,7 @@ export class ClientCache {
     @Inject
     private logger: Logger;
 
-    buildCacheMiddleware(clientCache: ClientCacheConfig, path: string) {
+    public buildCacheMiddleware(clientCache: ClientCacheConfig, path: string) {
         const func = new Array<string>();
         const cacheControl: string = this.cacheHeaderString(clientCache);
         if (this.logger.isDebugEnabled()) {

@@ -1,19 +1,19 @@
 'use strict';
 
-import { ApiPipelineConfig } from '../../config/gateway';
-import { ApiCircuitBreakerConfig } from '../../config/circuit-breaker';
-import { ApiConfig } from '../../config/api';
 import * as express from 'express';
 import * as _ from 'lodash';
-import { CircuitBreaker } from './express-circuit-breaker';
-import * as Groups from '../group';
-import { RedisStateHandler } from './redis-state-handler';
-import { Logger } from '../../logger';
-import { AutoWired, Inject, Container } from 'typescript-ioc';
-import { RequestLog, RequestLogger } from '../stats/request';
-import { getMilisecondsInterval } from '../../utils/time-intervals';
-import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { AutoWired, Container, Inject } from 'typescript-ioc';
+import { ApiConfig } from '../../config/api';
+import { ApiCircuitBreakerConfig } from '../../config/circuit-breaker';
+import { ApiPipelineConfig } from '../../config/gateway';
 import { Gateway } from '../../gateway';
+import { Logger } from '../../logger';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { getMilisecondsInterval } from '../../utils/time-intervals';
+import * as Groups from '../group';
+import { RequestLog, RequestLogger } from '../stats/request';
+import { CircuitBreaker } from './express-circuit-breaker';
+import { RedisStateHandler } from './redis-state-handler';
 
 interface BreakerInfo {
     circuitBreaker?: CircuitBreaker;
@@ -28,7 +28,7 @@ export class ApiCircuitBreaker {
 
     private activeBreakers: Map<string, CircuitBreaker> = new Map<string, CircuitBreaker>();
 
-    circuitBreaker(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public circuitBreaker(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const breakerInfos: Array<BreakerInfo> = new Array<BreakerInfo>();
         const sortedBreakers = this.sortBreakers(api.circuitBreaker, api.path);
         const breakersSize = sortedBreakers.length;
@@ -42,8 +42,8 @@ export class ApiCircuitBreaker {
                 rejectMessage: (cbConfig.rejectMessage || 'Service unavailable'),
                 rejectStatusCode: (cbConfig.rejectStatusCode || 503),
                 stateHandler: new RedisStateHandler(cbStateID,
-                                    getMilisecondsInterval(cbConfig.resetTimeout, 120000),
-                                    getMilisecondsInterval(cbConfig.timeWindow)),
+                    getMilisecondsInterval(cbConfig.resetTimeout, 120000),
+                    getMilisecondsInterval(cbConfig.timeWindow)),
                 timeout: getMilisecondsInterval(cbConfig.timeout, 30000),
                 timeoutMessage: (cbConfig.timeoutMessage || 'Operation timeout'),
                 timeoutStatusCode: (cbConfig.timeoutStatusCode || 504)
@@ -67,14 +67,14 @@ export class ApiCircuitBreaker {
         this.addStopListeners();
     }
 
-    onStateChanged(id: string, state: string) {
+    public onStateChanged(id: string, state: string) {
         const breaker: CircuitBreaker = this.activeBreakers.get(id);
         if (breaker) {
             breaker.onStateChanged(state);
         }
     }
 
-    removeAllBreakers() {
+    public removeAllBreakers() {
         this.activeBreakers.forEach(breaker => breaker.destroy());
         this.activeBreakers.clear();
     }

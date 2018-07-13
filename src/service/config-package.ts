@@ -1,14 +1,14 @@
 'use strict';
 
+import { AutoWired, Inject, Provides, Singleton } from 'typescript-ioc';
 import { ConfigPackage, MiddlewareConfig } from '../config/config-package';
-import { Provides, AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { ApiService } from './api';
 import { GatewayService } from './gateway';
 import { MiddlewareService } from './middleware';
 
 export abstract class ConfigPackageService {
-    abstract set(config: ConfigPackage): Promise<void>;
-    abstract get(): Promise<ConfigPackage>;
+    public abstract set(config: ConfigPackage): Promise<void>;
+    public abstract get(): Promise<ConfigPackage>;
 }
 
 @AutoWired
@@ -23,7 +23,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
      * Apply a config package to this Gateway
      * @param config The config package to apply
      */
-    async set(config: ConfigPackage): Promise<void> {
+    public async set(config: ConfigPackage): Promise<void> {
         if (config.middlewares) {
             await Promise.all(config.middlewares.map(mid =>
                 this.middlewareService.update(mid.middleware, mid.id || mid.name, new Buffer(mid.content), true))
@@ -38,7 +38,7 @@ export class ConfigPackageServiceImpl implements ConfigPackageService {
      * Export all gateway configurations to a new config package.
      * @return The generated config package
      */
-    async get(): Promise<ConfigPackage> {
+    public async get(): Promise<ConfigPackage> {
         const result: ConfigPackage = {};
         const data = await Promise.all([this.apiService.list(), this.gatewayService.get(), this.getMiddlewares()]);
         if (data && data.length) {

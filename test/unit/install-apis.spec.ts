@@ -1,19 +1,19 @@
 'use strict';
 
-import 'mocha';
 import * as chai from 'chai';
 import * as chaiPromises from 'chai-as-promised';
 import * as fs from 'fs-extra-promise';
+import 'mocha';
 import * as path from 'path';
-import {Container} from 'typescript-ioc';
-import {Configuration} from '../../src/configuration';
-import {Gateway} from '../../src/gateway';
-import {Database} from '../../src/database';
-import {SDK} from '../../src/admin/config/sdk';
+import { Container } from 'typescript-ioc';
 import * as YAML from 'yamljs';
+import { SDK } from '../../src/admin/config/sdk';
 import { ApiConfig } from '../../src/config/api';
 import { ConfigPackage } from '../../src/config/config-package';
-import { getSwaggerHost, getSwaggerUrl, generateSecurityToken } from '../../src/utils/config';
+import { Configuration } from '../../src/configuration';
+import { Database } from '../../src/database';
+import { Gateway } from '../../src/gateway';
+import { generateSecurityToken, getSwaggerHost, getSwaggerUrl } from '../../src/utils/config';
 
 chai.use(chaiPromises);
 
@@ -33,14 +33,14 @@ describe('Gateway SDKs', () => {
             return startGateway();
         } else {
             return new Promise<void>((resolve, reject) => {
-                    config.on('load', () => {
-                        startGateway()
-                            .then(resolve)
-                            .catch(reject);
-                    });
-                    config.on('error', error => {
-                        reject(error);
-                    });
+                config.on('load', () => {
+                    startGateway()
+                        .then(resolve)
+                        .catch(reject);
+                });
+                config.on('error', error => {
+                    reject(error);
+                });
             });
         }
     });
@@ -142,12 +142,12 @@ describe('Gateway SDKs', () => {
         expect(sdk.middleware.authVerify('verifyBasicUser')).to.eventually.have.members(['verifyBasicUser']);
         expect(sdk.middleware.filters()).to.eventually.have.members(['myCustomFilter', 'mySecondFilter']);
         expect(sdk.middleware.requestInterceptors()).to.eventually.have.members(['myRequestInterceptor',
-                                                                                 'mySecondRequestInterceptor',
-                                                                                 'changeBodyInterceptor']);
+            'mySecondRequestInterceptor',
+            'changeBodyInterceptor']);
         expect(sdk.middleware.responseInterceptors()).to.eventually.have.members(['myResponseInterceptor',
-                                                                                 'SecondInterceptor',
-                                                                                 'changeBodyResponseInterceptor',
-                                                                                 'removeHeaderResponseInterceptor']);
+            'SecondInterceptor',
+            'changeBodyResponseInterceptor',
+            'removeHeaderResponseInterceptor']);
         expect(sdk.middleware.circuitBreaker()).to.eventually.have.members(['myOpenHandler']);
         expect(sdk.middleware.corsOrigin()).to.eventually.have.members(['corsOrigin']);
         expect(sdk.middleware.errorHandler()).to.eventually.have.members(['errorHandler']);
@@ -189,12 +189,12 @@ describe('Gateway SDKs', () => {
         const pathApi = './test/data/apis/';
 
         const files = await fs.readdirAsync(pathApi);
-        let promises = files.filter(file => !file.endsWith('.DS_Store')).map( async file => {
+        let promises = files.filter(file => !file.endsWith('.DS_Store')).map(async file => {
             if (file.endsWith('.yml') || file.endsWith('.yaml')) {
-                const api = YAML.load(pathApi+file);
+                const api = YAML.load(pathApi + file);
                 return api;
             }
-            return await fs.readJsonAsync(pathApi+file);
+            return await fs.readJsonAsync(pathApi + file);
         });
         installedApis = await Promise.all(promises);
         promises = installedApis.map(apiConfig => sdk.apis.addApi(apiConfig));

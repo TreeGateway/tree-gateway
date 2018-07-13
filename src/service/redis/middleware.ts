@@ -1,11 +1,11 @@
 'use strict';
 
-import { ConfigTopics } from '../../config/events';
 import { Inject } from 'typescript-ioc';
-import { Database } from '../../database';
-import { MiddlewareService } from '../middleware';
 import { ValidationError } from '../../config/errors';
+import { ConfigTopics } from '../../config/events';
+import { Database } from '../../database';
 import { NotFoundError } from '../../pipeline/error/errors';
+import { MiddlewareService } from '../middleware';
 
 export class RedisMiddlewareService implements MiddlewareService {
     private static MIDDLEWARE_PREFIX = '{config}:middleware';
@@ -13,8 +13,8 @@ export class RedisMiddlewareService implements MiddlewareService {
 
     @Inject private database: Database;
 
-    async list(middleware: string, filter?: string): Promise<Array<string>> {
-        let result: string[] = await this.database.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`);
+    public async list(middleware: string, filter?: string): Promise<Array<string>> {
+        let result: Array<string> = await this.database.redisClient.smembers(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`);
         result = result.filter((middlwareName: string) => {
             if (filter && !middlwareName.includes(filter)) {
                 return false;
@@ -25,13 +25,13 @@ export class RedisMiddlewareService implements MiddlewareService {
         return result;
     }
 
-    async add(middleware: string, name: string, content: Buffer): Promise<string> {
+    public async add(middleware: string, name: string, content: Buffer): Promise<string> {
         await this.ensureMiddlewareCreateConstraints(middleware, name);
         await this.save(middleware, name, content);
         return name;
     }
 
-    async remove(middleware: string, name: string): Promise<void> {
+    public async remove(middleware: string, name: string): Promise<void> {
         await this.database.redisClient.multi()
             .srem(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}`, name)
             .del(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`)
@@ -39,12 +39,12 @@ export class RedisMiddlewareService implements MiddlewareService {
             .exec();
     }
 
-    async update(middleware: string, name: string, content: Buffer, upsert?: boolean): Promise<void> {
+    public async update(middleware: string, name: string, content: Buffer, upsert?: boolean): Promise<void> {
         await this.ensureMiddlewareUpdateConstraints(middleware, name, upsert);
         await this.save(middleware, name, content);
     }
 
-    read(middleware: string, name: string): Promise<Buffer> {
+    public read(middleware: string, name: string): Promise<Buffer> {
         return this.database.redisClient.get(`${RedisMiddlewareService.MIDDLEWARE_PREFIX}:${middleware}:${name}`);
     }
 

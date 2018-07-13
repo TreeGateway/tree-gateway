@@ -1,12 +1,12 @@
 'use strict';
 
 import * as express from 'express';
+import { Container } from 'typescript-ioc';
 import { JSONAtaExpression, validateJsonAtaExpression } from '../../../config/jsonata';
 import { Logger } from '../../../logger';
-import { Container } from 'typescript-ioc';
 
 const jsonata = require('jsonata');
-module.exports = function(config: JSONAtaExpression) {
+module.exports = function (config: JSONAtaExpression) {
     validateJsonAtaExpression(config);
     const logger: Logger = Container.get(Logger);
     const expression = jsonata(config.expression);

@@ -1,11 +1,12 @@
 'use strict';
 
-import { MiddlewareService } from '../service/middleware';
 import * as fs from 'fs-extra-promise';
 import * as path from 'path';
-import { Logger } from '../logger';
-import { AutoWired, Singleton, Inject } from 'typescript-ioc';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { Configuration } from '../configuration';
+import { Logger } from '../logger';
+import { MiddlewareService } from '../service/middleware';
+
 const decache = require('decache');
 
 @AutoWired
@@ -21,11 +22,11 @@ export class MiddlewareInstaller {
     @Inject private logger: Logger;
     @Inject private config: Configuration;
 
-    async installAll(): Promise<void> {
+    public async installAll(): Promise<void> {
         await Promise.all(this.types.map(type => this.installAllOfType(type)));
     }
 
-    async install(type: string, name: string): Promise<void> {
+    public async install(type: string, name: string): Promise<void> {
         await this.uninstall(type, name);
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Installing middleware ${type}/${name}`);
@@ -37,7 +38,7 @@ export class MiddlewareInstaller {
         }
     }
 
-    async uninstall(type: string, name: string): Promise<void> {
+    public async uninstall(type: string, name: string): Promise<void> {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug(`Uninstalling middleware ${type}/${name}`);
         }
@@ -48,7 +49,7 @@ export class MiddlewareInstaller {
         }
     }
 
-    removeModuleCache(type: string, name: string) {
+    public removeModuleCache(type: string, name: string) {
         decache(this.getModuleName(type, name));
     }
 

@@ -1,26 +1,26 @@
 'use strict';
 
-import * as _ from 'lodash';
-import * as http from 'http';
 import * as compression from 'compression';
+import { EventEmitter } from 'events';
 import * as express from 'express';
+import * as fs from 'fs-extra-promise';
+import * as http from 'http';
+import * as _ from 'lodash';
+import * as path from 'path';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
+import { HttpError, Server } from 'typescript-rest';
 import adminApi from './admin/api/admin-api';
 import { UsersRest } from './admin/api/users';
-import { Server, HttpError } from 'typescript-rest';
 import { ApiConfig } from './config/api';
-import { Logger } from './logger';
-import { AccessLogger } from './express-logger';
-import { ConfigService } from './service/config';
-import { Configuration } from './configuration';
-import * as fs from 'fs-extra-promise';
-import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ConfigEvents } from './config/events';
-import * as path from 'path';
-import { getMilisecondsInterval } from './utils/time-intervals';
-import { ServiceDiscovery } from './pipeline/servicediscovery/service-discovery';
-import { EventEmitter } from 'events';
-import { RequestLogger } from './pipeline/stats/request';
+import { Configuration } from './configuration';
+import { AccessLogger } from './express-logger';
+import { Logger } from './logger';
 import { ApiPileline } from './pipeline/api';
+import { ServiceDiscovery } from './pipeline/servicediscovery/service-discovery';
+import { RequestLogger } from './pipeline/stats/request';
+import { ConfigService } from './service/config';
+import { getMilisecondsInterval } from './utils/time-intervals';
 
 @Singleton
 @AutoWired
@@ -55,11 +55,11 @@ export class Gateway extends EventEmitter {
         return this.serverRunning;
     }
 
-    getApiConfig(apiId: string): ApiConfig {
+    public getApiConfig(apiId: string): ApiConfig {
         return this.apiPipeline.getApiConfig(apiId);
     }
 
-    start(): Promise<void> {
+    public start(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.initialize()
                 .then(() => {
@@ -70,7 +70,7 @@ export class Gateway extends EventEmitter {
                         expected++;
                         const httpServer = http.createServer(this.app);
 
-                        this.apiServer.set('http', <http.Server>httpServer.listen(_.toSafeInteger(this.config.gateway.protocol.http.listenPort), () => {
+                        this.apiServer.set('http', httpServer.listen(_.toSafeInteger(this.config.gateway.protocol.http.listenPort), () => {
                             this.logger.info(`Gateway listenning HTTP on port ${this.config.gateway.protocol.http.listenPort}`);
                             started++;
                             if (started === expected) {
@@ -78,7 +78,7 @@ export class Gateway extends EventEmitter {
                                 this.emit('start', this);
                                 resolve();
                             }
-                        }));
+                        }) as http.Server);
                     }
                     if (this.config.gateway.protocol.https) {
                         expected++;
@@ -100,7 +100,7 @@ export class Gateway extends EventEmitter {
         });
     }
 
-    startAdmin(): Promise<void> {
+    public startAdmin(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             if (!this.config.gateway.admin) {
                 return resolve();
@@ -113,14 +113,14 @@ export class Gateway extends EventEmitter {
                     expected++;
                     const httpServer = http.createServer(this.adminApp);
                     httpServer.timeout = getMilisecondsInterval(this.config.gateway.timeout, 60000);
-                    this.adminServer.set('http', <http.Server>httpServer.listen(_.toSafeInteger(this.config.gateway.admin.protocol.http.listenPort), () => {
+                    this.adminServer.set('http', httpServer.listen(_.toSafeInteger(this.config.gateway.admin.protocol.http.listenPort), () => {
                         this.logger.info(`Gateway Admin Server listenning HTTP on port ${this.config.gateway.admin.protocol.http.listenPort}`);
                         started++;
                         if (started === expected) {
                             this.emit('admin-start', this);
                             resolve();
                         }
-                    }));
+                    }) as http.Server);
                 }
                 if (this.config.gateway.admin.protocol.https) {
                     expected++;
@@ -141,7 +141,7 @@ export class Gateway extends EventEmitter {
         });
     }
 
-    stop(): Promise<void> {
+    public stop(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             if (this.apiServer) {
                 let toClose = this.apiServer.size;
@@ -173,7 +173,7 @@ export class Gateway extends EventEmitter {
         });
     }
 
-    stopAdmin() {
+    public stopAdmin() {
         return new Promise<void>((resolve, reject) => {
             if (this.adminServer) {
                 let toClose = this.adminServer.size;
@@ -198,7 +198,7 @@ export class Gateway extends EventEmitter {
         });
     }
 
-    async restart(): Promise<void> {
+    public async restart(): Promise<void> {
         this.logger.info(`Gateway is restarting...`);
         await this.stopAdmin();
         await this.stop();
@@ -222,9 +222,8 @@ export class Gateway extends EventEmitter {
         if (this.config.gateway.protocol.https.ciphers) {
             credentials.ciphers = this.config.gateway.protocol.https.ciphers.join(':');
         }
-        if (this.config.gateway.protocol.https.honorCipherOrder) {
-            credentials.honorCipherOrder = true;
-        }
+        _.assign(credentials, _.omit(this.config.gateway.protocol.https, 'privateKey',
+            'certificate', 'certificateAuthority', 'ciphers'));
         const https = require('https');
         return https.createServer(credentials, app);
     }

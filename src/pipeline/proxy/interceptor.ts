@@ -1,14 +1,14 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig, Interceptor } from '../../config/api';
-import * as Groups from '../group';
+import * as mm from 'micromatch';
 import { Inject } from 'typescript-ioc';
+import { ApiConfig, Interceptor } from '../../config/api';
+import { ApiPipelineConfig } from '../../config/gateway';
 import { Logger } from '../../logger';
 import { createFunction } from '../../utils/functions';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
-import * as mm from 'micromatch';
-import { ApiPipelineConfig } from '../../config/gateway';
+import * as Groups from '../group';
 
 export interface ResponseInterceptors {
     middelware: Function;
@@ -19,24 +19,24 @@ export class ProxyInterceptor {
     @Inject private middlewareLoader: MiddlewareLoader;
     @Inject private logger: Logger;
 
-    buildRequestInterceptors(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public buildRequestInterceptors(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.hasRequestInterceptor(api)) {
             this.createRequestInterceptors(apiRouter, api, pipelineConfig);
         }
     }
 
-    buildResponseInterceptors(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public buildResponseInterceptors(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         if (this.hasResponseInterceptor(api)) {
             return (this.createResponseInterceptors(api, pipelineConfig));
         }
         return null;
     }
 
-    hasRequestInterceptor(api: ApiConfig) {
+    public hasRequestInterceptor(api: ApiConfig) {
         return (api.interceptor && api.interceptor.request && api.interceptor.request.length > 0);
     }
 
-    hasResponseInterceptor(api: ApiConfig) {
+    public hasResponseInterceptor(api: ApiConfig) {
         return (api.interceptor && api.interceptor.response && api.interceptor.response.length > 0);
     }
 
@@ -74,7 +74,7 @@ export class ProxyInterceptor {
                 const groupValidator = Groups.buildGroupAllowFilter(api.group, interceptor.group);
                 apiRouter.use((req, res, next) => {
                     if (groupValidator(req, res)) {
-                        const proxyReq = (<any>req).proxyReq || {
+                        const proxyReq = (req as any).proxyReq || {
                             body: req.body,
                             headers: Object.assign({}, req.headers),
                             method: req.method,
@@ -83,7 +83,7 @@ export class ProxyInterceptor {
                         };
                         Promise.resolve(interceptorMiddleware(proxyReq))
                             .then(result => {
-                                (<any>req).proxyReq = Object.assign(proxyReq, result || {});
+                                (req as any).proxyReq = Object.assign(proxyReq, result || {});
                                 next();
                             }).catch(err => {
                                 next(err);
@@ -94,7 +94,7 @@ export class ProxyInterceptor {
                 });
             } else {
                 apiRouter.use((req, res, next) => {
-                    const proxyReq = (<any>req).proxyReq || {
+                    const proxyReq = (req as any).proxyReq || {
                         body: req.body,
                         headers: Object.assign({}, req.headers),
                         method: req.method,
@@ -103,7 +103,7 @@ export class ProxyInterceptor {
                     };
                     Promise.resolve(interceptorMiddleware(proxyReq))
                         .then(result => {
-                            (<any>req).proxyReq = Object.assign(proxyReq, result || {});
+                            (req as any).proxyReq = Object.assign(proxyReq, result || {});
                             next();
                         }).catch(err => {
                             next(err);

@@ -1,9 +1,9 @@
 'use strict';
 
 import * as Joi from 'joi';
+import * as _ from 'lodash';
 import * as chooser from 'weighted';
 import { ValidationError } from '../../../config/errors';
-import * as _ from 'lodash';
 
 interface TrafficSplitConfig {
     destinations: Array<TrafficDestination>;
@@ -31,7 +31,7 @@ function validateTrafficSplitConfig(config: TrafficSplitConfig) {
     }
 }
 
-module.exports = function(config: TrafficSplitConfig) {
+module.exports = function (config: TrafficSplitConfig) {
     validateTrafficSplitConfig(config);
     config.destinations = _.castArray(config.destinations || []);
     const values = config.destinations.map(destination => destination.target);

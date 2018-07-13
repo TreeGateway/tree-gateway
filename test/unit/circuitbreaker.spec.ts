@@ -1,12 +1,12 @@
 'use strict';
 
-import 'mocha';
 import * as chai from 'chai';
+import 'mocha';
 
 import * as request from 'request';
+import { setTimeout } from 'timers';
 import {Container} from 'typescript-ioc';
 import {Configuration} from '../../src/configuration';
-import { setTimeout } from 'timers';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression

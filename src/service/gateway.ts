@@ -3,9 +3,9 @@
 import { GatewayConfig } from '../config/gateway';
 
 export abstract class GatewayService {
-    abstract remove(): Promise<void>;
-    abstract save(content: GatewayConfig): Promise<void>;
-    abstract read(): Promise<GatewayConfig>;
-    abstract get(): Promise<GatewayConfig>;
-    abstract registerGatewayVersion(): Promise<void>;
+    public abstract remove(): Promise<void>;
+    public abstract save(content: GatewayConfig): Promise<void>;
+    public abstract read(): Promise<GatewayConfig>;
+    public abstract get(): Promise<GatewayConfig>;
+    public abstract registerGatewayVersion(): Promise<void>;
 }

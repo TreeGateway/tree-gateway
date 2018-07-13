@@ -1,9 +1,9 @@
 'use strict';
 
-import { Configuration } from '../../configuration';
 import { Request } from 'express';
-import { Singleton, AutoWired, Inject } from 'typescript-ioc';
+import { AutoWired, Inject, Singleton } from 'typescript-ioc';
 import { ApiConfig } from '../../config/api';
+import { Configuration } from '../../configuration';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
 import { normalizePath } from '../../utils/path';
 
@@ -14,7 +14,7 @@ export interface RequestLog {
     cache?: string;
     circuitbreaker?: string;
     error?: string;
-    headers?: { [index: string]: {header: string} };
+    headers?: { [index: string]: { header: string } };
     ip: string;
     method: string;
     path: string;
@@ -33,35 +33,35 @@ export class RequestLogger {
 
     private requestLogHandler: (requestLog: RequestLog) => void;
 
-    initialize() {
+    public initialize() {
         this.requestLogHandler = this.middlewareLoader.loadMiddleware('request/logger',
             this.getRequestLogMiddleware());
     }
 
-    isRequestLogEnabled(api: ApiConfig): boolean {
+    public isRequestLogEnabled(api: ApiConfig): boolean {
         return (this.isGatewayRequestLogEnabled() && !api.disableAnalytics);
     }
 
-    isGatewayRequestLogEnabled() {
+    public isGatewayRequestLogEnabled() {
         return this.config.gateway.analytics && this.config.gateway.analytics.enabled;
     }
 
-    getRequestLog(req: Request): RequestLog {
-        return (<any>req).requestLog;
+    public getRequestLog(req: Request): RequestLog {
+        return (req as any).requestLog;
     }
 
-    initRequestLog(req: Request, api: ApiConfig): RequestLog {
-        (<any>req).requestLog = {
+    public initRequestLog(req: Request, api: ApiConfig): RequestLog {
+        (req as any).requestLog = {
             apiId: api.id,
             ip: req.ip,
             method: req.method,
             path: normalizePath(req.path),
             timestamp: new Date().getTime()
         };
-        return (<any>req).requestLog;
+        return (req as any).requestLog;
     }
 
-    registerOccurrence(requestLog: RequestLog) {
+    public registerOccurrence(requestLog: RequestLog) {
         this.requestLogHandler(requestLog);
     }
 

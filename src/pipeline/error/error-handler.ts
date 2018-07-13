@@ -1,14 +1,14 @@
 'use strict';
 
 import * as express from 'express';
-import { ApiConfig, ErrorHandler } from '../../config/api';
-import { Logger } from '../../logger';
 import { AutoWired, Inject } from 'typescript-ioc';
-import { MiddlewareLoader } from '../../utils/middleware-loader';
-import { Configuration } from '../../configuration';
-import { MiddlewareConfig } from '../../config/middleware';
-import { RequestLogger } from '../stats/request';
+import { ApiConfig, ErrorHandler } from '../../config/api';
 import { ApiPipelineConfig } from '../../config/gateway';
+import { MiddlewareConfig } from '../../config/middleware';
+import { Configuration } from '../../configuration';
+import { Logger } from '../../logger';
+import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { RequestLogger } from '../stats/request';
 
 /**
  * The API Error handler. Called to handle errors in API pipeline processing.
@@ -23,13 +23,13 @@ export class ApiErrorHandler {
     /**
      * Configure a proxy for a given API
      */
-    handle(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
+    public handle(apiRouter: express.Router, api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         apiRouter.use(this.configureErrorHandler(api, pipelineConfig));
     }
 
     private configureErrorHandler(api: ApiConfig, pipelineConfig: ApiPipelineConfig) {
         const apiErrorHandler = api.errorHandler ? this.resolveReferences(api.errorHandler, pipelineConfig) : null;
-        const errorHandler: MiddlewareConfig = apiErrorHandler ?  apiErrorHandler.middleware : this.config.gateway.errorHandler;
+        const errorHandler: MiddlewareConfig = apiErrorHandler ? apiErrorHandler.middleware : this.config.gateway.errorHandler;
         const appErrorHandler = this.getAppErrorHandler(errorHandler);
         if (this.requestLogger.isRequestLogEnabled(api)) {
             return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

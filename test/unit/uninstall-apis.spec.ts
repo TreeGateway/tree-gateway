@@ -4,12 +4,12 @@ import 'mocha';
 
 import * as fs from 'fs-extra-promise';
 import * as path from 'path';
-import {Container} from 'typescript-ioc';
-import {Configuration} from '../../src/configuration';
-import {Gateway} from '../../src/gateway';
-import {Database} from '../../src/database';
-import {SDK} from '../../src/admin/config/sdk';
-import { getSwaggerHost, getSwaggerUrl, generateSecurityToken } from '../../src/utils/config';
+import { Container } from 'typescript-ioc';
+import { SDK } from '../../src/admin/config/sdk';
+import { Configuration } from '../../src/configuration';
+import { Database } from '../../src/database';
+import { Gateway } from '../../src/gateway';
+import { generateSecurityToken, getSwaggerHost, getSwaggerUrl } from '../../src/utils/config';
 
 // tslint:disable:no-unused-expression
 // tslint:disable:no-console

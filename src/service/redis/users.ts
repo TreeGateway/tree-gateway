@@ -1,32 +1,32 @@
 'use strict';
 
-import { UserData } from '../../config/users';
 import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import * as auth from 'passport';
-import * as _ from 'lodash';
 import * as express from 'express';
+import * as jwt from 'jsonwebtoken';
+import * as _ from 'lodash';
+import * as auth from 'passport';
 import { Inject } from 'typescript-ioc';
+import { ValidationError } from '../../config/errors';
+import { UserData } from '../../config/users';
 import { Configuration } from '../../configuration';
 import { Database } from '../../database';
-import { ValidationError } from '../../config/errors';
 import { NotFoundError } from '../../pipeline/error/errors';
-import { UserService } from '../users';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
+import { UserService } from '../users';
 
 export class RedisUserService implements UserService {
-    static USERS_PREFIX = 'adminUsers';
+    public static USERS_PREFIX = 'adminUsers';
 
     @Inject private config: Configuration;
     @Inject private database: Database;
     @Inject private middlewareLoader: MiddlewareLoader;
 
-    async list(): Promise<Array<UserData>> {
+    public async list(): Promise<Array<UserData>> {
         const users = await this.database.redisClient.hgetall(RedisUserService.USERS_PREFIX);
-        return <UserData[]>_.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password'));
+        return _.map(_.values(users), (value: string) => _.omit(JSON.parse(value), 'password')) as Array<UserData>;
     }
 
-    async get(login: string): Promise<UserData> {
+    public async get(login: string): Promise<UserData> {
         const user = await this.database.redisClient.hget(RedisUserService.USERS_PREFIX, login);
         if (!user) {
             return null;
@@ -35,7 +35,7 @@ export class RedisUserService implements UserService {
         return JSON.parse(user);
     }
 
-    async create(user: UserData): Promise<void> {
+    public async create(user: UserData): Promise<void> {
         const exists = await this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, user.login);
         if (exists) {
             throw new ValidationError(`User ${user.login} already exists`);
@@ -47,7 +47,7 @@ export class RedisUserService implements UserService {
         await this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
     }
 
-    async changePassword(login: string, password: string): Promise<void> {
+    public async changePassword(login: string, password: string): Promise<void> {
         const exists = await this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, login);
         if (!exists) {
             throw new NotFoundError('User not found.');
@@ -57,7 +57,7 @@ export class RedisUserService implements UserService {
         await this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
     }
 
-    async update(user: UserData): Promise<void> {
+    public async update(user: UserData): Promise<void> {
         const exists = await this.database.redisClient.hexists(`${RedisUserService.USERS_PREFIX}`, user.login);
         if (!exists) {
             throw new NotFoundError('User not found.');
@@ -67,14 +67,14 @@ export class RedisUserService implements UserService {
         await this.database.redisClient.hmset(`${RedisUserService.USERS_PREFIX}`, user.login, JSON.stringify(user));
     }
 
-    async remove(login: string): Promise<void> {
+    public async remove(login: string): Promise<void> {
         const count = await this.database.redisClient.hdel(`${RedisUserService.USERS_PREFIX}`, login);
         if (count === 0) {
             throw new NotFoundError('User not found.');
         }
     }
 
-    async generateToken(login: string, password: string): Promise<string> {
+    public async generateToken(login: string, password: string): Promise<string> {
         const user = await this.get(login);
         if (!user) {
             throw new ValidationError('User not found');
@@ -105,11 +105,11 @@ export class RedisUserService implements UserService {
         }
     }
 
-    getAuthMiddleware(): express.RequestHandler {
+    public getAuthMiddleware(): express.RequestHandler {
         const opts: any = {
             secretOrKey: this.config.gateway.admin.userService.jwtSecret
         };
-        const strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', {name: 'jwt', options: opts});
+        const strategy = this.middlewareLoader.loadMiddleware('authentication/strategy', { name: 'jwt', options: opts });
         auth.use('_tree_gateway_admin_', strategy);
 
         return auth.authenticate('_tree_gateway_admin_', { session: false, failWithError: true });

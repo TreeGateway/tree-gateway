@@ -25,7 +25,7 @@ function validateRequestHeadersConfig(config: RequestHeadersConfig) {
     }
 }
 
-module.exports = function(config: RequestHeadersConfig) {
+module.exports = function (config: RequestHeadersConfig) {
     validateRequestHeadersConfig(config);
     if (config.removeHeaders) {
         config.removeHeaders = _.castArray(config.removeHeaders).map(header => header.toLowerCase());
@@ -37,7 +37,7 @@ module.exports = function(config: RequestHeadersConfig) {
             h = Object.assign(h, updateHeaders);
         }
         if (config.removeHeaders) {
-            h = _.omit(h, ...<Array<string>>config.removeHeaders);
+            h = _.omit(h, ...config.removeHeaders as Array<string>);
         }
         return { headers: h };
     };

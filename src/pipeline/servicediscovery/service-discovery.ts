@@ -1,9 +1,9 @@
 'use strict';
 
-import { Logger } from '../../logger';
 import { Inject, Singleton } from 'typescript-ioc';
 import { GatewayConfig } from '../../config/gateway';
 import { MiddlewareConfig } from '../../config/middleware';
+import { Logger } from '../../logger';
 import { MiddlewareLoader } from '../../utils/middleware-loader';
 
 @Singleton
@@ -13,7 +13,7 @@ export class ServiceDiscovery {
 
     private loadedClients: Map<string, any> = new Map<string, any>();
 
-    async loadServiceDiscoveryProviders(gatewayConfig: GatewayConfig): Promise<void> {
+    public async loadServiceDiscoveryProviders(gatewayConfig: GatewayConfig): Promise<void> {
         if (!gatewayConfig.serviceDiscovery || !gatewayConfig.serviceDiscovery.provider || !gatewayConfig.serviceDiscovery.provider.length) {
             return;
         }
@@ -39,7 +39,7 @@ export class ServiceDiscovery {
         await Promise.all(promises);
     }
 
-    loadServiceDiscovery(middlewareConfig: MiddlewareConfig, ssl?: boolean) {
+    public loadServiceDiscovery(middlewareConfig: MiddlewareConfig, ssl?: boolean) {
         const provider = this.middlewareLoader.getId(middlewareConfig);
         const serviceDiscovery = this.loadedClients.get(provider);
         if (serviceDiscovery) {

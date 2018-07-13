@@ -1,16 +1,16 @@
 'use strict';
 
+import chalk from 'chalk';
 import * as cluster from 'cluster';
 import * as os from 'os';
-import { Configuration } from './configuration';
 import { Container } from 'typescript-ioc';
-import { Gateway } from './gateway';
+import { Configuration } from './configuration';
 import { Database } from './database';
+import { Gateway } from './gateway';
 import { VersionUpgrades } from './utils/upgrade';
-import chalk from 'chalk';
 
 export class Application {
-    start() {
+    public start() {
         if (Configuration.instances === 1) {
             this.standalone();
         } else {
@@ -18,44 +18,50 @@ export class Application {
         }
     }
 
-    standalone() {
+    public standalone() {
         this.startGateway()
             .catch((err: Error) => {
+                // tslint:disable-next-line:no-console
                 console.error(chalk.red(`Error starting gateway: ${err.message}`));
                 process.exit(-1);
             });
     }
 
-    cluster(instances: number) {
+    public cluster(instances: number) {
         if (cluster.isMaster) {
             const n = instances < 1 ? os.cpus().length : instances;
+            // tslint:disable-next-line:no-console
             console.info(`Starting child processes...`);
 
             for (let i = 0; i < n; i++) {
                 const env = { processNumber: i + 1 };
                 const worker = cluster.fork(env);
-                (<any>worker).process['env'] = env;
+                (worker as any).process['env'] = env;
             }
 
-            cluster.on('online', function(worker) {
-                console.info(`Child process running PID: ${worker.process.pid} PROCESS_NUMBER: ${(<any>worker).process['env'].processNumber}`);
+            cluster.on('online', function (worker) {
+                // tslint:disable-next-line:no-console
+                console.info(`Child process running PID: ${worker.process.pid} PROCESS_NUMBER: ${(worker as any).process['env'].processNumber}`);
             });
 
-            cluster.on('exit', function(worker, code, signal) {
+            cluster.on('exit', function (worker, code, signal) {
+                // tslint:disable-next-line:no-console
                 console.info(`PID ${worker.process.pid}  code: ${code}  signal: ${signal}`);
-                const env = (<any>worker).process['env'];
+                const env = (worker as any).process['env'];
                 const newWorker = cluster.fork(env);
-                (<any>newWorker).process['env'] = env;
+                (newWorker as any).process['env'] = env;
             });
         } else {
             this.startGateway()
                 .catch((err: Error) => {
+                    // tslint:disable-next-line:no-console
                     console.error(chalk.red(`Error starting gateway: ${err.message}`));
                     process.exit(-1);
                 });
         }
 
-        process.on('uncaughtException', function(err: any) {
+        process.on('uncaughtException', function (err: any) {
+            // tslint:disable-next-line:no-console
             console.error(err);
         });
     }

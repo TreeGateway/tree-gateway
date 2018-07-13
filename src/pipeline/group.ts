@@ -1,11 +1,11 @@
 'use strict';
 
-import * as _ from 'lodash';
 import * as express from 'express';
-import { Group } from '../config/group';
-import { normalizePath } from '../utils/path';
-import { createFunction } from '../utils/functions';
+import * as _ from 'lodash';
 import * as mm from 'micromatch';
+import { Group } from '../config/group';
+import { createFunction } from '../utils/functions';
+import { normalizePath } from '../utils/path';
 
 export function filter(groups: Array<Group>, groupIds: Array<string>) {
     const filtered = _.filter(groups, (g: Group) => {
@@ -16,7 +16,7 @@ export function filter(groups: Array<Group>, groupIds: Array<string>) {
 
 export function buildGroupAllowFilter(groups: Array<Group>, groupIds: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupAllowTest('req', groups, groupIds)};`;
-    return <(req: express.Request, res: express.Response) => boolean>createFunction({ mm: mm }, 'req', 'res', body);
+    return createFunction({ mm: mm }, 'req', 'res', body) as (req: express.Request, res: express.Response) => boolean;
 }
 
 export function buildGroupAllowTest(request: string, groups: Array<Group>, groupIds: Array<string>) {
@@ -91,7 +91,7 @@ export function buildGroupAllowTest(request: string, groups: Array<Group>, group
 
 export function buildGroupDenyFilter(groups: Array<Group>, names: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupDenyTest('req', groups, names)}`;
-    return <(req: express.Request, res: express.Response) => boolean>createFunction({ mm: mm }, 'req', 'res', body);
+    return createFunction({ mm: mm }, 'req', 'res', body) as (req: express.Request, res: express.Response) => boolean;
 }
 
 export function buildGroupDenyTest(request: string, groups: Array<Group>, names: Array<string>) {
@@ -166,7 +166,7 @@ export function buildGroupDenyTest(request: string, groups: Array<Group>, names:
 
 export function buildGroupNotAllowFilter(groups: Array<Group>, groupIds: Array<string>): (req: express.Request, res: express.Response) => boolean {
     const body = `return ${buildGroupNotAllowTest('req', groups, groupIds)};`;
-    return <(req: express.Request, res: express.Response) => boolean>createFunction({ mm: mm }, 'req', 'res', body);
+    return createFunction({ mm: mm }, 'req', 'res', body) as (req: express.Request, res: express.Response) => boolean;
 }
 
 export function buildGroupNotAllowTest(request: string, groups: Array<Group>, names: Array<string>) {

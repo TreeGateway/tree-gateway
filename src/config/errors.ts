@@ -1,23 +1,10 @@
 'use strict';
 
-import { Errors } from 'typescript-rest';
 import * as Joi from 'joi';
 import * as _ from 'lodash';
+import { Errors } from 'typescript-rest';
 
 export class ValidationError extends Errors.ForbidenError {
-    entity: any;
-
-    constructor(entity?: string | Joi.ValidationError) {
-        let message;
-        if (entity instanceof String || typeof (entity) === 'string') {
-            message = <string>entity;
-        } else {
-            message = ValidationError.buildValidationErrorString(entity);
-        }
-        super(message);
-        this.entity = { error: message };
-        Object.setPrototypeOf(this, ValidationError.prototype);
-    }
 
     private static buildValidationErrorString(err: Joi.ValidationError) {
         const requiredFields: Array<string> = [];
@@ -29,7 +16,7 @@ export class ValidationError extends Errors.ForbidenError {
             } else if (_.endsWith(e.type, 'Unknown')) {
                 unexpectedFields.push(e.path);
             } else {
-                invalidFields.push(`${e.path} (${e.context?e.context.value:''})`);
+                invalidFields.push(`${e.path} (${e.context ? e.context.value : ''})`);
             }
         });
 
@@ -44,5 +31,19 @@ export class ValidationError extends Errors.ForbidenError {
             result.push(`Invalid value for Fields: ${invalidFields.join(', ')}`);
         }
         return result.join('\n');
+    }
+
+    public entity: any;
+
+    constructor(entity?: string | Joi.ValidationError) {
+        let message;
+        if (entity instanceof String || typeof (entity) === 'string') {
+            message = entity as string;
+        } else {
+            message = ValidationError.buildValidationErrorString(entity);
+        }
+        super(message);
+        this.entity = { error: message };
+        Object.setPrototypeOf(this, ValidationError.prototype);
     }
 }

@@ -1,8 +1,8 @@
 'use strict';
 
-import { CacheEntry, CacheStore, StoreCallback } from './cache-store';
 import * as redis from 'ioredis';
 import * as _ from 'lodash';
+import { CacheEntry, CacheStore, StoreCallback } from './cache-store';
 
 export interface Options {
     maxAge?: number;
@@ -11,7 +11,7 @@ export interface Options {
 }
 
 export class RedisStore implements CacheStore<CacheEntry> {
-    options: Options;
+    public options: Options;
 
     constructor(options: Options) {
         this.options = _.defaults(options, {
@@ -20,7 +20,7 @@ export class RedisStore implements CacheStore<CacheEntry> {
         });
     }
 
-    set(key: string, value: CacheEntry, maxAge?: number): void {
+    public set(key: string, value: CacheEntry, maxAge?: number): void {
         const rdskey = this.options.prefix + key;
         const opt: Options = this.options;
         if (maxAge) {
@@ -29,7 +29,7 @@ export class RedisStore implements CacheStore<CacheEntry> {
         opt.client.set(rdskey, JSON.stringify(value), 'EX', opt.maxAge);
     }
 
-    get(key: string, callback: StoreCallback<CacheEntry>): void {
+    public get(key: string, callback: StoreCallback<CacheEntry>): void {
         const rdskey = this.options.prefix + key;
         this.options.client.get(rdskey).then((cachedValue: string) => {
             if (cachedValue) {
@@ -42,7 +42,7 @@ export class RedisStore implements CacheStore<CacheEntry> {
         });
     }
 
-    del(key: string): void {
+    public del(key: string): void {
         const rdskey = this.options.prefix + key;
         this.options.client.del(rdskey);
     }
