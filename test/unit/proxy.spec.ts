@@ -4,8 +4,8 @@ import * as chai from 'chai';
 import 'mocha';
 
 import * as request from 'request';
-import {Container} from 'typescript-ioc';
-import {Configuration} from '../../src/configuration';
+import { Container } from 'typescript-ioc';
+import { Configuration } from '../../src/configuration';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -17,7 +17,7 @@ let config: Configuration;
 describe('The Gateway Proxy', () => {
     before(() => {
         config = Container.get(Configuration);
-        gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
+        gatewayRequest = request.defaults({ baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}` });
     });
 
     describe('/healthcheck', () => {
@@ -48,7 +48,7 @@ describe('The Gateway Proxy', () => {
     });
     it('should be able to send post requests', (done) => {
         gatewayRequest.post({
-            body: {test: 'test123'},
+            body: { test: 'test123' },
             json: true,
             url: '/simple/post'
         }, (error: any, response: any, body: any) => {
@@ -58,7 +58,7 @@ describe('The Gateway Proxy', () => {
     });
     it('should be able to send post requests with interceptors', (done) => {
         gatewayRequest.post({
-            body: {test: 'test123'},
+            body: { test: 'test123' },
             json: true,
             url: '/hasbody/post'
         }, (error: any, response: any, body: any) => {
@@ -75,7 +75,7 @@ describe('The Gateway Proxy', () => {
     });
     it('should be able to send post requests with interceptors that remove headers', (done) => {
         gatewayRequest.post({
-            body: {test: 'test123'},
+            body: { test: 'test123' },
             json: true,
             url: '/removeheader/post'
         }, (error: any, response: any, body: any) => {
@@ -145,7 +145,7 @@ describe('The Gateway Proxy', () => {
     });
     it('should be able to filter IPs', (done) => {
         gatewayRequest.post({
-            body: {test: 'test123'},
+            body: { test: 'test123' },
             json: true,
             url: '/filtered/post'
         }, (error: any, response: any, body: any) => {
@@ -168,7 +168,7 @@ describe('The Gateway Proxy', () => {
         gatewayRequest('/intercepted/headers', (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
-            expect(result.headers['X-Proxied-2-By']).to.equal('Tree-Gateway');
+            expect(result['X-Proxied-2-By']).to.equal('Tree-Gateway');
             done();
         });
     });
@@ -199,7 +199,7 @@ describe('The Gateway Proxy', () => {
     });
     it('should be able to intercept requests with default middlewares', (done) => {
         gatewayRequest.post({
-            body: {test: 'test123'},
+            body: { test: 'test123' },
             json: true,
             url: '/interceptedByDefault/post'
         }, (error: any, response: any, body: any) => {
