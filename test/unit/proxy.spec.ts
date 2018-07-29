@@ -169,7 +169,7 @@ describe('The Gateway Proxy', () => {
         gatewayRequest('/intercepted/headers', (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
-            expect(result['X-Proxied-2-By']).to.equal('Tree-Gateway');
+            expect(result.headers['X-Proxied-2-By']).to.equal('Tree-Gateway');
             done();
         });
     });
