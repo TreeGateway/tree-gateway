@@ -161,6 +161,7 @@ describe('The Gateway Proxy', () => {
             const result = JSON.parse(body);
             expect(result.headers['X-Proxied-By']).to.equal('Tree-Gateway');
             expect(result.headers['X-Proxied-2-By']).to.equal('Tree-Gateway');
+            expect(result.headers['X-Ip']).to.exist;
             done();
         });
     });
