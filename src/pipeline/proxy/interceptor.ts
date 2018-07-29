@@ -76,6 +76,7 @@ export class ProxyInterceptor {
                     if (groupValidator(req, res)) {
                         const proxyReq = (req as any).proxyReq || {
                             body: req.body,
+                            connection: req.connection,
                             headers: Object.assign({}, req.headers),
                             method: req.method,
                             url: req.url,
@@ -96,6 +97,7 @@ export class ProxyInterceptor {
                 apiRouter.use((req, res, next) => {
                     const proxyReq = (req as any).proxyReq || {
                         body: req.body,
+                        connection: req.connection,
                         headers: Object.assign({}, req.headers),
                         method: req.method,
                         url: req.url,
