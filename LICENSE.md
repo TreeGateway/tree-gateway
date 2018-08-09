@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2017 LEANTY
+Copyright (c) 2017 TreeGateway
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

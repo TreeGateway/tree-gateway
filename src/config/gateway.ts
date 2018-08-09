@@ -54,7 +54,7 @@ export interface GatewayConfig {
     disableCompression?: boolean;
     /**
      * Disable the validation of API Ids. If the id is not validated, the data could not be synchronizable
-     * to Leanty dashboard.
+     * to TreeGateway dashboard.
      */
     disableApiIdValidation?: boolean;
     /**

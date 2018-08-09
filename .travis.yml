@@ -22,10 +22,10 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      repo: Leanty/tree-gateway
+      repo: TreeGateway/tree-gateway
   - provider: script
     skip_cleanup: true
     script: ./deploy-docker.sh
     on:
       tags: true
-      repo: Leanty/tree-gateway
+      repo: TreeGateway/tree-gateway

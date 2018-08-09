@@ -159,14 +159,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Leanty/tree-gateway"
+    "url": "https://github.com/TreeGateway/tree-gateway"
   },
   "bin": {
     "treeGateway": "dist/index.js",
     "treeGatewayConfig": "dist/admin/config/cli.js"
   },
   "bugs": {
-    "url": "https://github.com/Leanty/tree-gateway/issues"
+    "url": "https://github.com/TreeGateway/tree-gateway/issues"
   },
   "directories": {
     "lib": "dist",

@@ -1,7 +1,7 @@
 [![npm version](https://badge.fury.io/js/tree-gateway.svg)](https://badge.fury.io/js/tree-gateway)
-[![Build Status](https://travis-ci.org/Leanty/tree-gateway.svg?branch=master)](https://travis-ci.org/Leanty/tree-gateway)
-[![Coverage Status](https://coveralls.io/repos/github/Leanty/tree-gateway/badge.svg?branch=master)](https://coveralls.io/github/Leanty/tree-gateway?branch=master)
-[![Known Vulnerabilities](https://snyk.io/test/github/leanty/tree-gateway/badge.svg?targetFile=package.json)](https://snyk.io/test/github/leanty/tree-gateway?targetFile=package.json)
+[![Build Status](https://travis-ci.org/TreeGateway/tree-gateway.svg?branch=master)](https://travis-ci.org/TreeGateway/tree-gateway)
+[![Coverage Status](https://coveralls.io/repos/github/TreeGateway/tree-gateway/badge.svg?branch=master)](https://coveralls.io/github/TreeGateway/tree-gateway?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/github/TreeGateway/tree-gateway/badge.svg?targetFile=package.json)](https://snyk.io/test/github/TreeGateway/tree-gateway?targetFile=package.json)
 
 <p align="center">
 <a href="http://treegateway.org"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAwjAAAAJGFlNWE2MDI1LTM0OGItNDc2NC1hYmU5LTM2NmNkMDlmZjkxNQ.png"/></a>
@@ -15,7 +15,7 @@ A full featured and free API Gateway in Node JS
 An API gateway provides a single, unified entry point across one or more internal APIs. It is an important element in any microservice architecture.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Leanty/tree-gateway/gh-pages/img/presentation.png" />
+  <img src="https://raw.githubusercontent.com/TreeGateway/tree-gateway/gh-pages/img/presentation.png" />
 </p>
 
 ## Why Tree Gateway?
@@ -87,9 +87,9 @@ And its done. You can test it accessing in your browser: `http://localhost:8000/
 
 ## Gateway Configuration Reference
 
-Check the [Docs](https://github.com/Leanty/tree-gateway/wiki).
+Check the [Docs](https://github.com/TreeGateway/tree-gateway/wiki).
 
 
 ## Migrating from previous versions
 
-Check our [migration guide](https://github.com/Leanty/tree-gateway/wiki/migrationGuide).
+Check our [migration guide](https://github.com/TreeGateway/tree-gateway/wiki/migrationGuide).
