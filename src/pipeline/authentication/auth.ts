@@ -125,9 +125,9 @@ export class ApiAuth {
     private sortMiddlewares(middlewares: Array<ApiAuthenticationConfig>, path: string): Array<ApiAuthenticationConfig> {
         const generalMiddlewares = _.filter(middlewares, (value) => {
             if (value.group) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         });
 
         if (generalMiddlewares.length > 1) {
