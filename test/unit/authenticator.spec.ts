@@ -4,9 +4,9 @@ import * as chai from 'chai';
 import 'mocha';
 
 import * as request from 'request';
-import {Cookie} from 'tough-cookie';
-import {Container} from 'typescript-ioc';
-import {Configuration} from '../../src/configuration';
+import { Cookie } from 'tough-cookie';
+import { Container } from 'typescript-ioc';
+import { Configuration } from '../../src/configuration';
 
 const expect = chai.expect;
 // tslint:disable:no-unused-expression
@@ -18,7 +18,7 @@ let config: Configuration;
 describe('The Gateway Authenticator', () => {
     before(() => {
         config = Container.get(Configuration);
-        gatewayRequest = request.defaults({baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}`});
+        gatewayRequest = request.defaults({ baseUrl: `http://localhost:${config.gateway.protocol.http.listenPort}` });
 
     });
 
@@ -35,7 +35,7 @@ describe('The Gateway Authenticator', () => {
     it('should be able to verify JWT authentication on requests to API', (done) => {
         gatewayRequest.get({
             headers: { 'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ' },
-            url:'/secure/get?arg=1'
+            url: '/secure/get?arg=1'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
@@ -46,7 +46,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify JWT authentication on requests to API via query param', (done) => {
         gatewayRequest.get({
-            url:'/secure/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
+            url: '/secure/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
@@ -57,8 +57,8 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify JWT authentication on requests to API via custom header', (done) => {
         gatewayRequest.get({
-            headers: {'x-my-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'},
-            url:'/secure/get'
+            headers: { 'x-my-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ' },
+            url: '/secure/get'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             done();
@@ -71,10 +71,10 @@ describe('The Gateway Authenticator', () => {
             value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
         });
         const jar = gatewayRequest.jar();
-        jar.setCookie(cookie, 'http://localhost:8001');
+        jar.setCookie(cookie.cookieString(), 'http://localhost:8001');
         gatewayRequest.get({
             jar: jar,
-            url:'/secure/get'
+            url: '/secure/get'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             done();
@@ -84,7 +84,7 @@ describe('The Gateway Authenticator', () => {
     it('should be able to verify Basic authentication on requests to API', (done) => {
         gatewayRequest.get({
             headers: { 'authorization': 'Basic dGVzdDp0ZXN0MTIz' },
-            url:'/secureBasic/get?arg=1'
+            url: '/secureBasic/get?arg=1'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
@@ -95,7 +95,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify authentication only to restricted groups in API', (done) => {
         gatewayRequest.get({
-            url:'/secureBasic-by-group/get?arg=1'
+            url: '/secureBasic-by-group/get?arg=1'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(401);
             const result = JSON.parse(body);
@@ -106,7 +106,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify authentication only to restricted groups in API', (done) => {
         gatewayRequest.get({
-            url:'/secureBasic-by-group/headers'
+            url: '/secureBasic-by-group/headers'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             done();
@@ -115,7 +115,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify authentication only to restricted groups in API with multiple paths', (done) => {
         gatewayRequest.get({
-            url:'/secureBasic-by-group-multi/get?arg=1'
+            url: '/secureBasic-by-group-multi/get?arg=1'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(401);
             const result = JSON.parse(body);
@@ -126,7 +126,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify authentication only to restricted groups in API with multiple paths', (done) => {
         gatewayRequest.get({
-            url:'/secureBasic-by-group-multi/headers'
+            url: '/secureBasic-by-group-multi/headers'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             done();
@@ -135,7 +135,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify Local authentication on requests to API', (done) => {
         gatewayRequest.get({
-            url:'/secureLocal/get?userid=test&passwd=test123'
+            url: '/secureLocal/get?userid=test&passwd=test123'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
@@ -146,7 +146,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify a custom authentication on requests to API', (done) => {
         gatewayRequest.get({
-            url:'/secureCustom/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
+            url: '/secureCustom/get?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(200);
             const result = JSON.parse(body);
@@ -157,7 +157,7 @@ describe('The Gateway Authenticator', () => {
 
     it('should be able to verify a custom authentication on requests to API', (done) => {
         gatewayRequest.get({
-            url:'/secureCustom/get'
+            url: '/secureCustom/get'
         }, (error: any, response: any, body: any) => {
             expect(response.statusCode).to.equal(401);
             done();

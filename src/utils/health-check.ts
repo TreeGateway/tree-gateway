@@ -28,7 +28,7 @@ export class HealthCheck extends EventEmitter {
     private checks: any = {};
     private previousChecks: any;
     private options: HealthCheckOptions;
-    private interval: number;
+    private interval: NodeJS.Timeout;
     private checking: boolean = false;
 
     constructor(options: HealthCheckOptions) {
@@ -63,7 +63,7 @@ export class HealthCheck extends EventEmitter {
     public stop() {
         if (this.interval) {
             clearInterval(this.interval);
-            this.interval = 0;
+            this.interval = undefined;
         }
     }
 
@@ -119,7 +119,7 @@ export class HealthCheck extends EventEmitter {
                 host: urlCheck.hostname,
                 path: urlCheck.pathname,
                 port: urlCheck.port
-            }, (response: http.ClientResponse) => {
+            }, (response: http.ServerResponse) => {
                 let result = new Buffer('');
                 if (response.statusCode === 200) {
                     response.on('data', (chunk: Buffer) => {
