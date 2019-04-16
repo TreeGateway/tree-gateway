@@ -1,7 +1,7 @@
 {
   "name": "tree-gateway",
   "version": "3.1.6",
-  "homepage": "http://treegateway.org",
+  "homepage": "http://treegateway.com",
   "description": "The Tree Gateway API Gateway",
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
   "keywords": [

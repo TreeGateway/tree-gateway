@@ -4,7 +4,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/TreeGateway/tree-gateway/badge.svg?targetFile=package.json)](https://snyk.io/test/github/TreeGateway/tree-gateway?targetFile=package.json)
 
 <p align="center">
-<a href="http://treegateway.org"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAwjAAAAJGFlNWE2MDI1LTM0OGItNDc2NC1hYmU5LTM2NmNkMDlmZjkxNQ.png"/></a>
+<a href="http://treegateway.com"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAwjAAAAJGFlNWE2MDI1LTM0OGItNDc2NC1hYmU5LTM2NmNkMDlmZjkxNQ.png"/></a>
 </p>
 <p align="center">
 A full featured and free API Gateway in Node JS
