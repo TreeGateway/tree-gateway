@@ -15,6 +15,9 @@ RUN npm install
 COPY README.md tree-gateway.json rest.config ioc.config /usr/src/app/
 COPY ./lib /usr/src/app/lib/
 COPY ./dist /usr/src/app/dist/
+RUN ln -sf /usr/src/app/dist/admin/config/cli.js /usr/local/bin/treeGatewayConfig; \
+    ln -sf /usr/src/app/dist/index.js /usr/local/bin/treeGateway; \
+    chmod +x /usr/local/bin/treeGatewayConfig /usr/local/bin/treeGateway
 
 EXPOSE 8000 8001
 
