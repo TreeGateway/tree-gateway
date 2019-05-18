@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  gw:
+    image: treegateway/tree-gateway:latest
+    ports:
+      - '8000:8000'
+      - '8001:8001'
+    links:
+      - 'redis:redis'
+  redis:
+    image: redis:3.2.8-alpine
+    ports:
+      - '6379:6379'
