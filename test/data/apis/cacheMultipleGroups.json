@@ -1,0 +1,46 @@
+{
+    "name": "TestMultipleGroupsCachedAPI",
+    "version": "1.0.0",
+    "path": "multipleGroupsTestCache/",
+    "group": [
+        {
+            "id": "Group1",
+            "description": "Endpoints Group One",
+            "member": [
+                {
+                    "path": ["get/"],
+                    "method": ["GET"]
+                }
+            ]
+        },
+        {
+            "id": "Group2",
+            "description": "Endpoints Group Two",
+            "member": [
+                {
+                    "path": ["get-2/"],
+                    "method": ["GET"]
+                }
+            ]
+        }
+    ],
+    "proxy": {
+        "target": {
+            "host": "http://localhost"
+        },
+        "timeout": 5000
+    },
+    "cache": [
+        {
+            "use": "my-cache",
+            "group": ["Group1"]
+        },
+        {
+            "server": {
+                "cacheTime": "30 minutes",
+                "binary": true
+            },
+            "group": ["Group2"]
+        }
+    ]
+}

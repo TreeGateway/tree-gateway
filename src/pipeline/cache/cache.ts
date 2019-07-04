@@ -100,12 +100,23 @@ export class ApiCache {
     }
 
     private sortCaches(caches: Array<ApiCacheConfig>, path: string): Array<ApiCacheConfig> {
-        const generalCaches = _.filter(caches, (value) => {
-            if (value.group) {
-                return true;
-            }
-            return false;
-        });
+        const generalCaches = _.filter(caches, (value: ApiCacheConfig) => !value.group);
+
+        let groupsTemp: Array<string> = [];
+        caches = caches
+            .reverse()
+            .map(cache => {
+                cache.group = _.uniq(cache.group).filter((group: string) => {
+                    const isGroupPresent = groupsTemp.indexOf(group) >= 0;
+                    if (isGroupPresent) {
+                        this.logger.warn(`Duplicated group cache configuration for api [${path}]. Conflicting configurations for group [${group}]. Kept last one.`);
+                    }
+                    return !isGroupPresent;
+                });
+                groupsTemp = groupsTemp.concat(cache.group);
+                return cache;
+            })
+            .reverse();
 
         if (generalCaches.length > 1) {
             this.logger.error(`Invalid cache configuration for api [${path}]. Conflicting configurations for default group`);
