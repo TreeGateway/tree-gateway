@@ -36,4 +36,11 @@ describe('The Gateway Cache', () => {
             done();
         });
     });
+
+    it('should be able to cache multiple distinct groups', (done) => {
+        gatewayRequest('/multipleGroupsTestCache/get', (error: any, response: any, body: any) => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
 });
