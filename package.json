@@ -29,7 +29,9 @@
     "swagger": "swaggerGen -c ./swagger.config.json",
     "test": "cross-env NODE_ENV=test mocha --exit",
     "test:coverage": "nyc npm test",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "nyc": {
     "include": [
@@ -101,7 +103,8 @@
     "weighted": "^0.3.0",
     "winston": "^2.4.0",
     "xml2js": "^0.4.19",
-    "yamljs": "^0.2.10"
+    "yamljs": "^0.2.10",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@types/argparse": "^1.0.33",
@@ -173,5 +176,6 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "engineStrict": true
+  "engineStrict": true,
+  "snyk": true
 }
