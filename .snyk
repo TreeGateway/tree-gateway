@@ -1,0 +1,24 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - express-winston > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - inquirer > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - lodash-deep > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - swagger-client > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - typescript-rest > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - typescript-rest-swagger > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - typescript-rest-swagger > typescript-rest > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
+    - swagger-client > isomorphic-form-data > form-data > async > lodash:
+        patched: '2020-05-01T04:18:37.661Z'
