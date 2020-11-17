@@ -95,7 +95,7 @@
     "swagger-client": "^3.8.1",
     "typescript-ioc": "^1.2.1",
     "typescript-rest": "^1.5.2",
-    "typescript-rest-swagger": "0.0.12",
+    "typescript-rest-swagger": "1.1.2",
     "url": "^0.11.0",
     "uuid": "^3.2.1",
     "weighted": "^0.3.0",
