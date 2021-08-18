@@ -73,7 +73,7 @@
     "fs-extra-promise": "^0.4.1",
     "human-interval": "^0.1.6",
     "inquirer": "^5.1.0",
-    "ioredis": "^3.1.4",
+    "ioredis": "^4.27.8",
     "joi": "13.0.0",
     "jsonata": "^1.5.2",
     "jsonwebtoken": "^8.2.0",
