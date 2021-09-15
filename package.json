@@ -72,7 +72,7 @@
     "express-winston": "^2.5.0",
     "fs-extra-promise": "^0.4.1",
     "human-interval": "^0.1.6",
-    "inquirer": "^5.1.0",
+    "inquirer": "^7.0.5",
     "ioredis": "^3.1.4",
     "joi": "13.0.0",
     "jsonata": "^1.5.2",
