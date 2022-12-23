@@ -76,7 +76,7 @@
     "ioredis": "^3.1.4",
     "joi": "13.0.0",
     "jsonata": "^1.5.2",
-    "jsonwebtoken": "^8.2.0",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.5",
     "lodash-deep": "^2.0.0",
     "micromatch": "^3.1.10",
