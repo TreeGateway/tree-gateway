@@ -87,7 +87,7 @@
     "passport-http": "^0.3.0",
     "passport-local": "^1.0.0",
     "passport-strategy": "^1.0.0",
-    "path-to-regexp": "^1.6.0",
+    "path-to-regexp": "^8.0.0",
     "raw-body": "^2.3.0",
     "request": "^2.86.0",
     "requires-port": "1.x.x",
