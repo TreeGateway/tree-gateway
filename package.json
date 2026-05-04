@@ -97,7 +97,7 @@
     "typescript-rest": "^1.5.2",
     "typescript-rest-swagger": "0.0.12",
     "url": "^0.11.0",
-    "uuid": "^3.2.1",
+    "uuid": "^14.0.0",
     "weighted": "^0.3.0",
     "winston": "^2.4.0",
     "xml2js": "^0.4.19",
